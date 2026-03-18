@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-shell">
+  <aside class="sidebar">
+    <h3>Admin CRM</h3>
+    <a href="/admin/leads?token={{ token }}">Leads</a>
+    <a href="/admin/blog?token={{ token }}">Blog</a>
+  </aside>
+  <section class="admin-main">
+    <header class="admin-header">Dashboard</header>
+    {% block admin_content %}{% endblock %}
+    <footer class="admin-footer">Gestion interne</footer>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block content %}
+<article class="card">
+  <h1>{{ article.title }}</h1>
+  <p>{{ article.intro }}</p>
+  <div class="markdown">{{ article.body_markdown | replace('\n', '<br>') | safe }}</div>
+  <h3>Conclusion</h3>
+  <p>{{ article.conclusion }}</p>
+  <h3>FAQ</h3>
+  <p>{{ article.faq | replace('\n', '<br>') | safe }}</p>
+</article>
+{% endblock %}

@@ -1,0 +1,38 @@
+<div class="card">
+  <h2>Votre estimation</h2>
+  <div class="grid-3">
+    <div><strong>Basse</strong><p>{{ "{:,.0f}".format(estimate.low) }} €</p></div>
+    <div><strong>Moyenne</strong><p>{{ "{:,.0f}".format(estimate.mid) }} €</p></div>
+    <div><strong>Haute</strong><p>{{ "{:,.0f}".format(estimate.high) }} €</p></div>
+  </div>
+  <h3>Recevoir une estimation avancée</h3>
+  <form action="/lead" method="post" class="lead-form">
+    {% for key, value in form_data.items() %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    <input type="hidden" name="estimated_low" value="{{ estimate.low }}">
+    <input type="hidden" name="estimated_mid" value="{{ estimate.mid }}">
+    <input type="hidden" name="estimated_high" value="{{ estimate.high }}">
+
+    <label>Nom <input type="text" name="name" required></label>
+    <label>Email <input type="email" name="email" required></label>
+    <label>Téléphone <input type="text" name="phone" required></label>
+    <label>Adresse du bien <input type="text" name="address" required></label>
+    <label>Urgence
+      <select name="urgency">
+        <option value="rapide">Rapide</option>
+        <option value="moyen">Moyen</option>
+        <option value="long">Long</option>
+      </select>
+    </label>
+    <label>Motivation
+      <select name="motivation">
+        <option value="vente">Vente</option>
+        <option value="succession">Succession</option>
+        <option value="divorce">Divorce</option>
+        <option value="investissement">Investissement</option>
+      </select>
+    </label>
+    <button type="submit">Envoyer</button>
+  </form>
+</div>

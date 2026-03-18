@@ -1,0 +1,38 @@
+{% extends "admin/layout.html" %}
+{% block admin_content %}
+<h1>Administration Blog</h1>
+<section class="card">
+  <h2>Générer un article IA</h2>
+  <form action="/admin/blog/generate?token={{ token }}" method="post">
+    <label>Ville <input type="text" name="city" value="Bordeaux"></label>
+    <label>Sujet <input type="text" name="topic_hint" value="prix immobilier 2026"></label>
+    <button type="submit">Générer article IA</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Créer un article manuel</h2>
+  <form action="/admin/blog/create?token={{ token }}" method="post">
+    <label>Titre <input type="text" name="title" required></label>
+    <label>Intro <textarea name="intro" rows="3"></textarea></label>
+    <label>Corps <textarea name="body_markdown" rows="6"></textarea></label>
+    <label>Conclusion <textarea name="conclusion" rows="3"></textarea></label>
+    <label>FAQ <textarea name="faq" rows="3"></textarea></label>
+    <button type="submit">Créer</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Articles existants</h2>
+  <ul>
+    {% for article in articles %}
+      <li>
+        {{ article.title }} ({{ article.slug }})
+        <form style="display:inline" action="/admin/blog/{{ article.id }}/delete?token={{ token }}" method="post">
+          <button type="submit">Supprimer</button>
+        </form>
+      </li>
+    {% else %}
+      <li>Aucun article</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

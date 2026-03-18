@@ -1,0 +1,25 @@
+{% extends "admin/layout.html" %}
+{% block admin_content %}
+<h1>Leads</h1>
+<div class="filters">
+  <a href="/admin/leads?token={{ token }}">Tous</a>
+  <a href="/admin/leads?token={{ token }}&temperature=chaud">Chaud</a>
+  <a href="/admin/leads?token={{ token }}&temperature=tiède">Tiède</a>
+  <a href="/admin/leads?token={{ token }}&temperature=froid">Froid</a>
+</div>
+<table>
+  <thead><tr><th>Nom</th><th>Ville</th><th>Budget</th><th>Température</th><th>Statut</th><th>Détail</th></tr></thead>
+  <tbody>
+  {% for lead in leads %}
+    <tr>
+      <td>{{ lead.name }}</td>
+      <td>{{ lead.city }}</td>
+      <td>{{ "{:,.0f}".format(lead.bant_budget) }} €</td>
+      <td>{{ lead.temperature }}</td>
+      <td>{{ lead.status }}</td>
+      <td><a href="/admin/leads/{{ lead.id }}?token={{ token }}">Voir</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -46,7 +46,7 @@ final class EstimationController
             $nom = Validator::string($_POST, 'nom', 2, 120);
             $email = Validator::email($_POST, 'email');
             $telephone = Validator::string($_POST, 'telephone', 6, 30);
-            Validator::string($_POST, 'adresse', 5, 255);
+            $adresse = Validator::string($_POST, 'adresse', 5, 255);
             $ville = Validator::string($_POST, 'ville', 2, 120);
             $estimation = Validator::float($_POST, 'estimation', 10000, 100000000);
             $urgence = Validator::string($_POST, 'urgence', 3, 40);
@@ -60,6 +60,7 @@ final class EstimationController
                 'nom' => $nom,
                 'email' => $email,
                 'telephone' => $telephone,
+                'adresse' => $adresse,
                 'ville' => $ville,
                 'estimation' => $estimation,
                 'urgence' => $urgence,

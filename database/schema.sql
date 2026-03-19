@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS leads (
     nom VARCHAR(120) NOT NULL,
     email VARCHAR(180) NOT NULL,
     telephone VARCHAR(40) NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
     ville VARCHAR(120) NOT NULL,
     estimation DECIMAL(12,2) NOT NULL,
     urgence VARCHAR(40) NOT NULL,

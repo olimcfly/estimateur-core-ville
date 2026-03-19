@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<?php
-  $colors = $config['colors'] ?? [];
-  $rgbColors = $config['rgb_colors'] ?? [];
-?>
+  <?php
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+    $canonicalPath = (string) parse_url($requestUri, PHP_URL_PATH);
+    $canonicalPath = $canonicalPath !== '' ? $canonicalPath : '/';
+    if ($canonicalPath !== '/') {
+        $canonicalPath = rtrim($canonicalPath, '/');
+    }
+
+    $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    $scheme = $isHttps ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $canonicalUrl = $scheme . '://' . $host . $canonicalPath;
+  ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Estimation immobilière Bordeaux - Évaluez votre bien gratuitement et découvrez nos guides immobiliers.">
-  <meta name="theme-color" content="<?= e((string) ($colors['primary'] ?? '#8B1538')) ?>">
+  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilière Bordeaux - Évaluez votre bien gratuitement et découvrez nos guides immobiliers.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="theme-color" content="#8B1538">
+  <link rel="canonical" href="<?= e($canonicalUrl) ?>">
   <title><?= isset($page_title) ? $page_title : 'Estimation Immobilière Bordeaux' ?></title>
 
   <!-- Google Fonts -->
@@ -438,153 +448,58 @@
 <!-- HEADER PREMIUM -->
 <!-- ============================= -->
 <header class="site-header">
-  <div class="header-container">
-    <div class="header-wrapper">
-      <!-- LOGO -->
-      <a href="/" class="brand">
-        <div class="brand-icon">
-          <i class="fas fa-home"></i>
-        </div>
-        <span>Estim</span>ation
-      </a>
+  <div class="container nav-wrapper">
+    <a href="/" class="brand">Bordeaux<span>Estimate</span></a>
 
-      <!-- NAVIGATION PRINCIPALE -->
-      <nav class="nav-main" id="navMain">
-        <!-- ESTIMATION -->
-        <div class="nav-item nav-dropdown">
-          <a href="/" class="nav-link dropdown-toggle">
-            <i class="fas fa-calculator"></i> Estimation
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/#form-estimation"><i class="fas fa-zap"></i> Estimer mon bien</a></li>
-            <li><a href="/#example-result"><i class="fas fa-chart-bar"></i> Voir un exemple</a></li>
-            <li><a href="/#how-it-works"><i class="fas fa-cogs"></i> Comment ça marche</a></li>
-            <li><a href="/faq"><i class="fas fa-question-circle"></i> FAQ Estimation</a></li>
-          </ul>
-        </div>
-
-        <!-- BLOG -->
-        <div class="nav-item nav-dropdown">
-          <a href="/blog" class="nav-link dropdown-toggle">
-            <i class="fas fa-book-open"></i> Blog
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/blog"><i class="fas fa-newspaper"></i> Tous les articles</a></li>
-            <li><a href="/blog?cat=vendre"><i class="fas fa-door-open"></i> Vendre son bien</a></li>
-            <li><a href="/blog?cat=marche"><i class="fas fa-chart-line"></i> Marché immobilier</a></li>
-            <li><a href="/blog?cat=conseil"><i class="fas fa-lightbulb"></i> Conseils & astuces</a></li>
-            <li><a href="/blog?cat=legal"><i class="fas fa-gavel"></i> Aspect juridique</a></li>
-          </ul>
-        </div>
-
-        <!-- SERVICES -->
-        <div class="nav-item nav-dropdown">
-          <a href="/services" class="nav-link dropdown-toggle">
-            <i class="fas fa-briefcase"></i> Services
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/services#estimation"><i class="fas fa-calculator"></i> Estimation détaillée</a></li>
-            <li><a href="/services#accompagnement"><i class="fas fa-handshake"></i> Accompagnement</a></li>
-            <li><a href="/services#conseil"><i class="fas fa-user-tie"></i> Conseil immobilier</a></li>
-            <li><a href="/services#marketing"><i class="fas fa-bullhorn"></i> Marketing immobilier</a></li>
-          </ul>
-        </div>
-
-        <!-- À PROPOS -->
-        <div class="nav-item">
-          <a href="/about" class="nav-link">
-            <i class="fas fa-info-circle"></i> À propos
-          </a>
-        </div>
-
-        <!-- CONTACT -->
-        <div class="nav-item">
-          <a href="/contact" class="nav-link">
-            <i class="fas fa-envelope"></i> Contact
-          </a>
-        </div>
-
-        <!-- RESSOURCES -->
-        <div class="nav-item nav-dropdown">
-          <a href="#" class="nav-link dropdown-toggle">
-            <i class="fas fa-graduation-cap"></i> Ressources
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="/guides"><i class="fas fa-map"></i> Guides complets</a></li>
-            <li><a href="/tools/calculatrice"><i class="fas fa-calculator"></i> Calculatrice prix</a></li>
-            <li><a href="/quartiers"><i class="fas fa-map-marker-alt"></i> Quartiers Bordeaux</a></li>
-            <li><a href="/podcast"><i class="fas fa-podcast"></i> Podcast immobilier</a></li>
-            <li><a href="/newsletter"><i class="fas fa-envelope-open"></i> Newsletter</a></li>
-          </ul>
-        </div>
-      </nav>
-
-      <!-- ACTIONS DROITE -->
-      <div class="header-actions">
-        <!-- SEARCH (optionnel) -->
-        <!-- <div class="search-wrapper">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" class="search-input" placeholder="Chercher...">
-        </div> -->
-
-        <!-- CTA PRINCIPAL -->
-        <a href="/#form-estimation" class="btn-cta">
-          <i class="fas fa-bolt"></i>
-          <span>Estimer</span>
-        </a>
-
-        <!-- MENU TOGGLE MOBILE -->
-        <button class="menu-toggle" id="menuToggle" aria-label="Menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+    <nav class="top-nav" aria-label="Navigation principale">
+      <div class="nav-item has-dropdown">
+        <a href="/estimation" class="nav-link">Estimation</a>
+        <ul class="dropdown-menu" aria-label="Sous-menu estimation">
+          <li><a href="/estimation#form-estimation">Estimer mon bien</a></li>
+          <li><a href="/estimation#example-result">Voir un exemple</a></li>
+          <li><a href="/estimation#how-it-works">Comment ça marche</a></li>
+          <li><a href="/estimation#faq">FAQ Estimation</a></li>
+        </ul>
       </div>
-    </div>
+
+      <div class="nav-item has-dropdown">
+        <a href="/blog" class="nav-link">Blog</a>
+        <ul class="dropdown-menu" aria-label="Sous-menu blog">
+          <li><a href="/blog">Tous les articles</a></li>
+          <li><a href="/blog?cat=vendre">Vendre son bien</a></li>
+          <li><a href="/blog?cat=marche">Marché immobilier</a></li>
+          <li><a href="/blog?cat=conseil">Conseils &amp; astuces</a></li>
+          <li><a href="/blog?cat=legal">Aspect juridique</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-item has-dropdown">
+        <a href="/services" class="nav-link">Services</a>
+        <ul class="dropdown-menu" aria-label="Sous-menu services">
+          <li><a href="/services#estimation-detaillee">Estimation détaillée</a></li>
+          <li><a href="/services#accompagnement">Accompagnement</a></li>
+          <li><a href="/services#conseil-immobilier">Conseil immobilier</a></li>
+          <li><a href="/services#marketing-immobilier">Marketing immobilier</a></li>
+        </ul>
+      </div>
+
+      <a href="/about" class="nav-link">À propos</a>
+      <a href="/contact" class="nav-link">Contact</a>
+
+      <div class="nav-item has-dropdown">
+        <a href="/guides" class="nav-link">Ressources</a>
+        <ul class="dropdown-menu" aria-label="Sous-menu ressources">
+          <li><a href="/guides">Guides complets</a></li>
+          <li><a href="/tools/calculatrice">Calculatrice prix</a></li>
+          <li><a href="/quartiers">Quartiers Bordeaux</a></li>
+          <li><a href="/podcast">Podcast immobilier</a></li>
+          <li><a href="/newsletter">Newsletter</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <a href="/estimation#form-estimation" class="btn btn-small">Estimer mon bien</a>
   </div>
 </header>
 
 <main>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const menuToggle = document.getElementById('menuToggle');
-    const navMain = document.getElementById('navMain');
-    const navDropdowns = document.querySelectorAll('.nav-dropdown');
-
-    // Toggle menu mobile
-    menuToggle.addEventListener('click', function() {
-      navMain.classList.toggle('active');
-    });
-
-    // Fermer menu au clic sur un lien
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        // Ne pas fermer si c'est un dropdown
-        if (!this.parentElement.classList.contains('nav-dropdown')) {
-          navMain.classList.remove('active');
-        }
-      });
-    });
-
-    // Gestion des dropdowns en mobile
-    navDropdowns.forEach(dropdown => {
-      const toggle = dropdown.querySelector('.nav-link');
-      toggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
-          e.preventDefault();
-          dropdown.classList.toggle('active');
-          e.stopPropagation();
-        }
-      });
-    });
-
-    // Fermer les dropdowns au clic extérieur
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.nav-dropdown')) {
-        navDropdowns.forEach(d => d.classList.remove('active'));
-      }
-    });
-  });
-</script>

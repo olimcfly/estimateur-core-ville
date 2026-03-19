@@ -1,48 +1,52 @@
-# Estimateur Immobilier Intelligent (FastAPI + HTMX)
+# Estimateur Immobilier SaaS (PHP MVC)
 
-Application SaaS immobilière modulaire avec :
+Application SaaS immobilière en **PHP 8+**, architecture MVC légère, **MySQL (PDO)**.
 
-- Estimateur gratuit (sans inscription)
-- Estimation avancée et qualification BANT
-- CRM admin (leads, filtres, statut, notes)
-- Blog automatique IA (Perplexity + OpenAI)
+## Fonctionnalités livrées
 
-## Lancer le projet
+- Estimateur immobilier (`/estimation`) avec calcul bas/moyen/haut
+- Intégration Perplexity pour prix m² (fallback local si API indisponible)
+- Capture lead après estimation
+- Stockage lead sécurisé en MySQL via requêtes préparées
+- Scoring lead (`chaud`, `tiede`, `froid`)
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn app.main:app --reload
-```
-
-## Endpoints principaux
-
-- `/` : formulaire d'estimation gratuite
-- `/estimate` : calcul HTMX d'estimation
-- `/lead` : création lead qualifié
-- `/admin/leads?token=...` : CRM admin
-- `/blog` : liste des articles publiés
-- `/blog/{slug}` : détail article
-- `/admin/blog?token=...` : gestion blog + génération IA
-
-## Architecture
+## Arborescence
 
 ```text
-app/
-  core/            # config + db
-  models/          # SQLAlchemy entities
-  routes/          # endpoints web
-  schemas/         # validation Pydantic
-  services/        # estimation, Perplexity, OpenAI, blog
-  templates/       # Jinja2 + HTMX views
-  static/          # CSS
+/public
+/app
+  /controllers
+  /models
+  /services
+  /views
+  /core
+/config
+/routes
+/storage
+/database
 ```
 
-## Scalabilité
+## Installation
 
-- Config pilotée par variables d'environnement
-- SQLAlchemy compatible PostgreSQL (changer `DATABASE_URL`)
-- Services AI isolés pour faciliter retries, queue, caching
-- Routes séparées pour migrer vers API REST stricte
+1. Configurer Apache avec `DocumentRoot` sur `public/`
+2. Créer la base MySQL
+3. Exécuter `database/schema.sql`
+4. Définir les variables d'environnement:
+
+```bash
+export DB_HOST=127.0.0.1
+export DB_PORT=3306
+export DB_NAME=immobilier_saas
+export DB_USER=root
+export DB_PASS=''
+export PERPLEXITY_API_KEY=''
+```
+
+5. Ouvrir `/estimation`
+
+## Routes
+
+- `GET /` → redirection logique estimateur (même vue)
+- `GET /estimation` → formulaire
+- `POST /estimation` → calcul estimation
+- `POST /lead` → insertion lead

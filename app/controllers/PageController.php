@@ -24,7 +24,7 @@ final class PageController
 
     public function about(): void
     {
-        View::render('pages/about', [
+        View::render('pages/a_propos', [
             'page_title' => 'À Propos - Estimation Immobilier Bordeaux',
         ]);
     }
@@ -54,6 +54,13 @@ final class PageController
     {
         View::render('pages/contact', [
             'page_title' => 'Contact - Estimation Immobilier Bordeaux',
+        ]);
+    }
+
+    public function guides(): void
+    {
+        View::render('pages/guides', [
+            'page_title' => 'Guides - Estimation Immobilier Bordeaux',
         ]);
     }
 

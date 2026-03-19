@@ -1,5 +1,4 @@
 <?php $page_title = 'Estimation Immobilière Bordeaux - Évaluez Votre Bien'; ?>
-<?php include 'header.php'; ?>
 
 <!-- HERO SECTION -->
 <section class="hero">
@@ -222,5 +221,3 @@
     </div>
   </div>
 </section>
-
-<?php include 'footer.php'; ?>

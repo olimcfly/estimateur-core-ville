@@ -12,6 +12,18 @@ use App\Services\LeadScoringService;
 
 final class EstimationController
 {
+    public function leads(): void
+    {
+        $score = isset($_GET['score']) ? (string) $_GET['score'] : null;
+        $leadModel = new Lead();
+        $leads = $leadModel->listByScore($score);
+
+        View::render('estimation/leads', [
+            'leads' => $leads,
+            'scoreFilter' => $score,
+        ]);
+    }
+
     public function index(): void
     {
         View::render('estimation/index');

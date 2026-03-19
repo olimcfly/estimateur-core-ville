@@ -22,7 +22,8 @@ final class EstimationController
     {
         try {
             $city = Validator::string($_POST, 'ville', 2, 120);
-            $propertyType = Validator::string($_POST, 'type_bien', 2, 80);
+            $typeKey = array_key_exists('type', $_POST) ? 'type' : 'type_bien';
+            $propertyType = Validator::string($_POST, $typeKey, 2, 80);
             $surface = Validator::float($_POST, 'surface', 5, 10000);
             $rooms = Validator::int($_POST, 'pieces', 1, 50);
 

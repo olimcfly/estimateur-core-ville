@@ -22,7 +22,19 @@
         pour mieux estimer, vendre ou acheter à Bordeaux.
       </p>
 
-      <form class="form-grid" action="#" method="post" style="margin-top: 1rem;">
+      <?php if (isset($success_message)): ?>
+        <div class="alert alert-success" style="background:#e9f9ef;color:#14532d;border:1px solid #86efac;padding:0.9rem 1rem;border-radius:10px;margin:1rem 0;">
+          <?= e($success_message) ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (isset($error_message)): ?>
+        <div class="alert alert-error" style="background:#fef2f2;color:#7f1d1d;border:1px solid #fecaca;padding:0.9rem 1rem;border-radius:10px;margin:1rem 0;">
+          <?= e($error_message) ?>
+        </div>
+      <?php endif; ?>
+
+      <form class="form-grid" action="/newsletter" method="post" style="margin-top: 1rem;">
         <label for="newsletter_email" class="full-width">
           <span><i class="fas fa-envelope"></i> Email *</span>
           <input type="email" id="newsletter_email" name="newsletter_email" placeholder="vous@exemple.com" required>

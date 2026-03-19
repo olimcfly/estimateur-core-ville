@@ -23,6 +23,8 @@ $router->get('/processus-estimation', [PageController::class, 'processusEstimati
 $router->get('/quartiers', [PageController::class, 'quartiers']);
 $router->get('/contact', [PageController::class, 'contact']);
 $router->get('/newsletter', [PageController::class, 'newsletter']);
+$router->post('/newsletter', [PageController::class, 'newsletterSubscribe']);
+$router->get('/newsletter/confirm', [PageController::class, 'newsletterConfirm']);
 $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation']);
 $router->get('/guides', [PageController::class, 'guides']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);

@@ -11,19 +11,35 @@
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="site-header">
+<!-- FOOTER -->
+<footer class="site-footer">
   <div class="container">
-    <nav class="nav-wrapper">
-      <a href="/" class="brand">Estimation <span>Bordeaux</span></a>
-      <div class="top-nav">
-        <a href="/#avantages">Avantages</a>
-        <a href="/#process">Processus</a>
-        <a href="/#faq">FAQ</a>
-        <a href="/#simulateur" class="btn btn-small">Estimer</a>
+    <div class="footer-grid">
+      <div>
+        <p class="brand-footer">Estimation <span>Bordeaux</span></p>
+        <p class="muted">Accompagner les vendeurs immobiliers à Bordeaux avec des estimations fiables et professionnelles.</p>
       </div>
-    </nav>
+      <div>
+        <h4>Pages</h4>
+        <ul class="footer-links">
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/about">À propos</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/mentions-legales">Mentions légales</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p class="muted"><i class="fas fa-envelope"></i> contact@estimation-bordeaux.fr</p>
+        <p class="muted"><i class="fas fa-phone"></i> 05 XX XX XX XX</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="muted">&copy; 2024 Estimation Bordeaux. Tous droits réservés.</p>
+    </div>
   </div>
-</header>
+</footer>
 
-<main>
+</body>
+</html>

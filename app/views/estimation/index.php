@@ -3,66 +3,32 @@
 
 <!-- ============================================ -->
 <!-- HERO SECTION -->
-<!-- ============================================ -->
-<section class="section page-hero page-block-hero">
-  <div class="container">
-    <div class="page-hero-inner card">
-      <p class="eyebrow">
-        <i class="fas fa-calculator"></i> Estimation gratuite
-      </p>
-      <h1>Découvrez la vraie valeur de votre bien</h1>
-      <p class="lead">
-        Formulaire simple, résultat instantané. Aucune visite obligatoire. 100% gratuit et sans engagement.
-      </p>
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <p class="eyebrow">✓ Estimation immobilière à Bordeaux</p>
+      <h1>Vendez au meilleur prix avec une évaluation fiable et professionnelle</h1>
+      <p class="lead">Notre moteur analyse les données locales, les tendances du marché et les caractéristiques de votre bien pour fournir une fourchette de valeur précise en quelques secondes.</p>
+      
+      <ul class="trust-list">
+        <li><i class="fas fa-check-circle"></i> +2 000 estimations réalisées</li>
+        <li><i class="fas fa-check-circle"></i> Méthodologie marché local</li>
+        <li><i class="fas fa-check-circle"></i> Accompagnement personnalisé</li>
+      </ul>
+
+      <div class="hero-actions">
+        <a class="btn" href="#form-estimation">Lancer mon estimation</a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============================================ -->
-<!-- FORMULAIRE ESTIMATION -->
-<!-- ============================================ -->
-<section class="section" id="form-estimation">
-  <div class="container">
-    <div class="estimation-form-wrapper estimation-layout">
-      
-      <!-- GAUCHE: INFOS BIEN -->
-      <article class="card estimation-form">
-        <h2 class="estimation-form-title">
-          <i class="fas fa-home"></i> Parlez-nous de votre bien
-        </h2>
-        <p class="form-intro">
-          Remplissez les informations ci-dessous. Votre estimation sera calculée en temps réel.
-        </p>
-
-        <form class="form-grid form-estimation" action="/estimation" method="post" id="estimation-form">
-          
-          <!-- LOCALISATION -->
-          <label for="localisation" class="full-width">
-            <span><i class="fas fa-map-marker-alt"></i> Localisation *</span>
-            <select id="localisation" name="localisation" required onchange="updateQuartiers(this.value)">
-              <option value="">-- Sélectionner une zone --</option>
-              <optgroup label="Bordeaux Centre">
-                <option value="chartrons">Chartrons</option>
-                <option value="vieux-bordeaux">Vieux Bordeaux</option>
-                <option value="pey-berland">Pey Berland</option>
-                <option value="st-michel">Saint-Michel</option>
-              </optgroup>
-              <optgroup label="Rive Gauche">
-                <option value="sainte-croix">Sainte-Croix</option>
-                <option value="bacalan">Bacalan</option>
-                <option value="la-bastide">La Bastide</option>
-              </optgroup>
-              <optgroup label="Banlieue">
-                <option value="talence">Talence</option>
-                <option value="floirac">Floirac</option>
-                <option value="villenave">Villenave d'Ornon</option>
-                <option value="bruges">Bruges</option>
-              </optgroup>
-              <optgroup label="Autre">
-                <option value="autre">Autre quartier</option>
-              </optgroup>
-            </select>
-          </label>
+    <!-- FORMULAIRE HERO -->
+    <aside class="hero-panel card" id="form-estimation">
+      <div class="panel-header">
+        <h2>Simuler la valeur de votre bien</h2>
+        <p class="muted">Remplissez le formulaire pour obtenir votre estimation immédiate.</p>
+      </div>
 
           <!-- CODE POSTAL -->
           <label for="code-postal" class="half-width">
@@ -340,9 +306,7 @@
   </div>
 </section>
 
-<!-- ============================================ -->
-<!-- RÉSULTAT ESTIMATION (EXEMPLE) -->
-<!-- ============================================ -->
+<!-- EXEMPLE RÉSULTAT -->
 <section class="section section-alt" id="example-result">
   <div class="container">
     <div class="section-heading">
@@ -418,16 +382,33 @@
 
       </div>
 
-      <!-- BOUTONS -->
-      <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
-        <a href="/estimation/exemple" class="btn btn-primary">
-          <i class="fas fa-eye"></i> Voir plus d'exemples
-        </a>
-        <a href="#form-estimation" class="btn btn-ghost">
-          <i class="fas fa-arrow-up"></i> Estimer mon bien
-        </a>
-      </div>
-    </article>
+<!-- PROCESSUS -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Notre méthode</p>
+      <h2>3 étapes simples pour démarrer</h2>
+    </div>
+    <div class="steps-grid">
+      <article class="card step-card">
+        <div class="step-number">01</div>
+        <h3>Renseignez votre bien</h3>
+        <p>Ville, type, surface, étage et état suffisent pour lancer la simulation complète.</p>
+        <div class="step-icon"><i class="fas fa-pencil-alt"></i></div>
+      </article>
+      <article class="card step-card">
+        <div class="step-number">02</div>
+        <h3>Recevez l'estimation</h3>
+        <p>Une fourchette de prix avec analyse comparative et prix au m² en cohérence avec le marché.</p>
+        <div class="step-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+      </article>
+      <article class="card step-card">
+        <div class="step-number">03</div>
+        <h3>Activez l'accompagnement</h3>
+        <p>Laissez vos coordonnées et avancez avec nos experts pour concrétiser votre vente.</p>
+        <div class="step-icon"><i class="fas fa-phone-alt"></i></div>
+      </article>
+    </div>
   </div>
 </section>
 

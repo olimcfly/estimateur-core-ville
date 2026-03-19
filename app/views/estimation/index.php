@@ -1,29 +1,5 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estimation Immobilière Bordeaux - Évaluez Votre Bien</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<!-- HEADER -->
-<header class="site-header">
-  <div class="container">
-    <nav class="nav-wrapper">
-      <a href="#" class="brand">Estimation <span>Bordeaux</span></a>
-      <div class="top-nav">
-        <a href="#avantages">Avantages</a>
-        <a href="#process">Processus</a>
-        <a href="#faq">FAQ</a>
-        <a href="#simulateur" class="btn btn-small">Estimer</a>
-      </div>
-    </nav>
-  </div>
-</header>
+<?php $page_title = 'Estimation Immobilière Bordeaux - Évaluez Votre Bien'; ?>
+<?php include 'header.php'; ?>
 
 <!-- HERO SECTION -->
 <section class="hero">
@@ -247,33 +223,4 @@
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <p class="brand-footer">Estimation <span>Bordeaux</span></p>
-        <p class="muted">Accompagner les vendeurs immobiliers à Bordeaux avec des estimations fiables et professionnelles.</p>
-      </div>
-      <div>
-        <h4>Pages</h4>
-        <ul class="footer-links">
-          <li><a href="#avantages">Avantages</a></li>
-          <li><a href="#process">Processus</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <p class="muted"><i class="fas fa-envelope"></i> contact@estimation-bordeaux.fr</p>
-        <p class="muted"><i class="fas fa-phone"></i> 05 XX XX XX XX</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="muted">&copy; 2024 Estimation Bordeaux. Tous droits réservés.</p>
-    </div>
-  </div>
-</footer>
-
-</body>
-</html>
+<?php include 'footer.php'; ?>

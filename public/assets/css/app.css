@@ -241,3 +241,38 @@ input, select {
   .grid-3,
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+main {
+  min-height: calc(100vh - 220px);
+}
+
+.page-hero {
+  padding-top: 2.4rem;
+}
+
+.page-hero-inner {
+  max-width: 900px;
+}
+
+.cards-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.service-card h2,
+.about-grid h2,
+.contact-layout h2 {
+  margin-bottom: .5rem;
+}
+
+.about-grid,
+.contact-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 980px) {
+  .about-grid,
+  .contact-layout { grid-template-columns: 1fr; }
+}

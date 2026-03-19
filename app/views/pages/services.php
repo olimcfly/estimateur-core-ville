@@ -20,7 +20,7 @@
 
     <div class="cards-stack">
       <!-- SERVICE 1 -->
-      <article class="card service-card service-card-1">
+      <article class="card service-card service-card-1" id="estimation-detaillee">
         <div class="service-header">
           <div class="service-icon-large">
             <i class="fas fa-calculator"></i>
@@ -51,14 +51,14 @@
           </div>
 
           <div class="service-cta">
-            <a href="/#simulateur" class="btn btn-small">Estimer mon bien</a>
+            <a href="/estimation#form-estimation" class="btn btn-small">Estimer mon bien</a>
             <p class="service-tag">100% gratuit • Sans engagement</p>
           </div>
         </div>
       </article>
 
       <!-- SERVICE 2 -->
-      <article class="card service-card service-card-2">
+      <article class="card service-card service-card-2" id="conseil-immobilier">
         <div class="service-header">
           <div class="service-icon-large">
             <i class="fas fa-chart-line"></i>
@@ -96,7 +96,7 @@
       </article>
 
       <!-- SERVICE 3 -->
-      <article class="card service-card service-card-3">
+      <article class="card service-card service-card-3" id="accompagnement">
         <div class="service-header">
           <div class="service-icon-large">
             <i class="fas fa-hands-helping"></i>
@@ -156,7 +156,7 @@
           <p>Préparation d'un dossier complet avec diagnostics, documents légaux et caractéristiques du bien.</p>
         </article>
 
-        <article class="card service-additional">
+        <article class="card service-additional" id="marketing-immobilier">
           <h3><i class="fas fa-bullhorn"></i> Marketing immobilier</h3>
           <p>Publication optimisée sur les portails, réseaux sociaux et emails ciblés auprès d'acquéreurs potentiels.</p>
         </article>
@@ -323,7 +323,7 @@
           <li class="unavailable"><i class="fas fa-times"></i> Conseil personnalisé</li>
         </ul>
 
-        <a href="/#simulateur" class="btn btn-ghost btn-full">Commencer</a>
+        <a href="/estimation#form-estimation" class="btn btn-ghost btn-full">Commencer</a>
       </article>
 
       <article class="pricing-card card pricing-featured">
@@ -417,7 +417,7 @@
       <h2>Commencez maintenant avec une estimation gratuite</h2>
       <p class="lead">Aucun engagement, 100% confidentiel. Découvrez la première valeur de votre bien en moins de 5 minutes.</p>
       <div class="cta-buttons">
-        <a href="/#simulateur" class="btn btn-primary">Estimer gratuitement</a>
+        <a href="/estimation#form-estimation" class="btn btn-primary">Estimer gratuitement</a>
         <a href="/contact" class="btn btn-ghost">Demander un conseil</a>
       </div>
     </div>

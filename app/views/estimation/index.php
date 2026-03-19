@@ -15,12 +15,12 @@
       </ul>
 
       <div class="hero-actions">
-        <a class="btn" href="#simulateur">Lancer mon estimation</a>
+        <a class="btn" href="#form-estimation">Lancer mon estimation</a>
       </div>
     </div>
 
     <!-- FORMULAIRE HERO -->
-    <aside class="hero-panel card" id="simulateur">
+    <aside class="hero-panel card" id="form-estimation">
       <div class="panel-header">
         <h2>Simuler la valeur de votre bien</h2>
         <p class="muted">Remplissez le formulaire pour obtenir votre estimation immédiate.</p>
@@ -120,7 +120,7 @@
 </section>
 
 <!-- EXEMPLE RÉSULTAT -->
-<section class="section section-alt" id="resultat-exemple">
+<section class="section section-alt" id="example-result">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Voici ce que vous recevrez</p>
@@ -157,7 +157,7 @@
 </section>
 
 <!-- PROCESSUS -->
-<section class="section" id="process">
+<section class="section" id="how-it-works">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">Notre méthode</p>

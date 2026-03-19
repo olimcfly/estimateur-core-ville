@@ -19,3 +19,7 @@ $router->get('/about', [PageController::class, 'about']);
 $router->get('/a-propos', [PageController::class, 'aPropos']);
 $router->get('/contact', [PageController::class, 'contact']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
+
+
+$router->get('/blog', [BlogController::class, 'index']);
+$router->get('/blog/{slug}', [BlogController::class, 'show']);

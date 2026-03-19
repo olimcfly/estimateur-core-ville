@@ -218,6 +218,33 @@ input, select {
 
 .muted { color: var(--muted); }
 
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.leads-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+.leads-table th,
+.leads-table td {
+  text-align: left;
+  padding: .65rem .75rem;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.leads-table th {
+  background: #f8fafc;
+  font-size: .82rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: #334155;
+}
+
 .site-footer {
   margin-top: 2rem;
   border-top: 1px solid #d9e2ef;

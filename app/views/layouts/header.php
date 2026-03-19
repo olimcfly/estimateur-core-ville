@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -21,5 +21,7 @@
     </nav>
     <a href="/estimation" class="btn btn-small">Estimer mon bien</a>
   </div>
-</header>
-<main>
+</footer>
+
+</body>
+</html>

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS leads (
     urgence VARCHAR(40) NOT NULL,
     motivation VARCHAR(80) NOT NULL,
     score ENUM('chaud', 'tiede', 'froid') NOT NULL DEFAULT 'froid',
-    statut ENUM('nouveau', 'contacte', 'signe') NOT NULL DEFAULT 'nouveau',
+    statut ENUM('nouveau', 'contacté', 'signé') NOT NULL DEFAULT 'nouveau',
     created_at DATETIME NOT NULL,
     INDEX idx_email (email),
     INDEX idx_statut (statut),

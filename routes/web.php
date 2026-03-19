@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AdminBlogController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
+use App\Controllers\PageController;
 
 $router->get('/', [EstimationController::class, 'index']);
 $router->get('/estimation', [EstimationController::class, 'index']);

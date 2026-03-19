@@ -57,10 +57,11 @@ final class PageController
         ]);
     }
 
-    public function newsletter(): void
+
+    public function podcast(): void
     {
-        View::render('pages/newsletter', [
-            'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+        View::render('pages/podcast', [
+            'page_title' => 'Podcast Immobilier Bordeaux - Conseils & Tendances',
         ]);
     }
 

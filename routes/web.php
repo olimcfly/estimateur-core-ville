@@ -26,7 +26,4 @@ $router->get('/newsletter', [PageController::class, 'newsletter']);
 $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation']);
 $router->get('/guides', [PageController::class, 'guides']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
-
-
-$router->get('/blog', [BlogController::class, 'index']);
-$router->get('/blog/{slug}', [BlogController::class, 'show']);
+$router->get('/podcast', [PageController::class, 'podcast']);

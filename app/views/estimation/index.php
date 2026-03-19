@@ -32,7 +32,7 @@
         </label>
 
         <label>Type de bien
-          <select name="type_bien" required>
+          <select name="type" required>
             <option value="Appartement">Appartement</option>
             <option value="Maison">Maison</option>
           </select>

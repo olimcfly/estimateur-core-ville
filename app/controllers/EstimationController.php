@@ -9,7 +9,6 @@ use App\Core\View;
 use App\Models\Lead;
 use App\Services\EstimationService;
 use App\Services\LeadScoringService;
-use App\Services\PerplexityService;
 
 final class EstimationController
 {
@@ -26,7 +25,7 @@ final class EstimationController
             $surface = Validator::float($_POST, 'surface', 5, 10000);
             $rooms = Validator::int($_POST, 'pieces', 1, 50);
 
-            $service = new EstimationService(new PerplexityService());
+            $service = new EstimationService();
             $estimate = $service->estimate($city, $propertyType, $surface, $rooms);
 
             View::render('estimation/result', [

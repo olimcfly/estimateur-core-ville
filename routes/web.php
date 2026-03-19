@@ -21,3 +21,4 @@ $router->get('/processus-estimation', [PageController::class, 'processusEstimati
 $router->get('/contact', [PageController::class, 'contact']);
 $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
+$router->get('/podcast', [PageController::class, 'podcast']);

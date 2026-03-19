@@ -49,6 +49,14 @@ final class PageController
         ]);
     }
 
+
+    public function podcast(): void
+    {
+        View::render('pages/podcast', [
+            'page_title' => 'Podcast Immobilier Bordeaux - Conseils & Tendances',
+        ]);
+    }
+
     public function contactSubmit(): void
     {
         View::render('pages/contact', [

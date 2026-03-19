@@ -6,7 +6,7 @@ use App\Controllers\AdminBlogController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
-use App\Controllers\SeoController;
+use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
 $router->get('/estimation', [EstimationController::class, 'index']);
@@ -28,4 +28,5 @@ $router->get('/newsletter/confirm', [PageController::class, 'newsletterConfirm']
 $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation']);
 $router->get('/guides', [PageController::class, 'guides']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
-$router->get('/podcast', [PageController::class, 'podcast']);
+
+$router->get('/tools/calculatrice', [ToolController::class, 'calculatrice']);

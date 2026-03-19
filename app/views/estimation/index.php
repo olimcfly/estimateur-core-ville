@@ -23,194 +23,27 @@
   </div>
 </section>
 
-    <!-- FORMULAIRE HERO -->
-    <aside class="hero-panel card" id="form-estimation">
-      <div class="panel-header">
-        <h2>Simuler la valeur de votre bien</h2>
-        <p class="muted">Remplissez le formulaire pour obtenir votre estimation immédiate.</p>
-      </div>
-
-          <!-- CODE POSTAL -->
-          <label for="code-postal" class="half-width">
-            <span><i class="fas fa-envelope"></i> Code postal *</span>
-            <input 
-              type="text" 
-              id="code-postal" 
-              name="code_postal" 
-              placeholder="33000" 
-              pattern="[0-9]{5}"
-              required
-            >
-          </label>
-
-          <!-- TYPE DE BIEN -->
-          <label for="type-bien" class="half-width">
-            <span><i class="fas fa-home"></i> Type de bien *</span>
-            <select id="type-bien" name="type_bien" required onchange="updateChamps(this.value)">
-              <option value="">-- Sélectionner --</option>
-              <option value="appartement">Appartement</option>
-              <option value="maison">Maison / Villa</option>
-              <option value="terrain">Terrain</option>
-              <option value="local">Local commercial</option>
-            </select>
-          </label>
-
-          <!-- SURFACE -->
-          <label for="surface" class="half-width">
-            <span><i class="fas fa-ruler"></i> Surface (m²) *</span>
-            <input 
-              type="number" 
-              id="surface" 
-              name="surface" 
-              placeholder="85" 
-              min="20"
-              max="500"
-              required
-            >
-          </label>
-
-          <!-- NOMBRE DE PIÈCES -->
-          <label for="pieces" class="half-width">
-            <span><i class="fas fa-door-open"></i> Nombre de pièces *</span>
-            <select id="pieces" name="pieces" required>
-              <option value="">-- Sélectionner --</option>
-              <option value="1">1 pièce</option>
-              <option value="2">2 pièces</option>
-              <option value="3">3 pièces</option>
-              <option value="4">4 pièces</option>
-              <option value="5">5 pièces</option>
-              <option value="6+">6+ pièces</option>
-            </select>
-          </label>
-
-          <!-- NOMBRE DE CHAMBRES -->
-          <label for="chambres" class="half-width">
-            <span><i class="fas fa-bed"></i> Chambres</span>
-            <select id="chambres" name="chambres">
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5+">5+</option>
-            </select>
-          </label>
-
-          <!-- SALLES DE BAIN -->
-          <label for="sdb" class="half-width">
-            <span><i class="fas fa-bath"></i> Salles de bain</span>
-            <select id="sdb" name="sdb">
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4+">4+</option>
-            </select>
-          </label>
-
-          <!-- ANNÉE CONSTRUCTION -->
-          <label for="annee" class="half-width">
-            <span><i class="fas fa-calendar"></i> Année de construction *</span>
-            <input 
-              type="number" 
-              id="annee" 
-              name="annee" 
-              placeholder="2005" 
-              min="1800"
-              max="2024"
-              required
-            >
-          </label>
-
-          <!-- ÉTAGE -->
-          <label for="etage" class="half-width">
-            <span><i class="fas fa-layer-group"></i> Étage</span>
-            <select id="etage" name="etage">
-              <option value="">Pas applicable</option>
-              <option value="rdc">Rez-de-chaussée</option>
-              <option value="1">1er étage</option>
-              <option value="2">2ème étage</option>
-              <option value="3">3ème étage</option>
-              <option value="4+">4+ étages</option>
-            </select>
-          </label>
-
-          <!-- ÉTAT GÉNÉRAL -->
-          <label for="etat" class="full-width">
-            <span><i class="fas fa-check-circle"></i> État général du bien *</span>
-            <div class="radio-group">
-              <label class="radio-option">
-                <input type="radio" name="etat" value="excellent" required>
-                <span><strong>Excellent</strong> - Rénové récemment, très bon état</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="etat" value="bon" required>
-                <span><strong>Bon</strong> - Bon état, quelques travaux possibles</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="etat" value="moyen" required>
-                <span><strong>Moyen</strong> - État correct, travaux à prévoir</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="etat" value="mauvais" required>
-                <span><strong>Mauvais</strong> - Nécessite travaux importants</span>
-              </label>
-            </div>
-          </label>
-
-          <!-- INFORMATIONS PERSONNELLES -->
-          <h3 class="form-section-title">
-            <i class="fas fa-user"></i> Vos informations (optionnel)
-          </h3>
-
-          <label for="nom" class="half-width">
-            <span>Nom complet</span>
-            <input 
-              type="text" 
-              id="nom" 
-              name="nom" 
-              placeholder="Jean Dupont"
-            >
-          </label>
-
-          <label for="email" class="half-width">
-            <span>Email</span>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              placeholder="jean@exemple.com"
-            >
-          </label>
-
-          <!-- CHECKBOX RGPD -->
-          <div class="form-checkbox full-width">
-            <input 
-              type="checkbox" 
-              id="rgpd-estimation" 
-              name="rgpd"
-            >
-            <label for="rgpd-estimation" class="form-checkbox-label">
-              J'accepte la 
-              <a href="/politique-confidentialite">politique de confidentialité</a>
-            </label>
-          </div>
-
-          <!-- SUBMIT -->
-          <button 
-            type="submit" 
-            class="btn btn-primary full-width estimation-submit"
-          >
-            <i class="fas fa-bolt"></i> Voir mon estimation
-          </button>
-
-          <!-- FOOTER INFO -->
-          <p class="form-footer form-footer-inline">
-            <i class="fas fa-clock"></i> Résultat en 60 secondes • 
-            <i class="fas fa-lock"></i> 100% sécurisé • 
-            <i class="fas fa-ban"></i> Sans engagement
-          </p>
-        </form>
+<section class="section" id="avantages">
+  <div class="container">
+    <div class="section-heading">
+      <p class="eyebrow">Pourquoi nous choisir</p>
+      <h2>Une home page premium mérite un service premium.</h2>
+    </div>
+    <div class="features-grid">
+      <article class="card feature-card">
+        <h3>Données locales fines</h3>
+        <p>Nous nous appuyons sur des références de transactions en Gironde pour une évaluation réaliste de votre bien.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
+      </article>
+      <article class="card feature-card">
+        <h3>Résultat immédiat</h3>
+        <p>En moins d'une minute, obtenez une fourchette de prix basse, moyenne et haute avec prix au m².</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
+      </article>
+      <article class="card feature-card">
+        <h3>Passage à l'action</h3>
+        <p>Recevez ensuite un accompagnement sur-mesure pour vendre rapidement et sécuriser votre projet.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
 
       <!-- DROITE: AVANTAGES + ÉTAPES -->
@@ -393,20 +226,20 @@
       <article class="card step-card">
         <div class="step-number">01</div>
         <h3>Renseignez votre bien</h3>
-        <p>Ville, type, surface, étage et état suffisent pour lancer la simulation complète.</p>
-        <div class="step-icon"><i class="fas fa-pencil-alt"></i></div>
+        <p>Ville, type, surface et nombre de pièces suffisent pour lancer la simulation.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
       <article class="card step-card">
         <div class="step-number">02</div>
         <h3>Recevez l'estimation</h3>
-        <p>Une fourchette de prix avec analyse comparative et prix au m² en cohérence avec le marché.</p>
-        <div class="step-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+        <p>Une fourchette de prix cohérente avec la dynamique actuelle du marché bordelais.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
       <article class="card step-card">
         <div class="step-number">03</div>
         <h3>Activez l'accompagnement</h3>
-        <p>Laissez vos coordonnées et avancez avec nos experts pour concrétiser votre vente.</p>
-        <div class="step-icon"><i class="fas fa-phone-alt"></i></div>
+        <p>Laissez vos coordonnées et avancez avec des conseils d'expert pour concrétiser votre vente.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
     </div>
   </div>
@@ -425,19 +258,20 @@
     </div>
 
     <div class="faq-grid">
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Quelle est la précision de l'estimation?</h3>
-        <p>Précision moyenne ±3% vs prix de vente final. Basée sur 5000+ transactions réelles à Bordeaux.</p>
+      <article class="card">
+        <h3>L'estimation est-elle gratuite ?</h3>
+        <p>Oui, la simulation en ligne est gratuite et sans engagement.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Faut-il une visite pour estimer?</h3>
-        <p>Non. Notre estimation est basée sur les données que vous fournissez. Une visite peut améliorer la précision si vous le souhaitez.</p>
+      <article class="card">
+        <h3>En combien de temps j'obtiens mon résultat ?</h3>
+        <p>Le résultat est généré immédiatement après validation du formulaire.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Puis-je modifier mon estimation?</h3>
-        <p>Oui, autant de fois que vous le souhaitez. Vous pouvez ajuster les paramètres et voir les résultats en temps réel.</p>
+      <article class="card">
+        <h3>Puis-je être recontacté ensuite ?</h3>
+        <p>Oui, si vous le souhaitez, vous pouvez laisser vos coordonnées pour être accompagné.</p>
+        <a class="btn btn-small" href="#simulateur">Estimer mon bien</a>
       </article>
 
       <article class="card faq-card">

@@ -2,7 +2,7 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div>
-      <p class="brand">Bordeaux<span>Estimate</span></p>
+      <p class="brand">Estimation <span>Immobilier Bordeaux</span></p>
       <p class="muted">Plateforme d'estimation immobilière pour vendeurs exigeants en Gironde.</p>
     </div>
     <div>

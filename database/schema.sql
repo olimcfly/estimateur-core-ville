@@ -1,14 +1,50 @@
+CREATE TABLE IF NOT EXISTS articles (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    content LONGTEXT NOT NULL,
+    meta_title VARCHAR(255) NOT NULL,
+    meta_description TEXT NOT NULL,
+    persona VARCHAR(100) NOT NULL,
+    awareness_level VARCHAR(50) NOT NULL,
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    created_at DATETIME NOT NULL,
+    INDEX idx_status_created_at (status, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS article_revisions (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    article_id INT UNSIGNED NOT NULL,
+    revision_number INT UNSIGNED NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+    content LONGTEXT NOT NULL,
+    meta_title VARCHAR(255) NOT NULL,
+    meta_description TEXT NOT NULL,
+    persona VARCHAR(100) NOT NULL,
+    awareness_level VARCHAR(50) NOT NULL,
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    created_at DATETIME NOT NULL,
+    UNIQUE KEY uniq_article_revision (article_id, revision_number),
+    INDEX idx_article_created_at (article_id, created_at),
+    CONSTRAINT fk_article_revisions_article
+        FOREIGN KEY (article_id) REFERENCES articles(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS leads (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(120) NOT NULL,
     email VARCHAR(180) NOT NULL,
     telephone VARCHAR(40) NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
     ville VARCHAR(120) NOT NULL,
     estimation DECIMAL(12,2) NOT NULL,
     urgence VARCHAR(40) NOT NULL,
     motivation VARCHAR(80) NOT NULL,
+    notes TEXT NULL,
     score ENUM('chaud', 'tiede', 'froid') NOT NULL DEFAULT 'froid',
-    statut ENUM('nouveau', 'contacte', 'signe') NOT NULL DEFAULT 'nouveau',
+    statut ENUM('nouveau', 'contacté', 'signé') NOT NULL DEFAULT 'nouveau',
     created_at DATETIME NOT NULL,
     INDEX idx_email (email),
     INDEX idx_statut (statut),

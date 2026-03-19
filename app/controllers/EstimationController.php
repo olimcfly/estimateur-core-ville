@@ -12,21 +12,18 @@ use App\Services\LeadScoringService;
 
 final class EstimationController
 {
-    public function leads(): void
-    {
-        $score = isset($_GET['score']) ? (string) $_GET['score'] : null;
-        $leadModel = new Lead();
-        $leads = $leadModel->listByScore($score);
+    private EstimationService $estimationService;
 
-        View::render('estimation/leads', [
-            'leads' => $leads,
-            'scoreFilter' => $score,
-        ]);
+    public function __construct(?EstimationService $estimationService = null)
+    {
+        $this->estimationService = $estimationService ?? new EstimationService(new PerplexityService());
     }
 
     public function index(): void
     {
-        View::render('estimation/index');
+        View::render('estimation/index', [
+            'errors' => [],
+        ]);
     }
 
     public function estimate(): void
@@ -38,8 +35,7 @@ final class EstimationController
             $surface = Validator::float($_POST, 'surface', 5, 10000);
             $rooms = Validator::int($_POST, 'pieces', 1, 50);
 
-            $service = new EstimationService();
-            $estimate = $service->estimate($city, $propertyType, $surface, $rooms);
+            $estimate = $this->estimationService->estimate($city, $propertyType, $surface, $rooms);
 
             View::render('estimation/result', [
                 'estimate' => $estimate,

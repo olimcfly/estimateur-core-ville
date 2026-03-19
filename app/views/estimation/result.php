@@ -51,7 +51,7 @@
             <p class="benefit"><i class="fas fa-check"></i> Accompagnement expert</p>
           </div>
 
-          <a href="#lead-form" class="btn btn-full">
+          <a href="#lead-form" class="btn btn-primary btn-full">
             <i class="fas fa-phone-alt"></i> Je veux être recontacté
           </a>
         </article>
@@ -78,7 +78,7 @@
         <!-- IDENTITÉ -->
         <div class="form-section">
           <h4><i class="fas fa-user"></i> Vos informations</h4>
-          
+
           <div class="form-row">
             <label for="nom">
               <span>Nom complet *</span>
@@ -97,9 +97,9 @@
               <input type="tel" id="telephone" name="telephone" placeholder="06 12 34 56 78" required>
             </label>
 
-            <label for="contact_prefere">
+            <label for="nom_contact">
               <span>Préféré pour le contact</span>
-              <select id="contact_prefere" name="contact_prefere">
+              <select id="nom_contact" name="contact_prefere">
                 <option value="">-- Choisir --</option>
                 <option value="telephone">Téléphone</option>
                 <option value="email">Email</option>
@@ -139,7 +139,7 @@
 
           <label for="message" class="full-width">
             <span>Message (optionnel)</span>
-            <textarea id="message" name="message" placeholder="Parlez-nous de votre projet..."></textarea>
+            <textarea id="message" name="message" placeholder="Parlez-nous de votre projet..." rows="4" style="width: 100%; padding: 0.9rem 1rem; border: 2px solid var(--border); border-radius: 10px; font-family: inherit; resize: vertical;"></textarea>
           </label>
         </div>
 

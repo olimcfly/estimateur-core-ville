@@ -42,6 +42,14 @@ final class PageController
         ]);
     }
 
+
+    public function quartiers(): void
+    {
+        View::render('pages/quartiers', [
+            'page_title' => 'Quartiers de Bordeaux - Estimation Immobilier Bordeaux',
+        ]);
+    }
+
     public function contact(): void
     {
         View::render('pages/contact', [

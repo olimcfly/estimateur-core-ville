@@ -5,7 +5,9 @@ declare(strict_types=1);
 return [
     'app_name' => $_ENV['APP_NAME'] ?? 'Estimateur Immobilier SaaS',
     'base_url' => $_ENV['APP_BASE_URL'] ?? '',
-    'app_key' => $_ENV['APP_KEY'] ?? '',
+    'website' => [
+        'id' => (int) ($_ENV['WEBSITE_ID'] ?? 1),
+    ],
     'db' => [
         'host' => $_ENV['DB_HOST'] ?? '127.0.0.1',
         'port' => (int) ($_ENV['DB_PORT'] ?? 3306),

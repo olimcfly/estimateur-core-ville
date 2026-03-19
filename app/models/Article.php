@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Core\Config;
 use App\Core\Database;
 
 final class Article
@@ -12,12 +13,15 @@ final class Article
     {
         $sql = 'SELECT id, title, slug, content, meta_title, meta_description, persona, awareness_level, status, created_at
                 FROM articles
-                WHERE status = :status
-                ORDER BY created_at DESC
-                LIMIT 10 OFFSET 0';
+                WHERE website_id = :website_id
+                  AND status = :status
+                ORDER BY created_at DESC';
 
         $stmt = Database::connection()->prepare($sql);
-        $stmt->execute([':status' => 'published']);
+        $stmt->execute([
+            ':website_id' => $this->websiteId(),
+            ':status' => 'published',
+        ]);
 
         return $stmt->fetchAll();
     }
@@ -26,11 +30,14 @@ final class Article
     {
         $sql = 'SELECT id, title, slug, content, meta_title, meta_description, persona, awareness_level, status, created_at
                 FROM articles
-                WHERE slug = :slug AND status = :status
+                WHERE website_id = :website_id
+                  AND slug = :slug
+                  AND status = :status
                 LIMIT 1';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([
+            ':website_id' => $this->websiteId(),
             ':slug' => $slug,
             ':status' => 'published',
         ]);
@@ -43,9 +50,13 @@ final class Article
     {
         $sql = 'SELECT id, title, slug, persona, awareness_level, status, created_at
                 FROM articles
+                WHERE website_id = :website_id
                 ORDER BY created_at DESC';
 
-        return Database::connection()->query($sql)->fetchAll();
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([':website_id' => $this->websiteId()]);
+
+        return $stmt->fetchAll();
     }
 
     public function findById(int $id): ?array
@@ -53,10 +64,14 @@ final class Article
         $sql = 'SELECT id, title, slug, content, meta_title, meta_description, persona, awareness_level, status, created_at
                 FROM articles
                 WHERE id = :id
+                  AND website_id = :website_id
                 LIMIT 1';
 
         $stmt = Database::connection()->prepare($sql);
-        $stmt->execute([':id' => $id]);
+        $stmt->execute([
+            ':id' => $id,
+            ':website_id' => $this->websiteId(),
+        ]);
         $row = $stmt->fetch();
 
         return is_array($row) ? $row : null;
@@ -64,11 +79,12 @@ final class Article
 
     public function create(array $data): int
     {
-        $sql = 'INSERT INTO articles (title, slug, content, meta_title, meta_description, persona, awareness_level, status, created_at)
-                VALUES (:title, :slug, :content, :meta_title, :meta_description, :persona, :awareness_level, :status, NOW())';
+        $sql = 'INSERT INTO articles (website_id, title, slug, content, meta_title, meta_description, persona, awareness_level, status, created_at)
+                VALUES (:website_id, :title, :slug, :content, :meta_title, :meta_description, :persona, :awareness_level, :status, NOW())';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([
+            ':website_id' => $this->websiteId(),
             ':title' => $data['title'],
             ':slug' => $data['slug'],
             ':content' => $data['content'],
@@ -84,121 +100,45 @@ final class Article
 
     public function update(int $id, array $data): void
     {
-        $connection = Database::connection();
-        $connection->beginTransaction();
-
-        try {
-            $this->createRevisionSnapshot($id, $connection);
-
-            $sql = 'UPDATE articles
-                    SET title = :title,
-                        slug = :slug,
-                        content = :content,
-                        meta_title = :meta_title,
-                        meta_description = :meta_description,
-                        persona = :persona,
-                        awareness_level = :awareness_level,
-                        status = :status
-                    WHERE id = :id';
-
-            $stmt = $connection->prepare($sql);
-            $stmt->execute([
-                ':id' => $id,
-                ':title' => $data['title'],
-                ':slug' => $data['slug'],
-                ':content' => $data['content'],
-                ':meta_title' => $data['meta_title'],
-                ':meta_description' => $data['meta_description'],
-                ':persona' => $data['persona'],
-                ':awareness_level' => $data['awareness_level'],
-                ':status' => $data['status'],
-            ]);
-
-            $connection->commit();
-        } catch (\Throwable $throwable) {
-            if ($connection->inTransaction()) {
-                $connection->rollBack();
-            }
-
-            throw $throwable;
-        }
-    }
-
-    public function findRevisionsByArticleId(int $articleId): array
-    {
-        $sql = 'SELECT id, revision_number, title, status, created_at
-                FROM article_revisions
-                WHERE article_id = :article_id
-                ORDER BY revision_number DESC';
+        $sql = 'UPDATE articles
+                SET title = :title,
+                    slug = :slug,
+                    content = :content,
+                    meta_title = :meta_title,
+                    meta_description = :meta_description,
+                    persona = :persona,
+                    awareness_level = :awareness_level,
+                    status = :status
+                WHERE id = :id
+                  AND website_id = :website_id';
 
         $stmt = Database::connection()->prepare($sql);
-        $stmt->execute([':article_id' => $articleId]);
-
-        return $stmt->fetchAll();
-    }
-
-    public function restoreRevision(int $articleId, int $revisionId): void
-    {
-        $connection = Database::connection();
-        $connection->beginTransaction();
-
-        try {
-            $this->createRevisionSnapshot($articleId, $connection);
-
-            $revisionSql = 'SELECT title, slug, content, meta_title, meta_description, persona, awareness_level, status
-                            FROM article_revisions
-                            WHERE id = :id AND article_id = :article_id
-                            LIMIT 1';
-
-            $revisionStmt = $connection->prepare($revisionSql);
-            $revisionStmt->execute([
-                ':id' => $revisionId,
-                ':article_id' => $articleId,
-            ]);
-
-            $revision = $revisionStmt->fetch();
-            if (!is_array($revision)) {
-                throw new \InvalidArgumentException('Révision introuvable.');
-            }
-
-            $sql = 'UPDATE articles
-                    SET title = :title,
-                        slug = :slug,
-                        content = :content,
-                        meta_title = :meta_title,
-                        meta_description = :meta_description,
-                        persona = :persona,
-                        awareness_level = :awareness_level,
-                        status = :status
-                    WHERE id = :id';
-
-            $stmt = $connection->prepare($sql);
-            $stmt->execute([
-                ':id' => $articleId,
-                ':title' => $revision['title'],
-                ':slug' => $revision['slug'],
-                ':content' => $revision['content'],
-                ':meta_title' => $revision['meta_title'],
-                ':meta_description' => $revision['meta_description'],
-                ':persona' => $revision['persona'],
-                ':awareness_level' => $revision['awareness_level'],
-                ':status' => $revision['status'],
-            ]);
-
-            $connection->commit();
-        } catch (\Throwable $throwable) {
-            if ($connection->inTransaction()) {
-                $connection->rollBack();
-            }
-
-            throw $throwable;
-        }
+        $stmt->execute([
+            ':id' => $id,
+            ':website_id' => $this->websiteId(),
+            ':title' => $data['title'],
+            ':slug' => $data['slug'],
+            ':content' => $data['content'],
+            ':meta_title' => $data['meta_title'],
+            ':meta_description' => $data['meta_description'],
+            ':persona' => $data['persona'],
+            ':awareness_level' => $data['awareness_level'],
+            ':status' => $data['status'],
+        ]);
     }
 
     public function delete(int $id): void
     {
-        $stmt = Database::connection()->prepare('DELETE FROM articles WHERE id = :id');
-        $stmt->execute([':id' => $id]);
+        $stmt = Database::connection()->prepare('DELETE FROM articles WHERE id = :id AND website_id = :website_id');
+        $stmt->execute([
+            ':id' => $id,
+            ':website_id' => $this->websiteId(),
+        ]);
+    }
+
+    private function websiteId(): int
+    {
+        return (int) Config::get('website.id', 1);
     }
 
     private function createRevisionSnapshot(int $articleId, \PDO $connection): void

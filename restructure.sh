@@ -1,136 +1,32 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Script de restructuration - Estimation Immobilier Bordeaux
-# Exécution: bash restructure.sh
+mkdir -p app/views/layouts app/views/pages app/controllers routes public/assets/css
 
-set -e
+create_file_if_missing() {
+  local file="$1"
+  local content="$2"
 
-echo "================================"
-echo "RESTRUCTURATION DU PROJET"
-echo "================================"
-echo ""
+  if [[ ! -f "$file" ]]; then
+    printf "%s\n" "$content" > "$file"
+    echo "Créé: $file"
+  else
+    echo "Déjà présent: $file"
+  fi
+}
 
-# Couleurs
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-# 1. CRÉER LES RÉPERTOIRES MANQUANTS
-echo -e "${YELLOW}[1/8] Création des répertoires...${NC}"
-mkdir -p app/views/layouts
-mkdir -p app/views/pages
-mkdir -p app/views/estimation
-mkdir -p app/controllers
-mkdir -p app/models
-mkdir -p app/services
-mkdir -p app/core
-mkdir -p public/assets/css
-mkdir -p public/assets/js
-mkdir -p public/assets/images
-mkdir -p routes
-mkdir -p config
-mkdir -p database
-echo -e "${GREEN}✓ Répertoires créés${NC}\n"
-
-# 2. VÉRIFIER LES FICHIERS EXISTANTS
-echo -e "${YELLOW}[2/8] Vérification des fichiers existants...${NC}"
-
-if [ -f "app/views/layouts/footer.php" ]; then
-    echo -e "${GREEN}✓ footer.php existe${NC}"
-else
-    echo -e "${RED}✗ footer.php MANQUANT${NC}"
-fi
-
-if [ -f "app/views/estimation/index.php" ]; then
-    echo -e "${GREEN}✓ estimation/index.php existe${NC}"
-else
-    echo -e "${RED}✗ estimation/index.php MANQUANT${NC}"
-fi
-
-if [ -f "public/assets/css/app.css" ]; then
-    echo -e "${GREEN}✓ app.css existe${NC}"
-else
-    echo -e "${RED}✗ app.css MANQUANT${NC}"
-fi
-echo ""
-
-# 3. CRÉER HEADER.PHP SI N'EXISTE PAS
-echo -e "${YELLOW}[3/8] Création/vérification du header...${NC}"
-if [ ! -f "app/views/layouts/header.php" ]; then
-    cat > app/views/layouts/header.php << 'EOH'
-<!DOCTYPE html>
+create_file_if_missing "app/views/layouts/header.php" '<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Obtenez une estimation immobilière instantanée à Bordeaux avec une interface premium et un accompagnement professionnel.">
-  <title><?= isset($page_title) ? $page_title : 'Estimation Immobilière Bordeaux' ?></title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/public/assets/css/app.css">
+  <title><?= htmlspecialchars($page_title ?? "Estimation Immobilier Bordeaux", ENT_QUOTES, "UTF-8") ?></title>
+  <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
+<main>'
 
-<!-- HEADER -->
-<header class="site-header">
-  <div class="container">
-    <nav class="nav-wrapper">
-      <a href="/" class="brand">Estimation <span>Bordeaux</span></a>
-      <div class="top-nav">
-        <a href="/">Accueil</a>
-        <a href="/about">À propos</a>
-        <a href="/services">Services</a>
-        <a href="/contact">Contact</a>
-        <a href="/#simulateur" class="btn btn-small">Estimer</a>
-      </div>
-    </nav>
-  </div>
-</header>
-
-<main>
-EOH
-    echo -e "${GREEN}✓ header.php créé${NC}"
-else
-    echo -e "${GREEN}✓ header.php existe${NC}"
-fi
-echo ""
-
-# 4. CRÉER/METTRE À JOUR FOOTER.PHP
-echo -e "${YELLOW}[4/8] Création/mise à jour du footer...${NC}"
-cat > app/views/layouts/footer.php << 'EOH'
-</main>
-
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <p class="brand-footer">Estimation <span>Bordeaux</span></p>
-        <p class="muted">Accompagner les vendeurs immobiliers à Bordeaux avec des estimations fiables et professionnelles.</p>
-      </div>
-      <div>
-        <h4>Pages</h4>
-        <ul class="footer-links">
-          <li><a href="/">Accueil</a></li>
-          <li><a href="/about">À propos</a></li>
-          <li><a href="/services">Services</a></li>
-          <li><a href="/contact">Contact</a></li>
-          <li><a href="/mentions-legales">Mentions légales</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <p class="muted"><i class="fas fa-envelope"></i> contact@estimation-bordeaux.fr</p>
-        <p class="muted"><i class="fas fa-phone"></i> 05 XX XX XX XX</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="muted">&copy; 2024 Estimation Bordeaux. Tous droits réservés.</p>
-    </div>
-  </div>
-</footer>
-
+create_file_if_missing "app/views/layouts/footer.php" '</main>
 </body>
 </html>
 EOH
@@ -387,24 +283,27 @@ if [ ! -f "app/controllers/PageController.php" ]; then
     cat > app/controllers/PageController.php << 'EOH'
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
-class PageController {
-    
-    public function home() {
-        require 'app/views/pages/home.php';
+use App\Core\View;
+
+final class PageController
+{
+    public function services(): void
+    {
+        View::render('pages/services');
     }
 
-    public function about() {
-        require 'app/views/pages/about.php';
+    public function aPropos(): void
+    {
+        View::render('pages/a_propos');
     }
 
-    public function services() {
-        require 'app/views/pages/services.php';
-    }
-
-    public function contact() {
-        require 'app/views/pages/contact.php';
+    public function contact(): void
+    {
+        View::render('pages/contact');
     }
 }
 EOH
@@ -414,35 +313,29 @@ else
 fi
 echo ""
 
-# 7. CRÉER LES ROUTES
-echo -e "${YELLOW}[7/8] Création des routes...${NC}"
-if [ ! -f "routes/web.php" ]; then
-    cat > routes/web.php << 'EOH'
-<?php
+create_file_if_missing "app/views/pages/home.php" '<section class="section"><div class="container"><h1>Accueil</h1></div></section>'
+create_file_if_missing "app/views/pages/about.php" '<section class="section"><div class="container"><h1>À propos</h1></div></section>'
+create_file_if_missing "app/views/pages/services.php" '<section class="section"><div class="container"><h1>Services</h1></div></section>'
+create_file_if_missing "app/views/pages/contact.php" '<section class="section"><div class="container"><h1>Contact</h1></div></section>'
 
-/**
- * Routes de l'application
- * Format: $router->METHOD('path', 'Controller@method')
- */
+declare(strict_types=1);
 
-// Pages
-$router->get('/', 'PageController@home');
-$router->get('/about', 'PageController@about');
-$router->get('/services', 'PageController@services');
-$router->get('/contact', 'PageController@contact');
+use App\Controllers\EstimationController;
+use App\Controllers\PageController;
 
-// Estimation
-$router->post('/estimation', 'EstimationController@store');
-$router->get('/estimation/result', 'EstimationController@result');
+$router->get('/', [EstimationController::class, 'index']);
+$router->get('/estimation', [EstimationController::class, 'index']);
+$router->post('/estimation', [EstimationController::class, 'estimate']);
+$router->post('/lead', [EstimationController::class, 'storeLead']);
 
-// Contact
-$router->post('/contact', 'PageController@contactSubmit');
+$router->get('/services', [PageController::class, 'services']);
+$router->get('/a-propos', [PageController::class, 'aPropos']);
+$router->get('/contact', [PageController::class, 'contact']);
 EOH
     echo -e "${GREEN}✓ routes/web.php créé${NC}"
 else
-    echo -e "${GREEN}✓ routes/web.php existe${NC}"
+  echo "WARN: app-css-complete-final.css absent, copie CSS ignorée"
 fi
-echo ""
 
 # 8. AFFICHER RÉSUMÉ
 echo -e "${YELLOW}[8/8] Résumé de la restructuration${NC}"
@@ -472,7 +365,8 @@ echo "2. Vérifie les routes dans routes/web.php"
 echo ""
 echo "3. Teste les URLs :"
 echo "   → http://localhost/"
-echo "   → http://localhost/about"
+echo "   → http://localhost/estimation"
+echo "   → http://localhost/a-propos"
 echo "   → http://localhost/services"
 echo "   → http://localhost/contact"
 echo ""

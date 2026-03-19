@@ -2,6 +2,17 @@
 
 <!-- ============================================ -->
 <!-- FOOTER -->
+<footer class="site-footer" role="contentinfo" aria-label="Pied de page du site">
+  <div class="container footer-container">
+    <div class="footer-grid">
+      <div class="footer-column footer-brand-column">
+        <p class="brand-footer">Maison d’Estimation <span>Bordeaux</span></p>
+        <p class="muted footer-description">L’expertise immobilière d’exception au cœur de Bordeaux. Une estimation précise, confidentielle et élégante de votre patrimoine.</p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Pages</h4>
+        <ul class="footer-links" aria-label="Liens de navigation">
 <!-- ============================================ -->
 <footer class="site-footer">
   <div class="container">
@@ -110,33 +121,8 @@
 
     </div>
 
-    <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
-      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-        <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">
-          © 2024 <strong>Estimation Immobilier Bordeaux</strong>. Tous droits réservés.
-        </p>
-        
-        <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem;">
-          <a href="/mentions-legales" style="color: var(--muted); text-decoration: none; transition: color 0.2s;">Mentions légales</a>
-          <a href="/politique-confidentialite" style="color: var(--muted); text-decoration: none; transition: color 0.2s;">Confidentialité</a>
-          <a href="/contact" style="color: var(--muted); text-decoration: none; transition: color 0.2s;">Support</a>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--muted);">
-          <i class="fas fa-shield-alt"></i> RGPD Conforme
-          <span style="color: var(--border);">•</span>
-          <i class="fas fa-lock"></i> SSL Sécurisé
-        </div>
-      </div>
-
-      <!-- BANDE BOTTOM DECORATIVE -->
-      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
-        <p style="margin: 0; font-size: 0.8rem; color: var(--muted);">
-          Estimation Immobilier Bordeaux • Plateforme d'estimation immobilière • 
-          <a href="https://estimation-immobilier-bordeaux.fr" style="color: var(--primary); text-decoration: none;">estimation-immobilier-bordeaux.fr</a>
-        </p>
-      </div>
+      <p class="muted">&copy; 2026 Maison d’Estimation Bordeaux. Tous droits réservés.</p>
     </div>
   </div>
 </footer>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'app_name' => $_ENV['APP_NAME'] ?? 'Estimateur Immobilier SaaS',
     'base_url' => $_ENV['APP_BASE_URL'] ?? '',
+    'app_key' => $_ENV['APP_KEY'] ?? '',
     'db' => [
         'host' => $_ENV['DB_HOST'] ?? '127.0.0.1',
         'port' => (int) ($_ENV['DB_PORT'] ?? 3306),
@@ -17,6 +18,9 @@ return [
         'api_key' => $_ENV['PERPLEXITY_API_KEY'] ?? '',
         'model' => $_ENV['PERPLEXITY_MODEL'] ?? 'sonar-pro',
         'endpoint' => $_ENV['PERPLEXITY_ENDPOINT'] ?? 'https://api.perplexity.ai/chat/completions',
+    ],
+    'mail' => [
+        'from' => $_ENV['MAIL_FROM'] ?? 'no-reply@localhost',
     ],
     'openai' => [
         'api_key' => $_ENV['OPENAI_API_KEY'] ?? '',

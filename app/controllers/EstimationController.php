@@ -12,6 +12,15 @@ use App\Services\LeadScoringService;
 
 final class EstimationController
 {
+    public function leads(): void
+    {
+        $leadModel = new Lead();
+
+        View::render('admin/leads', [
+            'leads' => $leadModel->all(),
+        ]);
+    }
+
     public function index(): void
     {
         View::render('estimation/index');

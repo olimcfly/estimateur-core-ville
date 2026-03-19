@@ -11,6 +11,7 @@ $router->get('/', [EstimationController::class, 'index']);
 $router->get('/estimation', [EstimationController::class, 'index']);
 $router->post('/estimation', [EstimationController::class, 'estimate']);
 $router->post('/lead', [EstimationController::class, 'storeLead']);
+$router->get('/admin/leads', [EstimationController::class, 'leads']);
 
 $router->get('/blog', [BlogController::class, 'index']);
 $router->get('/blog/{slug}', [BlogController::class, 'show']);

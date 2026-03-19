@@ -63,6 +63,10 @@ final class EstimationController
             $estimation = Validator::float($_POST, 'estimation', 10000, 100000000);
             $urgence = Validator::string($_POST, 'urgence', 3, 40);
             $motivation = Validator::string($_POST, 'motivation', 3, 80);
+            $notes = trim((string) ($_POST['notes'] ?? ''));
+            if (mb_strlen($notes) > 1500) {
+                throw new \InvalidArgumentException('Les notes ne doivent pas dépasser 1500 caractères.');
+            }
 
             $scoring = new LeadScoringService();
             $temperature = $scoring->score($estimation, $urgence, $motivation);
@@ -77,6 +81,7 @@ final class EstimationController
                 'estimation' => $estimation,
                 'urgence' => $urgence,
                 'motivation' => $motivation,
+                'notes' => $notes,
                 'score' => $temperature,
                 'statut' => 'nouveau',
             ]);
@@ -84,6 +89,18 @@ final class EstimationController
             View::render('estimation/lead_saved', [
                 'leadId' => $leadId,
                 'temperature' => $temperature,
+                'lead' => [
+                    'nom' => $nom,
+                    'email' => $email,
+                    'telephone' => $telephone,
+                    'adresse' => $adresse,
+                    'ville' => $ville,
+                    'estimation' => $estimation,
+                    'urgence' => $urgence,
+                    'motivation' => $motivation,
+                    'notes' => $notes,
+                    'statut' => 'nouveau',
+                ],
             ]);
         } catch (\Throwable $throwable) {
             View::render('estimation/index', [

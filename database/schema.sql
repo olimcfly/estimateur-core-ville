@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS leads (
     estimation DECIMAL(12,2) NOT NULL,
     urgence VARCHAR(40) NOT NULL,
     motivation VARCHAR(80) NOT NULL,
+    notes TEXT NULL,
     score ENUM('chaud', 'tiede', 'froid') NOT NULL DEFAULT 'froid',
     statut ENUM('nouveau', 'contacté', 'signé') NOT NULL DEFAULT 'nouveau',
     created_at DATETIME NOT NULL,

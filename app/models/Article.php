@@ -140,4 +140,66 @@ final class Article
     {
         return (int) Config::get('website.id', 1);
     }
+
+    private function createRevisionSnapshot(int $articleId, \PDO $connection): void
+    {
+        $sql = 'SELECT id, title, slug, content, meta_title, meta_description, persona, awareness_level, status
+                FROM articles
+                WHERE id = :id
+                LIMIT 1';
+        $articleStmt = $connection->prepare($sql);
+        $articleStmt->execute([':id' => $articleId]);
+        $article = $articleStmt->fetch();
+
+        if (!is_array($article)) {
+            throw new \InvalidArgumentException('Article introuvable.');
+        }
+
+        $revisionSql = 'SELECT COALESCE(MAX(revision_number), 0) + 1
+                        FROM article_revisions
+                        WHERE article_id = :article_id';
+        $revisionStmt = $connection->prepare($revisionSql);
+        $revisionStmt->execute([':article_id' => $articleId]);
+        $nextRevisionNumber = (int) $revisionStmt->fetchColumn();
+
+        $insertSql = 'INSERT INTO article_revisions (
+                            article_id,
+                            revision_number,
+                            title,
+                            slug,
+                            content,
+                            meta_title,
+                            meta_description,
+                            persona,
+                            awareness_level,
+                            status,
+                            created_at
+                      ) VALUES (
+                            :article_id,
+                            :revision_number,
+                            :title,
+                            :slug,
+                            :content,
+                            :meta_title,
+                            :meta_description,
+                            :persona,
+                            :awareness_level,
+                            :status,
+                            NOW()
+                      )';
+
+        $insertStmt = $connection->prepare($insertSql);
+        $insertStmt->execute([
+            ':article_id' => $articleId,
+            ':revision_number' => $nextRevisionNumber,
+            ':title' => $article['title'],
+            ':slug' => $article['slug'],
+            ':content' => $article['content'],
+            ':meta_title' => $article['meta_title'],
+            ':meta_description' => $article['meta_description'],
+            ':persona' => $article['persona'],
+            ':awareness_level' => $article['awareness_level'],
+            ':status' => $article['status'],
+        ]);
+    }
 }

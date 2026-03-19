@@ -57,10 +57,10 @@ final class PageController
         ]);
     }
 
-    public function guides(): void
+    public function newsletter(): void
     {
-        View::render('pages/guides', [
-            'page_title' => 'Guides - Estimation Immobilier Bordeaux',
+        View::render('pages/newsletter', [
+            'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
         ]);
     }
 

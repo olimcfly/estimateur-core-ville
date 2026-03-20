@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AdminBlogController;
+use App\Controllers\AuthController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
@@ -14,6 +15,13 @@ $router->get('/leads', [EstimationController::class, 'leads']);
 $router->post('/estimation', [EstimationController::class, 'estimate']);
 $router->post('/api/estimation', [EstimationController::class, 'apiEstimate']);
 $router->post('/lead', [EstimationController::class, 'storeLead']);
+
+// Auth routes
+$router->get('/admin/login', [AuthController::class, 'loginForm']);
+$router->post('/admin/login', [AuthController::class, 'login']);
+$router->get('/admin/logout', [AuthController::class, 'logout']);
+
+// Protected admin routes
 $router->get('/admin/leads', [EstimationController::class, 'leads']);
 
 $router->get('/services', [PageController::class, 'services']);

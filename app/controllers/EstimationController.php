@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Controllers\AuthController;
 use App\Core\Validator;
 use App\Core\View;
 use App\Models\DesignTemplate;
@@ -28,6 +29,17 @@ final class EstimationController
     {
         View::render('estimation/index', [
             'errors' => [],
+        ]);
+    }
+
+    public function leads(): void
+    {
+        AuthController::requireAuth();
+
+        $leadModel = new Lead();
+        View::render('admin/leads', [
+            'page_title' => 'Gestion des Leads - Admin',
+            'leads' => $leadModel->findAllLeads(),
         ]);
     }
 

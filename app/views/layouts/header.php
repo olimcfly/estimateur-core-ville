@@ -18,6 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
   <meta name="theme-color" content="#8B1538">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
   <title><?= isset($page_title) ? $page_title : 'Estimation Immobilier Bordeaux' ?></title>
 
@@ -28,11 +29,15 @@
   <meta property="og:url" content="<?= e($canonicalUrl) ?>">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="Estimation Immobilier Bordeaux">
+  <meta property="og:image" content="https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="<?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Estimation Immobilier Bordeaux' ?>">
   <meta name="twitter:description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="twitter:image" content="https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png">
 
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">

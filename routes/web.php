@@ -28,6 +28,9 @@ $router->get('/newsletter/confirm', [PageController::class, 'newsletterConfirm']
 $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation']);
 $router->get('/guides', [PageController::class, 'guides']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
+$router->get('/blog', [BlogController::class, 'index']);
+$router->get('/blog/{slug}', [BlogController::class, 'show']);
+
 $router->get('/mentions-legales', [PageController::class, 'mentionsLegales']);
 $router->get('/politique-confidentialite', [PageController::class, 'politiqueConfidentialite']);
 $router->get('/conditions-utilisation', [PageController::class, 'conditionsUtilisation']);

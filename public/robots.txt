@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /leads
+Disallow: /api/
+Disallow: /phpinfo.php
 
-Sitemap: /sitemap.xml
+Sitemap: https://estimation-immobilier-bordeaux.fr/sitemap.xml

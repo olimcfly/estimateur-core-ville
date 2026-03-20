@@ -1,175 +1,137 @@
 </main>
 
 <!-- ================================================ -->
-<!-- FOOTER PREMIUM -->
+<!-- FOOTER PRO -->
 <!-- ================================================ -->
-<footer class="site-footer">
-  <div class="footer-container">
 
-    <!-- FOOTER MAIN CONTENT -->
-    <div class="footer-content">
-      <div class="footer-grid">
-
-        <!-- COLONNE 1: BRAND & NEWSLETTER -->
-        <div class="footer-column footer-brand">
-          <div class="footer-logo">
-            <div class="footer-icon">
-              <i class="fas fa-home"></i>
-            </div>
-            <h3 class="footer-brand-name">
-              Estimation Immobilier <span>Bordeaux</span>
-            </h3>
-          </div>
-
-          <p class="footer-tagline">
-            Estimez votre bien immobilier gratuitement à Bordeaux et ses alentours. Algorithme IA + expertise locale.
-          </p>
-
-          <!-- Newsletter Signup -->
-          <div class="footer-newsletter">
-            <h4 class="footer-section-title">Rester informé</h4>
-            <form class="newsletter-form" method="POST" action="/api/newsletter">
-              <input
-                type="email"
-                name="email"
-                placeholder="Votre email..."
-                required
-                class="newsletter-input"
-                aria-label="Email pour newsletter"
-              >
-              <button type="submit" class="newsletter-btn" aria-label="S'inscrire à la newsletter">
-                <i class="fas fa-paper-plane"></i>
-              </button>
-            </form>
-            <p class="newsletter-info">
-              <i class="fas fa-lock"></i> Aucun spam, désinscription facile
-            </p>
-          </div>
-
-          <!-- Réseaux Sociaux -->
-          <div class="footer-social">
-            <a href="https://facebook.com/estimation-bordeaux"
-               class="social-link"
-               title="Suivez-nous sur Facebook"
-               target="_blank"
-               rel="noopener noreferrer">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://instagram.com/estimation-bordeaux"
-               class="social-link"
-               title="Suivez-nous sur Instagram"
-               target="_blank"
-               rel="noopener noreferrer">
-              <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://linkedin.com/company/estimation-bordeaux"
-               class="social-link"
-               title="Suivez-nous sur LinkedIn"
-               target="_blank"
-               rel="noopener noreferrer">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-            <a href="https://twitter.com/estimation_bdx"
-               class="social-link"
-               title="Suivez-nous sur Twitter"
-               target="_blank"
-               rel="noopener noreferrer">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </div>
-        </div>
-
-        <!-- COLONNE 2: ESTIMATION & RESSOURCES -->
-        <div class="footer-column">
-          <h4 class="footer-section-title">
-            <i class="fas fa-calculator"></i> Estimation
-          </h4>
-          <ul class="footer-links">
-            <li><a href="/#form-estimation">Estimer mon bien</a></li>
-            <li><a href="/#example-result">Voir un exemple</a></li>
-            <li><a href="/processus-estimation">Notre processus</a></li>
-            <li><a href="/#how-it-works">Comment ça marche</a></li>
-            <li><a href="/quartiers">Nos quartiers</a></li>
-          </ul>
-
-          <h4 class="footer-section-title" style="margin-top: var(--space-6);">
-            <i class="fas fa-book-open"></i> Ressources
-          </h4>
-          <ul class="footer-links">
-            <li><a href="/guides">Guides complets</a></li>
-            <li><a href="/podcast">Podcast immobilier</a></li>
-            <li><a href="/newsletter">Newsletter</a></li>
-            <li><a href="/blog">Blog & articles</a></li>
-          </ul>
-        </div>
-
-        <!-- COLONNE 3: ENTREPRISE & SUPPORT -->
-        <div class="footer-column">
-          <h4 class="footer-section-title">
-            <i class="fas fa-building"></i> Entreprise
-          </h4>
-          <ul class="footer-links">
-            <li><a href="/a-propos">À propos de nous</a></li>
-            <li><a href="/contact">Nous contacter</a></li>
-            <li><a href="tel:+33556000000">+33 5 56 00 00 00</a></li>
-            <li><a href="mailto:contact@estimation-immobilier-bordeaux.fr">contact@estimation-immobilier-bordeaux.fr</a></li>
-            <li><a href="/a-propos">Notre équipe</a></li>
-          </ul>
-
-          <h4 class="footer-section-title" style="margin-top: var(--space-6);">
-            <i class="fas fa-headset"></i> Support
-          </h4>
-          <ul class="footer-links">
-            <li><a href="/#faq">Questions fréquentes</a></li>
-            <li><a href="/contact">Formulaire de contact</a></li>
-            <li><a href="/mentions-legales#help">Centre d'aide</a></li>
-            <li><a href="/mentions-legales#bugs">Signaler un bug</a></li>
-          </ul>
-        </div>
-
-        <!-- COLONNE 4: LEGAL & CONFORMITÉ -->
-        <div class="footer-column">
-          <h4 class="footer-section-title">
-            <i class="fas fa-shield-alt"></i> Conformité
-          </h4>
-          <ul class="footer-links">
-            <li><a href="/mentions-legales">Mentions légales</a></li>
-            <li><a href="/politique-confidentialite">Politique de confidentialité</a></li>
-            <li><a href="/conditions-utilisation">Conditions d'utilisation</a></li>
-            <li><a href="/rgpd">Politique de cookies</a></li>
-            <li><a href="/rgpd">Conformité RGPD</a></li>
-          </ul>
-
-          <h4 class="footer-section-title" style="margin-top: var(--space-6);">
-            <i class="fas fa-certificate"></i> Certifications
-          </h4>
-          <div class="footer-badges">
-            <span class="badge">
-              <i class="fas fa-lock"></i> SSL Sécurisé
-            </span>
-            <span class="badge">
-              <i class="fas fa-shield-alt"></i> RGPD
-            </span>
-            <span class="badge">
-              <i class="fas fa-check-circle"></i> Vérifiée
-            </span>
-          </div>
-        </div>
-
+<!-- PRE-FOOTER CTA -->
+<section class="footer-cta-band">
+  <div class="container">
+    <div class="footer-cta-inner">
+      <div class="footer-cta-text">
+        <h3>Estimez votre bien immobilier gratuitement</h3>
+        <p>Algorithme IA + expertise locale pour une estimation fiable en quelques minutes.</p>
       </div>
+      <a href="/#form-estimation" class="btn-footer-cta">
+        <i class="fas fa-chart-line"></i> Estimer mon bien
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+
+    <!-- FOOTER MAIN -->
+    <div class="footer-grid">
+
+      <!-- COL 1: BRAND -->
+      <div class="footer-column footer-col-brand">
+        <a href="/" class="footer-logo-link">
+          <span class="footer-logo-icon"><i class="fas fa-home"></i></span>
+          <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux</strong></span>
+        </a>
+        <p class="footer-desc">
+          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et la métropole bordelaise depuis 2020.
+        </p>
+        <div class="footer-social">
+          <a href="https://facebook.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <a href="https://linkedin.com/company/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          <a href="https://twitter.com/estimation_bdx" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="social-icon"><i class="fab fa-x-twitter"></i></a>
+        </div>
+      </div>
+
+      <!-- COL 2: SERVICES -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Services</h4>
+        <ul class="footer-links">
+          <li><a href="/#form-estimation">Estimation en ligne</a></li>
+          <li><a href="/processus-estimation">Notre processus</a></li>
+          <li><a href="/quartiers">Quartiers de Bordeaux</a></li>
+          <li><a href="/#how-it-works">Comment ça marche</a></li>
+          <li><a href="/#example-result">Voir un exemple</a></li>
+        </ul>
+      </div>
+
+      <!-- COL 3: RESSOURCES -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Ressources</h4>
+        <ul class="footer-links">
+          <li><a href="/blog">Blog & actualités</a></li>
+          <li><a href="/guides">Guides immobiliers</a></li>
+          <li><a href="/podcast">Podcast</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/newsletter">Newsletter</a></li>
+        </ul>
+      </div>
+
+      <!-- COL 4: ENTREPRISE -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Entreprise</h4>
+        <ul class="footer-links">
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/mentions-legales">Mentions légales</a></li>
+          <li><a href="/politique-confidentialite">Confidentialité</a></li>
+          <li><a href="/conditions-utilisation">CGU</a></li>
+        </ul>
+      </div>
+
+      <!-- COL 5: CONTACT -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Nous contacter</h4>
+        <ul class="footer-contact">
+          <li>
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Bordeaux, 33000<br>Nouvelle-Aquitaine</span>
+          </li>
+          <li>
+            <a href="tel:+33556000000">
+              <i class="fas fa-phone"></i>
+              <span>05 56 00 00 00</span>
+            </a>
+          </li>
+          <li>
+            <a href="mailto:contact@estimation-immobilier-bordeaux.fr">
+              <i class="fas fa-envelope"></i>
+              <span>contact@estimation-immobilier-bordeaux.fr</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div class="footer-newsletter-band">
+      <div class="footer-newsletter-text">
+        <i class="fas fa-envelope-open-text"></i>
+        <div>
+          <strong>Restez informé</strong>
+          <span>Recevez nos analyses du marché bordelais et nos conseils immobiliers.</span>
+        </div>
+      </div>
+      <form class="footer-newsletter-form" method="POST" action="/api/newsletter">
+        <input type="email" name="email" placeholder="Votre adresse email" required aria-label="Email pour newsletter">
+        <button type="submit">S'inscrire</button>
+      </form>
     </div>
 
     <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
-      <div class="footer-bottom-container">
-        <p class="footer-copyright">
-          &copy; 2026 Estimation Immobilier Bordeaux. Tous droits réservés. SAS OCDM Agency.
-        </p>
-        <div class="footer-bottom-links">
-          <a href="#top" class="back-to-top">
-            <i class="fas fa-arrow-up"></i> Retour en haut
-          </a>
+      <div class="footer-bottom-left">
+        <p>&copy; 2026 Estimation Immobilier Bordeaux &mdash; SAS OCDM Agency. Tous droits réservés.</p>
+      </div>
+      <div class="footer-bottom-right">
+        <div class="footer-trust">
+          <span class="trust-badge"><i class="fas fa-lock"></i> SSL</span>
+          <span class="trust-badge"><i class="fas fa-shield-alt"></i> RGPD</span>
+          <span class="trust-badge"><i class="fas fa-check-circle"></i> Vérifié</span>
         </div>
+        <a href="#top" class="back-to-top" aria-label="Retour en haut">
+          <i class="fas fa-chevron-up"></i>
+        </a>
       </div>
     </div>
 

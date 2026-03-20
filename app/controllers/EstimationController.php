@@ -38,7 +38,9 @@ final class EstimationController
             $typeKey = array_key_exists('type', $_POST) ? 'type' : 'type_bien';
             $propertyType = Validator::string($_POST, $typeKey, 2, 80);
             $surface = Validator::float($_POST, 'surface', 5, 10000);
-            $rooms = Validator::int($_POST, 'pieces', 1, 50);
+
+            $roomsRaw = trim((string) ($_POST['pieces'] ?? ''));
+            $rooms = $roomsRaw !== '' ? Validator::int($_POST, 'pieces', 1, 50) : 3;
 
             $estimate = $this->estimationService->estimate($city, $propertyType, $surface, $rooms);
             $now = time();

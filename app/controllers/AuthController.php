@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Config;
+use App\Core\Database;
 use App\Core\View;
 use App\Models\AdminUser;
 use App\Services\Mailer;
@@ -220,5 +222,75 @@ final class AuthController
         $valid = hash_equals($sessionToken, $token);
         unset($_SESSION['csrf_token']);
         return $valid;
+    }
+
+    public function diagnostic(): void
+    {
+        header('Content-Type: text/plain; charset=utf-8');
+
+        $checks = [];
+
+        // 1. Fichier .env
+        $envFile = dirname(__DIR__, 2) . '/.env';
+        $checks[] = '1. Fichier .env : ' . (is_file($envFile) ? 'PRESENT' : 'ABSENT - Copiez .env.example en .env');
+
+        // 2. Config DB
+        $checks[] = '';
+        $checks[] = '2. Configuration DB :';
+        $checks[] = '   Host    : ' . Config::get('db.host', '(non defini)');
+        $checks[] = '   Port    : ' . Config::get('db.port', '(non defini)');
+        $checks[] = '   Name    : ' . Config::get('db.name', '(non defini)');
+        $checks[] = '   User    : ' . Config::get('db.user', '(non defini)');
+        $checks[] = '   Pass    : ' . (Config::get('db.pass', '') !== '' ? '(defini)' : '(VIDE)');
+
+        // 3. Connexion
+        $checks[] = '';
+        $checks[] = '3. Test de connexion :';
+        try {
+            $pdo = Database::connection();
+            $checks[] = '   Statut  : OK';
+        } catch (\Throwable $e) {
+            $checks[] = '   Statut  : ECHEC';
+            $checks[] = '   Erreur  : ' . $e->getMessage();
+            echo "=== Diagnostic DB ===\n\n" . implode("\n", $checks) . "\n\n=== Verifiez .env ===\n";
+            return;
+        }
+
+        // 4. Tables
+        $checks[] = '';
+        $checks[] = '4. Tables :';
+        $tables = $pdo->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($tables)) {
+            $checks[] = '   AUCUNE TABLE - Importez database/schema.sql';
+        } else {
+            foreach ($tables as $table) {
+                $checks[] = '   - ' . $table;
+            }
+        }
+
+        // 5. admin_users
+        $checks[] = '';
+        $checks[] = '5. Table admin_users :';
+        if (!in_array('admin_users', $tables, true)) {
+            $checks[] = '   ABSENTE - Executez setup-admin.php';
+        } else {
+            $columns = $pdo->query('SHOW COLUMNS FROM admin_users')->fetchAll(\PDO::FETCH_COLUMN);
+            $checks[] = '   Colonnes : ' . implode(', ', $columns);
+            if (!in_array('login_code', $columns, true)) {
+                $checks[] = '   ATTENTION : colonne login_code manquante !';
+            }
+            $count = (int) $pdo->query('SELECT COUNT(*) FROM admin_users')->fetchColumn();
+            $checks[] = '   Admins : ' . $count;
+            if ($count > 0) {
+                $admins = $pdo->query('SELECT email FROM admin_users')->fetchAll(\PDO::FETCH_COLUMN);
+                foreach ($admins as $adminEmail) {
+                    $checks[] = '   - ' . $adminEmail;
+                }
+            } else {
+                $checks[] = '   AUCUN ADMIN - Executez setup-admin.php';
+            }
+        }
+
+        echo "=== Diagnostic DB ===\n\n" . implode("\n", $checks) . "\n\n=== Diagnostic termine ===\n";
     }
 }

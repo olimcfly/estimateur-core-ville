@@ -507,17 +507,33 @@
       flex-shrink: 0;
     }
 
-    @media (max-width: 768px) {
-      .btn-header-cta {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.85rem;
-      }
+    .nav-cta-mobile {
+      display: none;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       .btn-header-cta {
-        padding: 0.6rem 1rem;
-        font-size: 0.78rem;
+        display: none;
+      }
+
+      .nav-cta-mobile {
+        display: block;
+        padding: 1.5rem;
+      }
+
+      .nav-cta-mobile a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--primary), #C41E3A);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.25);
       }
     }
   </style>
@@ -578,6 +594,10 @@
           <li><a href="/quartiers">Quartiers Bordeaux</a></li>
           <li><a href="/newsletter">Newsletter</a></li>
         </ul>
+      </div>
+
+      <div class="nav-cta-mobile">
+        <a href="/estimation#form-estimation">Estimer mon bien</a>
       </div>
     </nav>
 

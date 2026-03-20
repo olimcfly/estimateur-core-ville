@@ -882,6 +882,13 @@ textarea:focus {
   font-family: 'Playfair Display', serif;
 }
 
+.kpi-detail {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .result-detail {
   padding: 1.5rem;
   background: rgba(212, 175, 55, 0.08);
@@ -2811,5 +2818,9 @@ main {
 @media (max-width: 768px) {
   input, select, textarea {
     font-size: 16px;
+  }
+
+  .section-alt [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
   }
 }

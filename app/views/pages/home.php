@@ -94,7 +94,7 @@
 
       <!-- CTA BUTTONS -->
       <div class="hero-actions">
-        <a href="#form-estimation" class="btn btn-primary">
+        <a href="/estimation" class="btn btn-primary">
           <i class="fas fa-bolt"></i> Estimer gratuitement
         </a>
         <a href="#how-it-works" class="btn btn-ghost">
@@ -103,169 +103,43 @@
       </div>
     </div>
 
-    <!-- COLONNE 2: FORMULAIRE HERO -->
+    <!-- COLONNE 2: CTA RAPIDE -->
     <aside class="hero-panel card" id="form-estimation">
       <div class="panel-header">
         <h2>
           <i class="fas fa-calculator"></i> Estimation gratuite
         </h2>
-        <p class="muted">Remplissez les infos de votre bien pour obtenir votre fourchette de prix.</p>
+        <p class="muted">Obtenez votre fourchette de prix en moins de 60 secondes.</p>
       </div>
 
-      <form action="/estimation" method="post" class="form-grid">
-        <!-- LIGNE 1: LOCALISATION -->
-        <div class="form-row">
-          <label for="city">
-            <span><i class="fas fa-map-marker-alt"></i> Ville</span>
-            <input 
-              type="text" 
-              id="city" 
-              name="city" 
-              placeholder="Bordeaux, Talence, Floirac..." 
-              required
-              autocomplete="off"
-            >
-          </label>
+      <div style="padding: 1.5rem;">
+        <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem;">
+          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>100% gratuit</strong> — aucun frais caché</span>
+          </li>
+          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>Résultat immédiat</strong> — en moins d'1 minute</span>
+          </li>
+          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>Données réelles</strong> — 5000+ transactions en Gironde</span>
+          </li>
+          <li style="display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>Sans engagement</strong> — aucune obligation</span>
+          </li>
+        </ul>
 
-          <label for="postal_code">
-            <span><i class="fas fa-envelope"></i> Code postal</span>
-            <input 
-              type="text" 
-              id="postal_code" 
-              name="postal_code" 
-              placeholder="33000" 
-              maxlength="5"
-              required
-            >
-          </label>
-        </div>
+        <a href="/estimation" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.1rem;">
+          <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
+        </a>
 
-        <!-- LIGNE 2: TYPE & SURFACE -->
-        <div class="form-row">
-          <label for="property_type">
-            <span><i class="fas fa-home"></i> Type de bien</span>
-            <select id="property_type" name="property_type" required>
-              <option value="">-- Sélectionner --</option>
-              <option value="apartment">Appartement</option>
-              <option value="house">Maison / Villa</option>
-              <option value="studio">Studio</option>
-              <option value="loft">Loft</option>
-              <option value="townhouse">Maison de ville</option>
-            </select>
-          </label>
-
-          <label for="surface">
-            <span><i class="fas fa-ruler-combined"></i> Surface (m²)</span>
-            <input 
-              type="number" 
-              id="surface" 
-              name="surface" 
-              min="10" 
-              max="500" 
-              step="0.1"
-              placeholder="85" 
-              required
-            >
-          </label>
-        </div>
-
-        <!-- LIGNE 3: PIÈCES & ANNÉE -->
-        <div class="form-row">
-          <label for="rooms">
-            <span><i class="fas fa-door-open"></i> Nombre de pièces</span>
-            <input 
-              type="number" 
-              id="rooms" 
-              name="rooms" 
-              min="1" 
-              max="10"
-              placeholder="3" 
-              required
-            >
-          </label>
-
-          <label for="year_built">
-            <span><i class="fas fa-calendar"></i> Année construction</span>
-            <input 
-              type="number" 
-              id="year_built" 
-              name="year_built" 
-              min="1850" 
-              max="2024"
-              placeholder="2005" 
-              required
-            >
-          </label>
-        </div>
-
-        <!-- LIGNE 4: ÉTAGE & ÉTAT -->
-        <div class="form-row">
-          <label for="floor">
-            <span><i class="fas fa-building"></i> Étage</span>
-            <select id="floor" name="floor" required>
-              <option value="">-- Sélectionner --</option>
-              <option value="0">Rez-de-chaussée</option>
-              <option value="1">1er étage</option>
-              <option value="2">2e étage</option>
-              <option value="3">3e étage</option>
-              <option value="4">4e étage</option>
-              <option value="5plus">5+ étages</option>
-            </select>
-          </label>
-
-          <label for="condition">
-            <span><i class="fas fa-tools"></i> État général</span>
-            <select id="condition" name="condition" required>
-              <option value="">-- Sélectionner --</option>
-              <option value="excellent">Excellent (neuf/rénové)</option>
-              <option value="good">Bon (entretenu)</option>
-              <option value="fair">Moyen (travaux à prévoir)</option>
-              <option value="poor">Mauvais (gros travaux)</option>
-            </select>
-          </label>
-        </div>
-
-        <!-- LIGNE 5: CHAMBRES & SALLE BAIN -->
-        <div class="form-row">
-          <label for="bedrooms">
-            <span><i class="fas fa-bed"></i> Chambres</span>
-            <input 
-              type="number" 
-              id="bedrooms" 
-              name="bedrooms" 
-              min="0" 
-              max="10"
-              placeholder="2" 
-              required
-            >
-          </label>
-
-          <label for="bathrooms">
-            <span><i class="fas fa-bath"></i> Salles de bain</span>
-            <input 
-              type="number" 
-              id="bathrooms" 
-              name="bathrooms" 
-              min="0" 
-              max="5"
-              placeholder="1" 
-              required
-            >
-          </label>
-        </div>
-
-        <!-- BOUTON SOUMISSION -->
-        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1rem; padding: 1rem;">
-          <i class="fas fa-bolt"></i> Obtenir mon estimation gratuite
-        </button>
-
-        <!-- REASSURANCE -->
-        <p class="form-footer" style="text-align: center; margin: 1rem 0 0; font-size: 0.8rem;">
-          <i class="fas fa-check-circle"></i> 100% gratuit • 
-          <i class="fas fa-zap"></i> Résultat en 1 min • 
-          <i class="fas fa-lock"></i> Sécurisé & confidentiel
+        <p style="text-align: center; margin: 1rem 0 0; font-size: 0.8rem; color: var(--muted);">
+          <i class="fas fa-lock"></i> Données sécurisées & conformes RGPD
         </p>
-      </form>
+      </div>
     </aside>
   </div>
 </section>
@@ -536,7 +410,7 @@
       <p class="lead" style="max-width: 600px; margin: 0 auto 2rem;">
         Obtenez une fourchette de prix précise basée sur les données réelles du marché bordelais. Avis de valeur 100% gratuit, sans engagement, confidentiel.
       </p>
-      <a href="#form-estimation" class="btn btn-primary" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
+      <a href="/estimation" class="btn btn-primary" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
         <i class="fas fa-calculator"></i> Lancer mon estimation gratuite
       </a>
       <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">

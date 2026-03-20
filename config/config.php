@@ -47,7 +47,13 @@ return [
         'endpoint' => $_ENV['PERPLEXITY_ENDPOINT'] ?? 'https://api.perplexity.ai/chat/completions',
     ],
     'mail' => [
-        'from' => $_ENV['MAIL_FROM'] ?? 'no-reply@localhost',
+        'from' => $_ENV['MAIL_FROM'] ?? 'contact@estimation-immobilier-bordeaux.fr',
+        'from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Estimation Immobilier Bordeaux',
+        'smtp_host' => $_ENV['MAIL_SMTP_HOST'] ?? '',
+        'smtp_port' => (int) ($_ENV['MAIL_SMTP_PORT'] ?? 587),
+        'smtp_user' => $_ENV['MAIL_SMTP_USER'] ?? '',
+        'smtp_pass' => $_ENV['MAIL_SMTP_PASS'] ?? '',
+        'smtp_encryption' => $_ENV['MAIL_SMTP_ENCRYPTION'] ?? 'tls',
     ],
     'openai' => [
         'api_key' => $_ENV['OPENAI_API_KEY'] ?? '',

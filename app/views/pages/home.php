@@ -36,6 +36,32 @@
     </div>
 
     <!-- COLONNE 2: FORMULAIRE 3 CHAMPS -->
+
+      <!-- SOCIAL PROOF -->
+      <div style="margin-top: 2rem; padding: 1.2rem; background: rgba(var(--primary-rgb), 0.04); border-radius: 12px; border-left: 3px solid var(--primary);">
+        <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+          <i class="fas fa-quote-left"></i> Témoignage client
+        </p>
+        <p style="margin: 0; font-style: italic; color: var(--text); line-height: 1.6;">
+          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux !"
+        </p>
+        <p style="margin: 0.8rem 0 0; font-size: 0.85rem; color: var(--muted); font-weight: 600;">
+          — Marie D. • Bordeaux Chartrons
+        </p>
+      </div>
+
+      <!-- CTA BUTTONS -->
+      <div class="hero-actions">
+        <a href="/estimation" class="btn btn-primary">
+          <i class="fas fa-bolt"></i> Estimer gratuitement
+        </a>
+        <a href="#how-it-works" class="btn btn-ghost">
+          <i class="fas fa-info-circle"></i> Comment ça marche
+        </a>
+      </div>
+    </div>
+
+    <!-- COLONNE 2: CTA RAPIDE -->
     <aside class="hero-panel card" id="form-estimation">
       <div class="panel-header">
         <h2>
@@ -93,8 +119,37 @@
 
         <p class="form-footer" style="text-align: center; margin: 0.8rem 0 0; font-size: 0.8rem; color: var(--muted);">
           <i class="fas fa-lock"></i> Aucune donnée personnelle requise
+        <p class="muted">Obtenez votre fourchette de prix en moins de 60 secondes.</p>
+      </div>
+
+      <div style="padding: 1.5rem;">
+        <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem;">
+          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>100% gratuit</strong> — aucun frais caché</span>
+          </li>
+          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>Résultat immédiat</strong> — en moins d'1 minute</span>
+          </li>
+          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>Données réelles</strong> — 5000+ transactions en Gironde</span>
+          </li>
+          <li style="display: flex; align-items: center; gap: 0.75rem;">
+            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+            <span><strong>Sans engagement</strong> — aucune obligation</span>
+          </li>
+        </ul>
+
+        <a href="/estimation" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.1rem;">
+          <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
+        </a>
+
+        <p style="text-align: center; margin: 1rem 0 0; font-size: 0.8rem; color: var(--muted);">
+          <i class="fas fa-lock"></i> Données sécurisées & conformes RGPD
         </p>
-      </form>
+      </div>
     </aside>
   </div>
 </section>
@@ -285,6 +340,8 @@
       </p>
       <a href="#form-estimation" class="btn btn-primary" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
         <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
+      <a href="/estimation" class="btn btn-primary" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
+        <i class="fas fa-calculator"></i> Lancer mon estimation gratuite
       </a>
     </div>
   </div>

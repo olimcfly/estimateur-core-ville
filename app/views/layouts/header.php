@@ -576,6 +576,10 @@
         </ul>
       </div>
 
+      <div class="nav-item">
+        <a href="/actualites" class="nav-link">Actualités</a>
+      </div>
+
       <div class="nav-item has-dropdown">
         <a href="/services" class="nav-link">Services</a>
         <ul class="dropdown-menu" aria-label="Sous-menu services">

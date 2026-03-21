@@ -87,3 +87,39 @@ CREATE TABLE IF NOT EXISTS design_templates (
     name VARCHAR(255) NOT NULL DEFAULT '',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS actualites (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    website_id INT UNSIGNED NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+    content LONGTEXT NOT NULL,
+    excerpt TEXT NOT NULL DEFAULT '',
+    meta_title VARCHAR(255) NOT NULL DEFAULT '',
+    meta_description TEXT NOT NULL DEFAULT '',
+    image_url VARCHAR(500) DEFAULT NULL,
+    image_prompt TEXT DEFAULT NULL,
+    source_query TEXT DEFAULT NULL,
+    source_results LONGTEXT DEFAULT NULL,
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    generated_by ENUM('manual', 'ai', 'cron') NOT NULL DEFAULT 'manual',
+    published_at DATETIME DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_actualites_website_slug (website_id, slug),
+    INDEX idx_actualites_website (website_id),
+    INDEX idx_actualites_status (status, published_at),
+    INDEX idx_actualites_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS actualites_cron_log (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    website_id INT UNSIGNED NOT NULL,
+    query_used TEXT NOT NULL,
+    articles_found INT UNSIGNED NOT NULL DEFAULT 0,
+    article_published_id INT UNSIGNED DEFAULT NULL,
+    status ENUM('success', 'error') NOT NULL DEFAULT 'success',
+    error_message TEXT DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_cron_log_website (website_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

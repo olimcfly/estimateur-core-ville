@@ -378,8 +378,14 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
 
     <div class="sidebar-section">
       <div class="sidebar-section-title">Contenu</div>
-      <a href="/blog" class="sidebar-link <?= $currentPage === 'blog' ? 'active' : '' ?>">
-        <i class="fas fa-newspaper"></i> Articles
+      <a href="/admin/blog" class="sidebar-link <?= $currentPage === 'blog' ? 'active' : '' ?>">
+        <i class="fas fa-pen-fancy"></i> Articles Blog
+      </a>
+      <a href="/admin/actualites" class="sidebar-link <?= $currentPage === 'actualites' ? 'active' : '' ?>">
+        <i class="fas fa-newspaper"></i> Actualités
+      </a>
+      <a href="/admin/images" class="sidebar-link <?= $currentPage === 'images' ? 'active' : '' ?>">
+        <i class="fas fa-image"></i> Images IA
       </a>
     </div>
 

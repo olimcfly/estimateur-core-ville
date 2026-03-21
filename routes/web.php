@@ -15,6 +15,7 @@ use App\Controllers\PageController;
 use App\Controllers\AdminDashboardController;
 use App\Controllers\AdminLeadController;
 use App\Controllers\AdminPartenaireController;
+use App\Controllers\AdminAchatController;
 use App\Controllers\AdminSocialImageController;
 use App\Controllers\ToolController;
 
@@ -121,6 +122,13 @@ $router->get('/admin/social-images', [AdminSocialImageController::class, 'index'
 $router->get('/admin/social-images/history', [AdminSocialImageController::class, 'history']);
 $router->post('/admin/social-images/save', [AdminSocialImageController::class, 'save']);
 $router->post('/admin/social-images/delete', [AdminSocialImageController::class, 'delete']);
+
+// Admin achat (purchase) routes
+$router->get('/admin/achats', [AdminAchatController::class, 'index']);
+$router->get('/admin/achats/edit', [AdminAchatController::class, 'edit']);
+$router->post('/admin/achats/save', [AdminAchatController::class, 'save']);
+$router->post('/admin/achats/delete', [AdminAchatController::class, 'delete']);
+$router->post('/admin/achats/create-table', [AdminAchatController::class, 'createTable']);
 
 // Admin lead status update
 $router->post('/admin/leads/update-statut', [EstimationController::class, 'updateLeadStatut']);

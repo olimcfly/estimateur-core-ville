@@ -98,6 +98,7 @@ $router->get('/admin/sequences/article-suggestions', [AdminSequenceController::c
 $router->get('/admin/dashboard', [AdminDashboardController::class, 'index']);
 $router->get('/admin/funnel', [AdminDashboardController::class, 'funnel']);
 $router->get('/admin/portfolio', [AdminDashboardController::class, 'portfolio']);
+$router->post('/admin/portfolio/update-rate', [AdminDashboardController::class, 'updateCommissionRate']);
 
 // Admin partenaire routes
 $router->get('/admin/partenaires', [AdminPartenaireController::class, 'index']);

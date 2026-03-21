@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\View;
+use App\Models\Lead;
 use PDO;
 
 final class AdminDashboardController
@@ -141,6 +142,7 @@ final class AdminDashboardController
 
         $pdo = Database::connection();
         $websiteId = (int) Config::get('website.id', 1);
+        $defaultRate = (float) Config::get('portfolio.default_commission_rate', 3.0);
 
         // Active leads with portfolio data
         $stmt = $pdo->prepare('SELECT l.*, p.nom as partenaire_nom, p.entreprise as partenaire_entreprise
@@ -155,7 +157,7 @@ final class AdminDashboardController
         $totalValeur = 0;
         $totalCommission = 0;
         foreach ($leads as &$lead) {
-            $taux = (float) ($lead['commission_taux'] ?? 3.0);
+            $taux = (float) ($lead['commission_taux'] ?? $defaultRate);
             $estimation = (float) $lead['estimation'];
             $commission = $lead['commission_montant'] ? (float) $lead['commission_montant'] : ($estimation * $taux / 100);
             $lead['commission_calculee'] = $commission;
@@ -172,6 +174,28 @@ final class AdminDashboardController
             'leads' => $leads,
             'totalValeur' => $totalValeur,
             'totalCommission' => $totalCommission,
+            'defaultRate' => $defaultRate,
         ]);
+    }
+
+    public function updateCommissionRate(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = (int) ($_POST['id'] ?? 0);
+        $rate = (float) ($_POST['commission_taux'] ?? 0);
+
+        if ($id <= 0 || $rate < 0 || $rate > 20) {
+            echo json_encode(['success' => false, 'error' => 'Paramètres invalides']);
+            return;
+        }
+
+        $lead = new Lead();
+        $updated = $lead->updateLeadDetails($id, ['commission_taux' => $rate]);
+
+        echo json_encode(['success' => $updated]);
     }
 }

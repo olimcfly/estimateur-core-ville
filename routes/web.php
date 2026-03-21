@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 use App\Controllers\AdminBlogController;
+use App\Controllers\AdminDatabaseController;
+use App\Controllers\AdminEmailController;
 use App\Controllers\AdminImageController;
+use App\Controllers\AdminSequenceController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
@@ -65,3 +68,23 @@ $router->post('/admin/images/generate', [AdminImageController::class, 'generate'
 $router->post('/admin/images/delete', [AdminImageController::class, 'delete']);
 $router->post('/admin/api/images/generate', [AdminImageController::class, 'apiGenerate']);
 $router->get('/admin/api/images/seo-prompt', [AdminImageController::class, 'apiSeoPrompt']);
+
+// Admin database management routes
+$router->get('/admin/database', [AdminDatabaseController::class, 'index']);
+$router->post('/admin/database', [AdminDatabaseController::class, 'index']);
+
+// Admin email template routes
+$router->get('/admin/emails', [AdminEmailController::class, 'index']);
+$router->get('/admin/emails/edit', [AdminEmailController::class, 'edit']);
+$router->post('/admin/emails/save', [AdminEmailController::class, 'save']);
+$router->post('/admin/emails/delete', [AdminEmailController::class, 'delete']);
+$router->post('/admin/emails/send-test', [AdminEmailController::class, 'sendTest']);
+$router->post('/admin/emails/ai-generate', [AdminEmailController::class, 'aiGenerate']);
+
+// Admin email sequence routes
+$router->get('/admin/sequences', [AdminSequenceController::class, 'index']);
+$router->get('/admin/sequences/edit', [AdminSequenceController::class, 'edit']);
+$router->post('/admin/sequences/save', [AdminSequenceController::class, 'save']);
+$router->post('/admin/sequences/delete', [AdminSequenceController::class, 'delete']);
+$router->post('/admin/sequences/save-persona', [AdminSequenceController::class, 'savePersona']);
+$router->get('/admin/sequences/article-suggestions', [AdminSequenceController::class, 'articleSuggestions']);

@@ -14,6 +14,7 @@ use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\AdminDashboardController;
 use App\Controllers\AdminPartenaireController;
+use App\Controllers\AdminSocialImageController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
@@ -106,6 +107,11 @@ $router->get('/admin/partenaires', [AdminPartenaireController::class, 'index']);
 $router->get('/admin/partenaires/edit', [AdminPartenaireController::class, 'edit']);
 $router->post('/admin/partenaires/save', [AdminPartenaireController::class, 'save']);
 $router->post('/admin/partenaires/delete', [AdminPartenaireController::class, 'delete']);
+
+// Admin social media image routes
+$router->get('/admin/social-images', [AdminSocialImageController::class, 'index']);
+$router->post('/admin/social-images/save', [AdminSocialImageController::class, 'save']);
+$router->post('/admin/social-images/delete', [AdminSocialImageController::class, 'delete']);
 
 // Admin lead status update
 $router->post('/admin/leads/update-statut', [EstimationController::class, 'updateLeadStatut']);

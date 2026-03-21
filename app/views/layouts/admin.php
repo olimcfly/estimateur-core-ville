@@ -394,6 +394,9 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
       <a href="/blog" class="sidebar-link <?= $currentPage === 'blog' ? 'active' : '' ?>">
         <i class="fas fa-newspaper"></i> Articles
       </a>
+      <a href="/admin/social-images" class="sidebar-link <?= $currentPage === 'social-images' ? 'active' : '' ?>">
+        <i class="fas fa-share-alt"></i> Images Sociales
+      </a>
     </div>
 
     <div class="sidebar-section">

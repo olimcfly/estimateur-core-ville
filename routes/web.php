@@ -107,3 +107,7 @@ $router->post('/admin/partenaires/delete', [AdminPartenaireController::class, 'd
 
 // Admin lead status update
 $router->post('/admin/leads/update-statut', [EstimationController::class, 'updateLeadStatut']);
+$router->post('/admin/leads/update-inline', [EstimationController::class, 'updateLeadInline']);
+
+// Admin pipeline view
+$router->get('/admin/pipeline', [EstimationController::class, 'pipeline']);

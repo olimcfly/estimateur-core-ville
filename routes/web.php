@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Controllers\AdminAchatController;
+use App\Controllers\ActualiteController;
+use App\Controllers\AdminActualiteController;
 use App\Controllers\AdminBlogController;
 use App\Controllers\AdminController;
 use App\Controllers\AdminDashboardController;
@@ -90,6 +91,10 @@ $router->post('/contact', [PageController::class, 'contactSubmit']);
 $router->get('/blog', [BlogController::class, 'index']);
 $router->get('/blog/{slug}', [BlogController::class, 'show']);
 
+// Actualités (news) routes
+$router->get('/actualites', [ActualiteController::class, 'index']);
+$router->get('/actualites/{slug}', [ActualiteController::class, 'show']);
+
 $router->get('/mentions-legales', [PageController::class, 'mentionsLegales']);
 $router->get('/politique-confidentialite', [PageController::class, 'politiqueConfidentialite']);
 $router->get('/conditions-utilisation', [PageController::class, 'conditionsUtilisation']);
@@ -106,6 +111,16 @@ $router->post('/admin/blog/update/{id}', [AdminBlogController::class, 'update'])
 $router->get('/admin/blog/delete/{id}', [AdminBlogController::class, 'delete']);
 $router->post('/admin/blog/generate', [AdminBlogController::class, 'generate']);
 $router->post('/admin/blog/restore/{id}/{revisionId}', [AdminBlogController::class, 'restoreRevision']);
+
+// Admin actualités routes
+$router->get('/admin/actualites', [AdminActualiteController::class, 'index']);
+$router->get('/admin/actualites/create', [AdminActualiteController::class, 'create']);
+$router->post('/admin/actualites/store', [AdminActualiteController::class, 'store']);
+$router->get('/admin/actualites/edit/{id}', [AdminActualiteController::class, 'edit']);
+$router->post('/admin/actualites/update/{id}', [AdminActualiteController::class, 'update']);
+$router->post('/admin/actualites/delete/{id}', [AdminActualiteController::class, 'delete']);
+$router->post('/admin/actualites/search', [AdminActualiteController::class, 'search']);
+$router->post('/admin/actualites/generate', [AdminActualiteController::class, 'generate']);
 
 // Admin AI image generation routes
 $router->get('/admin/images', [AdminImageController::class, 'index']);

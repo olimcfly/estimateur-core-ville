@@ -397,6 +397,9 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
       <a href="/blog" class="sidebar-link <?= $currentPage === 'blog' ? 'active' : '' ?>">
         <i class="fas fa-newspaper"></i> Articles
       </a>
+      <a href="/admin/social-images" class="sidebar-link <?= $currentPage === 'social-images' ? 'active' : '' ?>">
+        <i class="fas fa-share-alt"></i> Images Sociales
+      </a>
     </div>
 
     <div class="sidebar-section">
@@ -413,6 +416,9 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
       <div class="sidebar-section-title">Outils</div>
       <a href="/admin/database" class="sidebar-link <?= $currentPage === 'database' ? 'active' : '' ?>">
         <i class="fas fa-database"></i> Base de donn&eacute;es
+      </a>
+      <a href="/admin/test-smtp" class="sidebar-link <?= $currentPage === 'smtp' ? 'active' : '' ?>">
+        <i class="fas fa-envelope-open-text"></i> Config SMTP
       </a>
       <a href="/admin/diagnostic" class="sidebar-link <?= $currentPage === 'diagnostic' ? 'active' : '' ?>">
         <i class="fas fa-stethoscope"></i> Diagnostic

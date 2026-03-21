@@ -13,7 +13,9 @@ use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\AdminDashboardController;
+use App\Controllers\AdminLeadController;
 use App\Controllers\AdminPartenaireController;
+use App\Controllers\AdminSocialImageController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
@@ -29,11 +31,19 @@ $router->post('/admin/login', [AuthController::class, 'login']);
 $router->get('/admin/logout', [AuthController::class, 'logout']);
 $router->get('/admin/diagnostic', [AdminDiagnosticController::class, 'index']);
 $router->get('/admin/test-smtp', [AuthController::class, 'testSmtp']);
+$router->post('/admin/test-smtp/save', [AuthController::class, 'testSmtpSave']);
+$router->post('/admin/test-smtp/reset', [AuthController::class, 'testSmtpReset']);
 $router->post('/admin/test-smtp/run', [AuthController::class, 'testSmtpRun']);
 $router->post('/admin/test-smtp/send', [AuthController::class, 'testSmtpSendEmail']);
 
-// Protected admin routes
-$router->get('/admin/leads', [EstimationController::class, 'leads']);
+// Admin lead management routes
+$router->get('/admin/leads', [AdminLeadController::class, 'index']);
+$router->get('/admin/leads/detail', [AdminLeadController::class, 'show']);
+$router->get('/admin/leads/edit', [AdminLeadController::class, 'edit']);
+$router->post('/admin/leads/update', [AdminLeadController::class, 'update']);
+$router->post('/admin/leads/add-note', [AdminLeadController::class, 'addNote']);
+$router->post('/admin/leads/delete-note', [AdminLeadController::class, 'deleteNote']);
+$router->post('/admin/leads/delete', [AdminLeadController::class, 'delete']);
 
 $router->get('/services', [PageController::class, 'services']);
 $router->get('/about', [PageController::class, 'about']);
@@ -104,6 +114,11 @@ $router->get('/admin/partenaires', [AdminPartenaireController::class, 'index']);
 $router->get('/admin/partenaires/edit', [AdminPartenaireController::class, 'edit']);
 $router->post('/admin/partenaires/save', [AdminPartenaireController::class, 'save']);
 $router->post('/admin/partenaires/delete', [AdminPartenaireController::class, 'delete']);
+
+// Admin social media image routes
+$router->get('/admin/social-images', [AdminSocialImageController::class, 'index']);
+$router->post('/admin/social-images/save', [AdminSocialImageController::class, 'save']);
+$router->post('/admin/social-images/delete', [AdminSocialImageController::class, 'delete']);
 
 // Admin lead status update
 $router->post('/admin/leads/update-statut', [EstimationController::class, 'updateLeadStatut']);

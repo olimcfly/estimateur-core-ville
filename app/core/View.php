@@ -19,6 +19,10 @@ final class View
         $pageContent = self::renderTemplate($templatePath, $data);
         $data['meta_description'] = self::resolveMetaDescription($data, $pageContent);
 
+        $siteConfig = getSiteConfig();
+        $data['colors'] = $siteConfig['colors'] ?? [];
+        $data['rgbColors'] = $siteConfig['rgb_colors'] ?? [];
+
         extract($data, EXTR_SKIP);
         include __DIR__ . '/../views/layouts/header.php';
         echo $pageContent;

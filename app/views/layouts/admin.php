@@ -401,7 +401,7 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
       <a href="/admin/diagnostic" class="sidebar-link <?= $currentPage === 'diagnostic' ? 'active' : '' ?>" target="_blank">
         <i class="fas fa-stethoscope"></i> Diagnostic DB
       </a>
-      <a href="/admin/test-smtp" class="sidebar-link <?= $currentPage === 'smtp' ? 'active' : '' ?>" target="_blank">
+      <a href="/admin/test-smtp" class="sidebar-link <?= $currentPage === 'smtp' ? 'active' : '' ?>">
         <i class="fas fa-envelope-open-text"></i> Test SMTP
       </a>
       <a href="/" class="sidebar-link" target="_blank">

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\ActualiteController;
 use App\Controllers\AdminActualiteController;
 use App\Controllers\AdminBlogController;
+use App\Controllers\AdminAchatController;
 use App\Controllers\AdminController;
 use App\Controllers\AdminDashboardController;
 use App\Controllers\AdminDatabaseController;
@@ -108,7 +109,7 @@ $router->get('/admin/blog/create', [AdminBlogController::class, 'create']);
 $router->post('/admin/blog/store', [AdminBlogController::class, 'store']);
 $router->get('/admin/blog/edit/{id}', [AdminBlogController::class, 'edit']);
 $router->post('/admin/blog/update/{id}', [AdminBlogController::class, 'update']);
-$router->get('/admin/blog/delete/{id}', [AdminBlogController::class, 'delete']);
+$router->post('/admin/blog/delete/{id}', [AdminBlogController::class, 'delete']);
 $router->post('/admin/blog/generate', [AdminBlogController::class, 'generate']);
 $router->post('/admin/blog/restore/{id}/{revisionId}', [AdminBlogController::class, 'restoreRevision']);
 

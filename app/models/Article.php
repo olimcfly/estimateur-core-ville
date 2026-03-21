@@ -136,6 +136,64 @@ final class Article
         ]);
     }
 
+    public function findRevisionsByArticleId(int $articleId): array
+    {
+        $sql = 'SELECT id, article_id, revision_number, title, slug, status, created_at
+                FROM article_revisions
+                WHERE article_id = :article_id
+                ORDER BY revision_number DESC';
+
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([':article_id' => $articleId]);
+
+        return $stmt->fetchAll();
+    }
+
+    public function restoreRevision(int $articleId, int $revisionId): void
+    {
+        $connection = Database::connection();
+
+        $sql = 'SELECT title, slug, content, meta_title, meta_description, persona, awareness_level, status
+                FROM article_revisions
+                WHERE id = :id AND article_id = :article_id
+                LIMIT 1';
+
+        $stmt = $connection->prepare($sql);
+        $stmt->execute([':id' => $revisionId, ':article_id' => $articleId]);
+        $revision = $stmt->fetch();
+
+        if (!is_array($revision)) {
+            throw new \InvalidArgumentException('Révision introuvable.');
+        }
+
+        $this->createRevisionSnapshot($articleId, $connection);
+
+        $updateSql = 'UPDATE articles
+                       SET title = :title,
+                           slug = :slug,
+                           content = :content,
+                           meta_title = :meta_title,
+                           meta_description = :meta_description,
+                           persona = :persona,
+                           awareness_level = :awareness_level,
+                           status = :status
+                       WHERE id = :id AND website_id = :website_id';
+
+        $updateStmt = $connection->prepare($updateSql);
+        $updateStmt->execute([
+            ':id' => $articleId,
+            ':website_id' => $this->websiteId(),
+            ':title' => $revision['title'],
+            ':slug' => $revision['slug'],
+            ':content' => $revision['content'],
+            ':meta_title' => $revision['meta_title'],
+            ':meta_description' => $revision['meta_description'],
+            ':persona' => $revision['persona'],
+            ':awareness_level' => $revision['awareness_level'],
+            ':status' => $revision['status'],
+        ]);
+    }
+
     private function websiteId(): int
     {
         return (int) Config::get('website.id', 1);

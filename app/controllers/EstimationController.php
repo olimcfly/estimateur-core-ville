@@ -66,9 +66,9 @@ final class EstimationController
         }
 
         View::renderAdmin('admin/leads', [
-            'page_title' => 'Leads - Admin CRM',
-            'admin_page' => 'leads',
-            'breadcrumb' => 'Leads',
+            'page_title' => 'Gestion des Leads - Admin',
+            'admin_page_title' => 'Leads',
+            'admin_current_page' => 'leads',
             'leads' => $leads,
             'leadCount' => count($leads),
             'dbError' => $dbError,

@@ -1,0 +1,377 @@
+{
+  "nantes": {
+    "city_name": "Nantes",
+    "city_slug": "nantes",
+    "city_region": "Pays de la Loire",
+    "city_departement": "Loire-Atlantique",
+    "city_code_postal": "44000",
+    "city_coords": "47.2184,-1.5536",
+    "prix_m2_moyen": 3800,
+    "city_factor": 1.05,
+    "domain": "estimation-immobilier-nantes.fr",
+    "db_name": "estimation_immobilier_nantes",
+    "telephone": "+33240000000",
+    "colors": {
+      "primary": "#1B4F72",
+      "primary_dark": "#153d58",
+      "accent": "#F39C12",
+      "accent_light": "#F5B041"
+    },
+    "quartiers": [
+      {
+        "nom": "Ile de Nantes",
+        "description": "Quartier en pleine mutation sur l'ancienne île industrielle. Projets urbains ambitieux, architecture contemporaine, vie culturelle riche avec les Machines de l'île. Très prisé des jeunes actifs et investisseurs.",
+        "prix_m2": 4200,
+        "prix_moyen": 380000,
+        "caracteristiques": ["Renouveau urbain", "Culture", "Machines de l'île", "Contemporain"],
+        "population": "~18000 habitants",
+        "transports": "Tram 1/2/3, Busway, Chronobus",
+        "attractivite": "Très haute",
+        "coords": "47.2050,-1.5600",
+        "tendance": "+5.2%"
+      },
+      {
+        "nom": "Centre-Ville / Graslin",
+        "description": "Coeur historique de Nantes avec le passage Pommeraye, le théâtre Graslin et les places animées. Architecture classique, commerces haut de gamme et restaurants gastronomiques.",
+        "prix_m2": 4800,
+        "prix_moyen": 420000,
+        "caracteristiques": ["Centre historique", "Commerce", "Gastronomie", "Patrimoine"],
+        "population": "~12000 habitants",
+        "transports": "Tram 1/2/3, Bus, Piéton",
+        "attractivite": "Très haute",
+        "coords": "47.2130,-1.5580",
+        "tendance": "+3.1%"
+      },
+      {
+        "nom": "Erdre",
+        "description": "Quartier résidentiel verdoyant le long de la rivière Erdre. Cadre de vie exceptionnel, maisons bourgeoises, parcs et activités nautiques. Idéal pour les familles.",
+        "prix_m2": 4500,
+        "prix_moyen": 550000,
+        "caracteristiques": ["Résidentiel", "Verdoyant", "Rivière", "Familles"],
+        "population": "~25000 habitants",
+        "transports": "Tram 2, Bus, Pistes cyclables",
+        "attractivite": "Très haute",
+        "coords": "47.2350,-1.5450",
+        "tendance": "+3.8%"
+      },
+      {
+        "nom": "Chantenay",
+        "description": "Ancien village de pêcheurs sur les hauteurs de la Loire. Quartier bohème en plein essor avec ateliers d'artistes, bars branchés et vue panoramique. Prix encore accessibles.",
+        "prix_m2": 3400,
+        "prix_moyen": 320000,
+        "caracteristiques": ["Bohème", "Vue Loire", "Artistes", "En essor"],
+        "population": "~15000 habitants",
+        "transports": "Tram 1, Bus, Navibus",
+        "attractivite": "Haute",
+        "coords": "47.2050,-1.5900",
+        "tendance": "+6.5%"
+      },
+      {
+        "nom": "Hauts-Pavés / Saint-Félix",
+        "description": "Quartier familial prisé avec ses écoles réputées, ses commerces de proximité et son marché Talensac. Ambiance village en plein centre-ville.",
+        "prix_m2": 4300,
+        "prix_moyen": 480000,
+        "caracteristiques": ["Familial", "Marché Talensac", "Écoles", "Commerces"],
+        "population": "~20000 habitants",
+        "transports": "Tram 2, Bus, Vélo",
+        "attractivite": "Très haute",
+        "coords": "47.2250,-1.5630",
+        "tendance": "+3.5%"
+      },
+      {
+        "nom": "Doulon / Bottière",
+        "description": "Quartier en développement à l'est de Nantes. Écoquartier Bottière-Chénaie, logements neufs et espaces verts. Excellent rapport qualité-prix pour les primo-accédants.",
+        "prix_m2": 3100,
+        "prix_moyen": 280000,
+        "caracteristiques": ["Écoquartier", "Neuf", "Abordable", "Espaces verts"],
+        "population": "~22000 habitants",
+        "transports": "Tram 1, Bus, Chronobus",
+        "attractivite": "Moyenne à haute",
+        "coords": "47.2280,-1.5100",
+        "tendance": "+7.1%"
+      }
+    ]
+  },
+
+  "nandy": {
+    "city_name": "Nandy",
+    "city_slug": "nandy",
+    "city_region": "Île-de-France",
+    "city_departement": "Seine-et-Marne",
+    "city_code_postal": "77176",
+    "city_coords": "48.5800,2.5600",
+    "prix_m2_moyen": 3200,
+    "city_factor": 0.95,
+    "domain": "estimation-immobilier-nandy.fr",
+    "db_name": "estimation_immobilier_nandy",
+    "telephone": "+33164000000",
+    "colors": {
+      "primary": "#2E7D32",
+      "primary_dark": "#1B5E20",
+      "accent": "#FF8F00",
+      "accent_light": "#FFB300"
+    },
+    "quartiers": [
+      {
+        "nom": "Centre-Ville",
+        "description": "Coeur de Nandy avec ses commerces, la mairie et les équipements publics. Quartier animé, bien desservi, avec un mélange de pavillons et petits collectifs.",
+        "prix_m2": 3400,
+        "prix_moyen": 310000,
+        "caracteristiques": ["Central", "Commerces", "Services", "Bien desservi"],
+        "population": "~3000 habitants",
+        "transports": "RER D (Cesson), Bus, Routes",
+        "attractivite": "Haute",
+        "coords": "48.5810,2.5590",
+        "tendance": "+4.2%"
+      },
+      {
+        "nom": "Les Bois de Nandy",
+        "description": "Secteur résidentiel prisé bordé par la forêt de Sénart. Pavillons avec jardins, cadre verdoyant et calme. Idéal pour les familles recherchant la nature aux portes de Paris.",
+        "prix_m2": 3600,
+        "prix_moyen": 380000,
+        "caracteristiques": ["Résidentiel", "Forêt", "Calme", "Familles"],
+        "population": "~2500 habitants",
+        "transports": "Bus, Voiture, Pistes cyclables",
+        "attractivite": "Très haute",
+        "coords": "48.5850,2.5500",
+        "tendance": "+3.5%"
+      },
+      {
+        "nom": "Quartier de la Seine",
+        "description": "Secteur proche de la Seine offrant un cadre de vie agréable entre rivière et espaces verts. Pavillons et résidences récentes à prix compétitifs.",
+        "prix_m2": 3100,
+        "prix_moyen": 290000,
+        "caracteristiques": ["Bords de Seine", "Verdoyant", "Résidences récentes", "Accessible"],
+        "population": "~1800 habitants",
+        "transports": "Bus, Voiture",
+        "attractivite": "Moyenne à haute",
+        "coords": "48.5750,2.5650",
+        "tendance": "+5.1%"
+      },
+      {
+        "nom": "Quartier des Écoles",
+        "description": "Secteur familial autour des groupes scolaires. Résidences calmes, parcs de jeux et proximité des équipements sportifs. Très recherché par les jeunes familles.",
+        "prix_m2": 3300,
+        "prix_moyen": 320000,
+        "caracteristiques": ["Familial", "Écoles", "Sport", "Calme"],
+        "population": "~2000 habitants",
+        "transports": "Bus, Pistes cyclables",
+        "attractivite": "Haute",
+        "coords": "48.5820,2.5620",
+        "tendance": "+3.8%"
+      },
+      {
+        "nom": "Zone Parc d'Activités",
+        "description": "Secteur mixte avec zones d'activités et habitat. Logements neufs, bonne accessibilité routière (A5/Francilienne). Intéressant pour les actifs travaillant en zone d'activités.",
+        "prix_m2": 2900,
+        "prix_moyen": 260000,
+        "caracteristiques": ["Mixte", "Neuf", "Accessibilité", "Actifs"],
+        "population": "~1500 habitants",
+        "transports": "A5, Francilienne, Bus",
+        "attractivite": "Moyenne",
+        "coords": "48.5780,2.5700",
+        "tendance": "+4.5%"
+      },
+      {
+        "nom": "Quartier du Parc",
+        "description": "Secteur résidentiel autour du parc municipal. Environnement calme et verdoyant, pavillons avec jardins, vie de quartier agréable. Bon compromis qualité-prix.",
+        "prix_m2": 3200,
+        "prix_moyen": 300000,
+        "caracteristiques": ["Parc", "Résidentiel", "Verdoyant", "Qualité de vie"],
+        "population": "~1700 habitants",
+        "transports": "Bus, Voiture",
+        "attractivite": "Haute",
+        "coords": "48.5830,2.5550",
+        "tendance": "+3.2%"
+      }
+    ]
+  },
+
+  "angers": {
+    "city_name": "Angers",
+    "city_slug": "angers",
+    "city_region": "Pays de la Loire",
+    "city_departement": "Maine-et-Loire",
+    "city_code_postal": "49000",
+    "city_coords": "47.4784,-0.5632",
+    "prix_m2_moyen": 3200,
+    "city_factor": 0.92,
+    "domain": "estimation-immobilier-angers.fr",
+    "db_name": "estimation_immobilier_angers",
+    "telephone": "+33241000000",
+    "colors": {
+      "primary": "#4A148C",
+      "primary_dark": "#38006b",
+      "accent": "#FFD600",
+      "accent_light": "#FFEA00"
+    },
+    "quartiers": [
+      {
+        "nom": "Centre-Ville / Doutre",
+        "description": "Coeur historique d'Angers avec le château, la cathédrale et le quartier médiéval de la Doutre. Rues piétonnes, commerces, restaurants et vie culturelle intense.",
+        "prix_m2": 3800,
+        "prix_moyen": 320000,
+        "caracteristiques": ["Historique", "Château", "Piéton", "Culture"],
+        "population": "~15000 habitants",
+        "transports": "Tram A, Bus Irigo, Piéton",
+        "attractivite": "Très haute",
+        "coords": "47.4712,-0.5553",
+        "tendance": "+4.1%"
+      },
+      {
+        "nom": "Lac de Maine",
+        "description": "Quartier résidentiel prisé autour du lac de Maine. Cadre de vie exceptionnel entre nature et ville, activités nautiques et de plein air. Très recherché par les familles.",
+        "prix_m2": 3500,
+        "prix_moyen": 420000,
+        "caracteristiques": ["Lac", "Nature", "Sport", "Familles"],
+        "population": "~12000 habitants",
+        "transports": "Bus Irigo, Pistes cyclables",
+        "attractivite": "Très haute",
+        "coords": "47.4600,-0.5800",
+        "tendance": "+3.6%"
+      },
+      {
+        "nom": "Belle-Beille",
+        "description": "Quartier universitaire dynamique en pleine rénovation urbaine. Campus, résidences étudiantes et logements rénovés. Prix attractifs et fort potentiel de valorisation.",
+        "prix_m2": 2600,
+        "prix_moyen": 220000,
+        "caracteristiques": ["Universitaire", "Rénovation", "Dynamique", "Abordable"],
+        "population": "~18000 habitants",
+        "transports": "Tram A, Bus Irigo",
+        "attractivite": "Moyenne à haute",
+        "coords": "47.4750,-0.5900",
+        "tendance": "+6.8%"
+      },
+      {
+        "nom": "Saint-Serge / Ney",
+        "description": "Quartier d'affaires moderne le long de la Maine. Pôle tertiaire, écoles de commerce (ESSCA), restaurants et espaces verts. Mélange réussi de bureaux et d'habitat.",
+        "prix_m2": 3400,
+        "prix_moyen": 300000,
+        "caracteristiques": ["Affaires", "Moderne", "Maine", "Tertiaire"],
+        "population": "~10000 habitants",
+        "transports": "Tram A, Bus, Gare proche",
+        "attractivite": "Haute",
+        "coords": "47.4850,-0.5500",
+        "tendance": "+4.5%"
+      },
+      {
+        "nom": "Madeleine / Saint-Léonard",
+        "description": "Quartier résidentiel calme et familial avec de belles maisons de caractère. Proximité du parc de la Garenne et ambiance village. Excellent cadre de vie.",
+        "prix_m2": 3200,
+        "prix_moyen": 350000,
+        "caracteristiques": ["Résidentiel", "Calme", "Maisons de caractère", "Parc"],
+        "population": "~14000 habitants",
+        "transports": "Bus Irigo, Vélo",
+        "attractivite": "Haute",
+        "coords": "47.4650,-0.5400",
+        "tendance": "+3.2%"
+      },
+      {
+        "nom": "Monplaisir",
+        "description": "Quartier en pleine transformation avec le projet de renouvellement urbain. Logements neufs, commerces et équipements publics. Opportunités d'investissement intéressantes.",
+        "prix_m2": 2400,
+        "prix_moyen": 200000,
+        "caracteristiques": ["Renouveau urbain", "Neuf", "Investissement", "Équipements"],
+        "population": "~16000 habitants",
+        "transports": "Tram A, Bus Irigo",
+        "attractivite": "Moyenne",
+        "coords": "47.4900,-0.5350",
+        "tendance": "+7.5%"
+      }
+    ]
+  },
+
+  "lannion": {
+    "city_name": "Lannion",
+    "city_slug": "lannion",
+    "city_region": "Bretagne",
+    "city_departement": "Côtes-d'Armor",
+    "city_code_postal": "22300",
+    "city_coords": "48.7322,-3.4590",
+    "prix_m2_moyen": 2100,
+    "city_factor": 0.72,
+    "domain": "estimation-immobilier-lannion.fr",
+    "db_name": "estimation_immobilier_lannion",
+    "telephone": "+33296000000",
+    "colors": {
+      "primary": "#0D47A1",
+      "primary_dark": "#0A3570",
+      "accent": "#00BFA5",
+      "accent_light": "#1DE9B6"
+    },
+    "quartiers": [
+      {
+        "nom": "Centre Historique",
+        "description": "Coeur médiéval de Lannion avec ses maisons à colombages, ses escaliers de Brélévenez et ses places animées. Charme authentique breton, commerces et marchés.",
+        "prix_m2": 2400,
+        "prix_moyen": 200000,
+        "caracteristiques": ["Médiéval", "Colombages", "Patrimoine", "Marché"],
+        "population": "~5000 habitants",
+        "transports": "Bus TILT, Centre piéton",
+        "attractivite": "Haute",
+        "coords": "48.7320,-3.4580",
+        "tendance": "+3.8%"
+      },
+      {
+        "nom": "Brélévenez",
+        "description": "Quartier historique sur les hauteurs avec son église romane et ses 142 marches. Vue panoramique sur la vallée du Léguer. Maisons de caractère et ambiance paisible.",
+        "prix_m2": 2200,
+        "prix_moyen": 220000,
+        "caracteristiques": ["Historique", "Vue panoramique", "Église romane", "Calme"],
+        "population": "~3000 habitants",
+        "transports": "Bus TILT, Piéton",
+        "attractivite": "Haute",
+        "coords": "48.7350,-3.4550",
+        "tendance": "+3.2%"
+      },
+      {
+        "nom": "Servel / Technopole",
+        "description": "Secteur dynamique autour du technopole Anticipa. Pôle télécom historique (Orange, Nokia), logements récents et campus universitaire. Attractif pour les ingénieurs et chercheurs.",
+        "prix_m2": 2300,
+        "prix_moyen": 250000,
+        "caracteristiques": ["Technopole", "Innovation", "Campus", "Moderne"],
+        "population": "~4000 habitants",
+        "transports": "Bus TILT, Voiture",
+        "attractivite": "Haute",
+        "coords": "48.7450,-3.4700",
+        "tendance": "+4.5%"
+      },
+      {
+        "nom": "Loguivy-lès-Lannion",
+        "description": "Ancien village rattaché à Lannion, ambiance rurale préservée. Maisons en pierre, jardins et proximité de la campagne bretonne. Idéal pour ceux cherchant le calme.",
+        "prix_m2": 1800,
+        "prix_moyen": 180000,
+        "caracteristiques": ["Rural", "Pierre", "Calme", "Nature"],
+        "population": "~2500 habitants",
+        "transports": "Bus TILT, Voiture",
+        "attractivite": "Moyenne",
+        "coords": "48.7200,-3.4400",
+        "tendance": "+5.2%"
+      },
+      {
+        "nom": "Ker Uhel / Pouldiguy",
+        "description": "Quartier résidentiel avec équipements sportifs et parc de loisirs. Pavillons récents, commerces de proximité et vie de quartier active. Bon rapport qualité-prix.",
+        "prix_m2": 2000,
+        "prix_moyen": 210000,
+        "caracteristiques": ["Résidentiel", "Sport", "Loisirs", "Familles"],
+        "population": "~3500 habitants",
+        "transports": "Bus TILT, Pistes cyclables",
+        "attractivite": "Moyenne à haute",
+        "coords": "48.7280,-3.4650",
+        "tendance": "+3.5%"
+      },
+      {
+        "nom": "Beg Léguer / Côte",
+        "description": "Secteur côtier entre Lannion et la mer. Proximité des plages de la Côte de Granit Rose. Résidences principales et secondaires, cadre exceptionnel entre terre et mer.",
+        "prix_m2": 2600,
+        "prix_moyen": 280000,
+        "caracteristiques": ["Côtier", "Plages", "Granit Rose", "Cadre exceptionnel"],
+        "population": "~2000 habitants",
+        "transports": "Voiture, Bus saisonnier",
+        "attractivite": "Très haute",
+        "coords": "48.7500,-3.5000",
+        "tendance": "+5.8%"
+      }
+    ]
+  }
+}

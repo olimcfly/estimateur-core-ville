@@ -26,6 +26,8 @@ $router->post('/admin/login', [AuthController::class, 'login']);
 $router->get('/admin/logout', [AuthController::class, 'logout']);
 $router->get('/admin/diagnostic', [AuthController::class, 'diagnostic']);
 $router->get('/admin/test-smtp', [AuthController::class, 'testSmtp']);
+$router->post('/admin/test-smtp/run', [AuthController::class, 'testSmtpRun']);
+$router->post('/admin/test-smtp/send', [AuthController::class, 'testSmtpSendEmail']);
 
 // Protected admin routes
 $router->get('/admin/leads', [EstimationController::class, 'leads']);

@@ -439,6 +439,9 @@
     <a href="/admin/test-smtp" class="admin-sidebar-link <?= $current === 'smtp' ? 'active' : '' ?>">
       <i class="fas fa-envelope-circle-check"></i> Test SMTP
     </a>
+    <a href="/admin/api-management" class="admin-sidebar-link <?= $current === 'api-management' ? 'active' : '' ?>">
+      <i class="fas fa-plug"></i> Gestion API
+    </a>
     <a href="/" class="admin-sidebar-link" target="_blank">
       <i class="fas fa-external-link-alt"></i> Voir le site
     </a>

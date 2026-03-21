@@ -7,8 +7,6 @@ namespace App\Controllers;
 use App\Core\Config;
 use App\Core\Database;
 use App\Core\View;
-use App\Models\Lead;
-use App\Models\Article;
 use PDO;
 
 final class AdminDashboardController
@@ -18,6 +16,24 @@ final class AdminDashboardController
         AuthController::requireAuth();
 
         $stats = [];
+        $stats = [
+            'total_leads' => 0,
+            'new_leads_today' => 0,
+            'hot_leads' => 0,
+            'leads_tiede' => 0,
+            'leads_froid' => 0,
+            'pending_leads' => 0,
+            'total_articles' => 0,
+            'draft_articles' => 0,
+            'pipeline' => [],
+            'revenu_gagne' => 0.0,
+            'ca_projete' => 0.0,
+            'valeur_portefeuille' => 0.0,
+            'commission_potentielle' => 0.0,
+            'taux_conversion' => 0,
+            'funnel' => [],
+            'leads_par_mois' => [],
+        ];
         $recentLeads = [];
         $dbError = null;
 
@@ -76,6 +92,50 @@ final class AdminDashboardController
 
             // Valeur totale du portefeuille (estimations des leads actifs)
             $stmt = $pdo->prepare('SELECT COALESCE(SUM(estimation), 0) as total FROM leads WHERE website_id = :wid AND lead_type = :lt AND statut NOT IN ("assigne_autre")');
+
+            // New leads today
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM leads WHERE website_id = :wid AND lead_type = :lt AND DATE(created_at) = CURDATE()');
+            $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
+            $stats['new_leads_today'] = (int) $stmt->fetchColumn();
+
+            // Leads par score
+            $stmt = $pdo->prepare('SELECT score, COUNT(*) as cnt FROM leads WHERE website_id = :wid AND lead_type = :lt GROUP BY score');
+            $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
+            $scoreData = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+            $stats['hot_leads'] = (int) ($scoreData['chaud'] ?? 0);
+            $stats['leads_tiede'] = (int) ($scoreData['tiede'] ?? 0);
+            $stats['leads_froid'] = (int) ($scoreData['froid'] ?? 0);
+
+            // Leads par statut (pipeline)
+            $stmt = $pdo->prepare('SELECT statut, COUNT(*) as cnt FROM leads WHERE website_id = :wid AND lead_type = :lt GROUP BY statut');
+            $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
+            $statutData = $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+            $stats['pipeline'] = $statutData;
+            $stats['pending_leads'] = (int) ($statutData['nouveau'] ?? 0);
+
+            // Article stats
+            if (Database::tableExists('articles')) {
+                $stmt = $pdo->prepare('SELECT COUNT(*) FROM articles WHERE website_id = :wid');
+                $stmt->execute([':wid' => $websiteId]);
+                $stats['total_articles'] = (int) $stmt->fetchColumn();
+
+                $stmt = $pdo->prepare('SELECT COUNT(*) FROM articles WHERE website_id = :wid AND status = :st');
+                $stmt->execute([':wid' => $websiteId, ':st' => 'draft']);
+                $stats['draft_articles'] = (int) $stmt->fetchColumn();
+            }
+
+            // CA signe (revenu gagne)
+            $stmt = $pdo->prepare('SELECT COALESCE(SUM(commission_montant), 0) FROM leads WHERE website_id = :wid AND statut = :st AND commission_montant IS NOT NULL');
+            $stmt->execute([':wid' => $websiteId, ':st' => 'signe']);
+            $stats['revenu_gagne'] = (float) $stmt->fetchColumn();
+
+            // CA projete (mandats en cours)
+            $stmt = $pdo->prepare('SELECT COALESCE(SUM(commission_montant), 0) FROM leads WHERE website_id = :wid AND statut IN ("mandat_simple","mandat_exclusif","compromis_vente","co_signature_partenaire") AND commission_montant IS NOT NULL');
+            $stmt->execute([':wid' => $websiteId]);
+            $stats['ca_projete'] = (float) $stmt->fetchColumn();
+
+            // Valeur totale du portefeuille
+            $stmt = $pdo->prepare('SELECT COALESCE(SUM(estimation), 0) FROM leads WHERE website_id = :wid AND lead_type = :lt AND statut NOT IN ("assigne_autre")');
             $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
             $stats['valeur_portefeuille'] = (float) $stmt->fetchColumn();
 
@@ -107,6 +167,33 @@ final class AdminDashboardController
             $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
             $recentLeads = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
+            $stmt = $pdo->prepare('SELECT COALESCE(SUM(COALESCE(commission_montant, estimation * COALESCE(commission_taux, 3) / 100)), 0) FROM leads WHERE website_id = :wid AND lead_type = :lt AND statut NOT IN ("assigne_autre","signe")');
+            $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
+            $stats['commission_potentielle'] = (float) $stmt->fetchColumn();
+
+            // Taux de conversion global
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM leads WHERE website_id = :wid AND lead_type = :lt AND statut IN ("signe","co_signature_partenaire")');
+            $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
+            $signes = (int) $stmt->fetchColumn();
+            $stats['taux_conversion'] = $stats['total_leads'] > 0 ? round(($signes / $stats['total_leads']) * 100, 1) : 0;
+
+            // Taux par etape (funnel)
+            $pipelineOrder = [
+                'nouveau', 'contacte', 'rdv_pris', 'visite_realisee',
+                'mandat_simple', 'mandat_exclusif', 'compromis_vente',
+                'signe', 'co_signature_partenaire',
+            ];
+            $funnel = [];
+            foreach ($pipelineOrder as $step) {
+                $funnel[$step] = (int) ($statutData[$step] ?? 0);
+            }
+            $stats['funnel'] = $funnel;
+
+            // Leads recents
+            $stmt = $pdo->prepare('SELECT id, nom, email, telephone, ville, estimation, score, statut, created_at FROM leads WHERE website_id = :wid AND lead_type = :lt ORDER BY created_at DESC LIMIT 10');
+            $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
+            $recentLeads = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
             // Leads par mois (6 derniers mois)
             $stmt = $pdo->prepare("SELECT DATE_FORMAT(created_at, '%Y-%m') as mois, COUNT(*) as cnt FROM leads WHERE website_id = :wid AND lead_type = :lt AND created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY mois ORDER BY mois ASC");
             $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
@@ -114,6 +201,10 @@ final class AdminDashboardController
         } catch (\Throwable $e) {
             error_log('Dashboard DB error: ' . $e->getMessage());
             $dbError = 'Erreur base de données : vérifiez que les tables existent. Exécutez "php database/migrate.php" si nécessaire.';
+
+        } catch (\Throwable $e) {
+            error_log('Admin dashboard DB error: ' . $e->getMessage());
+            $dbError = 'Base de données indisponible. Vérifiez la connexion dans la page Diagnostic.';
         }
 
         View::renderAdmin('admin/dashboard', [
@@ -131,9 +222,6 @@ final class AdminDashboardController
     {
         AuthController::requireAuth();
 
-        $pdo = Database::connection();
-        $websiteId = (int) Config::get('website.id', 1);
-
         $pipelineData = [];
         $total = 0;
         $totalValeur = 0;
@@ -144,6 +232,9 @@ final class AdminDashboardController
         $dbError = null;
 
         try {
+            $pdo = Database::connection();
+            $websiteId = (int) Config::get('website.id', 1);
+
             // Full pipeline data with estimation values and commission
             $stmt = $pdo->prepare(
                 'SELECT statut, COUNT(*) as cnt, COALESCE(SUM(estimation), 0) as valeur,
@@ -191,9 +282,9 @@ final class AdminDashboardController
             );
             $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
             $monthlyData = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-        } catch (\PDOException $e) {
+        } catch (\Throwable $e) {
             error_log('Funnel DB error: ' . $e->getMessage());
-            $dbError = 'Erreur base de données : la table "leads" est peut-être absente. Exécutez "php database/migrate.php" pour créer les tables manquantes.';
+            $dbError = 'Erreur base de données. Vérifiez la connexion dans la page Diagnostic.';
         }
 
         View::renderAdmin('admin/funnel', [
@@ -220,6 +311,10 @@ final class AdminDashboardController
         $leads = [];
         $totalValeur = 0;
         $totalCommission = 0;
+        $leads = [];
+        $totalValeur = 0;
+        $totalCommission = 0;
+        $defaultRate = (float) Config::get('portfolio.default_commission_rate', 3.0);
         $dbError = null;
 
         try {
@@ -267,6 +362,7 @@ final class AdminDashboardController
         } catch (\Throwable $e) {
             error_log('Portfolio DB error: ' . $e->getMessage());
             $dbError = 'Erreur base de données : la table "leads" est peut-être absente ou incomplète. Exécutez "php database/migrate.php" pour créer les tables manquantes.';
+            $dbError = 'Base de données indisponible. Vérifiez la connexion dans la page Diagnostic.';
         }
 
         View::renderAdmin('admin/portfolio', [
@@ -285,9 +381,16 @@ final class AdminDashboardController
     public function updateCommissionRate(): void
     {
         AuthController::requireAuth();
-        AuthController::verifyCsrfToken();
 
         header('Content-Type: application/json; charset=utf-8');
+
+        $csrfToken = (string) ($_POST['csrf_token'] ?? '');
+        $sessionToken = $_SESSION['csrf_token'] ?? '';
+        if ($sessionToken === '' || $csrfToken === '' || !hash_equals($sessionToken, $csrfToken)) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Token CSRF invalide']);
+            return;
+        }
 
         $id = (int) ($_POST['id'] ?? 0);
         $rate = (float) ($_POST['commission_taux'] ?? 0);
@@ -297,7 +400,7 @@ final class AdminDashboardController
             return;
         }
 
-        $lead = new Lead();
+        $lead = new \App\Models\Lead();
         $updated = $lead->updateLeadDetails($id, ['commission_taux' => $rate]);
 
         echo json_encode(['success' => $updated]);

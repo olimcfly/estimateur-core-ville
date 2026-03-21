@@ -13,6 +13,7 @@ use App\Controllers\AdminLeadController;
 use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
+use App\Controllers\AdminApiController;
 use App\Controllers\AdminSocialImageController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
@@ -141,3 +142,8 @@ $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 
 // Admin: Google Ads guide & best practices
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
+
+// Admin API management routes
+$router->get('/admin/api-management', [AdminApiController::class, 'index']);
+$router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
+$router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);

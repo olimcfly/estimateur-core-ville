@@ -388,13 +388,8 @@ final class AuthController
 
     public function testSmtp(): void
     {
-        header('Content-Type: text/plain; charset=utf-8');
+        self::requireAuth();
 
-        $checks = [];
-        $checks[] = '=== Test SMTP ===';
-        $checks[] = '';
-
-        // 1. Config
         $smtpHost = (string) Config::get('mail.smtp_host');
         $smtpPort = (int) Config::get('mail.smtp_port', 587);
         $smtpUser = (string) Config::get('mail.smtp_user');
@@ -403,36 +398,59 @@ final class AuthController
         $mailFrom = (string) Config::get('mail.from', '');
         $mailFromName = (string) Config::get('mail.from_name', '');
 
-        $checks[] = '1. Configuration SMTP :';
-        $checks[] = '   Host       : ' . ($smtpHost !== '' ? $smtpHost : '(VIDE - non configure)');
-        $checks[] = '   Port       : ' . $smtpPort;
-        $checks[] = '   User       : ' . ($smtpUser !== '' ? $smtpUser : '(VIDE)');
-        $checks[] = '   Pass       : ' . ($smtpPass !== '' ? '(defini)' : '(VIDE)');
-        $checks[] = '   Encryption : ' . $smtpEnc;
-        $checks[] = '   From       : ' . $mailFrom;
-        $checks[] = '   From Name  : ' . $mailFromName;
+        View::renderAdmin('admin/test-smtp', [
+            'admin_page'  => 'smtp',
+            'page_title'  => 'Test SMTP',
+            'breadcrumb'  => [['label' => 'Outils'], ['label' => 'Test SMTP']],
+            'smtp_host'   => $smtpHost,
+            'smtp_port'   => $smtpPort,
+            'smtp_user'   => $smtpUser,
+            'smtp_pass'   => $smtpPass !== '' ? '(defini)' : '(vide)',
+            'smtp_enc'    => $smtpEnc,
+            'mail_from'   => $mailFrom,
+            'mail_from_name' => $mailFromName,
+        ]);
+    }
+
+    public function testSmtpRun(): void
+    {
+        self::requireAuth();
+        header('Content-Type: application/json; charset=utf-8');
+
+        $smtpHost = (string) Config::get('mail.smtp_host');
+        $smtpPort = (int) Config::get('mail.smtp_port', 587);
+        $smtpUser = (string) Config::get('mail.smtp_user');
+        $smtpPass = (string) Config::get('mail.smtp_pass');
+        $smtpEnc = (string) Config::get('mail.smtp_encryption', 'tls');
+
+        $steps = [];
+
+        // Step 1: Config check
+        $steps[] = [
+            'label' => 'Configuration SMTP',
+            'status' => $smtpHost !== '' ? 'ok' : 'error',
+            'detail' => $smtpHost !== '' ? "Host: $smtpHost | Port: $smtpPort | Encryption: $smtpEnc" : 'MAIL_SMTP_HOST est vide dans .env',
+        ];
 
         if ($smtpHost === '') {
-            $checks[] = '';
-            $checks[] = 'ERREUR : MAIL_SMTP_HOST est vide dans .env';
-            $checks[] = 'Configurez vos identifiants SMTP dans le fichier .env';
-            echo implode("\n", $checks) . "\n";
+            echo json_encode(['success' => false, 'steps' => $steps]);
             return;
         }
 
-        // 2. PHPMailer
-        $checks[] = '';
-        $checks[] = '2. PHPMailer :';
-        if (!class_exists(\PHPMailer\PHPMailer\PHPMailer::class)) {
-            $checks[] = '   ABSENT - Executez "composer install"';
-            echo implode("\n", $checks) . "\n";
+        // Step 2: PHPMailer check
+        $phpmailerOk = class_exists(\PHPMailer\PHPMailer\PHPMailer::class);
+        $steps[] = [
+            'label' => 'PHPMailer',
+            'status' => $phpmailerOk ? 'ok' : 'error',
+            'detail' => $phpmailerOk ? 'Installe et disponible' : 'Absent - Executez "composer install"',
+        ];
+
+        if (!$phpmailerOk) {
+            echo json_encode(['success' => false, 'steps' => $steps]);
             return;
         }
-        $checks[] = '   OK (installe)';
 
-        // 3. Test connexion SMTP
-        $checks[] = '';
-        $checks[] = '3. Test connexion SMTP :';
+        // Step 3: SMTP connection
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
         try {
             $mail->isSMTP();
@@ -444,7 +462,6 @@ final class AuthController
             $mail->Timeout = 10;
             $mail->SMTPDebug = 0;
 
-            // Port 465 = SSL implicite, sinon STARTTLS
             if ($smtpPort === 465) {
                 $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
             } elseif ($smtpEnc === 'tls' || $smtpPort === 587) {
@@ -457,39 +474,49 @@ final class AuthController
             $mail->smtpConnect();
             $mail->smtpClose();
 
-            $checks[] = '   Statut : OK - Connexion SMTP reussie !';
+            $steps[] = [
+                'label' => 'Connexion SMTP',
+                'status' => 'ok',
+                'detail' => 'Connexion reussie !',
+            ];
+
+            echo json_encode(['success' => true, 'steps' => $steps]);
         } catch (\Throwable $e) {
-            $checks[] = '   Statut : ECHEC';
-            $checks[] = '   Erreur : ' . $e->getMessage();
-            $checks[] = '';
-
-            // Analyse automatique via diagnose()
             $diagnostics = Mailer::diagnose(['error_message' => $e->getMessage()]);
-            if (!empty($diagnostics)) {
-                $checks[] = 'Analyse automatique :';
-                foreach ($diagnostics as $issue) {
-                    $checks[] = '   ' . $issue;
-                }
-                $checks[] = '';
-            }
-
-            $checks[] = 'Verifiez vos identifiants SMTP dans .env :';
-            $checks[] = '   MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_SMTP_USER, MAIL_SMTP_PASS';
-
+            $advice = '';
             if (str_contains($e->getMessage(), 'Could not authenticate')) {
-                $checks[] = '';
-                $checks[] = 'CONSEIL : Identifiants incorrects. Verifiez username/password.';
-                $checks[] = 'Si vous utilisez Gmail, creez un "mot de passe d\'application" :';
-                $checks[] = '   https://myaccount.google.com/apppasswords';
+                $advice = 'Identifiants incorrects. Verifiez username/password.';
             } elseif (str_contains($e->getMessage(), 'connect()') || str_contains($e->getMessage(), 'Connection')) {
-                $checks[] = '';
-                $checks[] = 'CONSEIL : Impossible de se connecter au serveur SMTP.';
-                $checks[] = 'Verifiez le host et le port (587 pour TLS, 465 pour SSL).';
+                $advice = 'Impossible de se connecter. Verifiez le host et le port (587 pour TLS, 465 pour SSL).';
             }
+
+            $steps[] = [
+                'label' => 'Connexion SMTP',
+                'status' => 'error',
+                'detail' => $e->getMessage(),
+                'diagnostics' => $diagnostics,
+                'advice' => $advice,
+            ];
+
+            echo json_encode(['success' => false, 'steps' => $steps]);
+        }
+    }
+
+    public function testSmtpSendEmail(): void
+    {
+        self::requireAuth();
+        header('Content-Type: application/json; charset=utf-8');
+
+        $to = trim($_POST['to'] ?? '');
+        if ($to === '' || !filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['success' => false, 'error' => 'Adresse email invalide.']);
+            return;
         }
 
-        $checks[] = '';
-        $checks[] = '=== Test termine ===';
-        echo implode("\n", $checks) . "\n";
+        $subject = 'Test SMTP - Estimation Immobilier Bordeaux';
+        $body = '<h2>Test SMTP</h2><p>Ce message confirme que la configuration SMTP fonctionne correctement.</p><p><small>Envoye depuis l\'interface d\'administration.</small></p>';
+
+        $result = Mailer::send($to, $subject, $body);
+        echo json_encode(['success' => $result, 'error' => $result ? '' : 'Echec de l\'envoi. Consultez les logs pour plus de details.']);
     }
 }

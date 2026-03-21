@@ -426,8 +426,8 @@
                   if ($pieces) $bienInfo .= ' &middot; ' . (int) $pieces . 'p';
               }
             ?>
-            <tr>
-              <td><?= (int) $lead['id'] ?></td>
+            <tr style="cursor:pointer;" onclick="window.location='/admin/leads/detail?id=<?= (int) $lead['id'] ?>'">
+              <td><a href="/admin/leads/detail?id=<?= (int) $lead['id'] ?>" style="color:var(--admin-primary);font-weight:600;text-decoration:none;">#<?= (int) $lead['id'] ?></a></td>
               <td>
                 <?php if ($isTendance): ?>
                   <span class="badge-type badge-tendance"><i class="fas fa-chart-line"></i> Tendance</span>

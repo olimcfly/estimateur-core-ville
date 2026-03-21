@@ -205,6 +205,14 @@ final class AuthController
 
     public static function requireAuth(): void
     {
+        if (self::isDevSkipAuth()) {
+            // Auto-login en mode développeur
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_user_email'] = 'dev@localhost';
+            $_SESSION['admin_user_name'] = 'Dev Admin';
+            return;
+        }
+
         if (empty($_SESSION['admin_logged_in'])) {
             header('Location: /admin/login');
             exit;
@@ -213,7 +221,19 @@ final class AuthController
 
     public static function isLoggedIn(): bool
     {
+        if (self::isDevSkipAuth()) {
+            return true;
+        }
         return !empty($_SESSION['admin_logged_in']);
+    }
+
+    /**
+     * Vérifie si le mode développeur sans authentification est activé.
+     */
+    private static function isDevSkipAuth(): bool
+    {
+        $value = $_ENV['DEV_SKIP_AUTH'] ?? $_SERVER['DEV_SKIP_AUTH'] ?? 'false';
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     public static function generateCsrfToken(): string
@@ -360,9 +380,18 @@ final class AuthController
             $mail->SMTPAuth = true;
             $mail->Username = $smtpUser;
             $mail->Password = $smtpPass;
-            $mail->SMTPSecure = $smtpEnc;
             $mail->Timeout = 10;
             $mail->SMTPDebug = 0;
+
+            // Port 465 = SSL implicite, sinon STARTTLS
+            if ($smtpPort === 465) {
+                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            } elseif ($smtpEnc === 'tls' || $smtpPort === 587) {
+                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            } else {
+                $mail->SMTPSecure = $smtpEnc;
+            }
+            $mail->AuthType = '';
 
             $mail->smtpConnect();
             $mail->smtpClose();
@@ -372,6 +401,17 @@ final class AuthController
             $checks[] = '   Statut : ECHEC';
             $checks[] = '   Erreur : ' . $e->getMessage();
             $checks[] = '';
+
+            // Analyse automatique via diagnose()
+            $diagnostics = Mailer::diagnose(['error_message' => $e->getMessage()]);
+            if (!empty($diagnostics)) {
+                $checks[] = 'Analyse automatique :';
+                foreach ($diagnostics as $issue) {
+                    $checks[] = '   ' . $issue;
+                }
+                $checks[] = '';
+            }
+
             $checks[] = 'Verifiez vos identifiants SMTP dans .env :';
             $checks[] = '   MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_SMTP_USER, MAIL_SMTP_PASS';
 

@@ -142,12 +142,30 @@ final class AdminDashboardController
         $pdo = Database::connection();
         $websiteId = (int) Config::get('website.id', 1);
 
+        // Check if partenaires table exists before attempting JOIN
+        $hasPartenaires = Database::tableExists('partenaires');
+        $hasPartenaireId = false;
+        if ($hasPartenaires) {
+            $colCheck = $pdo->prepare(
+                'SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :t AND COLUMN_NAME = :c'
+            );
+            $colCheck->execute([':t' => 'leads', ':c' => 'partenaire_id']);
+            $hasPartenaireId = (int) $colCheck->fetchColumn() > 0;
+        }
+
         // Active leads with portfolio data
-        $stmt = $pdo->prepare('SELECT l.*, p.nom as partenaire_nom, p.entreprise as partenaire_entreprise
-                FROM leads l
-                LEFT JOIN partenaires p ON l.partenaire_id = p.id
-                WHERE l.website_id = :wid AND l.lead_type = :lt AND l.statut NOT IN ("assigne_autre")
-                ORDER BY l.estimation DESC');
+        if ($hasPartenaires && $hasPartenaireId) {
+            $stmt = $pdo->prepare('SELECT l.*, p.nom as partenaire_nom, p.entreprise as partenaire_entreprise
+                    FROM leads l
+                    LEFT JOIN partenaires p ON l.partenaire_id = p.id
+                    WHERE l.website_id = :wid AND l.lead_type = :lt AND l.statut NOT IN ("assigne_autre")
+                    ORDER BY l.estimation DESC');
+        } else {
+            $stmt = $pdo->prepare('SELECT l.*, NULL as partenaire_nom, NULL as partenaire_entreprise
+                    FROM leads l
+                    WHERE l.website_id = :wid AND l.lead_type = :lt AND l.statut NOT IN ("assigne_autre")
+                    ORDER BY l.estimation DESC');
+        }
         $stmt->execute([':wid' => $websiteId, ':lt' => 'qualifie']);
         $leads = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 

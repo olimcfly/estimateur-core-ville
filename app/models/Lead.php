@@ -145,6 +145,14 @@ final class Lead
         return $row ?: null;
     }
 
+    public function deleteById(int $id): bool
+    {
+        $sql = 'DELETE FROM leads WHERE id = :id AND website_id = :website_id';
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([':id' => $id, ':website_id' => $this->websiteId()]);
+        return $stmt->rowCount() > 0;
+    }
+
     private function websiteId(): int
     {
         return (int) Config::get('website.id', 1);

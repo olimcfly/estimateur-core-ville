@@ -13,6 +13,7 @@ use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\AdminDashboardController;
+use App\Controllers\AdminLeadController;
 use App\Controllers\AdminPartenaireController;
 use App\Controllers\ToolController;
 
@@ -34,8 +35,14 @@ $router->post('/admin/test-smtp/reset', [AuthController::class, 'testSmtpReset']
 $router->post('/admin/test-smtp/run', [AuthController::class, 'testSmtpRun']);
 $router->post('/admin/test-smtp/send', [AuthController::class, 'testSmtpSendEmail']);
 
-// Protected admin routes
-$router->get('/admin/leads', [EstimationController::class, 'leads']);
+// Admin lead management routes
+$router->get('/admin/leads', [AdminLeadController::class, 'index']);
+$router->get('/admin/leads/detail', [AdminLeadController::class, 'show']);
+$router->get('/admin/leads/edit', [AdminLeadController::class, 'edit']);
+$router->post('/admin/leads/update', [AdminLeadController::class, 'update']);
+$router->post('/admin/leads/add-note', [AdminLeadController::class, 'addNote']);
+$router->post('/admin/leads/delete-note', [AdminLeadController::class, 'deleteNote']);
+$router->post('/admin/leads/delete', [AdminLeadController::class, 'delete']);
 
 $router->get('/services', [PageController::class, 'services']);
 $router->get('/about', [PageController::class, 'about']);
@@ -108,4 +115,4 @@ $router->post('/admin/partenaires/save', [AdminPartenaireController::class, 'sav
 $router->post('/admin/partenaires/delete', [AdminPartenaireController::class, 'delete']);
 
 // Admin lead status update
-$router->post('/admin/leads/update-statut', [EstimationController::class, 'updateLeadStatut']);
+$router->post('/admin/leads/update-statut', [AdminLeadController::class, 'updateStatut']);

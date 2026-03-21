@@ -372,6 +372,17 @@ final class AuthController
             $checks[] = '   Statut : ECHEC';
             $checks[] = '   Erreur : ' . $e->getMessage();
             $checks[] = '';
+
+            // Analyse automatique via diagnose()
+            $diagnostics = Mailer::diagnose(['error_message' => $e->getMessage()]);
+            if (!empty($diagnostics)) {
+                $checks[] = 'Analyse automatique :';
+                foreach ($diagnostics as $issue) {
+                    $checks[] = '   ' . $issue;
+                }
+                $checks[] = '';
+            }
+
             $checks[] = 'Verifiez vos identifiants SMTP dans .env :';
             $checks[] = '   MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_SMTP_USER, MAIL_SMTP_PASS';
 

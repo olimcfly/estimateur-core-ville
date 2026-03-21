@@ -100,6 +100,9 @@ final class Article
 
     public function update(int $id, array $data): void
     {
+        $connection = Database::connection();
+        $this->createRevisionSnapshot($id, $connection);
+
         $sql = 'UPDATE articles
                 SET title = :title,
                     slug = :slug,
@@ -112,7 +115,7 @@ final class Article
                 WHERE id = :id
                   AND website_id = :website_id';
 
-        $stmt = Database::connection()->prepare($sql);
+        $stmt = $connection->prepare($sql);
         $stmt->execute([
             ':id' => $id,
             ':website_id' => $this->websiteId(),

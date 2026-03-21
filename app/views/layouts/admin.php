@@ -384,12 +384,25 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-section-title">Communication</div>
+      <a href="/admin/emails" class="sidebar-link <?= $currentPage === 'emails' ? 'active' : '' ?>">
+        <i class="fas fa-envelope"></i> Emails
+      </a>
+      <a href="/admin/sequences" class="sidebar-link <?= $currentPage === 'sequences' ? 'active' : '' ?>">
+        <i class="fas fa-project-diagram"></i> S&eacute;quences
+      </a>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-section-title">Outils</div>
+      <a href="/admin/database" class="sidebar-link <?= $currentPage === 'database' ? 'active' : '' ?>">
+        <i class="fas fa-database"></i> Base de donn&eacute;es
+      </a>
       <a href="/admin/diagnostic" class="sidebar-link <?= $currentPage === 'diagnostic' ? 'active' : '' ?>" target="_blank">
         <i class="fas fa-stethoscope"></i> Diagnostic DB
       </a>
       <a href="/admin/test-smtp" class="sidebar-link <?= $currentPage === 'smtp' ? 'active' : '' ?>" target="_blank">
-        <i class="fas fa-envelope"></i> Test SMTP
+        <i class="fas fa-envelope-open-text"></i> Test SMTP
       </a>
       <a href="/" class="sidebar-link" target="_blank">
         <i class="fas fa-external-link-alt"></i> Voir le site

@@ -121,4 +121,8 @@ $router->post('/admin/social-images/save', [AdminSocialImageController::class, '
 $router->post('/admin/social-images/delete', [AdminSocialImageController::class, 'delete']);
 
 // Admin lead status update
-$router->post('/admin/leads/update-statut', [AdminLeadController::class, 'updateStatut']);
+$router->post('/admin/leads/update-statut', [EstimationController::class, 'updateLeadStatut']);
+$router->post('/admin/leads/update-inline', [EstimationController::class, 'updateLeadInline']);
+
+// Admin pipeline view
+$router->get('/admin/pipeline', [EstimationController::class, 'pipeline']);

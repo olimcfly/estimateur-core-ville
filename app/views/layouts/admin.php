@@ -374,6 +374,9 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
           <span class="badge"><?= (int) $leadCount ?></span>
         <?php endif; ?>
       </a>
+      <a href="/admin/pipeline" class="sidebar-link <?= $currentPage === 'pipeline' ? 'active' : '' ?>">
+        <i class="fas fa-columns"></i> Pipeline
+      </a>
       <a href="/admin/funnel" class="sidebar-link <?= $currentPage === 'funnel' ? 'active' : '' ?>">
         <i class="fas fa-filter"></i> Entonnoir
       </a>

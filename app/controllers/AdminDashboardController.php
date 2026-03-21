@@ -89,6 +89,7 @@ final class AdminDashboardController
 
         View::renderAdmin('admin/dashboard', [
             'page_title' => 'Tableau de Bord - Admin CRM',
+            'admin_page_title' => 'Tableau de bord',
             'admin_page' => 'dashboard',
             'breadcrumb' => 'Tableau de Bord',
             'stats' => $stats,
@@ -155,6 +156,7 @@ final class AdminDashboardController
 
         View::renderAdmin('admin/funnel', [
             'page_title' => 'Entonnoir de Vente - Admin CRM',
+            'admin_page_title' => 'Funnel de vente',
             'admin_page' => 'funnel',
             'breadcrumb' => 'Entonnoir de Vente',
             'pipelineData' => $pipelineData,
@@ -218,6 +220,7 @@ final class AdminDashboardController
 
         View::renderAdmin('admin/portfolio', [
             'page_title' => 'Portefeuille Client - Admin CRM',
+            'admin_page_title' => 'Portfolio',
             'admin_page' => 'portfolio',
             'breadcrumb' => 'Portefeuille Client',
             'leads' => $leads,

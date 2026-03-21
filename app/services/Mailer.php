@@ -47,6 +47,10 @@ final class Mailer
             return true;
         } catch (Exception $e) {
             error_log('Mailer error: ' . $e->getMessage());
+            error_log('Mailer debug: host=' . ($mail->Host ?? '') . ' port=' . ($mail->Port ?? '') . ' user=' . ($mail->Username ?? ''));
+            return false;
+        } catch (\Throwable $e) {
+            error_log('Mailer unexpected error: ' . $e->getMessage());
             return false;
         }
     }

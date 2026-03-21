@@ -304,4 +304,91 @@ final class AuthController
 
         echo "=== Diagnostic DB ===\n\n" . implode("\n", $checks) . "\n\n=== Diagnostic termine ===\n";
     }
+
+    public function testSmtp(): void
+    {
+        header('Content-Type: text/plain; charset=utf-8');
+
+        $checks = [];
+        $checks[] = '=== Test SMTP ===';
+        $checks[] = '';
+
+        // 1. Config
+        $smtpHost = (string) Config::get('mail.smtp_host');
+        $smtpPort = (int) Config::get('mail.smtp_port', 587);
+        $smtpUser = (string) Config::get('mail.smtp_user');
+        $smtpPass = (string) Config::get('mail.smtp_pass');
+        $smtpEnc = (string) Config::get('mail.smtp_encryption', 'tls');
+        $mailFrom = (string) Config::get('mail.from', '');
+        $mailFromName = (string) Config::get('mail.from_name', '');
+
+        $checks[] = '1. Configuration SMTP :';
+        $checks[] = '   Host       : ' . ($smtpHost !== '' ? $smtpHost : '(VIDE - non configure)');
+        $checks[] = '   Port       : ' . $smtpPort;
+        $checks[] = '   User       : ' . ($smtpUser !== '' ? $smtpUser : '(VIDE)');
+        $checks[] = '   Pass       : ' . ($smtpPass !== '' ? '(defini)' : '(VIDE)');
+        $checks[] = '   Encryption : ' . $smtpEnc;
+        $checks[] = '   From       : ' . $mailFrom;
+        $checks[] = '   From Name  : ' . $mailFromName;
+
+        if ($smtpHost === '') {
+            $checks[] = '';
+            $checks[] = 'ERREUR : MAIL_SMTP_HOST est vide dans .env';
+            $checks[] = 'Configurez vos identifiants SMTP dans le fichier .env';
+            echo implode("\n", $checks) . "\n";
+            return;
+        }
+
+        // 2. PHPMailer
+        $checks[] = '';
+        $checks[] = '2. PHPMailer :';
+        if (!class_exists(\PHPMailer\PHPMailer\PHPMailer::class)) {
+            $checks[] = '   ABSENT - Executez "composer install"';
+            echo implode("\n", $checks) . "\n";
+            return;
+        }
+        $checks[] = '   OK (installe)';
+
+        // 3. Test connexion SMTP
+        $checks[] = '';
+        $checks[] = '3. Test connexion SMTP :';
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = $smtpHost;
+            $mail->Port = $smtpPort;
+            $mail->SMTPAuth = true;
+            $mail->Username = $smtpUser;
+            $mail->Password = $smtpPass;
+            $mail->SMTPSecure = $smtpEnc;
+            $mail->Timeout = 10;
+            $mail->SMTPDebug = 0;
+
+            $mail->smtpConnect();
+            $mail->smtpClose();
+
+            $checks[] = '   Statut : OK - Connexion SMTP reussie !';
+        } catch (\Throwable $e) {
+            $checks[] = '   Statut : ECHEC';
+            $checks[] = '   Erreur : ' . $e->getMessage();
+            $checks[] = '';
+            $checks[] = 'Verifiez vos identifiants SMTP dans .env :';
+            $checks[] = '   MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_SMTP_USER, MAIL_SMTP_PASS';
+
+            if (str_contains($e->getMessage(), 'Could not authenticate')) {
+                $checks[] = '';
+                $checks[] = 'CONSEIL : Identifiants incorrects. Verifiez username/password.';
+                $checks[] = 'Si vous utilisez Gmail, creez un "mot de passe d\'application" :';
+                $checks[] = '   https://myaccount.google.com/apppasswords';
+            } elseif (str_contains($e->getMessage(), 'connect()') || str_contains($e->getMessage(), 'Connection')) {
+                $checks[] = '';
+                $checks[] = 'CONSEIL : Impossible de se connecter au serveur SMTP.';
+                $checks[] = 'Verifiez le host et le port (587 pour TLS, 465 pour SSL).';
+            }
+        }
+
+        $checks[] = '';
+        $checks[] = '=== Test termine ===';
+        echo implode("\n", $checks) . "\n";
+    }
 }

@@ -390,6 +390,9 @@ $adminEmail = $_SESSION['admin_user_email'] ?? '';
       <a href="/admin/partenaires" class="sidebar-link <?= $currentPage === 'partenaires' ? 'active' : '' ?>">
         <i class="fas fa-handshake"></i> Partenaires
       </a>
+      <a href="/admin/achats" class="sidebar-link <?= $currentPage === 'achats' ? 'active' : '' ?>">
+        <i class="fas fa-shopping-cart"></i> Achats
+      </a>
     </div>
 
     <div class="sidebar-section">

@@ -38,6 +38,7 @@ final class Router
             $path = substr($path, strlen('/index.php'));
         }
 
+        // Normalize trailing slash: /admin/ → /admin (except root /)
         if ($path !== '/' && str_ends_with($path, '/')) {
             $path = rtrim($path, '/');
         }

@@ -54,6 +54,8 @@
   .stat-icon.hot { background: rgba(239,68,68,0.1); color: #ef4444; }
   .stat-icon.warm { background: rgba(245,158,11,0.1); color: #f59e0b; }
   .stat-icon.cold { background: rgba(100,116,139,0.1); color: #64748b; }
+  .stat-icon.tendance { background: rgba(168,85,247,0.1); color: #a855f7; }
+  .stat-icon.qualifie { background: rgba(34,197,94,0.1); color: #16a34a; }
 
   .stat-info { min-width: 0; }
 
@@ -206,6 +208,19 @@
   .badge-contacte { background: rgba(245,158,11,0.1); color: #d97706; }
   .badge-signe { background: rgba(34,197,94,0.1); color: #16a34a; }
 
+  .badge-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .badge-tendance { background: rgba(168,85,247,0.1); color: #7c3aed; }
+  .badge-qualifie { background: rgba(34,197,94,0.1); color: #16a34a; }
+
   .lead-name {
     font-weight: 600;
     color: var(--admin-text);
@@ -247,6 +262,8 @@
 <?php
   $allLeads = $leads ?? [];
   $totalLeads = count($allLeads);
+  $tendanceLeads = count(array_filter($allLeads, fn($l) => ($l['lead_type'] ?? '') === 'tendance'));
+  $qualifieLeads = count(array_filter($allLeads, fn($l) => ($l['lead_type'] ?? '') === 'qualifie'));
   $hotLeads = count(array_filter($allLeads, fn($l) => ($l['score'] ?? '') === 'chaud'));
   $warmLeads = count(array_filter($allLeads, fn($l) => ($l['score'] ?? '') === 'tiede'));
   $coldLeads = count(array_filter($allLeads, fn($l) => ($l['score'] ?? '') === 'froid'));
@@ -264,6 +281,20 @@
     <div class="stat-info">
       <div class="stat-value"><?= $totalLeads ?></div>
       <div class="stat-label">Total leads</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon tendance"><i class="fas fa-chart-line"></i></div>
+    <div class="stat-info">
+      <div class="stat-value"><?= $tendanceLeads ?></div>
+      <div class="stat-label">Tendance (estimation rapide)</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon qualifie"><i class="fas fa-user-check"></i></div>
+    <div class="stat-info">
+      <div class="stat-value"><?= $qualifieLeads ?></div>
+      <div class="stat-label">Qualifi&eacute;s (avec contact)</div>
     </div>
   </div>
   <div class="stat-card">
@@ -303,6 +334,8 @@
     <span class="table-card-title"><?= $totalLeads ?> lead<?= $totalLeads > 1 ? 's' : '' ?> enregistr&eacute;<?= $totalLeads > 1 ? 's' : '' ?></span>
     <div class="table-filters">
       <a href="/admin/leads" class="filter-btn active">Tous</a>
+      <a href="/admin/leads?type=tendance" class="filter-btn">Tendance</a>
+      <a href="/admin/leads?type=qualifie" class="filter-btn">Qualifi&eacute;s</a>
       <a href="/admin/leads?score=chaud" class="filter-btn">Chauds</a>
       <a href="/admin/leads?score=tiede" class="filter-btn">Ti&egrave;des</a>
       <a href="/admin/leads?score=froid" class="filter-btn">Froids</a>
@@ -321,12 +354,12 @@
         <thead>
           <tr>
             <th>#</th>
+            <th>Type</th>
             <th>Contact</th>
-            <th>T&eacute;l&eacute;phone</th>
+            <th>Bien</th>
             <th>Ville</th>
             <th>Estimation</th>
             <th>Urgence</th>
-            <th>Motivation</th>
             <th>Score</th>
             <th>Statut</th>
             <th>Date</th>
@@ -335,6 +368,7 @@
         <tbody>
           <?php foreach ($allLeads as $lead): ?>
             <?php
+              $isTendance = ($lead['lead_type'] ?? 'qualifie') === 'tendance';
               $scoreClass = match($lead['score'] ?? '') {
                 'chaud' => 'badge-chaud',
                 'tiede' => 'badge-tiede',
@@ -347,24 +381,44 @@
               };
               $statutClass = match($lead['statut'] ?? '') {
                 'nouveau' => 'badge-nouveau',
-                'contact&eacute;' => 'badge-contacte',
                 'contacté' => 'badge-contacte',
-                'sign&eacute;' => 'badge-signe',
                 'signé' => 'badge-signe',
                 default => 'badge-nouveau',
               };
+              $typeBien = $lead['type_bien'] ?? '';
+              $surface = $lead['surface_m2'] ?? '';
+              $pieces = $lead['pieces'] ?? '';
+              $bienInfo = '';
+              if ($typeBien !== '' && $typeBien !== null) {
+                  $bienInfo = ucfirst(e((string) $typeBien));
+                  if ($surface) $bienInfo .= ' &middot; ' . number_format((float) $surface, 0, ',', '') . ' m&sup2;';
+                  if ($pieces) $bienInfo .= ' &middot; ' . (int) $pieces . 'p';
+              }
             ?>
             <tr>
               <td><?= (int) $lead['id'] ?></td>
               <td>
-                <div class="lead-name"><?= e((string) $lead['nom']) ?></div>
-                <div class="lead-email"><?= e((string) $lead['email']) ?></div>
+                <?php if ($isTendance): ?>
+                  <span class="badge-type badge-tendance"><i class="fas fa-chart-line"></i> Tendance</span>
+                <?php else: ?>
+                  <span class="badge-type badge-qualifie"><i class="fas fa-user-check"></i> Qualifi&eacute;</span>
+                <?php endif; ?>
               </td>
-              <td><?= e((string) $lead['telephone']) ?></td>
+              <td>
+                <?php if ($isTendance): ?>
+                  <div class="lead-email" style="color: var(--admin-muted); font-style: italic;">Anonyme</div>
+                <?php else: ?>
+                  <div class="lead-name"><?= e((string) ($lead['nom'] ?? '')) ?></div>
+                  <div class="lead-email"><?= e((string) ($lead['email'] ?? '')) ?></div>
+                  <?php if (!empty($lead['telephone'])): ?>
+                    <div class="lead-email"><?= e((string) $lead['telephone']) ?></div>
+                  <?php endif; ?>
+                <?php endif; ?>
+              </td>
+              <td><?= $bienInfo ?: '<span style="color:var(--admin-muted);">-</span>' ?></td>
               <td><?= e((string) $lead['ville']) ?></td>
               <td><strong><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> &euro;</strong></td>
-              <td><?= e((string) $lead['urgence']) ?></td>
-              <td><?= e((string) $lead['motivation']) ?></td>
+              <td><?= !empty($lead['urgence']) ? e((string) $lead['urgence']) : '<span style="color:var(--admin-muted);">-</span>' ?></td>
               <td><span class="badge-score <?= $scoreClass ?>"><i class="fas <?= $scoreIcon ?>"></i> <?= e((string) $lead['score']) ?></span></td>
               <td><span class="badge-statut <?= $statutClass ?>"><?= e((string) $lead['statut']) ?></span></td>
               <td><?= e((string) $lead['created_at']) ?></td>

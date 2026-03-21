@@ -75,6 +75,24 @@ final class EstimationController
                 'expires_at' => $now + self::LEAD_FORM_TTL_SECONDS,
             ];
 
+            // Capture lead "tendance" (sans coordonnées)
+            try {
+                $leadModel = new Lead();
+                $leadModel->create([
+                    'lead_type' => 'tendance',
+                    'ville' => $city,
+                    'type_bien' => $propertyType,
+                    'surface_m2' => $surface,
+                    'pieces' => $rooms,
+                    'estimation' => $estimate['estimated_mid'],
+                    'score' => 'froid',
+                    'statut' => 'nouveau',
+                ]);
+            } catch (\Throwable $e) {
+                // Silently fail — don't block the estimation result
+                error_log('Tendance lead capture failed: ' . $e->getMessage());
+            }
+
             View::render('estimation/result', [
                 'estimate' => $estimate,
                 'errors' => [],
@@ -157,6 +175,7 @@ final class EstimationController
 
             $leadModel = new Lead();
             $leadId = $leadModel->create([
+                'lead_type' => 'qualifie',
                 'nom' => $nom,
                 'email' => $email,
                 'telephone' => $telephone,

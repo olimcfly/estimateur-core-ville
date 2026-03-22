@@ -249,9 +249,229 @@
 
   .leads-link-btn:hover { opacity: 0.9; }
 
+  /* ── View Switcher ── */
+  .leads-view-switcher {
+    display: inline-flex;
+    background: var(--admin-surface, #ffffff);
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .leads-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: none;
+    background: transparent;
+    color: var(--admin-muted, #6b6459);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .leads-view-btn:not(:last-child) {
+    border-right: 1px solid var(--admin-border, #e8dfd7);
+  }
+
+  .leads-view-btn:hover {
+    background: #f8fafc;
+    color: var(--admin-text, #1a1410);
+  }
+
+  .leads-view-btn.active {
+    background: var(--admin-primary, #8B1538);
+    color: #fff;
+  }
+
+  /* ── Grille (Cards) View ── */
+  .leads-grille-view {
+    display: none;
+    padding: 1.25rem;
+  }
+
+  .leads-grille-view.visible { display: block; }
+
+  .leads-grille-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .leads-card {
+    background: var(--admin-surface, #ffffff);
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: var(--admin-radius, 12px);
+    padding: 1.15rem;
+    transition: box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .leads-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .leads-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .leads-card-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--admin-text, #1a1410);
+  }
+
+  .leads-card-id {
+    font-size: 0.75rem;
+    color: var(--admin-muted, #6b6459);
+  }
+
+  .leads-card-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .leads-card-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .leads-card-info dt {
+    color: var(--admin-muted, #6b6459);
+    font-weight: 500;
+  }
+
+  .leads-card-info dd {
+    color: var(--admin-text, #1a1410);
+    margin: 0;
+    text-align: right;
+  }
+
+  .leads-card-footer {
+    border-top: 1px solid var(--admin-border, #e8dfd7);
+    padding-top: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--admin-muted, #6b6459);
+  }
+
+  /* ── Kanban View ── */
+  .leads-kanban-view {
+    display: none;
+    padding: 1.25rem;
+    overflow-x: auto;
+  }
+
+  .leads-kanban-view.visible { display: block; }
+
+  .leads-kanban-board {
+    display: flex;
+    gap: 1rem;
+    min-width: max-content;
+  }
+
+  .leads-kanban-col {
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    background: #f8fafc;
+    border-radius: var(--admin-radius, 12px);
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+  }
+
+  .leads-kanban-col-header {
+    padding: 0.85rem 1rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--admin-text, #1a1410);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--admin-border, #e8dfd7);
+  }
+
+  .leads-kanban-count {
+    background: var(--admin-border, #e8dfd7);
+    color: var(--admin-muted, #6b6459);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+  }
+
+  .leads-kanban-cards {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .leads-kanban-card {
+    background: var(--admin-surface, #ffffff);
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 8px;
+    padding: 0.85rem;
+    font-size: 0.82rem;
+    transition: box-shadow 0.15s;
+  }
+
+  .leads-kanban-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  .leads-kanban-card-name {
+    font-weight: 600;
+    color: var(--admin-text, #1a1410);
+    margin-bottom: 0.3rem;
+  }
+
+  .leads-kanban-card-detail {
+    color: var(--admin-muted, #6b6459);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .leads-kanban-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+
+  .leads-kanban-card-est {
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--admin-text, #1a1410);
+  }
+
+  /* ── Hide/show views ── */
+  .leads-liste-view { display: block; }
+  .leads-liste-view.hidden { display: none; }
+
   @media (max-width: 640px) {
     .leads-stats-grid { grid-template-columns: 1fr 1fr; }
     .leads-empty-steps { gap: 1rem; }
+    .leads-grille-grid { grid-template-columns: 1fr; }
+    .leads-kanban-col { width: 260px; min-width: 260px; }
+    .leads-view-btn span.view-label { display: none; }
   }
 </style>
 
@@ -306,6 +526,19 @@
           <h1><i class="fas fa-users"></i> Leads</h1>
           <p>Liste des leads enregistrés depuis le formulaire d'estimation.</p>
         </div>
+        <?php if (!empty($allLeads)): ?>
+        <div class="leads-view-switcher">
+          <button class="leads-view-btn active" data-view="liste" title="Vue liste">
+            <i class="fas fa-list"></i> <span class="view-label">Liste</span>
+          </button>
+          <button class="leads-view-btn" data-view="grille" title="Vue grille">
+            <i class="fas fa-th-large"></i> <span class="view-label">Grille</span>
+          </button>
+          <button class="leads-view-btn" data-view="kanban" title="Vue kanban">
+            <i class="fas fa-columns"></i> <span class="view-label">Kanban</span>
+          </button>
+        </div>
+        <?php endif; ?>
       </div>
 
       <!-- STATS -->
@@ -377,55 +610,208 @@
           </div>
 
         <?php else: ?>
-          <div class="table-wrapper" style="overflow-x: auto;">
-            <table class="leads-admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Téléphone</th>
-                  <th>Ville</th>
-                  <th>Estimation</th>
-                  <th>Urgence</th>
-                  <th>Motivation</th>
-                  <th>Score</th>
-                  <th>Statut</th>
-                  <th>Créé le</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($allLeads as $lead): ?>
-                  <?php
-                    $scoreClass = 'leads-badge-froid';
-                    $score = strtolower($lead['score'] ?? '');
-                    if ($score === 'chaud') $scoreClass = 'leads-badge-chaud';
-                    elseif ($score === 'tiede' || $score === 'tiède') $scoreClass = 'leads-badge-tiede';
-
-                    $statutClass = 'leads-badge-nouveau';
-                    $statut = strtolower($lead['statut'] ?? '');
-                    if ($statut === 'contacte' || $statut === 'contacté') $statutClass = 'leads-badge-contacte';
-                    elseif ($statut === 'converti') $statutClass = 'leads-badge-converti';
-                  ?>
+          <!-- LISTE VIEW (table) -->
+          <div class="leads-liste-view">
+            <div class="table-wrapper" style="overflow-x: auto;">
+              <table class="leads-admin-table">
+                <thead>
                   <tr>
-                    <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
-                    <td style="font-weight: 500;"><?= e((string) $lead['nom']) ?></td>
-                    <td><?= e((string) $lead['email']) ?></td>
-                    <td><?= e((string) $lead['telephone']) ?></td>
-                    <td><?= e((string) $lead['ville']) ?></td>
-                    <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
-                    <td><?= e((string) $lead['urgence']) ?></td>
-                    <td><?= e((string) $lead['motivation']) ?></td>
-                    <td><span class="leads-badge <?= $scoreClass ?>"><?= e((string) $lead['score']) ?></span></td>
-                    <td><span class="leads-badge <?= $statutClass ?>"><?= e((string) $lead['statut']) ?></span></td>
-                    <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Ville</th>
+                    <th>Estimation</th>
+                    <th>Urgence</th>
+                    <th>Motivation</th>
+                    <th>Score</th>
+                    <th>Statut</th>
+                    <th>Créé le</th>
                   </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <?php foreach ($allLeads as $lead): ?>
+                    <?php
+                      $scoreClass = 'leads-badge-froid';
+                      $score = strtolower($lead['score'] ?? '');
+                      if ($score === 'chaud') $scoreClass = 'leads-badge-chaud';
+                      elseif ($score === 'tiede' || $score === 'tiède') $scoreClass = 'leads-badge-tiede';
+
+                      $statutClass = 'leads-badge-nouveau';
+                      $statut = strtolower($lead['statut'] ?? '');
+                      if ($statut === 'contacte' || $statut === 'contacté') $statutClass = 'leads-badge-contacte';
+                      elseif ($statut === 'converti') $statutClass = 'leads-badge-converti';
+                    ?>
+                    <tr>
+                      <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
+                      <td style="font-weight: 500;"><?= e((string) $lead['nom']) ?></td>
+                      <td><?= e((string) $lead['email']) ?></td>
+                      <td><?= e((string) $lead['telephone']) ?></td>
+                      <td><?= e((string) $lead['ville']) ?></td>
+                      <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
+                      <td><?= e((string) $lead['urgence']) ?></td>
+                      <td><?= e((string) $lead['motivation']) ?></td>
+                      <td><span class="leads-badge <?= $scoreClass ?>"><?= e((string) $lead['score']) ?></span></td>
+                      <td><span class="leads-badge <?= $statutClass ?>"><?= e((string) $lead['statut']) ?></span></td>
+                      <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          <!-- GRILLE VIEW (cards) -->
+          <div class="leads-grille-view">
+            <div class="leads-grille-grid">
+              <?php foreach ($allLeads as $lead):
+                $scoreClass = 'leads-badge-froid';
+                $sc = strtolower($lead['score'] ?? '');
+                if ($sc === 'chaud') $scoreClass = 'leads-badge-chaud';
+                elseif ($sc === 'tiede' || $sc === 'tiède') $scoreClass = 'leads-badge-tiede';
+
+                $statutClass = 'leads-badge-nouveau';
+                $st = strtolower($lead['statut'] ?? '');
+                if ($st === 'contacte' || $st === 'contacté') $statutClass = 'leads-badge-contacte';
+                elseif ($st === 'converti') $statutClass = 'leads-badge-converti';
+              ?>
+                <div class="leads-card">
+                  <div class="leads-card-top">
+                    <span class="leads-card-name"><?= e((string) $lead['nom']) ?></span>
+                    <span class="leads-card-id">#<?= e((string) $lead['id']) ?></span>
+                  </div>
+                  <div class="leads-card-badges">
+                    <span class="leads-badge <?= $scoreClass ?>"><?= e((string) $lead['score']) ?></span>
+                    <span class="leads-badge <?= $statutClass ?>"><?= e((string) $lead['statut']) ?></span>
+                  </div>
+                  <dl class="leads-card-info">
+                    <dt>Ville</dt><dd><?= e((string) $lead['ville']) ?></dd>
+                    <dt>Estimation</dt><dd style="font-weight:600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</dd>
+                    <dt>Urgence</dt><dd><?= e((string) $lead['urgence']) ?></dd>
+                    <dt>Motivation</dt><dd><?= e((string) $lead['motivation']) ?></dd>
+                  </dl>
+                  <div class="leads-card-footer">
+                    <span><i class="fas fa-envelope"></i> <?= e((string) $lead['email']) ?></span>
+                    <span><?= e((string) $lead['created_at']) ?></span>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+
+          <!-- KANBAN VIEW (pipeline columns) -->
+          <div class="leads-kanban-view">
+            <?php
+              $kanbanStatuts = [
+                'nouveau' => 'Nouveau',
+                'contacte' => 'Contacté',
+                'rdv_pris' => 'RDV pris',
+                'visite_realisee' => 'Visite réalisée',
+                'mandat_simple' => 'Mandat simple',
+                'mandat_exclusif' => 'Mandat exclusif',
+                'compromis_vente' => 'Compromis',
+                'signe' => 'Signé',
+              ];
+              $kanbanData = [];
+              foreach ($kanbanStatuts as $key => $label) {
+                $kanbanData[$key] = [];
+              }
+              foreach ($allLeads as $lead) {
+                $s = $lead['statut'] ?? 'nouveau';
+                if (!isset($kanbanData[$s])) {
+                  $kanbanData[$s] = [];
+                }
+                $kanbanData[$s][] = $lead;
+              }
+            ?>
+            <div class="leads-kanban-board">
+              <?php foreach ($kanbanStatuts as $key => $label): ?>
+                <div class="leads-kanban-col">
+                  <div class="leads-kanban-col-header">
+                    <span><?= $label ?></span>
+                    <span class="leads-kanban-count"><?= count($kanbanData[$key]) ?></span>
+                  </div>
+                  <div class="leads-kanban-cards">
+                    <?php foreach ($kanbanData[$key] as $lead):
+                      $scoreClass = 'leads-badge-froid';
+                      $sc = strtolower($lead['score'] ?? '');
+                      if ($sc === 'chaud') $scoreClass = 'leads-badge-chaud';
+                      elseif ($sc === 'tiede' || $sc === 'tiède') $scoreClass = 'leads-badge-tiede';
+                    ?>
+                      <div class="leads-kanban-card">
+                        <div class="leads-kanban-card-name"><?= e((string) $lead['nom']) ?></div>
+                        <div class="leads-kanban-card-detail">
+                          <?= e((string) $lead['ville']) ?> · <?= e((string) $lead['type_bien']) ?>
+                        </div>
+                        <div class="leads-kanban-card-bottom">
+                          <span class="leads-kanban-card-est"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</span>
+                          <span class="leads-badge <?= $scoreClass ?>" style="font-size:0.68rem;"><?= e((string) $lead['score']) ?></span>
+                        </div>
+                      </div>
+                    <?php endforeach; ?>
+                    <?php if (empty($kanbanData[$key])): ?>
+                      <div style="text-align:center; padding:1.5rem 0.5rem; color:var(--admin-muted,#6b6459); font-size:0.78rem;">
+                        <i class="fas fa-inbox" style="font-size:1.2rem; opacity:0.4; display:block; margin-bottom:0.4rem;"></i>
+                        Aucun lead
+                      </div>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+
         <?php endif; ?>
       </div>
+
+      <!-- View Switcher JS -->
+      <script>
+      (function() {
+        var saved = localStorage.getItem('leads_view') || 'liste';
+        var btns = document.querySelectorAll('.leads-view-btn');
+        if (!btns.length) return;
+
+        function switchView(view) {
+          var liste = document.querySelector('.leads-liste-view');
+          var grille = document.querySelector('.leads-grille-view');
+          var kanban = document.querySelector('.leads-kanban-view');
+          var title = document.querySelector('.leads-table-title');
+          if (!liste) return;
+
+          liste.classList.add('hidden');
+          if (grille) grille.classList.remove('visible');
+          if (kanban) kanban.classList.remove('visible');
+
+          btns.forEach(function(b) { b.classList.remove('active'); });
+          var activeBtn = document.querySelector('.leads-view-btn[data-view="' + view + '"]');
+          if (activeBtn) activeBtn.classList.add('active');
+
+          if (view === 'liste') {
+            liste.classList.remove('hidden');
+            if (title) title.innerHTML = '<i class="fas fa-list"></i> Liste des leads';
+          } else if (view === 'grille') {
+            if (grille) grille.classList.add('visible');
+            if (title) title.innerHTML = '<i class="fas fa-th-large"></i> Grille des leads';
+          } else if (view === 'kanban') {
+            if (kanban) kanban.classList.add('visible');
+            if (title) title.innerHTML = '<i class="fas fa-columns"></i> Pipeline des leads';
+          }
+
+          localStorage.setItem('leads_view', view);
+        }
+
+        btns.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            switchView(this.getAttribute('data-view'));
+          });
+        });
+
+        // Restore saved view on load
+        if (['liste', 'grille', 'kanban'].indexOf(saved) !== -1) {
+          switchView(saved);
+        }
+      })();
+      </script>
 
     <?php endif; ?>
 </div>

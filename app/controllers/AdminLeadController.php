@@ -400,7 +400,7 @@ final class AdminLeadController
         $errors = [];
 
         $migrationFiles = [
-            'leads' => dirname(__DIR__, 2) . '/database/schema.sql',
+            'leads' => dirname(__DIR__, 2) . '/database/migration_leads.sql',
             'lead_notes' => dirname(__DIR__, 2) . '/database/migration_lead_management.sql',
             'lead_activities' => dirname(__DIR__, 2) . '/database/migration_lead_management.sql',
         ];
@@ -430,13 +430,6 @@ final class AdminLeadController
                 // Remove comments
                 $sql = preg_replace('/--.*$/m', '', $sql);
                 $sql = trim($sql);
-
-                if ($table === 'leads') {
-                    // schema.sql contains multiple tables, extract only the leads CREATE statement
-                    if (preg_match('/CREATE TABLE IF NOT EXISTS leads\s*\(.*?\)\s*ENGINE=InnoDB[^;]*;/s', $sql, $match)) {
-                        $sql = $match[0];
-                    }
-                }
 
                 if ($sql !== '') {
                     $pdo->exec($sql);

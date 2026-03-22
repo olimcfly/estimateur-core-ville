@@ -12,6 +12,9 @@
   --radius: 16px;
   --shadow: 0 20px 45px rgba(139, 21, 56, 0.08);
   --shadow-lg: 0 30px 60px rgba(139, 21, 56, 0.12);
+  --warning: #d97706;
+  --warning-rgb: 217, 119, 6;
+  --primary-rgb: 139, 21, 56;
 }
 
 /* ============================= */
@@ -1168,6 +1171,142 @@ textarea:focus {
   margin: 0;
   font-size: 0.85rem;
   color: var(--muted);
+}
+
+/* Result page specific styles */
+
+.result-page-heading {
+  margin-bottom: 2rem;
+}
+
+.result-page-subtitle {
+  max-width: 700px;
+  margin: 0.5rem auto 0;
+}
+
+.result-warning {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: rgba(var(--warning-rgb), 0.08);
+  border-radius: 10px;
+  border-left: 4px solid var(--warning);
+}
+
+.result-warning p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.result-warning i {
+  color: var(--warning);
+}
+
+.result-cta-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.result-cta-info .eyebrow {
+  margin-bottom: 1rem;
+}
+
+.result-cta-info h2 {
+  margin-bottom: 1rem;
+}
+
+.result-cta-description {
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.result-benefits-list {
+  margin-bottom: 1.5rem;
+}
+
+.result-benefits-list h3 {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.result-benefits-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.result-benefits-list li {
+  padding: 0.5rem 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.result-benefits-list li i {
+  color: var(--primary);
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.result-tip {
+  padding: 1rem 1.5rem;
+  background: rgba(var(--primary-rgb), 0.04);
+  border-radius: 10px;
+  border-left: 4px solid var(--primary);
+}
+
+.result-tip p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.result-tip i {
+  color: var(--primary);
+}
+
+.result-form-card {
+  border-top: 4px solid var(--primary);
+}
+
+.result-form-card .form-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result-form-card .form-header h3 i {
+  color: var(--primary);
+}
+
+.result-form-card textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.result-submit-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.result-form-legal {
+  text-align: center;
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.result-restart {
+  text-align: center;
+}
+
+.result-restart p {
+  margin-bottom: 1rem;
 }
 
 .result-cta-section {
@@ -3437,6 +3576,10 @@ main {
   .pricing-featured:hover {
     transform: translateY(-8px);
   }
+
+  .result-cta-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* iOS zoom prevention on input focus */
@@ -3445,8 +3588,8 @@ main {
     font-size: 16px;
   }
 
-  .section-alt [style*="grid-template-columns: 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
+  .result-cta-layout {
+    grid-template-columns: 1fr;
   }
 
   .comparison-grid {

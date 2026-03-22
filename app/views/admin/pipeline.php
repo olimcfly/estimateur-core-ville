@@ -143,13 +143,31 @@
     border: 1px solid var(--admin-border);
     border-radius: 6px;
     padding: 0.75rem;
-    cursor: default;
-    transition: box-shadow 0.15s, transform 0.15s;
+    cursor: grab;
+    transition: box-shadow 0.15s, transform 0.15s, opacity 0.2s;
   }
 
   .kanban-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     transform: translateY(-1px);
+  }
+
+  .kanban-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+    cursor: grabbing;
+  }
+
+  .kanban-column-body.drag-over {
+    background: rgba(139, 21, 56, 0.06);
+    border: 2px dashed var(--admin-primary);
+    border-radius: 6px;
+  }
+
+  .kanban-card.drag-preview {
+    border: 2px dashed var(--admin-primary);
+    background: rgba(139, 21, 56, 0.03);
+    min-height: 60px;
   }
 
   .kanban-card-header {
@@ -410,7 +428,7 @@
         </div>
         <div class="kanban-column-count"><?= $colCount ?></div>
       </div>
-      <div class="kanban-column-body">
+      <div class="kanban-column-body" data-statut="<?= $statutKey ?>">
         <?php if (empty($colLeads)): ?>
           <div class="kanban-empty">Aucun lead</div>
         <?php else: ?>
@@ -418,7 +436,7 @@
             $isTendance = ($lead['lead_type'] ?? 'qualifie') === 'tendance';
             $scoreKey = $lead['score'] ?? 'froid';
           ?>
-            <div class="kanban-card" data-lead-id="<?= (int)$lead['id'] ?>">
+            <div class="kanban-card" draggable="true" data-lead-id="<?= (int)$lead['id'] ?>" data-statut="<?= $statutKey ?>">
               <div class="kanban-card-header">
                 <?php if ($isTendance): ?>
                   <div class="kanban-card-name anonymous">Anonyme</div>
@@ -472,6 +490,7 @@
 <script>
 (function() {
   var csrfToken = <?= json_encode($_SESSION['csrf_token'] ?? '', JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  var draggedCard = null;
 
   function showToast(message, type) {
     var toast = document.getElementById('pipelineToast');
@@ -481,7 +500,30 @@
     setTimeout(function() { toast.style.display = 'none'; }, 2500);
   }
 
-  function updateLead(leadId, field, value) {
+  function updateColumnCount(columnBody) {
+    var column = columnBody.closest('.kanban-column');
+    var countEl = column.querySelector('.kanban-column-count');
+    var cards = columnBody.querySelectorAll('.kanban-card');
+    countEl.textContent = cards.length;
+
+    var emptyMsg = columnBody.querySelector('.kanban-empty');
+    if (cards.length === 0 && !emptyMsg) {
+      var div = document.createElement('div');
+      div.className = 'kanban-empty';
+      div.textContent = 'Aucun lead';
+      columnBody.appendChild(div);
+    } else if (cards.length > 0 && emptyMsg) {
+      emptyMsg.remove();
+    }
+  }
+
+  function updateCardStatutSelect(card, newStatut) {
+    var sel = card.querySelector('.kanban-move-select');
+    if (sel) { sel.value = newStatut; }
+    card.dataset.statut = newStatut;
+  }
+
+  function updateLead(leadId, field, value, onSuccess, onError) {
     var body = 'csrf_token=' + encodeURIComponent(csrfToken) + '&id=' + leadId + '&field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/admin/leads/update-inline', true);
@@ -494,24 +536,118 @@
           if (resp.success) {
             if (resp.csrf_token) { csrfToken = resp.csrf_token; }
             showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
-            setTimeout(function() { window.location.reload(); }, 800);
+            if (onSuccess) onSuccess();
           } else {
             showToast(resp.error || 'Erreur de mise \u00e0 jour', 'error');
+            if (onError) onError();
           }
         } catch(e) {
           showToast('Erreur de mise \u00e0 jour', 'error');
+          if (onError) onError();
         }
       } else {
         showToast('Erreur serveur', 'error');
+        if (onError) onError();
       }
     };
-    xhr.onerror = function() { showToast('Erreur r\u00e9seau', 'error'); };
+    xhr.onerror = function() {
+      showToast('Erreur r\u00e9seau', 'error');
+      if (onError) onError();
+    };
     xhr.send(body);
   }
 
+  // --- Drag & Drop ---
+
+  document.querySelectorAll('.kanban-card').forEach(function(card) {
+    card.addEventListener('dragstart', function(e) {
+      draggedCard = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.dataset.leadId);
+    });
+
+    card.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+      draggedCard = null;
+      document.querySelectorAll('.kanban-column-body').forEach(function(col) {
+        col.classList.remove('drag-over');
+      });
+    });
+  });
+
+  document.querySelectorAll('.kanban-column-body').forEach(function(colBody) {
+    colBody.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      this.classList.add('drag-over');
+    });
+
+    colBody.addEventListener('dragleave', function(e) {
+      if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drag-over');
+      }
+    });
+
+    colBody.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+
+      if (!draggedCard) return;
+
+      var newStatut = this.dataset.statut;
+      var oldStatut = draggedCard.dataset.statut;
+      if (newStatut === oldStatut) return;
+
+      var leadId = draggedCard.dataset.leadId;
+      var card = draggedCard;
+      var oldColumnBody = card.parentElement;
+
+      // Move card in the DOM immediately
+      this.appendChild(card);
+      updateCardStatutSelect(card, newStatut);
+      updateColumnCount(oldColumnBody);
+      updateColumnCount(this);
+
+      // Persist to server
+      var targetCol = this;
+      updateLead(leadId, 'statut', newStatut, null, function() {
+        // Revert on error
+        oldColumnBody.appendChild(card);
+        updateCardStatutSelect(card, oldStatut);
+        updateColumnCount(oldColumnBody);
+        updateColumnCount(targetCol);
+      });
+    });
+  });
+
+  // --- Dropdown selects (existing) ---
+
   document.querySelectorAll('.kanban-move-select').forEach(function(sel) {
     sel.addEventListener('change', function() {
-      updateLead(this.dataset.leadId, 'statut', this.value);
+      var leadId = this.dataset.leadId;
+      var newStatut = this.value;
+      var card = this.closest('.kanban-card');
+      var oldStatut = card.dataset.statut;
+      if (newStatut === oldStatut) return;
+
+      var oldColumnBody = card.parentElement;
+      var newColumnBody = document.querySelector('.kanban-column-body[data-statut="' + newStatut + '"]');
+
+      // Move card in the DOM immediately
+      newColumnBody.appendChild(card);
+      card.dataset.statut = newStatut;
+      updateColumnCount(oldColumnBody);
+      updateColumnCount(newColumnBody);
+
+      updateLead(leadId, 'statut', newStatut, null, function() {
+        // Revert on error
+        oldColumnBody.appendChild(card);
+        card.dataset.statut = oldStatut;
+        sel.value = oldStatut;
+        updateColumnCount(oldColumnBody);
+        updateColumnCount(newColumnBody);
+      });
     });
   });
 

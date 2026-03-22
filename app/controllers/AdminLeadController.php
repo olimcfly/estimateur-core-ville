@@ -13,6 +13,19 @@ use App\Models\Partenaire;
 
 final class AdminLeadController
 {
+    private const REQUIRED_TABLES = [
+        'leads' => [
+            'id', 'website_id', 'lead_type', 'nom', 'email', 'telephone',
+            'adresse', 'ville', 'type_bien', 'surface_m2', 'pieces',
+            'estimation', 'urgence', 'motivation', 'notes',
+            'partenaire_id', 'commission_taux', 'commission_montant',
+            'assigne_a', 'date_mandat', 'date_compromis', 'date_signature',
+            'prix_vente', 'score', 'statut', 'created_at',
+        ],
+        'lead_notes' => ['id', 'lead_id', 'content', 'author', 'created_at'],
+        'lead_activities' => ['id', 'lead_id', 'activity_type', 'description', 'created_at'],
+    ];
+
     public function createTable(): void
     {
         AuthController::requireAuth();
@@ -79,7 +92,6 @@ final class AdminLeadController
             } catch (\Throwable $e) {
                 $dbError = 'Erreur lors du chargement des leads : ' . $e->getMessage();
             }
-        }
         } // end if ($tableExists)
 
         View::renderAdmin('admin/leads', [

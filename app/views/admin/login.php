@@ -241,6 +241,13 @@ $step = $step ?? 'email';
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($already_logged_in)): ?>
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>Vous êtes déjà connecté. <a href="/admin" style="color: inherit; font-weight: 700;">Accéder au tableau de bord</a></span>
+    </div>
+    <?php endif; ?>
+
     <?php if ($step === 'email'): ?>
 
       <form method="POST" action="/admin/login" class="login-form">
@@ -258,6 +265,8 @@ $step = $step ?? 'email';
             required
             autocomplete="email"
             autofocus
+            placeholder="votre@email.fr"
+            value="<?= e($_SESSION['admin_user_email'] ?? '') ?>"
           >
         </div>
 

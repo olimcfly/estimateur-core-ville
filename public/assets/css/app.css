@@ -2422,12 +2422,12 @@ textarea:focus {
 }
 
 /* ============================= */
-/* LEAD CONFIRMATION PAGE        */
+/* LEAD THANK-YOU PAGE (CLIENT)  */
 /* ============================= */
 
 .lead-confirmation {
-  max-width: 800px;
-  margin: 2rem auto;
+  max-width: 700px;
+  margin: 3rem auto;
   padding: 0 1.5rem;
 }
 
@@ -2441,8 +2441,8 @@ textarea:focus {
 }
 
 .lead-success-icon {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   background: #065f46;
   color: #fff;
   border-radius: 50%;
@@ -2451,7 +2451,7 @@ textarea:focus {
   justify-content: center;
   font-size: 1.8rem;
   font-weight: 700;
-  margin: 0 auto 1rem;
+  margin: 0 auto 1.2rem;
 }
 
 .lead-success-banner h2 {
@@ -2461,117 +2461,103 @@ textarea:focus {
 }
 
 .lead-success-banner p {
-  color: #065f46;
+  color: #047857;
   margin: 0.25rem 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
-.lead-badge {
-  display: inline-block;
-  padding: 0.2rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  text-transform: capitalize;
-}
-
-.lead-badge--chaud {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
-.lead-badge--tiede {
-  background: #fffbeb;
-  color: #92400e;
-  border: 1px solid #fde68a;
-}
-
-.lead-badge--froid {
-  background: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
-}
-
-.lead-detail-card {
+.lead-thankyou-card {
   padding: 2rem !important;
 }
 
-.lead-detail-card h3 {
-  font-size: 1.2rem;
+.lead-thankyou-card:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.lead-thankyou-card h3 {
+  font-size: 1.25rem;
   margin: 0 0 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 2px solid var(--border);
   color: var(--primary);
 }
 
-.lead-detail-card:hover {
-  border-color: var(--border);
-  box-shadow: var(--shadow);
+.lead-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.lead-sheet-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+.lead-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
-.lead-field {
-  padding: 0.75rem;
-  background: var(--bg);
-  border-radius: 8px;
-}
-
-.lead-field__label {
-  display: block;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin-bottom: 0.35rem;
-}
-
-.lead-field__value {
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text);
-  word-break: break-word;
-}
-
-.lead-field__value--highlight {
+.lead-step__icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.08), rgba(var(--primary-rgb), 0.04));
+  border: 1px solid rgba(var(--primary-rgb), 0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--primary);
   font-size: 1.1rem;
 }
 
-.lead-notes {
-  margin-top: 1.25rem;
-  padding: 0.75rem;
-  background: var(--bg);
-  border-radius: 8px;
+.lead-step__title {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
 }
 
-.lead-notes p {
+.lead-step__desc {
   margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.lead-thankyou-summary {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+  text-align: center;
+}
+
+.lead-thankyou-summary p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.lead-thankyou-summary p:first-child {
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .lead-actions {
   margin-top: 2rem;
-  text-align: center;
-}
-
-@media (max-width: 768px) {
-  .lead-sheet-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .lead-confirmation {
-    margin: 1rem auto;
-  }
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 480px) {
-  .lead-sheet-grid {
-    grid-template-columns: 1fr;
+  .lead-confirmation {
+    margin: 1.5rem auto;
   }
 
   .lead-success-banner {
@@ -2580,6 +2566,15 @@ textarea:focus {
 
   .lead-success-banner h2 {
     font-size: 1.2rem;
+  }
+
+  .lead-actions {
+    flex-direction: column;
+  }
+
+  .lead-actions .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 

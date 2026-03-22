@@ -1,59 +1,44 @@
 <div class="lead-confirmation">
   <section class="lead-success-banner">
     <div class="lead-success-icon">✓</div>
-    <h2>Merci, votre demande a bien été enregistrée.</h2>
-    <p>Référence lead: <strong>#<?= e((string) $leadId) ?></strong></p>
-    <p>Score commercial: <strong class="lead-badge lead-badge--<?= e((string) $temperature) ?>"><?= e((string) $temperature) ?></strong></p>
+    <h2>Merci, votre demande a bien été enregistrée !</h2>
+    <p>Votre référence : <strong>#<?= e((string) $leadId) ?></strong></p>
   </section>
 
-  <section class="card lead-detail-card">
-    <h3>Fiche complète du lead</h3>
-    <div class="lead-sheet-grid">
-      <div class="lead-field">
-        <span class="lead-field__label">Nom</span>
-        <p class="lead-field__value"><?= e((string) $lead['nom']) ?></p>
+  <section class="card lead-thankyou-card">
+    <h3>Et maintenant ?</h3>
+    <div class="lead-steps">
+      <div class="lead-step">
+        <div class="lead-step__icon"><i class="fas fa-phone-alt"></i></div>
+        <div>
+          <p class="lead-step__title">Un conseiller vous recontacte</p>
+          <p class="lead-step__desc">Nous avons bien reçu votre demande. Un conseiller immobilier vous contactera sous <strong>48 heures</strong> pour organiser un rendez-vous.</p>
+        </div>
       </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Email</span>
-        <p class="lead-field__value"><?= e((string) $lead['email']) ?></p>
+      <div class="lead-step">
+        <div class="lead-step__icon"><i class="fas fa-home"></i></div>
+        <div>
+          <p class="lead-step__title">Visite de votre bien</p>
+          <p class="lead-step__desc">Le conseiller se déplace chez vous pour évaluer votre bien en prenant en compte ses caractéristiques réelles.</p>
+        </div>
       </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Téléphone</span>
-        <p class="lead-field__value"><?= e((string) $lead['telephone']) ?></p>
-      </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Adresse du bien</span>
-        <p class="lead-field__value"><?= e((string) $lead['adresse']) ?></p>
-      </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Ville</span>
-        <p class="lead-field__value"><?= e((string) $lead['ville']) ?></p>
-      </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Estimation moyenne</span>
-        <p class="lead-field__value lead-field__value--highlight"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</p>
-      </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Urgence</span>
-        <p class="lead-field__value"><?= e((string) $lead['urgence']) ?></p>
-      </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Motivation</span>
-        <p class="lead-field__value"><?= e((string) $lead['motivation']) ?></p>
-      </div>
-      <div class="lead-field">
-        <span class="lead-field__label">Statut</span>
-        <p class="lead-field__value"><?= e((string) $lead['statut']) ?></p>
+      <div class="lead-step">
+        <div class="lead-step__icon"><i class="fas fa-file-alt"></i></div>
+        <div>
+          <p class="lead-step__title">Remise de votre avis de valeur</p>
+          <p class="lead-step__desc">Vous recevez un avis de valeur détaillé, basé sur le marché local et l'état de votre bien.</p>
+        </div>
       </div>
     </div>
 
-    <div class="lead-notes">
-      <span class="lead-field__label">Notes</span>
-      <p class="lead-field__value"><?= nl2br(e((string) ($lead['notes'] !== '' ? $lead['notes'] : 'Aucune note renseignée.'))) ?></p>
+    <div class="lead-thankyou-summary">
+      <p><strong>Récapitulatif de votre demande</strong></p>
+      <p><?= e((string) $lead['nom']) ?> &mdash; <?= e((string) $lead['ville']) ?> &mdash; <?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</p>
     </div>
 
     <div class="lead-actions">
-      <a href="/estimation" class="btn btn-primary">Faire une nouvelle estimation</a>
+      <a href="/" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+      <a href="/estimation" class="btn btn-ghost"><i class="fas fa-redo"></i> Nouvelle estimation</a>
     </div>
   </section>
 </div>

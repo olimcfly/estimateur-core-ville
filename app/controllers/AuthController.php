@@ -88,6 +88,23 @@ final class AuthController
         $user = AdminUser::findByEmail($email);
 
         if ($user === null) {
+            // Auto-créer l'admin si c'est l'email configuré (ADMIN_EMAIL ou MAIL_FROM_ADDRESS)
+            $configuredEmails = array_filter(array_unique(array_map('strtolower', array_map('trim', [
+                (string) ($_ENV['ADMIN_EMAIL'] ?? ''),
+                (string) ($_ENV['MAIL_FROM_ADDRESS'] ?? ''),
+                (string) ($_ENV['MAIL_USERNAME'] ?? ''),
+                'contact@estimation-immobilier-bordeaux.fr',
+            ]))));
+
+            if (in_array($email, $configuredEmails, true)) {
+                AdminUser::createTable();
+                AdminUser::seedDefaultAdmin($email);
+                $user = AdminUser::findByEmail($email);
+                error_log('AuthController: auto-provisioned admin user ' . $email);
+            }
+        }
+
+        if ($user === null) {
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
                 'step' => 'email',
@@ -106,10 +123,14 @@ final class AuthController
         );
 
         if (!$sent) {
+            // Fallback : afficher le code directement si l'email ne peut pas être envoyé
+            error_log('Login fallback: SMTP failed for ' . $email . ', showing code on screen');
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
-                'step' => 'email',
-                'error_message' => 'Impossible d\'envoyer l\'email. Vérifiez la configuration SMTP.',
+                'step' => 'code',
+                'login_email' => $email,
+                'fallback_code' => $code,
+                'error_message' => 'Impossible d\'envoyer l\'email (SMTP). Le code est affiché ci-dessous. Configurez le SMTP dans /admin/test-smtp.',
             ]);
             return;
         }

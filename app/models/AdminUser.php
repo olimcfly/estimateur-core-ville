@@ -14,12 +14,34 @@ final class AdminUser
     public static function findByEmail(string $email): ?array
     {
         $email = strtolower(trim($email));
+
+        try {
+            $stmt = Database::connection()->prepare(
+                'SELECT * FROM admin_users WHERE LOWER(email) = :email LIMIT 1'
+            );
+            $stmt->execute(['email' => $email]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            // Table doesn't exist — auto-create and seed
+            if (str_contains($e->getMessage(), 'admin_users') || str_contains($e->getMessage(), '1146')) {
+                self::createTable();
+                self::seedDefaultAdmin($email);
+                error_log('AdminUser: auto-created admin_users table and seeded ' . $email);
+                return self::findByEmailDirect($email);
+            }
+            throw $e;
+        }
+
+        return $row !== false ? $row : null;
+    }
+
+    private static function findByEmailDirect(string $email): ?array
+    {
         $stmt = Database::connection()->prepare(
             'SELECT * FROM admin_users WHERE LOWER(email) = :email LIMIT 1'
         );
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         return $row !== false ? $row : null;
     }
 

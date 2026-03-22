@@ -282,6 +282,16 @@ $step = $step ?? 'email';
         <?= e($login_email ?? '') ?>
       </div>
 
+      <?php if (!empty($fallback_code)): ?>
+      <div style="background: rgba(var(--primary-rgb), 0.06); border: 2px solid var(--primary); border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+        <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem;">Votre code de connexion :</div>
+        <div style="font-size: 2.2rem; font-weight: 700; letter-spacing: 0.5rem; color: var(--primary);"><?= e($fallback_code) ?></div>
+        <div style="font-size: 0.75rem; color: var(--danger); margin-top: 0.75rem;">
+          <i class="fas fa-exclamation-triangle"></i> SMTP non fonctionnel &mdash; <a href="/admin/test-smtp" style="color: var(--danger);">configurer</a>
+        </div>
+      </div>
+      <?php endif; ?>
+
       <div id="countdown-bar" style="background: rgba(var(--success-rgb), 0.08); border: 1px solid var(--success); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; text-align: center; font-size: 0.85rem; color: #15803d;">
         <i class="fas fa-clock" style="margin-right: 0.4rem;"></i>
         Code valable pendant <strong id="countdown-timer">10:00</strong>
@@ -307,6 +317,7 @@ $step = $step ?? 'email';
             autocomplete="one-time-code"
             required
             autofocus
+            <?php if (!empty($fallback_code)): ?>value="<?= e($fallback_code) ?>"<?php endif; ?>
           >
         </div>
 

@@ -47,6 +47,7 @@ $router->post('/admin/dev-skip-auth/toggle', [AuthController::class, 'toggleDevS
 // Protected admin routes
 $router->get('/admin', [AdminDashboardController::class, 'index']);
 $router->get('/admin/leads', [AdminLeadController::class, 'index']);
+$router->post('/admin/leads/create-table', [AdminLeadController::class, 'createTable']);
 $router->get('/admin/leads/{id}', [AdminLeadController::class, 'show']);
 $router->get('/admin/leads/edit/{id}', [AdminLeadController::class, 'edit']);
 $router->post('/admin/leads/update/{id}', [AdminLeadController::class, 'update']);
@@ -58,6 +59,7 @@ $router->post('/admin/leads/create-tables', [AdminLeadController::class, 'create
 
 // Admin funnel & portfolio
 $router->get('/admin/funnel', [AdminDashboardController::class, 'funnel']);
+$router->post('/admin/funnel/create-table', [AdminDashboardController::class, 'createLeadsTable']);
 $router->get('/admin/portfolio', [AdminDashboardController::class, 'portfolio']);
 $router->post('/admin/portfolio/commission', [AdminDashboardController::class, 'updateCommissionRate']);
 

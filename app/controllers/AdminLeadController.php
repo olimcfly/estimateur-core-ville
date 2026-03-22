@@ -13,61 +13,32 @@ use App\Models\Partenaire;
 
 final class AdminLeadController
 {
-    private const REQUIRED_TABLES = [
-        'leads' => [
-            'id', 'website_id', 'lead_type', 'nom', 'email', 'telephone',
-            'adresse', 'ville', 'type_bien', 'surface_m2', 'pieces',
-            'estimation', 'urgence', 'motivation', 'notes', 'partenaire_id',
-            'commission_taux', 'commission_montant', 'assigne_a',
-            'date_mandat', 'date_compromis', 'date_signature', 'prix_vente',
-            'score', 'statut', 'created_at',
-        ],
-        'lead_notes' => ['id', 'lead_id', 'content', 'author', 'created_at'],
-        'lead_activities' => ['id', 'lead_id', 'activity_type', 'description', 'created_at'],
-    ];
-
-    /**
-     * Check DB connection, tables, and columns status.
-     * @return array{connected: bool, tables: array<string, array{exists: bool, columns_ok: bool, missing_columns: string[], extra_columns: string[]}>}
-     */
-    private function diagnoseDatabase(): array
+    public function createTable(): void
     {
-        $result = ['connected' => false, 'tables' => []];
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
 
         try {
-            if (!Database::ping()) {
-                return $result;
-            }
-            $result['connected'] = true;
-        } catch (\Throwable) {
-            return $result;
-        }
-
-        $pdo = Database::connection();
-
-        foreach (self::REQUIRED_TABLES as $table => $expectedColumns) {
-            $tableInfo = ['exists' => false, 'columns_ok' => false, 'missing_columns' => [], 'extra_columns' => []];
-
-            if (!Database::tableExists($table)) {
-                $tableInfo['missing_columns'] = $expectedColumns;
-                $result['tables'][$table] = $tableInfo;
-                continue;
+            $pdo = Database::connection();
+            $sql = file_get_contents(dirname(__DIR__, 2) . '/database/migration_leads.sql');
+            if ($sql === false) {
+                throw new \RuntimeException('Fichier de migration introuvable.');
             }
 
-            $tableInfo['exists'] = true;
+            $sql = preg_replace('/--.*$/m', '', $sql);
+            $sql = trim($sql);
 
-            // Get actual columns
-            $stmt = $pdo->query("SHOW COLUMNS FROM `{$table}`");
-            $actualColumns = array_column($stmt->fetchAll(), 'Field');
+            if ($sql !== '') {
+                $pdo->exec($sql);
+            }
 
-            $tableInfo['missing_columns'] = array_values(array_diff($expectedColumns, $actualColumns));
-            $tableInfo['extra_columns'] = array_values(array_diff($actualColumns, $expectedColumns));
-            $tableInfo['columns_ok'] = empty($tableInfo['missing_columns']);
-
-            $result['tables'][$table] = $tableInfo;
+            $_SESSION['leads_flash'] = ['type' => 'success', 'message' => 'Table "leads" creee avec succes ! La page est maintenant fonctionnelle.'];
+        } catch (\Throwable $e) {
+            $_SESSION['leads_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];
         }
 
-        return $result;
+        header('Location: /admin/leads');
+        exit;
     }
 
     public function index(): void
@@ -76,26 +47,20 @@ final class AdminLeadController
 
         $leads = [];
         $dbError = null;
-        $dbDiag = $this->diagnoseDatabase();
-        $flash = $_SESSION['leads_flash'] ?? null;
-        unset($_SESSION['leads_flash']);
+        $tableExists = false;
 
-        $allTablesOk = $dbDiag['connected'];
-        if ($dbDiag['connected']) {
-            foreach ($dbDiag['tables'] as $info) {
-                if (!$info['exists'] || !$info['columns_ok']) {
-                    $allTablesOk = false;
-                    break;
-                }
-            }
+        try {
+            $tableExists = Database::tableExists('leads');
+        } catch (\Throwable $e) {
+            $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
         }
 
-        if ($allTablesOk) {
-            try {
-                $leadModel = new Lead();
-                $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
-                $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
-                $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
+        if ($tableExists) {
+        try {
+            $leadModel = new Lead();
+            $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
+            $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
+            $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
 
                 $leads = $leadModel->findAllLeads();
 
@@ -115,6 +80,7 @@ final class AdminLeadController
                 $dbError = 'Erreur lors du chargement des leads : ' . $e->getMessage();
             }
         }
+        } // end if ($tableExists)
 
         View::renderAdmin('admin/leads', [
             'page_title' => 'Leads - Admin CRM',
@@ -124,9 +90,7 @@ final class AdminLeadController
             'leads' => $leads,
             'leadCount' => count($leads),
             'dbError' => $dbError,
-            'dbDiag' => $dbDiag,
-            'allTablesOk' => $allTablesOk,
-            'flash' => $flash,
+            'tableExists' => $tableExists,
         ]);
     }
 

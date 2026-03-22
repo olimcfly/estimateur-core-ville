@@ -218,6 +218,34 @@ final class AdminDashboardController
         ]);
     }
 
+    public function createLeadsTable(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        try {
+            $pdo = Database::connection();
+            $sql = file_get_contents(dirname(__DIR__, 2) . '/database/migration_leads.sql');
+            if ($sql === false) {
+                throw new \RuntimeException('Fichier de migration introuvable.');
+            }
+
+            $sql = preg_replace('/--.*$/m', '', $sql);
+            $sql = trim($sql);
+
+            if ($sql !== '') {
+                $pdo->exec($sql);
+            }
+
+            $_SESSION['funnel_flash'] = ['type' => 'success', 'message' => 'Table "leads" creee avec succes ! La page est maintenant fonctionnelle.'];
+        } catch (\Throwable $e) {
+            $_SESSION['funnel_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];
+        }
+
+        header('Location: /admin/funnel');
+        exit;
+    }
+
     public function funnel(): void
     {
         AuthController::requireAuth();
@@ -230,7 +258,15 @@ final class AdminDashboardController
         $tendanceCount = 0;
         $monthlyData = [];
         $dbError = null;
+        $tableExists = false;
 
+        try {
+            $tableExists = Database::tableExists('leads');
+        } catch (\Throwable $e) {
+            $dbError = 'Erreur base de données. Vérifiez la connexion dans la page Diagnostic.';
+        }
+
+        if ($tableExists) {
         try {
             $pdo = Database::connection();
             $websiteId = (int) Config::get('website.id', 1);
@@ -286,6 +322,7 @@ final class AdminDashboardController
             error_log('Funnel DB error: ' . $e->getMessage());
             $dbError = 'Erreur base de données. Vérifiez la connexion dans la page Diagnostic.';
         }
+        } // end if ($tableExists)
 
         View::renderAdmin('admin/funnel', [
             'page_title' => 'Entonnoir de Vente - Admin CRM',
@@ -300,6 +337,7 @@ final class AdminDashboardController
             'totalValeur' => $totalValeur,
             'monthlyData' => $monthlyData,
             'dbError' => $dbError,
+            'tableExists' => $tableExists,
         ]);
     }
 

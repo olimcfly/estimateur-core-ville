@@ -614,8 +614,7 @@ final class AdminLeadController
                     author VARCHAR(120) NOT NULL DEFAULT 'Admin',
                     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     INDEX idx_lead_id (lead_id),
-                    INDEX idx_created_at (created_at),
-                    CONSTRAINT fk_lead_notes_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+                    INDEX idx_created_at (created_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
             }
 
@@ -628,8 +627,7 @@ final class AdminLeadController
                     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     INDEX idx_lead_id (lead_id),
                     INDEX idx_activity_type (activity_type),
-                    INDEX idx_created_at (created_at),
-                    CONSTRAINT fk_lead_activities_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+                    INDEX idx_created_at (created_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
             }
         } catch (\Throwable) {

@@ -651,10 +651,15 @@
                   ?>
                   <tr>
                     <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
+                    <td><span class="leads-badge <?= $typeClass ?>"><?= $typeLabel ?></span></td>
                     <td style="font-weight: 500;"><?= e((string) $lead['nom']) ?></td>
                     <td><?= e((string) $lead['email']) ?></td>
                     <td><?= e((string) $lead['telephone']) ?></td>
+                    <td><?= e((string) ($lead['adresse'] ?? '')) ?></td>
                     <td><?= e((string) $lead['ville']) ?></td>
+                    <td><?= e((string) ($lead['type_bien'] ?? '')) ?></td>
+                    <td><?= $lead['surface_m2'] ? e((string) $lead['surface_m2']) . ' m²' : '' ?></td>
+                    <td><?= $lead['pieces'] ? e((string) $lead['pieces']) : '' ?></td>
                     <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
                     <td><?= e((string) $lead['urgence']) ?></td>
                     <td><?= e((string) $lead['motivation']) ?></td>
@@ -681,40 +686,16 @@
                             'assigne_autre' => 'Assigné',
                           ];
                           foreach ($allStatuts as $sKey => $sLabel): ?>
-                            <option value="<?= $sKey ?>" <?= $statut === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
+                            <option value="<?= $sKey ?>" <?= $statutKey === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
                           <?php endforeach; ?>
                       </select>
                     </td>
                     <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
+                    <td class="leads-actions-cell">
+                      <a href="/admin/leads/<?= $leadId ?>" class="leads-action-btn view" title="Voir"><i class="fas fa-eye"></i></a>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($allLeads as $lead): ?>
-                    <?php
-                      $scoreClass = 'leads-badge-froid';
-                      $score = strtolower($lead['score'] ?? '');
-                      if ($score === 'chaud') $scoreClass = 'leads-badge-chaud';
-                      elseif ($score === 'tiede' || $score === 'tiède') $scoreClass = 'leads-badge-tiede';
-
-                      $statutClass = 'leads-badge-nouveau';
-                      $statut = strtolower($lead['statut'] ?? '');
-                      if ($statut === 'contacte' || $statut === 'contacté') $statutClass = 'leads-badge-contacte';
-                      elseif ($statut === 'converti') $statutClass = 'leads-badge-converti';
-                    ?>
-                    <tr>
-                      <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
-                      <td style="font-weight: 500;"><?= e((string) $lead['nom']) ?></td>
-                      <td><?= e((string) $lead['email']) ?></td>
-                      <td><?= e((string) $lead['telephone']) ?></td>
-                      <td><?= e((string) $lead['ville']) ?></td>
-                      <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
-                      <td><?= e((string) $lead['urgence']) ?></td>
-                      <td><?= e((string) $lead['motivation']) ?></td>
-                      <td><span class="leads-badge <?= $scoreClass ?>"><?= e((string) $lead['score']) ?></span></td>
-                      <td><span class="leads-badge <?= $statutClass ?>"><?= e((string) $lead['statut']) ?></span></td>
-                      <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
-                    </tr>
-                  <?php endforeach; ?>
+                <?php endforeach; ?>
                 </tbody>
               </table>
             </div>

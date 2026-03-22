@@ -155,6 +155,11 @@
             </label>
           </div>
 
+          <label for="notes">
+            <span><i class="fas fa-comment-dots"></i> Informations complémentaires</span>
+            <textarea id="notes" name="notes" rows="3" placeholder="Travaux réalisés, particularités du bien, disponibilités pour la visite…" style="width: 100%; resize: vertical;"></textarea>
+          </label>
+
           <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
             <i class="fas fa-certificate"></i> Demander mon avis de valeur
           </button>

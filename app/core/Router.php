@@ -68,7 +68,15 @@ final class Router
             error_log('[router][trace] ' . $e->getTraceAsString());
             http_response_code(500);
             header('Content-Type: text/html; charset=utf-8');
-            echo '<h1>Erreur 500</h1><p>Une erreur interne est survenue. Veuillez réessayer plus tard.</p>';
+
+            if (!empty($_SESSION['admin_logged_in'])) {
+                echo '<h1>Erreur 500</h1>';
+                echo '<p><strong>Message :</strong> ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</p>';
+                echo '<p><strong>Fichier :</strong> ' . htmlspecialchars($e->getFile(), ENT_QUOTES, 'UTF-8') . ':' . $e->getLine() . '</p>';
+                echo '<pre style="background:#f5f5f5;padding:1rem;overflow:auto;font-size:0.8rem;">' . htmlspecialchars($e->getTraceAsString(), ENT_QUOTES, 'UTF-8') . '</pre>';
+            } else {
+                echo '<h1>Erreur 500</h1><p>Une erreur interne est survenue. Veuillez réessayer plus tard.</p>';
+            }
         }
     }
 

@@ -16,11 +16,12 @@
 <style>
   .leads-page-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
+    min-width: 0;
   }
 
   .leads-page-header h1 {
@@ -84,6 +85,7 @@
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: var(--admin-radius, 12px);
     overflow: hidden;
+    max-width: 100%;
   }
 
   .leads-table-header {
@@ -309,16 +311,104 @@
 
   .leads-link-btn:hover { opacity: 0.9; }
 
-  .leads-inline-select {
-    padding: 0.25rem 0.4rem;
+  /* ── View Switcher ── */
+  .leads-view-switcher {
+    display: inline-flex;
+    background: var(--admin-surface, #ffffff);
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .leads-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: none;
+    background: transparent;
+    color: var(--admin-muted, #6b6459);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .leads-view-btn:not(:last-child) {
+    border-right: 1px solid var(--admin-border, #e8dfd7);
+  }
+
+  .leads-view-btn:hover {
+    background: #f8fafc;
+    color: var(--admin-text, #1a1410);
+  }
+
+  .leads-view-btn.active {
+    background: var(--admin-primary, #8B1538);
+    color: #fff;
+  }
+
+  /* ── Grille (Cards) View ── */
+  .leads-grille-view {
+    display: none;
+    padding: 1.25rem;
+  }
+
+  .leads-grille-view.visible { display: block; }
+
+  .leads-grille-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .leads-card {
+    background: var(--admin-surface, #ffffff);
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: 4px;
     font-size: 0.75rem;
     font-family: inherit;
     color: var(--admin-text, #1a1410);
-    background: #fff;
-    cursor: pointer;
-    transition: border-color 0.15s;
+    margin: 0;
+    text-align: right;
+  }
+
+  .leads-card-footer {
+    border-top: 1px solid var(--admin-border, #e8dfd7);
+    padding-top: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--admin-muted, #6b6459);
+  }
+
+  /* ── Kanban View ── */
+  .leads-kanban-view {
+    display: none;
+    padding: 1.25rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .leads-kanban-view.visible { display: block; }
+
+  .leads-kanban-board {
+    display: inline-flex;
+    gap: 1rem;
+  }
+
+  .leads-kanban-col {
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    background: #f8fafc;
+    border-radius: var(--admin-radius, 12px);
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
   }
 
   .leads-inline-select:focus {

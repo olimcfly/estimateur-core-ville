@@ -159,7 +159,7 @@
 
 <div class="form-card">
   <form method="POST" action="/admin/partenaires/save">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
     <?php if ($isEdit): ?>
       <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
     <?php endif; ?>

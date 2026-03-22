@@ -1,12 +1,41 @@
 <div style="max-width: 960px;">
 
-  <h2 style="margin-bottom: 0.5rem;"><i class="fas fa-bullhorn" style="color: var(--primary);"></i> Guide Google Ads & Pages de Destination</h2>
-  <p class="muted" style="margin-bottom: 2.5rem;">Bonnes pratiques, tracking UTM, et configuration de vos campagnes Google Ads.</p>
+  <!-- ═══════════════ HERO HEADER ═══════════════ -->
+  <div class="guide-hero">
+    <h2><i class="fas fa-bullhorn"></i> Guide Google Ads & Pages de Destination</h2>
+    <p>Bonnes pratiques, tracking UTM, et configuration de vos campagnes Google Ads.</p>
+    <div class="guide-hero-badges">
+      <span class="guide-hero-badge"><i class="fas fa-file-alt"></i> 3 landing pages</span>
+      <span class="guide-hero-badge"><i class="fas fa-chart-line"></i> Tracking UTM</span>
+      <span class="guide-hero-badge"><i class="fas fa-bullseye"></i> Conversion optimisée</span>
+      <span class="guide-hero-badge"><i class="fas fa-mobile-alt"></i> Mobile-first</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TABLE OF CONTENTS ═══════════════ -->
+  <div class="guide-toc">
+    <div class="guide-toc-title"><i class="fas fa-compass"></i> Sommaire du guide</div>
+    <div class="guide-toc-grid">
+      <a href="#guide-s1" class="guide-toc-item"><span class="guide-toc-num">1</span> Pages de destination disponibles</a>
+      <a href="#guide-s6" class="guide-toc-item"><span class="guide-toc-num">6</span> Structure des annonces</a>
+      <a href="#guide-s2" class="guide-toc-item"><span class="guide-toc-num">2</span> Paramètres UTM & Tracking</a>
+      <a href="#guide-s7" class="guide-toc-item"><span class="guide-toc-num">7</span> Suggestions de mots-clés</a>
+      <a href="#guide-s3" class="guide-toc-item"><span class="guide-toc-num">3</span> Configuration Google Ads</a>
+      <a href="#guide-s8" class="guide-toc-item"><span class="guide-toc-num">8</span> Budget & Enchères</a>
+      <a href="#guide-s4" class="guide-toc-item"><span class="guide-toc-num">4</span> Pixel Google Ads</a>
+      <a href="#guide-s9" class="guide-toc-item"><span class="guide-toc-num">9</span> Erreurs à éviter</a>
+      <a href="#guide-s5" class="guide-toc-item"><span class="guide-toc-num">5</span> Quality Score</a>
+      <a href="#guide-s10" class="guide-toc-item"><span class="guide-toc-num">10</span> KPIs à suivre</a>
+    </div>
+  </div>
 
   <!-- ═══════════════ SECTION 1 : PAGES DISPONIBLES ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-file-alt"></i> Pages de destination disponibles</h3>
-    <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--muted);">
+  <div class="guide-section" id="guide-s1">
+    <div class="guide-section-header">
+      <span class="guide-section-num">1</span>
+      <h3><i class="fas fa-file-alt"></i> Pages de destination disponibles</h3>
+    </div>
+    <p class="guide-section-desc">
       Chaque landing page est optimisée pour un groupe de mots-clés spécifique. Utilisez l'URL correspondante dans vos annonces Google Ads.
     </p>
 
@@ -49,9 +78,12 @@
   </div>
 
   <!-- ═══════════════ SECTION 2 : UTM TRACKING ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-chart-pie"></i> Paramètres UTM & Tracking</h3>
-    <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--muted);">
+  <div class="guide-section" id="guide-s2">
+    <div class="guide-section-header">
+      <span class="guide-section-num">2</span>
+      <h3><i class="fas fa-chart-pie"></i> Paramètres UTM & Tracking</h3>
+    </div>
+    <p class="guide-section-desc">
       Les paramètres UTM permettent de tracer l'origine exacte de chaque lead dans votre CRM.
       Ils sont automatiquement capturés et sauvegardés dans les notes du lead.
     </p>
@@ -98,7 +130,7 @@
       </tbody>
     </table>
 
-    <h4 style="margin: 1.5rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">Exemple d'URL complète avec UTM :</h4>
+    <h4>Exemple d'URL complète avec UTM :</h4>
     <div class="guide-code">
 <span class="string">https://estimation-immobilier-bordeaux.fr/lp/estimation-bordeaux</span>
   <span class="tag">?utm_source=</span><span class="string">google</span>
@@ -117,17 +149,20 @@
   </div>
 
   <!-- ═══════════════ SECTION 3 : CONFIG GOOGLE ADS ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-cog"></i> Configuration dans Google Ads</h3>
+  <div class="guide-section" id="guide-s3">
+    <div class="guide-section-header">
+      <span class="guide-section-num">3</span>
+      <h3><i class="fas fa-cog"></i> Configuration dans Google Ads</h3>
+    </div>
 
-    <h4 style="margin: 1rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">1. Activer l'auto-tagging (gclid)</h4>
-    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem;">
+    <h4><span class="guide-step-badge">1</span> Activer l'auto-tagging (gclid)</h4>
+    <p class="guide-section-desc">
       Dans Google Ads &rarr; Paramètres du compte &rarr; Cochez <strong>"Marquage automatique"</strong>.
       Cela ajoute automatiquement le paramètre <code>gclid</code> à chaque clic, ce qui permet le suivi des conversions.
     </p>
 
-    <h4 style="margin: 1rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">2. Configurer les modèles de suivi (Tracking Template)</h4>
-    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 0.5rem;">
+    <h4><span class="guide-step-badge">2</span> Configurer les modèles de suivi (Tracking Template)</h4>
+    <p class="guide-section-desc">
       Au niveau de la campagne ou du groupe d'annonces, configurez le modèle de suivi :
     </p>
     <div class="guide-code">
@@ -135,8 +170,8 @@
 <span class="string">{lpurl}?utm_source=google&amp;utm_medium=cpc&amp;utm_campaign={campaignid}&amp;utm_term={keyword}&amp;utm_content={creative}</span>
     </div>
 
-    <h4 style="margin: 1rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">3. URL finale dans l'annonce</h4>
-    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 0.5rem;">
+    <h4><span class="guide-step-badge">3</span> URL finale dans l'annonce</h4>
+    <p class="guide-section-desc">
       Dans le champ "URL finale" de chaque annonce, utilisez l'URL de la landing page correspondante :
     </p>
     <div class="guide-code">
@@ -150,8 +185,8 @@
 <span class="string">https://estimation-immobilier-bordeaux.fr/lp/avis-valeur-gratuit</span>
     </div>
 
-    <h4 style="margin: 1rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">4. Configurer le suivi de conversion</h4>
-    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem;">
+    <h4><span class="guide-step-badge">4</span> Configurer le suivi de conversion</h4>
+    <p class="guide-section-desc">
       Créez une action de conversion dans Google Ads &rarr; Outils &rarr; Conversions :
     </p>
     <ul class="guide-checklist">
@@ -171,10 +206,13 @@
   </div>
 
   <!-- ═══════════════ SECTION 4 : PIXEL GOOGLE ADS ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-code"></i> Installation du pixel Google Ads</h3>
+  <div class="guide-section" id="guide-s4">
+    <div class="guide-section-header">
+      <span class="guide-section-num">4</span>
+      <h3><i class="fas fa-code"></i> Installation du pixel Google Ads</h3>
+    </div>
 
-    <h4 style="margin: 1rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">Option A : Google Tag (gtag.js) direct</h4>
+    <h4>Option A : Google Tag (gtag.js) direct</h4>
     <div class="guide-code">
 <span class="comment">&lt;!-- Dans le &lt;head&gt; de layout.php --&gt;</span>
 <span class="tag">&lt;script</span> async src="https://www.googletagmanager.com/gtag/js?id=<span class="string">AW-VOTRE-ID</span>"<span class="tag">&gt;&lt;/script&gt;</span>
@@ -195,7 +233,7 @@
 <span class="tag">&lt;/script&gt;</span>
     </div>
 
-    <h4 style="margin: 1rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">Option B : Google Tag Manager (recommandé)</h4>
+    <h4>Option B : Google Tag Manager (recommandé)</h4>
     <div class="guide-code">
 <span class="comment">&lt;!-- Dans le &lt;head&gt; --&gt;</span>
 <span class="tag">&lt;script&gt;</span>
@@ -212,10 +250,13 @@
   </div>
 
   <!-- ═══════════════ SECTION 5 : BONNES PRATIQUES ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-star"></i> Bonnes pratiques Quality Score Google Ads</h3>
+  <div class="guide-section" id="guide-s5">
+    <div class="guide-section-header">
+      <span class="guide-section-num">5</span>
+      <h3><i class="fas fa-star"></i> Bonnes pratiques Quality Score</h3>
+    </div>
 
-    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 1.5rem;">
+    <p class="guide-section-desc">
       Le <strong>Quality Score</strong> (note de 1 à 10) détermine le coût et la position de vos annonces.
       Un score de <strong>7+</strong> réduit votre CPC de 20-30%. Voici les 3 composantes et comment les optimiser :
     </p>
@@ -251,7 +292,7 @@
       </tbody>
     </table>
 
-    <h4 style="margin: 1.5rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">Checklist d'optimisation :</h4>
+    <h4>Checklist d'optimisation :</h4>
 
     <ul class="guide-checklist">
       <li><i class="fas fa-check-circle"></i> <strong>Cohérence mot-clé &rarr; annonce &rarr; page :</strong> Le titre H1 de la landing page reprend le mot-clé de l'annonce</li>
@@ -268,16 +309,17 @@
   </div>
 
   <!-- ═══════════════ SECTION 6 : STRUCTURE ANNONCE ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-ad"></i> Structure recommandée des annonces</h3>
+  <div class="guide-section" id="guide-s6">
+    <div class="guide-section-header">
+      <span class="guide-section-num">6</span>
+      <h3><i class="fas fa-ad"></i> Structure recommandée des annonces</h3>
+    </div>
 
-    <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 1rem;">
+    <p class="guide-section-desc">
       Pour chaque page de destination, voici des exemples d'annonces Google Ads optimisées :
     </p>
 
-    <h4 style="margin: 1.5rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">
-      Campagne 1 : Estimation Immobilière Bordeaux
-    </h4>
+    <h4><span class="guide-step-badge">1</span> Campagne : Estimation Immobilière Bordeaux</h4>
     <div class="guide-code">
 <span class="keyword">Titre 1 :</span> <span class="string">Estimation Immobilière Bordeaux</span>
 <span class="keyword">Titre 2 :</span> <span class="string">Gratuite en 60 Secondes</span>
@@ -289,9 +331,7 @@
 <span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/estimation-bordeaux</span>
     </div>
 
-    <h4 style="margin: 1.5rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">
-      Campagne 2 : Vendre Maison Bordeaux
-    </h4>
+    <h4><span class="guide-step-badge">2</span> Campagne : Vendre Maison Bordeaux</h4>
     <div class="guide-code">
 <span class="keyword">Titre 1 :</span> <span class="string">Vendez Votre Maison à Bordeaux</span>
 <span class="keyword">Titre 2 :</span> <span class="string">Estimation Gratuite du Prix</span>
@@ -303,9 +343,7 @@
 <span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/vendre-maison-bordeaux</span>
     </div>
 
-    <h4 style="margin: 1.5rem 0 0.8rem; font-size: 0.95rem; font-weight: 700;">
-      Campagne 3 : Avis de Valeur Gratuit
-    </h4>
+    <h4><span class="guide-step-badge">3</span> Campagne : Avis de Valeur Gratuit</h4>
     <div class="guide-code">
 <span class="keyword">Titre 1 :</span> <span class="string">Avis de Valeur Gratuit Bordeaux</span>
 <span class="keyword">Titre 2 :</span> <span class="string">Sans Engagement</span>
@@ -319,8 +357,11 @@
   </div>
 
   <!-- ═══════════════ SECTION 7 : MOTS-CLÉS ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-search"></i> Suggestions de mots-clés par campagne</h3>
+  <div class="guide-section" id="guide-s7">
+    <div class="guide-section-header">
+      <span class="guide-section-num">7</span>
+      <h3><i class="fas fa-search"></i> Suggestions de mots-clés par campagne</h3>
+    </div>
 
     <table class="guide-table">
       <thead>
@@ -376,8 +417,11 @@
   </div>
 
   <!-- ═══════════════ SECTION 8 : BUDGET & ENCHÈRES ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-euro-sign"></i> Budget & Stratégie d'enchères recommandés</h3>
+  <div class="guide-section" id="guide-s8">
+    <div class="guide-section-header">
+      <span class="guide-section-num">8</span>
+      <h3><i class="fas fa-euro-sign"></i> Budget & Stratégie d'enchères</h3>
+    </div>
 
     <table class="guide-table">
       <thead>
@@ -418,8 +462,11 @@
   </div>
 
   <!-- ═══════════════ SECTION 9 : À NE PAS FAIRE ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-ban"></i> Erreurs à éviter</h3>
+  <div class="guide-section" id="guide-s9">
+    <div class="guide-section-header">
+      <span class="guide-section-num">9</span>
+      <h3><i class="fas fa-ban"></i> Erreurs à éviter</h3>
+    </div>
 
     <ul class="guide-checklist">
       <li><i class="fas fa-times-circle"></i> <strong>Envoyer vers la page d'accueil :</strong> Toujours utiliser une landing page dédiée, jamais la homepage</li>
@@ -434,8 +481,11 @@
   </div>
 
   <!-- ═══════════════ SECTION 10 : MESURER LES RÉSULTATS ═══════════════ -->
-  <div class="guide-section">
-    <h3><i class="fas fa-tachometer-alt"></i> KPIs à suivre</h3>
+  <div class="guide-section" id="guide-s10">
+    <div class="guide-section-header">
+      <span class="guide-section-num">10</span>
+      <h3><i class="fas fa-tachometer-alt"></i> KPIs à suivre</h3>
+    </div>
 
     <table class="guide-table">
       <thead>

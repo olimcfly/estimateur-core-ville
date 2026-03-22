@@ -60,6 +60,7 @@ $router->post('/admin/leads/update/{id}', [AdminLeadController::class, 'update']
 $router->post('/admin/leads/statut/{id}', [AdminLeadController::class, 'updateStatut']);
 $router->post('/admin/leads/note/{id}', [AdminLeadController::class, 'addNote']);
 $router->post('/admin/leads/note/delete/{id}', [AdminLeadController::class, 'deleteNote']);
+$router->post('/admin/leads/update-inline', [AdminLeadController::class, 'quickUpdate']);
 $router->post('/admin/leads/delete/{id}', [AdminLeadController::class, 'delete']);
 $router->post('/admin/leads/create-tables', [AdminLeadController::class, 'createTables']);
 

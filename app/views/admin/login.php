@@ -343,6 +343,12 @@ $step = $step ?? 'email';
         </a>
       </div>
 
+      <div style="text-align: center;">
+        <a href="https://estimation-immobilier-bordeaux.fr/webmail" target="_blank" rel="noopener" class="back-link" style="font-size: 0.8rem; opacity: 0.6;">
+          <i class="fas fa-envelope-open"></i>Accéder au webmail
+        </a>
+      </div>
+
       <script>
       (function() {
         var totalSeconds = 10 * 60;

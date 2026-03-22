@@ -43,6 +43,9 @@ $router->post('/admin/test-smtp/reset', [AuthController::class, 'testSmtpReset']
 $router->post('/admin/test-smtp/run', [AuthController::class, 'testSmtpRun']);
 $router->post('/admin/test-smtp/send', [AuthController::class, 'testSmtpSendEmail']);
 $router->post('/admin/dev-skip-auth/toggle', [AuthController::class, 'toggleDevSkipAuth']);
+$router->post('/admin/presence/heartbeat', [AuthController::class, 'presenceHeartbeat']);
+$router->post('/admin/presence/clear', [AuthController::class, 'presenceClear']);
+$router->get('/api/presence/check', [AuthController::class, 'presenceCheck']);
 
 // Protected admin routes
 $router->get('/admin', [AdminDashboardController::class, 'index']);

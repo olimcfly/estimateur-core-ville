@@ -157,3 +157,13 @@ CREATE TABLE IF NOT EXISTS actualites_cron_log (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_cron_log_website (website_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS admin_presence (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    admin_email VARCHAR(180) NOT NULL UNIQUE,
+    admin_name VARCHAR(120) NOT NULL DEFAULT '',
+    page_path VARCHAR(500) NOT NULL,
+    last_seen_at DATETIME NOT NULL,
+    INDEX idx_presence_page (page_path),
+    INDEX idx_presence_seen (last_seen_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

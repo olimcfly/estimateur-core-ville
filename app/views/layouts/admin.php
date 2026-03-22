@@ -502,6 +502,27 @@
     if (window.innerWidth > 1024) closeSidebar();
   });
 })();
+
+// Admin presence heartbeat - signals that admin is active on this page
+(function() {
+  var currentPage = window.location.pathname;
+
+  function sendHeartbeat() {
+    var fd = new FormData();
+    fd.append('page', currentPage);
+    fetch('/admin/presence/heartbeat', { method: 'POST', body: fd, credentials: 'same-origin' }).catch(function() {});
+  }
+
+  // Send immediately, then every 30 seconds
+  sendHeartbeat();
+  var heartbeatInterval = setInterval(sendHeartbeat, 30000);
+
+  // Clear presence when leaving the page
+  window.addEventListener('beforeunload', function() {
+    clearInterval(heartbeatInterval);
+    navigator.sendBeacon('/admin/presence/clear', '');
+  });
+})();
 </script>
 
 </body>

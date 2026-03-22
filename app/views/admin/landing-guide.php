@@ -2,8 +2,8 @@
 
   <!-- ═══════════════ HERO HEADER ═══════════════ -->
   <div class="guide-hero">
-    <h2><i class="fas fa-bullhorn"></i> Guide Google Ads & Pages de Destination</h2>
-    <p>Bonnes pratiques, tracking UTM, et configuration de vos campagnes Google Ads.</p>
+    <h2><i class="fas fa-bullhorn"></i> Guide Google Ads &<br>Pages de Destination</h2>
+    <p>Tout ce qu'il faut pour lancer, optimiser et suivre vos campagnes Google Ads avec vos landing pages.</p>
     <div class="guide-hero-badges">
       <span class="guide-hero-badge"><i class="fas fa-file-alt"></i> 3 landing pages</span>
       <span class="guide-hero-badge"><i class="fas fa-chart-line"></i> Tracking UTM</span>
@@ -205,6 +205,8 @@
     </div>
   </div>
 
+  <div class="guide-divider">Technique & Tracking</div>
+
   <!-- ═══════════════ SECTION 4 : PIXEL GOOGLE ADS ═══════════════ -->
   <div class="guide-section" id="guide-s4">
     <div class="guide-section-header">
@@ -308,6 +310,8 @@
     </ul>
   </div>
 
+  <div class="guide-divider">Campagnes & Mots-clés</div>
+
   <!-- ═══════════════ SECTION 6 : STRUCTURE ANNONCE ═══════════════ -->
   <div class="guide-section" id="guide-s6">
     <div class="guide-section-header">
@@ -319,8 +323,9 @@
       Pour chaque page de destination, voici des exemples d'annonces Google Ads optimisées :
     </p>
 
-    <h4><span class="guide-step-badge">1</span> Campagne : Estimation Immobilière Bordeaux</h4>
-    <div class="guide-code">
+    <div class="guide-ad-card">
+      <h4><span class="guide-step-badge">1</span> Campagne : Estimation Immobilière Bordeaux</h4>
+      <div class="guide-code">
 <span class="keyword">Titre 1 :</span> <span class="string">Estimation Immobilière Bordeaux</span>
 <span class="keyword">Titre 2 :</span> <span class="string">Gratuite en 60 Secondes</span>
 <span class="keyword">Titre 3 :</span> <span class="string">Résultat Immédiat</span>
@@ -329,10 +334,12 @@
 <span class="keyword">Description 2 :</span> <span class="string">Plus de 2 400 estimations réalisées à Bordeaux. Note 4.8/5. Un expert vous rappelle sous 24h.</span>
 
 <span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/estimation-bordeaux</span>
+      </div>
     </div>
 
-    <h4><span class="guide-step-badge">2</span> Campagne : Vendre Maison Bordeaux</h4>
-    <div class="guide-code">
+    <div class="guide-ad-card">
+      <h4><span class="guide-step-badge">2</span> Campagne : Vendre Maison Bordeaux</h4>
+      <div class="guide-code">
 <span class="keyword">Titre 1 :</span> <span class="string">Vendez Votre Maison à Bordeaux</span>
 <span class="keyword">Titre 2 :</span> <span class="string">Estimation Gratuite du Prix</span>
 <span class="keyword">Titre 3 :</span> <span class="string">Accompagnement Expert</span>
@@ -341,10 +348,12 @@
 <span class="keyword">Description 2 :</span> <span class="string">Fixez le bon prix dès le départ. Rappel expert sous 24h. Service 100% gratuit, sans engagement.</span>
 
 <span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/vendre-maison-bordeaux</span>
+      </div>
     </div>
 
-    <h4><span class="guide-step-badge">3</span> Campagne : Avis de Valeur Gratuit</h4>
-    <div class="guide-code">
+    <div class="guide-ad-card">
+      <h4><span class="guide-step-badge">3</span> Campagne : Avis de Valeur Gratuit</h4>
+      <div class="guide-code">
 <span class="keyword">Titre 1 :</span> <span class="string">Avis de Valeur Gratuit Bordeaux</span>
 <span class="keyword">Titre 2 :</span> <span class="string">Sans Engagement</span>
 <span class="keyword">Titre 3 :</span> <span class="string">Expert Immobilier Local</span>
@@ -353,6 +362,7 @@
 <span class="keyword">Description 2 :</span> <span class="string">Idéal pour vente, succession ou divorce. Avis professionnel affiné par un expert. Résultat sous 24h.</span>
 
 <span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/avis-valeur-gratuit</span>
+      </div>
     </div>
   </div>
 
@@ -416,6 +426,8 @@
     </div>
   </div>
 
+  <div class="guide-divider">Budget & Optimisation</div>
+
   <!-- ═══════════════ SECTION 8 : BUDGET & ENCHÈRES ═══════════════ -->
   <div class="guide-section" id="guide-s8">
     <div class="guide-section-header">
@@ -462,7 +474,7 @@
   </div>
 
   <!-- ═══════════════ SECTION 9 : À NE PAS FAIRE ═══════════════ -->
-  <div class="guide-section" id="guide-s9">
+  <div class="guide-section guide-section--danger" id="guide-s9">
     <div class="guide-section-header">
       <span class="guide-section-num">9</span>
       <h3><i class="fas fa-ban"></i> Erreurs à éviter</h3>
@@ -481,13 +493,13 @@
   </div>
 
   <!-- ═══════════════ SECTION 10 : MESURER LES RÉSULTATS ═══════════════ -->
-  <div class="guide-section" id="guide-s10">
+  <div class="guide-section guide-section--highlight" id="guide-s10">
     <div class="guide-section-header">
       <span class="guide-section-num">10</span>
       <h3><i class="fas fa-tachometer-alt"></i> KPIs à suivre</h3>
     </div>
 
-    <table class="guide-table">
+    <table class="guide-table guide-table--kpi">
       <thead>
         <tr>
           <th>KPI</th>

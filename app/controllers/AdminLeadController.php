@@ -62,22 +62,23 @@ final class AdminLeadController
             $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
             $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
 
-            $leads = $leadModel->findAllLeads();
+                $leads = $leadModel->findAllLeads();
 
-            if ($typeFilter !== null && in_array($typeFilter, ['tendance', 'qualifie'], true)) {
-                $leads = array_filter($leads, fn($l) => ($l['lead_type'] ?? '') === $typeFilter);
-                $leads = array_values($leads);
+                if ($typeFilter !== null && in_array($typeFilter, ['tendance', 'qualifie'], true)) {
+                    $leads = array_filter($leads, fn($l) => ($l['lead_type'] ?? '') === $typeFilter);
+                    $leads = array_values($leads);
+                }
+                if ($scoreFilter !== null && in_array($scoreFilter, ['chaud', 'tiede', 'froid'], true)) {
+                    $leads = array_filter($leads, fn($l) => ($l['score'] ?? '') === $scoreFilter);
+                    $leads = array_values($leads);
+                }
+                if ($statutFilter !== null) {
+                    $leads = array_filter($leads, fn($l) => ($l['statut'] ?? '') === $statutFilter);
+                    $leads = array_values($leads);
+                }
+            } catch (\Throwable $e) {
+                $dbError = 'Erreur lors du chargement des leads : ' . $e->getMessage();
             }
-            if ($scoreFilter !== null && in_array($scoreFilter, ['chaud', 'tiede', 'froid'], true)) {
-                $leads = array_filter($leads, fn($l) => ($l['score'] ?? '') === $scoreFilter);
-                $leads = array_values($leads);
-            }
-            if ($statutFilter !== null) {
-                $leads = array_filter($leads, fn($l) => ($l['statut'] ?? '') === $statutFilter);
-                $leads = array_values($leads);
-            }
-        } catch (\Throwable $e) {
-            $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
         }
         } // end if ($tableExists)
 
@@ -351,5 +352,171 @@ final class AdminLeadController
 
         header('Location: /admin/leads');
         exit;
+    }
+
+    public function createTables(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        $tables = isset($_POST['tables']) ? (array) $_POST['tables'] : [];
+        $created = [];
+
+        $sqlStatements = [
+            'leads' => "CREATE TABLE IF NOT EXISTS leads (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                website_id INT UNSIGNED NOT NULL,
+                lead_type ENUM('tendance','qualifie') NOT NULL DEFAULT 'qualifie',
+                nom VARCHAR(120) NULL DEFAULT NULL,
+                email VARCHAR(180) NULL DEFAULT NULL,
+                telephone VARCHAR(40) NULL DEFAULT NULL,
+                adresse VARCHAR(255) NULL DEFAULT NULL,
+                ville VARCHAR(120) NOT NULL,
+                type_bien VARCHAR(80) NULL,
+                surface_m2 DECIMAL(8,2) NULL,
+                pieces INT UNSIGNED NULL,
+                estimation DECIMAL(12,2) NOT NULL,
+                urgence VARCHAR(40) NULL DEFAULT NULL,
+                motivation VARCHAR(80) NULL DEFAULT NULL,
+                notes TEXT NULL,
+                partenaire_id INT UNSIGNED NULL,
+                commission_taux DECIMAL(5,2) NULL DEFAULT NULL,
+                commission_montant DECIMAL(12,2) NULL DEFAULT NULL,
+                assigne_a VARCHAR(180) NULL DEFAULT NULL,
+                date_mandat DATE NULL DEFAULT NULL,
+                date_compromis DATE NULL DEFAULT NULL,
+                date_signature DATE NULL DEFAULT NULL,
+                prix_vente DECIMAL(12,2) NULL DEFAULT NULL,
+                score ENUM('chaud','tiede','froid') NOT NULL DEFAULT 'froid',
+                statut ENUM('nouveau','contacte','rdv_pris','visite_realisee','mandat_simple','mandat_exclusif','compromis_vente','signe','co_signature_partenaire','assigne_autre') NOT NULL DEFAULT 'nouveau',
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_website_id (website_id),
+                INDEX idx_lead_type (lead_type),
+                INDEX idx_email (email),
+                INDEX idx_statut (statut),
+                INDEX idx_created_at (created_at),
+                INDEX idx_partenaire_id (partenaire_id),
+                INDEX idx_date_signature (date_signature)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            'lead_notes' => "CREATE TABLE IF NOT EXISTS lead_notes (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT UNSIGNED NOT NULL,
+                content TEXT NOT NULL,
+                author VARCHAR(120) NOT NULL DEFAULT 'Admin',
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_created_at (created_at),
+                CONSTRAINT fk_lead_notes_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            'lead_activities' => "CREATE TABLE IF NOT EXISTS lead_activities (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT UNSIGNED NOT NULL,
+                activity_type VARCHAR(50) NOT NULL,
+                description TEXT NOT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_activity_type (activity_type),
+                INDEX idx_created_at (created_at),
+                CONSTRAINT fk_lead_activities_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+        ];
+
+        try {
+            $pdo = Database::connection();
+
+            // Ensure 'leads' is created first (other tables depend on it)
+            if (in_array('lead_notes', $tables, true) || in_array('lead_activities', $tables, true)) {
+                if (!in_array('leads', $tables, true) && !Database::tableExists('leads')) {
+                    array_unshift($tables, 'leads');
+                }
+            }
+
+            foreach ($tables as $table) {
+                if (!isset($sqlStatements[$table])) {
+                    continue;
+                }
+
+                if (Database::tableExists($table)) {
+                    $this->addMissingColumns($pdo, $table);
+                    $created[] = $table . ' (colonnes mises à jour)';
+                    continue;
+                }
+
+                $pdo->exec($sqlStatements[$table]);
+                $created[] = $table;
+            }
+
+            if (!empty($created)) {
+                $_SESSION['leads_flash'] = ['type' => 'success', 'message' => 'Tables créées avec succès : ' . implode(', ', $created)];
+            }
+        } catch (\Throwable $e) {
+            $_SESSION['leads_flash'] = ['type' => 'error', 'message' => 'Erreur : ' . $e->getMessage()];
+        }
+
+        header('Location: /admin/leads');
+        exit;
+    }
+
+    private function addMissingColumns(\PDO $pdo, string $table): void
+    {
+        if (!isset(self::REQUIRED_TABLES[$table])) {
+            return;
+        }
+
+        $stmt = $pdo->query("SHOW COLUMNS FROM `{$table}`");
+        $actualColumns = array_column($stmt->fetchAll(), 'Field');
+        $missing = array_diff(self::REQUIRED_TABLES[$table], $actualColumns);
+
+        $columnDefs = [
+            'leads' => [
+                'website_id' => 'INT UNSIGNED NOT NULL DEFAULT 1',
+                'lead_type' => "ENUM('tendance','qualifie') NOT NULL DEFAULT 'qualifie'",
+                'nom' => 'VARCHAR(120) NULL DEFAULT NULL',
+                'email' => 'VARCHAR(180) NULL DEFAULT NULL',
+                'telephone' => 'VARCHAR(40) NULL DEFAULT NULL',
+                'adresse' => 'VARCHAR(255) NULL DEFAULT NULL',
+                'ville' => 'VARCHAR(120) NOT NULL DEFAULT \'Bordeaux\'',
+                'type_bien' => 'VARCHAR(80) NULL',
+                'surface_m2' => 'DECIMAL(8,2) NULL',
+                'pieces' => 'INT UNSIGNED NULL',
+                'estimation' => 'DECIMAL(12,2) NOT NULL DEFAULT 0',
+                'urgence' => 'VARCHAR(40) NULL DEFAULT NULL',
+                'motivation' => 'VARCHAR(80) NULL DEFAULT NULL',
+                'notes' => 'TEXT NULL',
+                'partenaire_id' => 'INT UNSIGNED NULL',
+                'commission_taux' => 'DECIMAL(5,2) NULL DEFAULT NULL',
+                'commission_montant' => 'DECIMAL(12,2) NULL DEFAULT NULL',
+                'assigne_a' => 'VARCHAR(180) NULL DEFAULT NULL',
+                'date_mandat' => 'DATE NULL DEFAULT NULL',
+                'date_compromis' => 'DATE NULL DEFAULT NULL',
+                'date_signature' => 'DATE NULL DEFAULT NULL',
+                'prix_vente' => 'DECIMAL(12,2) NULL DEFAULT NULL',
+                'score' => "ENUM('chaud','tiede','froid') NOT NULL DEFAULT 'froid'",
+                'statut' => "ENUM('nouveau','contacte','rdv_pris','visite_realisee','mandat_simple','mandat_exclusif','compromis_vente','signe','co_signature_partenaire','assigne_autre') NOT NULL DEFAULT 'nouveau'",
+                'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            ],
+            'lead_notes' => [
+                'lead_id' => 'INT UNSIGNED NOT NULL',
+                'content' => 'TEXT NOT NULL',
+                'author' => "VARCHAR(120) NOT NULL DEFAULT 'Admin'",
+                'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            ],
+            'lead_activities' => [
+                'lead_id' => 'INT UNSIGNED NOT NULL',
+                'activity_type' => 'VARCHAR(50) NOT NULL',
+                'description' => 'TEXT NOT NULL',
+                'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            ],
+        ];
+
+        foreach ($missing as $col) {
+            if ($col === 'id') {
+                continue;
+            }
+            $def = $columnDefs[$table][$col] ?? 'TEXT NULL';
+            $pdo->exec("ALTER TABLE `{$table}` ADD COLUMN `{$col}` {$def}");
+        }
     }
 }

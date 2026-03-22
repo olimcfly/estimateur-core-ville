@@ -1,5 +1,5 @@
-<?php $page_title = 'Estimation Immobilier Bordeaux | Avis de Valeur Gratuit'; ?>
-<?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
+<?php $page_title = 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit'; ?>
+<?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux et Métropole en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -12,7 +12,7 @@
         <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
       </p>
 
-      <h1>Estimez la valeur de votre bien immobilier à Bordeaux</h1>
+      <h1>Estimez la valeur de votre bien immobilier à Bordeaux et Métropole</h1>
 
       <p class="lead">
         Obtenez une fourchette de prix indicative en quelques secondes.
@@ -40,7 +40,7 @@
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
         <p style="margin: 0; font-style: italic; color: var(--text); line-height: 1.6;">
-          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux !"
+          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et Métropole !"
         </p>
         <p style="margin: 0.8rem 0 0; font-size: 0.85rem; color: var(--muted); font-weight: 600;">
           — Marie D. • Bordeaux Chartrons

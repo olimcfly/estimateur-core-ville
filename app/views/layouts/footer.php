@@ -29,10 +29,10 @@
       <div class="footer-column footer-col-brand">
         <a href="/" class="footer-logo-link">
           <span class="footer-logo-icon"><i class="fas fa-home"></i></span>
-          <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux</strong></span>
+          <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux et Métropole</strong></span>
         </a>
         <p class="footer-desc">
-          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et la métropole bordelaise depuis 2020.
+          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et Métropole depuis 2020.
         </p>
         <div class="footer-social">
           <a href="https://facebook.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
@@ -120,7 +120,7 @@
     <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
       <div class="footer-bottom-left">
-        <p>&copy; 2026 Estimation Immobilier Bordeaux &mdash; SAS OCDM Agency. Tous droits réservés.</p>
+        <p>&copy; 2026 Estimation Immobilier Bordeaux et Métropole &mdash; SAS OCDM Agency. Tous droits réservés.</p>
       </div>
       <div class="footer-bottom-right">
         <div class="footer-trust">

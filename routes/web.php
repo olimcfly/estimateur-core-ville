@@ -55,6 +55,7 @@ $router->post('/admin/leads/statut/{id}', [AdminLeadController::class, 'updateSt
 $router->post('/admin/leads/note/{id}', [AdminLeadController::class, 'addNote']);
 $router->post('/admin/leads/note/delete/{id}', [AdminLeadController::class, 'deleteNote']);
 $router->post('/admin/leads/delete/{id}', [AdminLeadController::class, 'delete']);
+$router->post('/admin/leads/create-tables', [AdminLeadController::class, 'createTables']);
 
 // Admin funnel & portfolio
 $router->get('/admin/funnel', [AdminDashboardController::class, 'funnel']);

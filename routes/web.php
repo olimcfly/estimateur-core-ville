@@ -63,9 +63,10 @@ $router->post('/admin/leads/note/delete/{id}', [AdminLeadController::class, 'del
 $router->post('/admin/leads/delete/{id}', [AdminLeadController::class, 'delete']);
 $router->post('/admin/leads/create-tables', [AdminLeadController::class, 'createTables']);
 
-// Admin funnel & portfolio
+// Admin funnel, pipeline & portfolio
 $router->get('/admin/funnel', [AdminDashboardController::class, 'funnel']);
 $router->post('/admin/funnel/create-table', [AdminDashboardController::class, 'createLeadsTable']);
+$router->get('/admin/pipeline', [EstimationController::class, 'pipeline']);
 $router->get('/admin/portfolio', [AdminDashboardController::class, 'portfolio']);
 $router->post('/admin/portfolio/commission', [AdminDashboardController::class, 'updateCommissionRate']);
 

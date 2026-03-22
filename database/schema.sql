@@ -100,11 +100,14 @@ CREATE TABLE IF NOT EXISTS admin_users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(180) NOT NULL UNIQUE,
     name VARCHAR(120) NOT NULL DEFAULT '',
+    role ENUM('superuser', 'admin') NOT NULL DEFAULT 'admin',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
     login_code VARCHAR(255) DEFAULT NULL,
     login_code_expires_at DATETIME DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_admin_email (email)
+    INDEX idx_admin_email (email),
+    INDEX idx_admin_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
@@ -156,6 +159,40 @@ CREATE TABLE IF NOT EXISTS actualites_cron_log (
     error_message TEXT DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_cron_log_website (website_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS admin_modules (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(180) NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    icon VARCHAR(80) NOT NULL DEFAULT 'fa-puzzle-piece',
+    category VARCHAR(60) NOT NULL DEFAULT 'general',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    superuser_only TINYINT(1) NOT NULL DEFAULT 0,
+    sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_module_active (is_active),
+    INDEX idx_module_category (category)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS admin_notifications (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL DEFAULT '',
+    type ENUM('info', 'success', 'warning', 'error', 'lead', 'system') NOT NULL DEFAULT 'info',
+    link VARCHAR(500) DEFAULT NULL,
+    is_read TINYINT(1) NOT NULL DEFAULT 0,
+    target_role ENUM('all', 'superuser', 'admin') NOT NULL DEFAULT 'all',
+    target_user_id INT UNSIGNED DEFAULT NULL,
+    created_by VARCHAR(180) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_notif_read (is_read),
+    INDEX idx_notif_type (type),
+    INDEX idx_notif_target (target_role),
+    INDEX idx_notif_created (created_at),
+    INDEX idx_notif_user (target_user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS admin_presence (

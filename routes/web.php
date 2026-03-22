@@ -16,7 +16,10 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminModuleController;
+use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
@@ -171,3 +174,23 @@ $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
 $router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);
+
+// Admin module management routes (superuser only)
+$router->get('/admin/modules', [AdminModuleController::class, 'index']);
+$router->post('/admin/modules/toggle', [AdminModuleController::class, 'toggle']);
+$router->post('/admin/modules/update', [AdminModuleController::class, 'update']);
+$router->post('/admin/modules/seed', [AdminModuleController::class, 'seedModules']);
+
+// Admin user management routes (superuser only)
+$router->get('/admin/users', [AdminUserController::class, 'index']);
+$router->post('/admin/users/create', [AdminUserController::class, 'create']);
+$router->post('/admin/users/update', [AdminUserController::class, 'update']);
+$router->post('/admin/users/delete', [AdminUserController::class, 'delete']);
+
+// Admin internal notifications routes
+$router->get('/admin/notifications', [AdminNotificationController::class, 'index']);
+$router->get('/admin/notifications/fetch', [AdminNotificationController::class, 'fetch']);
+$router->post('/admin/notifications/read', [AdminNotificationController::class, 'markRead']);
+$router->post('/admin/notifications/read-all', [AdminNotificationController::class, 'markAllRead']);
+$router->post('/admin/notifications/delete', [AdminNotificationController::class, 'delete']);
+$router->post('/admin/notifications/cleanup', [AdminNotificationController::class, 'cleanup']);

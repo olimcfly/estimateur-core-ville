@@ -12,7 +12,8 @@ error_reporting(E_ALL);
 
 header('Content-Type: text/html; charset=utf-8');
 
-require_once __DIR__ . '/app/core/bootstrap.php';
+$projectRoot = dirname(__DIR__);
+require_once $projectRoot . '/app/core/bootstrap.php';
 
 use App\Core\Config;
 use App\Core\Database;
@@ -40,7 +41,7 @@ foreach (['pdo', 'pdo_mysql', 'mbstring', 'json'] as $ext) {
 }
 
 // ── 3. Fichier .env ──
-$envFile = __DIR__ . '/.env';
+$envFile = $projectRoot . '/.env';
 $envExists = is_file($envFile);
 $checks[] = [
     'label' => 'Fichier .env',
@@ -162,7 +163,7 @@ $criticalFiles = [
 ];
 
 foreach ($criticalFiles as $file => $desc) {
-    $path = __DIR__ . '/' . $file;
+    $path = $projectRoot . '/' . $file;
     $exists = is_file($path);
     $checks[] = [
         'label' => "Fichier : $desc",

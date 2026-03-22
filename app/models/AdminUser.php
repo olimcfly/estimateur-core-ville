@@ -13,8 +13,9 @@ final class AdminUser
 
     public static function findByEmail(string $email): ?array
     {
+        $email = strtolower(trim($email));
         $stmt = Database::connection()->prepare(
-            'SELECT * FROM admin_users WHERE email = :email LIMIT 1'
+            'SELECT * FROM admin_users WHERE LOWER(email) = :email LIMIT 1'
         );
         $stmt->execute(['email' => $email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -24,10 +25,11 @@ final class AdminUser
 
     public static function storeLoginCode(string $email, string $code): void
     {
+        $email = strtolower(trim($email));
         $expiresAt = date('Y-m-d H:i:s', time() + self::CODE_TTL_MINUTES * 60);
 
         $stmt = Database::connection()->prepare(
-            'UPDATE admin_users SET login_code = :code, login_code_expires_at = :expires WHERE email = :email'
+            'UPDATE admin_users SET login_code = :code, login_code_expires_at = :expires WHERE LOWER(email) = :email'
         );
         $stmt->execute([
             'code' => password_hash($code, PASSWORD_BCRYPT, ['cost' => 10]),
@@ -59,8 +61,9 @@ final class AdminUser
 
     public static function clearLoginCode(string $email): void
     {
+        $email = strtolower(trim($email));
         $stmt = Database::connection()->prepare(
-            'UPDATE admin_users SET login_code = NULL, login_code_expires_at = NULL WHERE email = :email'
+            'UPDATE admin_users SET login_code = NULL, login_code_expires_at = NULL WHERE LOWER(email) = :email'
         );
         $stmt->execute(['email' => $email]);
     }
@@ -88,6 +91,7 @@ final class AdminUser
 
     public static function seedDefaultAdmin(string $email): void
     {
+        $email = strtolower(trim($email));
         $existing = self::findByEmail($email);
         if ($existing !== null) {
             return;

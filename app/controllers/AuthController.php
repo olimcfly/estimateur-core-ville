@@ -71,7 +71,7 @@ final class AuthController
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
                 'step' => $action === 'verify_code' ? 'code' : 'email',
-                'login_email' => $action === 'verify_code' ? trim((string) ($_POST['email'] ?? '')) : '',
+                'login_email' => $action === 'verify_code' ? strtolower(trim((string) ($_POST['email'] ?? ''))) : '',
                 'error_message' => $message,
             ]);
         }
@@ -79,13 +79,13 @@ final class AuthController
 
     private function handleSendCode(): void
     {
-        $email = trim((string) ($_POST['email'] ?? ''));
+        $email = strtolower(trim((string) ($_POST['email'] ?? '')));
 
-        if ($email === '') {
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
                 'step' => 'email',
-                'error_message' => 'Veuillez saisir votre adresse email.',
+                'error_message' => $email === '' ? 'Veuillez saisir votre adresse email.' : 'Adresse email invalide.',
             ]);
             return;
         }
@@ -129,10 +129,10 @@ final class AuthController
 
     private function handleVerifyCode(): void
     {
-        $email = trim((string) ($_POST['email'] ?? ''));
+        $email = strtolower(trim((string) ($_POST['email'] ?? '')));
         $code = trim((string) ($_POST['code'] ?? ''));
 
-        if ($email === '' || $code === '') {
+        if ($email === '' || $code === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
                 'step' => 'email',

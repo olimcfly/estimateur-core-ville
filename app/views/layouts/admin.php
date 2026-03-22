@@ -392,7 +392,10 @@
       <i class="fas fa-users"></i> Leads
     </a>
     <a href="/admin/funnel" class="admin-sidebar-link <?= ($admin_page ?? '') === 'funnel' ? 'active' : '' ?>">
-      <i class="fas fa-filter"></i> Funnel
+      <i class="fas fa-filter"></i> Entonnoir de vente
+    </a>
+    <a href="/admin/pipeline" class="admin-sidebar-link <?= ($admin_page ?? '') === 'pipeline' ? 'active' : '' ?>">
+      <i class="fas fa-columns"></i> Pipeline
     </a>
     <a href="/admin/partenaires" class="admin-sidebar-link <?= ($admin_page ?? '') === 'partenaires' ? 'active' : '' ?>">
       <i class="fas fa-handshake"></i> Partenaires

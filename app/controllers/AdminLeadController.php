@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Database;
 use App\Core\View;
 use App\Models\Lead;
 use App\Models\LeadNote;
@@ -12,13 +13,49 @@ use App\Models\Partenaire;
 
 final class AdminLeadController
 {
+    public function createTable(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        try {
+            $pdo = Database::connection();
+            $sql = file_get_contents(dirname(__DIR__, 2) . '/database/migration_leads.sql');
+            if ($sql === false) {
+                throw new \RuntimeException('Fichier de migration introuvable.');
+            }
+
+            $sql = preg_replace('/--.*$/m', '', $sql);
+            $sql = trim($sql);
+
+            if ($sql !== '') {
+                $pdo->exec($sql);
+            }
+
+            $_SESSION['leads_flash'] = ['type' => 'success', 'message' => 'Table "leads" creee avec succes ! La page est maintenant fonctionnelle.'];
+        } catch (\Throwable $e) {
+            $_SESSION['leads_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];
+        }
+
+        header('Location: /admin/leads');
+        exit;
+    }
+
     public function index(): void
     {
         AuthController::requireAuth();
 
         $leads = [];
         $dbError = null;
+        $tableExists = false;
 
+        try {
+            $tableExists = Database::tableExists('leads');
+        } catch (\Throwable $e) {
+            $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
+        }
+
+        if ($tableExists) {
         try {
             $leadModel = new Lead();
             $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
@@ -42,6 +79,7 @@ final class AdminLeadController
         } catch (\Throwable $e) {
             $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
         }
+        } // end if ($tableExists)
 
         View::renderAdmin('admin/leads', [
             'page_title' => 'Leads - Admin CRM',
@@ -51,6 +89,7 @@ final class AdminLeadController
             'leads' => $leads,
             'leadCount' => count($leads),
             'dbError' => $dbError,
+            'tableExists' => $tableExists,
         ]);
     }
 

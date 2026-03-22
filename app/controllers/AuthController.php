@@ -172,10 +172,32 @@ final class AuthController
 
         $user = AdminUser::findByEmail($email);
 
+        // Check if user is active
+        if (isset($user['is_active']) && !(bool) $user['is_active']) {
+            View::renderBare('admin/login', [
+                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'step' => 'email',
+                'error_message' => 'Ce compte est desactive. Contactez le super-utilisateur.',
+            ]);
+            return;
+        }
+
+        // Ensure role column exists and auto-assign role based on email
+        AdminUser::createTable();
+        $role = (string) ($user['role'] ?? '');
+        if ($role === '' || $role === 'admin') {
+            $determinedRole = AdminUser::determineRoleForEmail($email);
+            if ($determinedRole !== $role) {
+                AdminUser::updateUser((int) $user['id'], ['role' => $determinedRole]);
+                $role = $determinedRole;
+            }
+        }
+
         session_regenerate_id(true);
         $_SESSION['admin_user_id'] = (int) $user['id'];
         $_SESSION['admin_user_email'] = (string) $user['email'];
         $_SESSION['admin_user_name'] = (string) $user['name'];
+        $_SESSION['admin_user_role'] = $role ?: 'admin';
         $_SESSION['admin_logged_in'] = true;
 
         header('Location: /admin');

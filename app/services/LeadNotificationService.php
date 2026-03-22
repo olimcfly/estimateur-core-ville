@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Config;
+use App\Models\AdminModule;
+use App\Models\AdminNotification;
 use App\Services\Mailer;
 
 final class LeadNotificationService
@@ -27,8 +29,21 @@ final class LeadNotificationService
      */
     public static function notify(int $leadId, string $temperature, array $lead): void
     {
-        self::sendProspectEmail($lead);
-        self::sendAdminEmail($leadId, $temperature, $lead);
+        // Email notifications (if module active)
+        if (AdminModule::isActive('notifications_email')) {
+            self::sendProspectEmail($lead);
+            self::sendAdminEmail($leadId, $temperature, $lead);
+        }
+
+        // Internal notification (if module active)
+        if (AdminModule::isActive('notifications_internes')) {
+            AdminNotification::notifyNewLead(
+                $leadId,
+                (string) ($lead['nom'] ?? 'Anonyme'),
+                (string) ($lead['ville'] ?? ''),
+                $temperature
+            );
+        }
     }
 
     private static function sendProspectEmail(array $lead): void

@@ -105,17 +105,17 @@
   .leads-admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   .leads-admin-table thead { background: #f8fafc; }
 
   .leads-admin-table th {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
     text-align: left;
     font-weight: 600;
     color: var(--admin-muted, #6b6459);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     white-space: nowrap;
@@ -123,12 +123,72 @@
   }
 
   .leads-admin-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
     border-bottom: 1px solid #f1f5f9;
     color: var(--admin-text, #1a1410);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .leads-admin-table tbody tr:hover { background: #f8fafc; }
+
+  .leads-badge-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+  }
+
+  .leads-badge-qualifie { background: rgba(139,21,56,0.1); color: var(--admin-primary, #8B1538); }
+  .leads-badge-tendance { background: rgba(100,116,139,0.1); color: #475569; }
+
+  .leads-actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .leads-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    background: #fff;
+    color: var(--admin-muted, #6b6459);
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .leads-action-btn:hover { background: #f1f5f9; color: var(--admin-text, #1a1410); }
+  .leads-action-btn.view:hover { color: #2563eb; border-color: #93c5fd; background: rgba(59,130,246,0.06); }
+  .leads-action-btn.edit:hover { color: #d97706; border-color: #fcd34d; background: rgba(245,158,11,0.06); }
+  .leads-action-btn.delete:hover { color: #dc2626; border-color: #fca5a5; background: rgba(239,68,68,0.06); }
+
+  .leads-action-btn[title] { position: relative; }
+
+  .leads-statut-select {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.35rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--admin-text, #1a1410);
+    cursor: pointer;
+    max-width: 120px;
+  }
+
+  .leads-statut-select:hover { border-color: #93c5fd; }
+  .leads-statut-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15); }
 
   .leads-badge {
     display: inline-flex;
@@ -307,54 +367,9 @@
   .leads-card {
     background: var(--admin-surface, #ffffff);
     border: 1px solid var(--admin-border, #e8dfd7);
-    border-radius: var(--admin-radius, 12px);
-    padding: 1.15rem;
-    transition: box-shadow 0.15s;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .leads-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  }
-
-  .leads-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .leads-card-name {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--admin-text, #1a1410);
-  }
-
-  .leads-card-id {
+    border-radius: 4px;
     font-size: 0.75rem;
-    color: var(--admin-muted, #6b6459);
-  }
-
-  .leads-card-badges {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-  }
-
-  .leads-card-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.35rem 1rem;
-    font-size: 0.8rem;
-  }
-
-  .leads-card-info dt {
-    color: var(--admin-muted, #6b6459);
-    font-weight: 500;
-  }
-
-  .leads-card-info dd {
+    font-family: inherit;
     color: var(--admin-text, #1a1410);
     margin: 0;
     text-align: right;
@@ -396,78 +411,44 @@
     max-height: 70vh;
   }
 
-  .leads-kanban-col-header {
-    padding: 0.85rem 1rem;
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--admin-text, #1a1410);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 2px solid var(--admin-border, #e8dfd7);
+  .leads-inline-select:focus {
+    outline: none;
+    border-color: var(--admin-primary, #8B1538);
   }
 
-  .leads-kanban-count {
-    background: var(--admin-border, #e8dfd7);
-    color: var(--admin-muted, #6b6459);
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.15rem 0.5rem;
-    border-radius: 10px;
+  .leads-inline-select.saving {
+    opacity: 0.6;
+    pointer-events: none;
   }
 
-  .leads-kanban-cards {
-    padding: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    overflow-y: auto;
-    flex: 1;
+  .leads-inline-select.saved {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.3);
   }
 
-  .leads-kanban-card {
-    background: var(--admin-surface, #ffffff);
-    border: 1px solid var(--admin-border, #e8dfd7);
+  .leads-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #1e293b;
+    color: #fff;
+    padding: 0.75rem 1.25rem;
     border-radius: 8px;
-    padding: 0.85rem;
-    font-size: 0.82rem;
-    transition: box-shadow 0.15s;
+    font-size: 0.85rem;
+    font-weight: 500;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: leadsSlideUp 0.3s ease;
   }
 
-  .leads-kanban-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  }
+  .leads-toast.success { border-left: 4px solid #22c55e; }
+  .leads-toast.error { border-left: 4px solid #ef4444; }
 
-  .leads-kanban-card-name {
-    font-weight: 600;
-    color: var(--admin-text, #1a1410);
-    margin-bottom: 0.3rem;
+  @keyframes leadsSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
-
-  .leads-kanban-card-detail {
-    color: var(--admin-muted, #6b6459);
-    font-size: 0.75rem;
-    line-height: 1.5;
-  }
-
-  .leads-kanban-card-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-  }
-
-  .leads-kanban-card-est {
-    font-weight: 600;
-    font-size: 0.82rem;
-    color: var(--admin-text, #1a1410);
-  }
-
-  /* ── Hide/show views ── */
-  .leads-liste-view { display: block; }
-  .leads-liste-view.hidden { display: none; }
 
   @media (max-width: 640px) {
     .leads-stats-grid { grid-template-columns: 1fr 1fr; }
@@ -613,23 +594,98 @@
           </div>
 
         <?php else: ?>
-          <!-- LISTE VIEW (table) -->
-          <div class="leads-liste-view">
-            <div class="table-wrapper" style="overflow-x: auto;">
-              <table class="leads-admin-table">
-                <thead>
+          <?php
+          $statutLabels = [
+            'nouveau' => 'Nouveau',
+            'contacte' => 'Contacté',
+            'rdv_pris' => 'RDV pris',
+            'visite_realisee' => 'Visite réalisée',
+            'mandat_simple' => 'Mandat simple',
+            'mandat_exclusif' => 'Mandat exclusif',
+            'compromis_vente' => 'Compromis',
+            'signe' => 'Signé',
+            'co_signature_partenaire' => 'Co-signé',
+            'assigne_autre' => 'Assigné autre',
+          ];
+          $csrfToken = htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8');
+        ?>
+        <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="leads-admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Téléphone</th>
+                  <th>Adresse</th>
+                  <th>Ville</th>
+                  <th>Bien</th>
+                  <th>Surface</th>
+                  <th>Pièces</th>
+                  <th>Estimation</th>
+                  <th>Urgence</th>
+                  <th>Motivation</th>
+                  <th>Score</th>
+                  <th>Statut</th>
+                  <th>Créé le</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($allLeads as $lead): ?>
+                  <?php
+                    $leadId = (int) $lead['id'];
+                    $scoreClass = 'leads-badge-froid';
+                    $score = strtolower($lead['score'] ?? '');
+                    if ($score === 'chaud') $scoreClass = 'leads-badge-chaud';
+                    elseif ($score === 'tiede' || $score === 'tiède') $scoreClass = 'leads-badge-tiede';
+
+                    $statutKey = strtolower($lead['statut'] ?? 'nouveau');
+                    $statutClass = 'leads-badge-nouveau';
+                    if (in_array($statutKey, ['contacte', 'rdv_pris', 'visite_realisee'], true)) $statutClass = 'leads-badge-contacte';
+                    elseif (in_array($statutKey, ['mandat_simple', 'mandat_exclusif', 'compromis_vente', 'signe', 'co_signature_partenaire'], true)) $statutClass = 'leads-badge-converti';
+
+                    $typeClass = ($lead['lead_type'] ?? '') === 'qualifie' ? 'leads-badge-qualifie' : 'leads-badge-tendance';
+                    $typeLabel = ($lead['lead_type'] ?? '') === 'qualifie' ? 'Qualifié' : 'Tendance';
+                  ?>
                   <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Téléphone</th>
-                    <th>Ville</th>
-                    <th>Estimation</th>
-                    <th>Urgence</th>
-                    <th>Motivation</th>
-                    <th>Score</th>
-                    <th>Statut</th>
-                    <th>Créé le</th>
+                    <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
+                    <td style="font-weight: 500;"><?= e((string) $lead['nom']) ?></td>
+                    <td><?= e((string) $lead['email']) ?></td>
+                    <td><?= e((string) $lead['telephone']) ?></td>
+                    <td><?= e((string) $lead['ville']) ?></td>
+                    <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
+                    <td><?= e((string) $lead['urgence']) ?></td>
+                    <td><?= e((string) $lead['motivation']) ?></td>
+                    <td>
+                      <select class="leads-inline-select" data-lead-id="<?= (int) $lead['id'] ?>" data-field="score">
+                        <option value="chaud" <?= $score === 'chaud' ? 'selected' : '' ?>>chaud</option>
+                        <option value="tiede" <?= $score === 'tiede' || $score === 'tiède' ? 'selected' : '' ?>>tiede</option>
+                        <option value="froid" <?= $score === 'froid' ? 'selected' : '' ?>>froid</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="leads-inline-select" data-lead-id="<?= (int) $lead['id'] ?>" data-field="statut">
+                        <?php
+                          $allStatuts = [
+                            'nouveau' => 'Nouveau',
+                            'contacte' => 'Contacté',
+                            'rdv_pris' => 'RDV Pris',
+                            'visite_realisee' => 'Visite Réalisée',
+                            'mandat_simple' => 'Mandat Simple',
+                            'mandat_exclusif' => 'Mandat Exclusif',
+                            'compromis_vente' => 'Compromis',
+                            'signe' => 'Signé',
+                            'co_signature_partenaire' => 'Co-signature',
+                            'assigne_autre' => 'Assigné',
+                          ];
+                          foreach ($allStatuts as $sKey => $sLabel): ?>
+                            <option value="<?= $sKey ?>" <?= $statut === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
+                          <?php endforeach; ?>
+                      </select>
+                    </td>
+                    <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
                   </tr>
                 </thead>
                 <tbody>
@@ -818,3 +874,59 @@
 
     <?php endif; ?>
 </div>
+
+<!-- Toast notification -->
+<div class="leads-toast" id="leadsToast"></div>
+
+<script>
+(function() {
+  var csrfToken = <?= json_encode(\App\Controllers\AuthController::generateCsrfToken(), JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+
+  function showToast(message, type) {
+    var toast = document.getElementById('leadsToast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.className = 'leads-toast ' + type;
+    toast.style.display = 'block';
+    setTimeout(function() { toast.style.display = 'none'; }, 2500);
+  }
+
+  function quickUpdate(leadId, field, value, selectEl) {
+    selectEl.classList.add('saving');
+    var body = 'csrf_token=' + encodeURIComponent(csrfToken)
+      + '&id=' + encodeURIComponent(leadId)
+      + '&field=' + encodeURIComponent(field)
+      + '&value=' + encodeURIComponent(value);
+
+    fetch('/admin/leads/update-inline', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: body
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      selectEl.classList.remove('saving');
+      if (data.success) {
+        selectEl.classList.add('saved');
+        showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
+        setTimeout(function() { selectEl.classList.remove('saved'); }, 1500);
+      } else {
+        showToast(data.error || 'Erreur de mise \u00e0 jour', 'error');
+      }
+    })
+    .catch(function() {
+      selectEl.classList.remove('saving');
+      showToast('Erreur r\u00e9seau', 'error');
+    });
+  }
+
+  document.querySelectorAll('.leads-inline-select').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+      quickUpdate(this.dataset.leadId, this.dataset.field, this.value, this);
+    });
+  });
+})();
+</script>

@@ -1,5 +1,7 @@
 <?php $page_title = 'Estimation Immobilier Bordeaux et sa Métropole | Avis de Valeur Gratuit'; ?>
 <?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux et sa métropole en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
+<?php $page_title = 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit'; ?>
+<?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux et Métropole en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -13,6 +15,7 @@
       </p>
 
       <h1>Estimez la valeur de votre bien immobilier à Bordeaux et sa métropole</h1>
+      <h1>Estimez la valeur de votre bien immobilier à Bordeaux et Métropole</h1>
 
       <p class="lead">
         Obtenez une fourchette de prix indicative en quelques secondes.
@@ -35,14 +38,16 @@
       </ul>
 
       <!-- SOCIAL PROOF -->
-      <div style="margin-top: 2rem; padding: 1.2rem; background: rgba(var(--primary-rgb), 0.04); border-radius: 12px; border-left: 3px solid var(--primary);">
-        <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+      <div class="testimonial-block">
+        <p class="testimonial-label">
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
         <p style="margin: 0; font-style: italic; color: var(--text); line-height: 1.6;">
           "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et dans la métropole !"
+        <p class="testimonial-quote">
+          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et Métropole !"
         </p>
-        <p style="margin: 0.8rem 0 0; font-size: 0.85rem; color: var(--muted); font-weight: 600;">
+        <p class="testimonial-author">
           — Marie D. • Bordeaux Chartrons
         </p>
       </div>
@@ -110,40 +115,43 @@
         </label>
 
         <!-- BOUTON -->
-        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1rem; padding: 1rem;">
+        <button type="submit" class="btn btn-primary btn-full btn-pulse">
           <i class="fas fa-bolt"></i> Obtenir mon estimation gratuite
         </button>
 
-        <p class="form-footer" style="text-align: center; margin: 0.8rem 0 0; font-size: 0.8rem; color: var(--muted);">
+        <p class="form-footer">
           <i class="fas fa-lock"></i> Aucune donnée personnelle requise
         </p>
       </form>
 
-      <div style="padding: 1.5rem;">
-        <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem;">
-          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+      <div class="hero-benefits">
+        <ul class="hero-benefits-list">
+          <li>
+            <i class="fas fa-check-circle"></i>
             <span><strong>100% gratuit</strong> — aucun frais caché</span>
           </li>
-          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <li>
+            <i class="fas fa-check-circle"></i>
             <span><strong>Résultat immédiat</strong> — en moins d'1 minute</span>
           </li>
           <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
             <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
             <span><strong>Données réelles</strong> — 5000+ transactions à Bordeaux et sa métropole</span>
+          <li>
+            <i class="fas fa-check-circle"></i>
+            <span><strong>Données réelles</strong> — 5000+ transactions en Gironde</span>
           </li>
-          <li style="display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <li>
+            <i class="fas fa-check-circle"></i>
             <span><strong>Sans engagement</strong> — aucune obligation</span>
           </li>
         </ul>
 
-        <a href="/estimation" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.1rem;">
+        <a href="/estimation" class="btn btn-primary btn-full btn-pulse">
           <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
         </a>
 
-        <p style="text-align: center; margin: 1rem 0 0; font-size: 0.8rem; color: var(--muted);">
+        <p class="form-footer">
           <i class="fas fa-lock"></i> Données sécurisées & conformes RGPD
         </p>
       </div>
@@ -163,63 +171,63 @@
       <h2>Estimation en ligne vs. Avis de valeur réalisé par un conseiller immobilier</h2>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+    <div class="comparison-grid">
 
       <!-- COLONNE GAUCHE: CE QUE NOUS PROPOSONS -->
-      <article class="card" style="border-top: 4px solid var(--accent);">
-        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+      <article class="card comparison-card">
+        <h3 class="comparison-header">
           <i class="fas fa-chart-bar" style="color: var(--accent);"></i>
           Notre estimation en ligne
         </h3>
-        <p style="color: var(--muted); margin-bottom: 1rem;">
+        <p class="muted" style="margin-bottom: 1rem;">
           Notre outil analyse les <strong>données statistiques du marché</strong> (transactions récentes, prix au m² par quartier, tendances)
           pour vous donner une <strong>fourchette indicative</strong> de la valeur de votre bien.
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-check" style="color: var(--success); margin-top: 0.2rem;"></i>
+        <ul class="comparison-list">
+          <li>
+            <i class="fas fa-check" style="color: var(--success);"></i>
             <span>Résultat instantané et gratuit</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-check" style="color: var(--success); margin-top: 0.2rem;"></i>
+          <li>
+            <i class="fas fa-check" style="color: var(--success);"></i>
             <span>Basé sur les données statistiques du marché local</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-info-circle" style="color: var(--warning); margin-top: 0.2rem;"></i>
+          <li>
+            <i class="fas fa-info-circle" style="color: var(--warning);"></i>
             <span>Donne une <strong>indication</strong>, pas un prix de vente garanti</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-info-circle" style="color: var(--warning); margin-top: 0.2rem;"></i>
+          <li>
+            <i class="fas fa-info-circle" style="color: var(--warning);"></i>
             <span>Ne prend pas en compte l'état précis du bien, les travaux, la vue, la luminosité, etc.</span>
           </li>
         </ul>
       </article>
 
       <!-- COLONNE DROITE: AVIS DE VALEUR DU CONSEILLER -->
-      <article class="card" style="border-top: 4px solid var(--primary);">
-        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+      <article class="card comparison-card comparison-primary">
+        <h3 class="comparison-header">
           <i class="fas fa-user-tie" style="color: var(--primary);"></i>
           L'avis de valeur d'un conseiller immobilier
         </h3>
-        <p style="color: var(--muted); margin-bottom: 1rem;">
+        <p class="muted" style="margin-bottom: 1rem;">
           Un <strong>avis de valeur</strong> est une estimation rédigée par un <strong>professionnel de l'immobilier</strong> qui connaît le marché local.
           Il s'appuie sur une visite du bien et sur des références de ventes récentes pour proposer un prix de mise en vente cohérent.
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+        <ul class="comparison-list">
+          <li>
+            <i class="fas fa-certificate" style="color: var(--primary);"></i>
             <span>Réalisé par un <strong>conseiller immobilier</strong> connaissant votre quartier</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+          <li>
+            <i class="fas fa-certificate" style="color: var(--primary);"></i>
             <span>Visite physique du bien et analyse détaillée</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+          <li>
+            <i class="fas fa-certificate" style="color: var(--primary);"></i>
             <span>Prend en compte l'état, les travaux, la situation, l'environnement et la demande sur le secteur</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+          <li>
+            <i class="fas fa-certificate" style="color: var(--primary);"></i>
             <span>Base de travail pour fixer un prix de mise en vente réaliste</span>
           </li>
         </ul>
@@ -228,8 +236,8 @@
     </div>
 
     <!-- ENCART IMPORTANT -->
-    <div class="card" style="margin-top: 2rem; padding: 1.5rem 2rem; background: rgba(var(--primary-rgb), 0.04); border-left: 4px solid var(--primary);">
-      <p style="margin: 0; font-size: 0.95rem; line-height: 1.7;">
+    <div class="card note-card">
+      <p>
         <i class="fas fa-exclamation-triangle" style="color: var(--primary);"></i>
         <strong>Important :</strong> Tous les outils en ligne (y compris le nôtre) fournissent des <strong>estimations statistiques</strong> à partir de données de marché.
         Pour affiner le prix de vente de votre bien, l'idéal est de compléter cette première estimation par un <strong>avis de valeur</strong> réalisé par un conseiller immobilier
@@ -325,7 +333,7 @@
 <!-- ============================================ -->
 <section class="section">
   <div class="container">
-    <div class="card" style="padding: 3rem; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--accent-rgb), 0.03)); border: 2px solid var(--accent); text-align: center;">
+    <div class="card cta-final-card">
       <p class="eyebrow" style="margin-bottom: 1rem;">
         <i class="fas fa-calculator"></i> Commencez maintenant
       </p>
@@ -335,7 +343,7 @@
       <p class="lead" style="max-width: 600px; margin: 0 auto 2rem;">
         3 informations suffisent. Gratuit, sans engagement, sans inscription.
       </p>
-      <a href="/estimation" class="btn btn-primary" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
+      <a href="/estimation" class="btn btn-primary btn-pulse" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
         <i class="fas fa-calculator"></i> Lancer mon estimation gratuite
       </a>
     </div>

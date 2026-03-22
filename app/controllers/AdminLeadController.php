@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Database;
 use App\Core\View;
 use App\Models\Lead;
 use App\Models\LeadNote;
@@ -12,36 +13,88 @@ use App\Models\Partenaire;
 
 final class AdminLeadController
 {
+    private const REQUIRED_TABLES = [
+        'leads' => [
+            'id', 'website_id', 'lead_type', 'nom', 'email', 'telephone',
+            'adresse', 'ville', 'type_bien', 'surface_m2', 'pieces',
+            'estimation', 'urgence', 'motivation', 'notes',
+            'partenaire_id', 'commission_taux', 'commission_montant',
+            'assigne_a', 'date_mandat', 'date_compromis', 'date_signature',
+            'prix_vente', 'score', 'statut', 'created_at',
+        ],
+        'lead_notes' => ['id', 'lead_id', 'content', 'author', 'created_at'],
+        'lead_activities' => ['id', 'lead_id', 'activity_type', 'description', 'created_at'],
+    ];
+
+    public function createTable(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        try {
+            $pdo = Database::connection();
+            $sql = file_get_contents(dirname(__DIR__, 2) . '/database/migration_leads.sql');
+            if ($sql === false) {
+                throw new \RuntimeException('Fichier de migration introuvable.');
+            }
+
+            $sql = preg_replace('/--.*$/m', '', $sql);
+            $sql = trim($sql);
+
+            if ($sql !== '') {
+                $pdo->exec($sql);
+            }
+
+            $_SESSION['leads_flash'] = ['type' => 'success', 'message' => 'Table "leads" creee avec succes ! La page est maintenant fonctionnelle.'];
+        } catch (\Throwable $e) {
+            $_SESSION['leads_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];
+        }
+
+        header('Location: /admin/leads');
+        exit;
+    }
+
     public function index(): void
     {
         AuthController::requireAuth();
 
+        $this->ensureLeadTables();
+
         $leads = [];
         $dbError = null;
+        $tableExists = false;
 
+        try {
+            $tableExists = Database::tableExists('leads');
+        } catch (\Throwable $e) {
+            $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
+        }
+
+        if ($tableExists) {
         try {
             $leadModel = new Lead();
             $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
             $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
             $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
 
-            $leads = $leadModel->findAllLeads();
+                $leads = $leadModel->findAllLeads();
 
-            if ($typeFilter !== null && in_array($typeFilter, ['tendance', 'qualifie'], true)) {
-                $leads = array_filter($leads, fn($l) => ($l['lead_type'] ?? '') === $typeFilter);
-                $leads = array_values($leads);
+                if ($typeFilter !== null && in_array($typeFilter, ['tendance', 'qualifie'], true)) {
+                    $leads = array_filter($leads, fn($l) => ($l['lead_type'] ?? '') === $typeFilter);
+                    $leads = array_values($leads);
+                }
+                if ($scoreFilter !== null && in_array($scoreFilter, ['chaud', 'tiede', 'froid'], true)) {
+                    $leads = array_filter($leads, fn($l) => ($l['score'] ?? '') === $scoreFilter);
+                    $leads = array_values($leads);
+                }
+                if ($statutFilter !== null) {
+                    $leads = array_filter($leads, fn($l) => ($l['statut'] ?? '') === $statutFilter);
+                    $leads = array_values($leads);
+                }
+            } catch (\Throwable $e) {
+                $dbError = 'Erreur lors du chargement des leads : ' . $e->getMessage();
             }
-            if ($scoreFilter !== null && in_array($scoreFilter, ['chaud', 'tiede', 'froid'], true)) {
-                $leads = array_filter($leads, fn($l) => ($l['score'] ?? '') === $scoreFilter);
-                $leads = array_values($leads);
-            }
-            if ($statutFilter !== null) {
-                $leads = array_filter($leads, fn($l) => ($l['statut'] ?? '') === $statutFilter);
-                $leads = array_values($leads);
-            }
-        } catch (\Throwable $e) {
-            $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
-        }
+        } // end if ($tableExists)
 
         View::renderAdmin('admin/leads', [
             'page_title' => 'Leads - Admin CRM',
@@ -51,12 +104,14 @@ final class AdminLeadController
             'leads' => $leads,
             'leadCount' => count($leads),
             'dbError' => $dbError,
+            'tableExists' => $tableExists,
         ]);
     }
 
     public function show(): void
     {
         AuthController::requireAuth();
+        $this->ensureLeadTables();
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if ($id <= 0) {
@@ -298,6 +353,68 @@ final class AdminLeadController
         exit;
     }
 
+    public function quickUpdate(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $field = trim((string) ($_POST['field'] ?? ''));
+        $value = trim((string) ($_POST['value'] ?? ''));
+
+        if ($id <= 0 || $field === '' || $value === '') {
+            echo json_encode(['success' => false, 'error' => 'Paramètres manquants.']);
+            return;
+        }
+
+        if (!in_array($field, ['statut', 'score'], true)) {
+            echo json_encode(['success' => false, 'error' => 'Champ non autorisé.']);
+            return;
+        }
+
+        try {
+            $leadModel = new Lead();
+            $oldLead = $leadModel->findById($id);
+
+            if ($oldLead === null) {
+                echo json_encode(['success' => false, 'error' => 'Lead introuvable.']);
+                return;
+            }
+
+            $updated = false;
+
+            if ($field === 'statut') {
+                $updated = $leadModel->updateStatut($id, $value);
+                if ($updated && $oldLead['statut'] !== $value) {
+                    try {
+                        $activityModel = new LeadActivity();
+                        $activityModel->log($id, 'statut_change', 'Statut modifié de "' . ($oldLead['statut'] ?? '') . '" à "' . $value . '"');
+                    } catch (\Throwable) {
+                    }
+                }
+            } elseif ($field === 'score') {
+                $updated = $leadModel->updateScore($id, $value);
+                if ($updated && $oldLead['score'] !== $value) {
+                    try {
+                        $activityModel = new LeadActivity();
+                        $activityModel->log($id, 'score_change', 'Score modifié de "' . ($oldLead['score'] ?? '') . '" à "' . $value . '"');
+                    } catch (\Throwable) {
+                    }
+                }
+            }
+
+            if ($updated) {
+                echo json_encode(['success' => true, 'lead_id' => $id, 'field' => $field, 'value' => $value, 'csrf_token' => $_SESSION['csrf_token'] ?? '']);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Valeur invalide ou aucune modification.']);
+            }
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur serveur : ' . $e->getMessage()]);
+        }
+    }
+
     public function delete(): void
     {
         AuthController::requireAuth();
@@ -312,5 +429,208 @@ final class AdminLeadController
 
         header('Location: /admin/leads');
         exit;
+    }
+
+    public function createTables(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        $tables = isset($_POST['tables']) ? (array) $_POST['tables'] : [];
+        $created = [];
+
+        $sqlStatements = [
+            'leads' => "CREATE TABLE IF NOT EXISTS leads (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                website_id INT UNSIGNED NOT NULL,
+                lead_type ENUM('tendance','qualifie') NOT NULL DEFAULT 'qualifie',
+                nom VARCHAR(120) NULL DEFAULT NULL,
+                email VARCHAR(180) NULL DEFAULT NULL,
+                telephone VARCHAR(40) NULL DEFAULT NULL,
+                adresse VARCHAR(255) NULL DEFAULT NULL,
+                ville VARCHAR(120) NOT NULL,
+                type_bien VARCHAR(80) NULL,
+                surface_m2 DECIMAL(8,2) NULL,
+                pieces INT UNSIGNED NULL,
+                estimation DECIMAL(12,2) NOT NULL,
+                urgence VARCHAR(40) NULL DEFAULT NULL,
+                motivation VARCHAR(80) NULL DEFAULT NULL,
+                notes TEXT NULL,
+                partenaire_id INT UNSIGNED NULL,
+                commission_taux DECIMAL(5,2) NULL DEFAULT NULL,
+                commission_montant DECIMAL(12,2) NULL DEFAULT NULL,
+                assigne_a VARCHAR(180) NULL DEFAULT NULL,
+                date_mandat DATE NULL DEFAULT NULL,
+                date_compromis DATE NULL DEFAULT NULL,
+                date_signature DATE NULL DEFAULT NULL,
+                prix_vente DECIMAL(12,2) NULL DEFAULT NULL,
+                score ENUM('chaud','tiede','froid') NOT NULL DEFAULT 'froid',
+                statut ENUM('nouveau','contacte','rdv_pris','visite_realisee','mandat_simple','mandat_exclusif','compromis_vente','signe','co_signature_partenaire','assigne_autre') NOT NULL DEFAULT 'nouveau',
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_website_id (website_id),
+                INDEX idx_lead_type (lead_type),
+                INDEX idx_email (email),
+                INDEX idx_statut (statut),
+                INDEX idx_created_at (created_at),
+                INDEX idx_partenaire_id (partenaire_id),
+                INDEX idx_date_signature (date_signature)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            'lead_notes' => "CREATE TABLE IF NOT EXISTS lead_notes (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT UNSIGNED NOT NULL,
+                content TEXT NOT NULL,
+                author VARCHAR(120) NOT NULL DEFAULT 'Admin',
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_created_at (created_at),
+                CONSTRAINT fk_lead_notes_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            'lead_activities' => "CREATE TABLE IF NOT EXISTS lead_activities (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT UNSIGNED NOT NULL,
+                activity_type VARCHAR(50) NOT NULL,
+                description TEXT NOT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_activity_type (activity_type),
+                INDEX idx_created_at (created_at),
+                CONSTRAINT fk_lead_activities_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+        ];
+
+        try {
+            $pdo = Database::connection();
+
+            // Ensure 'leads' is created first (other tables depend on it)
+            if (in_array('lead_notes', $tables, true) || in_array('lead_activities', $tables, true)) {
+                if (!in_array('leads', $tables, true) && !Database::tableExists('leads')) {
+                    array_unshift($tables, 'leads');
+                }
+            }
+
+            foreach ($tables as $table) {
+                if (!isset($sqlStatements[$table])) {
+                    continue;
+                }
+
+                if (Database::tableExists($table)) {
+                    $this->addMissingColumns($pdo, $table);
+                    $created[] = $table . ' (colonnes mises à jour)';
+                    continue;
+                }
+
+                $pdo->exec($sqlStatements[$table]);
+                $created[] = $table;
+            }
+
+            if (!empty($created)) {
+                $_SESSION['leads_flash'] = ['type' => 'success', 'message' => 'Tables créées avec succès : ' . implode(', ', $created)];
+            }
+        } catch (\Throwable $e) {
+            $_SESSION['leads_flash'] = ['type' => 'error', 'message' => 'Erreur : ' . $e->getMessage()];
+        }
+
+        header('Location: /admin/leads');
+        exit;
+    }
+
+    private function addMissingColumns(\PDO $pdo, string $table): void
+    {
+        if (!isset(self::REQUIRED_TABLES[$table])) {
+            return;
+        }
+
+        $stmt = $pdo->query("SHOW COLUMNS FROM `{$table}`");
+        $actualColumns = array_column($stmt->fetchAll(), 'Field');
+        $missing = array_diff(self::REQUIRED_TABLES[$table], $actualColumns);
+
+        $columnDefs = [
+            'leads' => [
+                'website_id' => 'INT UNSIGNED NOT NULL DEFAULT 1',
+                'lead_type' => "ENUM('tendance','qualifie') NOT NULL DEFAULT 'qualifie'",
+                'nom' => 'VARCHAR(120) NULL DEFAULT NULL',
+                'email' => 'VARCHAR(180) NULL DEFAULT NULL',
+                'telephone' => 'VARCHAR(40) NULL DEFAULT NULL',
+                'adresse' => 'VARCHAR(255) NULL DEFAULT NULL',
+                'ville' => 'VARCHAR(120) NOT NULL DEFAULT \'Bordeaux\'',
+                'type_bien' => 'VARCHAR(80) NULL',
+                'surface_m2' => 'DECIMAL(8,2) NULL',
+                'pieces' => 'INT UNSIGNED NULL',
+                'estimation' => 'DECIMAL(12,2) NOT NULL DEFAULT 0',
+                'urgence' => 'VARCHAR(40) NULL DEFAULT NULL',
+                'motivation' => 'VARCHAR(80) NULL DEFAULT NULL',
+                'notes' => 'TEXT NULL',
+                'partenaire_id' => 'INT UNSIGNED NULL',
+                'commission_taux' => 'DECIMAL(5,2) NULL DEFAULT NULL',
+                'commission_montant' => 'DECIMAL(12,2) NULL DEFAULT NULL',
+                'assigne_a' => 'VARCHAR(180) NULL DEFAULT NULL',
+                'date_mandat' => 'DATE NULL DEFAULT NULL',
+                'date_compromis' => 'DATE NULL DEFAULT NULL',
+                'date_signature' => 'DATE NULL DEFAULT NULL',
+                'prix_vente' => 'DECIMAL(12,2) NULL DEFAULT NULL',
+                'score' => "ENUM('chaud','tiede','froid') NOT NULL DEFAULT 'froid'",
+                'statut' => "ENUM('nouveau','contacte','rdv_pris','visite_realisee','mandat_simple','mandat_exclusif','compromis_vente','signe','co_signature_partenaire','assigne_autre') NOT NULL DEFAULT 'nouveau'",
+                'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            ],
+            'lead_notes' => [
+                'lead_id' => 'INT UNSIGNED NOT NULL',
+                'content' => 'TEXT NOT NULL',
+                'author' => "VARCHAR(120) NOT NULL DEFAULT 'Admin'",
+                'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            ],
+            'lead_activities' => [
+                'lead_id' => 'INT UNSIGNED NOT NULL',
+                'activity_type' => 'VARCHAR(50) NOT NULL',
+                'description' => 'TEXT NOT NULL',
+                'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
+            ],
+        ];
+
+        foreach ($missing as $col) {
+            if ($col === 'id') {
+                continue;
+            }
+            $def = $columnDefs[$table][$col] ?? 'TEXT NULL';
+            $pdo->exec("ALTER TABLE `{$table}` ADD COLUMN `{$col}` {$def}");
+        }
+    }
+
+    private function ensureLeadTables(): void
+    {
+        try {
+            $pdo = Database::connection();
+
+            if (!Database::tableExists('leads')) {
+                return;
+            }
+
+            if (!Database::tableExists('lead_notes')) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS lead_notes (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    lead_id INT UNSIGNED NOT NULL,
+                    content TEXT NOT NULL,
+                    author VARCHAR(120) NOT NULL DEFAULT 'Admin',
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_lead_id (lead_id),
+                    INDEX idx_created_at (created_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+
+            if (!Database::tableExists('lead_activities')) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS lead_activities (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    lead_id INT UNSIGNED NOT NULL,
+                    activity_type VARCHAR(50) NOT NULL,
+                    description TEXT NOT NULL,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_lead_id (lead_id),
+                    INDEX idx_activity_type (activity_type),
+                    INDEX idx_created_at (created_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+        } catch (\Throwable) {
+        }
     }
 }

@@ -16,7 +16,10 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminModuleController;
+use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
@@ -43,20 +46,28 @@ $router->post('/admin/test-smtp/reset', [AuthController::class, 'testSmtpReset']
 $router->post('/admin/test-smtp/run', [AuthController::class, 'testSmtpRun']);
 $router->post('/admin/test-smtp/send', [AuthController::class, 'testSmtpSendEmail']);
 $router->post('/admin/dev-skip-auth/toggle', [AuthController::class, 'toggleDevSkipAuth']);
+$router->post('/admin/presence/heartbeat', [AuthController::class, 'presenceHeartbeat']);
+$router->post('/admin/presence/clear', [AuthController::class, 'presenceClear']);
+$router->get('/api/presence/check', [AuthController::class, 'presenceCheck']);
 
 // Protected admin routes
 $router->get('/admin', [AdminDashboardController::class, 'index']);
 $router->get('/admin/leads', [AdminLeadController::class, 'index']);
+$router->post('/admin/leads/create-table', [AdminLeadController::class, 'createTable']);
 $router->get('/admin/leads/{id}', [AdminLeadController::class, 'show']);
 $router->get('/admin/leads/edit/{id}', [AdminLeadController::class, 'edit']);
 $router->post('/admin/leads/update/{id}', [AdminLeadController::class, 'update']);
 $router->post('/admin/leads/statut/{id}', [AdminLeadController::class, 'updateStatut']);
 $router->post('/admin/leads/note/{id}', [AdminLeadController::class, 'addNote']);
 $router->post('/admin/leads/note/delete/{id}', [AdminLeadController::class, 'deleteNote']);
+$router->post('/admin/leads/update-inline', [AdminLeadController::class, 'quickUpdate']);
 $router->post('/admin/leads/delete/{id}', [AdminLeadController::class, 'delete']);
+$router->post('/admin/leads/create-tables', [AdminLeadController::class, 'createTables']);
 
-// Admin funnel & portfolio
+// Admin funnel, pipeline & portfolio
 $router->get('/admin/funnel', [AdminDashboardController::class, 'funnel']);
+$router->post('/admin/funnel/create-table', [AdminDashboardController::class, 'createLeadsTable']);
+$router->get('/admin/pipeline', [EstimationController::class, 'pipeline']);
 $router->get('/admin/portfolio', [AdminDashboardController::class, 'portfolio']);
 $router->post('/admin/portfolio/commission', [AdminDashboardController::class, 'updateCommissionRate']);
 
@@ -165,3 +176,23 @@ $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
 $router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);
+
+// Admin module management routes (superuser only)
+$router->get('/admin/modules', [AdminModuleController::class, 'index']);
+$router->post('/admin/modules/toggle', [AdminModuleController::class, 'toggle']);
+$router->post('/admin/modules/update', [AdminModuleController::class, 'update']);
+$router->post('/admin/modules/seed', [AdminModuleController::class, 'seedModules']);
+
+// Admin user management routes (superuser only)
+$router->get('/admin/users', [AdminUserController::class, 'index']);
+$router->post('/admin/users/create', [AdminUserController::class, 'create']);
+$router->post('/admin/users/update', [AdminUserController::class, 'update']);
+$router->post('/admin/users/delete', [AdminUserController::class, 'delete']);
+
+// Admin internal notifications routes
+$router->get('/admin/notifications', [AdminNotificationController::class, 'index']);
+$router->get('/admin/notifications/fetch', [AdminNotificationController::class, 'fetch']);
+$router->post('/admin/notifications/read', [AdminNotificationController::class, 'markRead']);
+$router->post('/admin/notifications/read-all', [AdminNotificationController::class, 'markAllRead']);
+$router->post('/admin/notifications/delete', [AdminNotificationController::class, 'delete']);
+$router->post('/admin/notifications/cleanup', [AdminNotificationController::class, 'cleanup']);

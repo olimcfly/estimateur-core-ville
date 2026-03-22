@@ -241,6 +241,13 @@ $step = $step ?? 'email';
     </div>
     <?php endif; ?>
 
+    <?php if (!empty($already_logged_in)): ?>
+    <div class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span>Vous êtes déjà connecté. <a href="/admin" style="color: inherit; font-weight: 700;">Accéder au tableau de bord</a></span>
+    </div>
+    <?php endif; ?>
+
     <?php if ($step === 'email'): ?>
 
       <form method="POST" action="/admin/login" class="login-form">
@@ -258,6 +265,8 @@ $step = $step ?? 'email';
             required
             autocomplete="email"
             autofocus
+            placeholder="votre@email.fr"
+            value="<?= e($_SESSION['admin_user_email'] ?? '') ?>"
           >
         </div>
 
@@ -272,6 +281,16 @@ $step = $step ?? 'email';
         <i class="fas fa-envelope" style="margin-right: 0.4rem; color: var(--primary);"></i>
         <?= e($login_email ?? '') ?>
       </div>
+
+      <?php if (!empty($fallback_code)): ?>
+      <div style="background: rgba(var(--primary-rgb), 0.06); border: 2px solid var(--primary); border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+        <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem;">Votre code de connexion :</div>
+        <div style="font-size: 2.2rem; font-weight: 700; letter-spacing: 0.5rem; color: var(--primary);"><?= e($fallback_code) ?></div>
+        <div style="font-size: 0.75rem; color: var(--danger); margin-top: 0.75rem;">
+          <i class="fas fa-exclamation-triangle"></i> SMTP non fonctionnel &mdash; <a href="/admin/test-smtp" style="color: var(--danger);">configurer</a>
+        </div>
+      </div>
+      <?php endif; ?>
 
       <div id="countdown-bar" style="background: rgba(var(--success-rgb), 0.08); border: 1px solid var(--success); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; text-align: center; font-size: 0.85rem; color: #15803d;">
         <i class="fas fa-clock" style="margin-right: 0.4rem;"></i>
@@ -298,6 +317,7 @@ $step = $step ?? 'email';
             autocomplete="one-time-code"
             required
             autofocus
+            <?php if (!empty($fallback_code)): ?>value="<?= e($fallback_code) ?>"<?php endif; ?>
           >
         </div>
 
@@ -320,6 +340,12 @@ $step = $step ?? 'email';
       <div style="text-align: center;">
         <a href="/admin/login" class="back-link">
           <i class="fas fa-arrow-left"></i>Utiliser une autre adresse
+        </a>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="https://estimation-immobilier-bordeaux.fr/webmail" target="_blank" rel="noopener" class="back-link" style="font-size: 0.8rem; opacity: 0.6;">
+          <i class="fas fa-envelope-open"></i>Accéder au webmail
         </a>
       </div>
 

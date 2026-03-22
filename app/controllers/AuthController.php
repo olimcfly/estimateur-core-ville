@@ -29,7 +29,7 @@ final class AuthController
         $action = (string) ($_POST['action'] ?? '');
         $csrfToken = (string) ($_POST['csrf_token'] ?? '');
 
-        if (!$this->verifyCsrfToken($csrfToken)) {
+        if (!self::checkCsrfToken($csrfToken)) {
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
                 'step' => 'email',
@@ -307,7 +307,17 @@ final class AuthController
         return $_SESSION['csrf_token'];
     }
 
-    private function verifyCsrfToken(string $token): bool
+    public static function verifyCsrfToken(): void
+    {
+        $token = (string) ($_POST['csrf_token'] ?? '');
+        if (!self::checkCsrfToken($token)) {
+            http_response_code(403);
+            echo 'Session expirée (jeton CSRF invalide). Veuillez rafraîchir la page et réessayer.';
+            exit;
+        }
+    }
+
+    private static function checkCsrfToken(string $token): bool
     {
         $sessionToken = $_SESSION['csrf_token'] ?? '';
         if ($sessionToken === '' || $token === '') {

@@ -106,10 +106,14 @@ final class AuthController
         );
 
         if (!$sent) {
+            // Fallback : afficher le code directement si l'email ne peut pas être envoyé
+            error_log('Login fallback: SMTP failed for ' . $email . ', showing code on screen');
             View::renderBare('admin/login', [
                 'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
-                'step' => 'email',
-                'error_message' => 'Impossible d\'envoyer l\'email. Vérifiez la configuration SMTP.',
+                'step' => 'code',
+                'login_email' => $email,
+                'fallback_code' => $code,
+                'error_message' => 'Impossible d\'envoyer l\'email (SMTP). Le code est affiché ci-dessous. Configurez le SMTP dans /admin/test-smtp.',
             ]);
             return;
         }

@@ -406,7 +406,7 @@ final class AdminLeadController
             }
 
             if ($updated) {
-                echo json_encode(['success' => true, 'lead_id' => $id, 'field' => $field, 'value' => $value]);
+                echo json_encode(['success' => true, 'lead_id' => $id, 'field' => $field, 'value' => $value, 'csrf_token' => $_SESSION['csrf_token'] ?? '']);
             } else {
                 echo json_encode(['success' => false, 'error' => 'Valeur invalide ou aucune modification.']);
             }

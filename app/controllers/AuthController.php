@@ -362,7 +362,8 @@ final class AuthController
             return false;
         }
         $valid = hash_equals($sessionToken, $token);
-        unset($_SESSION['csrf_token']);
+        // Regenerate token for next request instead of deleting it
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         return $valid;
     }
 

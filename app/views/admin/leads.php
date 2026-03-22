@@ -891,6 +891,7 @@
     .then(function(data) {
       selectEl.classList.remove('saving');
       if (data.success) {
+        if (data.csrf_token) { csrfToken = data.csrf_token; }
         selectEl.classList.add('saved');
         showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
         setTimeout(function() { selectEl.classList.remove('saved'); }, 1500);

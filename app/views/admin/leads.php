@@ -16,11 +16,12 @@
 <style>
   .leads-page-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
     gap: 1rem;
+    min-width: 0;
   }
 
   .leads-page-header h1 {
@@ -84,6 +85,7 @@
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: var(--admin-radius, 12px);
     overflow: hidden;
+    max-width: 100%;
   }
 
   .leads-table-header {
@@ -256,6 +258,7 @@
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: 8px;
     overflow: hidden;
+    flex-shrink: 0;
   }
 
   .leads-view-btn {
@@ -372,14 +375,14 @@
     display: none;
     padding: 1.25rem;
     overflow-x: auto;
+    overflow-y: hidden;
   }
 
   .leads-kanban-view.visible { display: block; }
 
   .leads-kanban-board {
-    display: flex;
+    display: inline-flex;
     gap: 1rem;
-    min-width: max-content;
   }
 
   .leads-kanban-col {

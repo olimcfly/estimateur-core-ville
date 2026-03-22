@@ -523,29 +523,27 @@
     card.dataset.statut = newStatut;
   }
 
-  function updateLead(leadId, field, value, onSuccess, onError) {
+  function updateLead(leadId, field, value, onSuccess, onError, isRetry) {
     var body = 'csrf_token=' + encodeURIComponent(csrfToken) + '&id=' + leadId + '&field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/admin/leads/update-inline', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.onload = function() {
-      if (xhr.status === 200) {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          if (resp.success) {
-            if (resp.csrf_token) { csrfToken = resp.csrf_token; }
-            showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
-            if (onSuccess) onSuccess();
-          } else {
-            showToast(resp.error || 'Erreur de mise \u00e0 jour', 'error');
-            if (onError) onError();
-          }
-        } catch(e) {
-          showToast('Erreur de mise \u00e0 jour', 'error');
+      try {
+        var resp = JSON.parse(xhr.responseText);
+        if (resp.csrf_token) { csrfToken = resp.csrf_token; }
+        if (resp.success) {
+          showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
+          if (onSuccess) onSuccess();
+        } else if (!isRetry && resp.csrf_token) {
+          // CSRF expired — retry once with fresh token
+          updateLead(leadId, field, value, onSuccess, onError, true);
+        } else {
+          showToast(resp.error || 'Erreur de mise \u00e0 jour', 'error');
           if (onError) onError();
         }
-      } else {
+      } catch(e) {
         showToast('Erreur serveur', 'error');
         if (onError) onError();
       }

@@ -356,9 +356,19 @@ final class AdminLeadController
     public function quickUpdate(): void
     {
         AuthController::requireAuth();
-        AuthController::verifyCsrfToken();
 
         header('Content-Type: application/json; charset=utf-8');
+
+        // Validate CSRF manually to return JSON (not plain text) on failure
+        $token = (string) ($_POST['csrf_token'] ?? '');
+        $sessionToken = $_SESSION['csrf_token'] ?? '';
+        $csrfValid = ($sessionToken !== '' && $token !== '' && hash_equals($sessionToken, $token));
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+        if (!$csrfValid) {
+            echo json_encode(['success' => false, 'error' => 'Session expirée. Veuillez réessayer.', 'csrf_token' => $_SESSION['csrf_token']]);
+            return;
+        }
 
         $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
         $field = trim((string) ($_POST['field'] ?? ''));

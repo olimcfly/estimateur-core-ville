@@ -139,11 +139,7 @@
           </li>
         </ul>
 
-        <a href="/estimation" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.1rem;">
-          <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
-        </a>
-
-        <p style="text-align: center; margin: 1rem 0 0; font-size: 0.8rem; color: var(--muted);">
+        <p style="text-align: center; margin: 0; font-size: 0.8rem; color: var(--muted);">
           <i class="fas fa-lock"></i> Données sécurisées & conformes RGPD
         </p>
       </div>

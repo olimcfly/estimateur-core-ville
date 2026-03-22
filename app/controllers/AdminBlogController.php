@@ -566,6 +566,13 @@ final class AdminBlogController
             ]);
         }
 
+        // Ensure articles table uses InnoDB so foreign keys can reference it
+        try {
+            $pdo->exec('ALTER TABLE articles ENGINE=InnoDB');
+        } catch (\PDOException $e) {
+            // Ignore if already InnoDB or any issue
+        }
+
         if (!Database::tableExists('article_revisions')) {
             $pdo->exec('CREATE TABLE article_revisions (
                 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

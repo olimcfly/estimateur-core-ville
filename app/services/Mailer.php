@@ -52,9 +52,10 @@ final class Mailer
 
         try {
             $smtpHost = (string) Config::get('mail.smtp_host');
-            $fromAddress = (string) Config::get('mail.from', 'no-reply@estimation-immobilier-bordeaux.fr');
             $fromName = (string) Config::get('mail.from_name', 'Estimation Immobilier Bordeaux');
             $smtpUser = (string) Config::get('mail.smtp_user');
+            // Sur o2switch, le From DOIT correspondre au user SMTP pour l'alignement SPF
+            $fromAddress = ($smtpUser !== '') ? $smtpUser : (string) Config::get('mail.from', 'contact@estimation-immobilier-bordeaux.fr');
 
             if ($smtpHost !== '') {
                 $mail->isSMTP();

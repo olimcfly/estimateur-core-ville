@@ -16,7 +16,7 @@
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux et sa métropole - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
   <meta name="theme-color" content="#8B1538">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
@@ -44,6 +44,8 @@
   {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
+    "name": "Estimation Immobilier Bordeaux",
+    "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et sa métropole.",
     "name": "Estimation Immobilier Bordeaux et Métropole",
     "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et en Gironde.",
     "url": "https://estimation-immobilier-bordeaux.fr",
@@ -57,8 +59,8 @@
       "addressCountry": "FR"
     },
     "areaServed": {
-      "@type": "City",
-      "name": "Bordeaux"
+      "@type": "Place",
+      "name": "Bordeaux et sa métropole"
     },
     "priceRange": "Gratuit"
   }

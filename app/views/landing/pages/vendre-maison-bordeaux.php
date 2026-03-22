@@ -14,10 +14,10 @@ $formError = $form_error ?? '';
         <i class="fas fa-home"></i> Vente immobilière à Bordeaux
       </p>
 
-      <h1>Vendez votre maison à <span class="lp-highlight">Bordeaux</span> au meilleur prix</h1>
+      <h1>Vendez votre maison à <span class="lp-highlight">Bordeaux et sa métropole</span> au meilleur prix</h1>
 
       <p class="lp-lead">
-        Vous envisagez de <strong>vendre votre maison à Bordeaux</strong> ?
+        Vous envisagez de <strong>vendre votre maison à Bordeaux ou dans sa métropole</strong> ?
         Commencez par connaître sa valeur réelle grâce à notre estimation gratuite.
         Un expert vous accompagne ensuite pour <strong>optimiser votre prix de vente</strong>.
       </p>
@@ -26,7 +26,7 @@ $formError = $form_error ?? '';
         <li><i class="fas fa-chart-line"></i> <strong>Prix de vente optimal</strong> — basé sur le marché actuel</li>
         <li><i class="fas fa-user-tie"></i> <strong>Accompagnement expert</strong> — rappel sous 24h</li>
         <li><i class="fas fa-hand-holding-usd"></i> <strong>Estimation gratuite</strong> — sans engagement</li>
-        <li><i class="fas fa-map-marked-alt"></i> <strong>Connaissance locale</strong> — Bordeaux et Gironde</li>
+        <li><i class="fas fa-map-marked-alt"></i> <strong>Connaissance locale</strong> — Bordeaux et sa métropole</li>
       </ul>
 
       <div class="lp-social-proof-mini">
@@ -124,8 +124,8 @@ $formError = $form_error ?? '';
       </div>
       <div class="lp-benefit-card">
         <div class="lp-benefit-icon"><i class="fas fa-map-pin"></i></div>
-        <h3>Expertise locale Bordeaux</h3>
-        <p>Nous connaissons chaque quartier de Bordeaux : Chartrons, Caudéran, Saint-Pierre, Bastide, Mériadeck...</p>
+        <h3>Expertise locale Bordeaux et sa métropole</h3>
+        <p>Nous connaissons chaque quartier de Bordeaux et sa métropole : Chartrons, Caudéran, Saint-Pierre, Bastide, Mériadeck, Talence, Pessac, Mérignac...</p>
       </div>
     </div>
   </div>
@@ -166,7 +166,7 @@ $formError = $form_error ?? '';
   <div class="lp-container">
     <div class="lp-section-heading">
       <p class="lp-eyebrow"><i class="fas fa-users"></i> Témoignages</p>
-      <h2>Ils ont vendu leur maison à Bordeaux avec nous</h2>
+      <h2>Ils ont vendu leur maison à Bordeaux et sa métropole avec nous</h2>
     </div>
 
     <div class="lp-testimonials">

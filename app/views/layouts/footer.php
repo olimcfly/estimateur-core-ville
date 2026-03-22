@@ -9,7 +9,7 @@
   <div class="container">
     <div class="footer-cta-inner">
       <div class="footer-cta-text">
-        <h3>Estimez votre bien immobilier gratuitement</h3>
+        <h3>Estimez votre bien immobilier à Bordeaux et sa métropole</h3>
         <p>Algorithme IA + expertise locale pour une estimation fiable en quelques minutes.</p>
       </div>
       <a href="/#form-estimation" class="btn-footer-cta">
@@ -32,6 +32,7 @@
           <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux et Métropole</strong></span>
         </a>
         <p class="footer-desc">
+          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et sa métropole depuis 2020.
           Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et Métropole depuis 2020.
         </p>
         <div class="footer-social">
@@ -108,7 +109,7 @@
         <i class="fas fa-envelope-open-text"></i>
         <div>
           <strong>Restez informé</strong>
-          <span>Recevez nos analyses du marché bordelais et nos conseils immobiliers.</span>
+          <span>Recevez nos analyses du marché de Bordeaux et sa métropole et nos conseils immobiliers.</span>
         </div>
       </div>
       <form class="footer-newsletter-form" method="POST" action="/api/newsletter">

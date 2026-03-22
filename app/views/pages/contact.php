@@ -1,4 +1,4 @@
-<?php $page_title = 'Contact - Estimation Immobilière Bordeaux | Nous Sommes Disponibles'; ?>
+<?php $page_title = 'Contact - Estimation Immobilière Bordeaux et sa Métropole | Nous Sommes Disponibles'; ?>
 
 <!-- ============================================ -->
 <!-- HERO SECTION -->
@@ -11,7 +11,7 @@
       </p>
       <h1>Parlons de votre projet immobilier</h1>
       <p class="lead">
-        Besoin d'un avis expert ? Des questions sur une estimation ? Notre équipe bordelaise est disponible pour vous accompagner.
+        Besoin d'un avis expert ? Des questions sur une estimation ? Notre équipe, spécialiste de Bordeaux et sa métropole, est disponible pour vous accompagner.
       </p>
     </div>
   </div>

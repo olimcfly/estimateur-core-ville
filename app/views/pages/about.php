@@ -1,4 +1,4 @@
-<?php $page_title = 'À Propos - Estimation Immobilier Bordeaux'; ?>
+<?php $page_title = 'À Propos - Estimation Immobilier Bordeaux et sa Métropole'; ?>
 
 <!-- HERO PAGE -->
 <section class="section page-hero">
@@ -6,7 +6,7 @@
     <div class="page-hero-inner card">
       <p class="eyebrow"><i class="fas fa-info-circle"></i> À propos de nous</p>
       <h1>Une équipe bordelaise dédiée à la réussite de votre vente immobilière</h1>
-      <p class="lead">Estimation Immobilier Bordeaux est né de l'envie de rendre l'estimation immobilière plus claire, plus rapide et plus fiable pour les propriétaires girondins.</p>
+      <p class="lead">Estimation Immobilier Bordeaux est né de l'envie de rendre l'estimation immobilière plus claire, plus rapide et plus fiable pour les propriétaires de Bordeaux et sa métropole.</p>
     </div>
   </div>
 </section>
@@ -28,7 +28,7 @@
           <i class="fas fa-chart-bar"></i>
         </div>
         <h2>Notre expertise</h2>
-        <p>Nous nous appuyons sur la dynamique des quartiers bordelais, l'analyse approfondie du marché immobilier local et les méthodes d'évaluation utilisées par les professionnels. Notre algorithme intègre données réelles et tendances du marché girond.</p>
+        <p>Nous nous appuyons sur la dynamique des quartiers de Bordeaux et sa métropole, l'analyse approfondie du marché immobilier local et les méthodes d'évaluation utilisées par les professionnels. Notre algorithme intègre données réelles et tendances du marché.</p>
       </article>
     </div>
   </div>
@@ -64,7 +64,7 @@
           <i class="fas fa-map-marker-alt"></i>
         </div>
         <h3>Proximité</h3>
-        <p>Basés à Bordeaux, nous connaissons les quartiers, les tendances locales et les dynamiques immobilières spécifiques de la Gironde et du Grand Bordeaux.</p>
+        <p>Basés à Bordeaux, nous connaissons les quartiers, les tendances locales et les dynamiques immobilières spécifiques de Bordeaux et sa métropole.</p>
       </article>
 
       <article class="card value-card">
@@ -100,7 +100,7 @@
           <i class="fas fa-database"></i>
         </div>
         <h3>Données locales réelles</h3>
-        <p>Notre moteur analyse les transactions réelles en Gironde, les prix de marché et les caractéristiques spécifiques de votre quartier.</p>
+        <p>Notre moteur analyse les transactions réelles à Bordeaux et sa métropole, les prix de marché et les caractéristiques spécifiques de votre quartier.</p>
       </article>
 
       <article class="card feature-card">
@@ -126,7 +126,7 @@
       <div class="stat-box card">
         <p class="stat-number">+2 000</p>
         <p class="stat-label">Estimations réalisées</p>
-        <p class="stat-desc">De propriétaires satisfaits en Gironde</p>
+        <p class="stat-desc">De propriétaires satisfaits à Bordeaux et sa métropole</p>
       </div>
 
       <div class="stat-box card">
@@ -201,7 +201,7 @@
       <div class="step-item">
         <div class="step-number">1</div>
         <h3>Données de référence</h3>
-        <p>Nous collectons les données réelles de transactions en Gironde : prix de vente, caractéristiques des biens, quartiers, dates de vente.</p>
+        <p>Nous collectons les données réelles de transactions à Bordeaux et sa métropole : prix de vente, caractéristiques des biens, quartiers, dates de vente.</p>
       </div>
 
       <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
@@ -254,7 +254,7 @@
     <div class="faq-grid">
       <article class="card faq-card">
         <h3><i class="fas fa-question-circle"></i> Comment l'estimation est-elle calculée ?</h3>
-        <p>Notre algorithme analyse les transactions réelles en Gironde, compare votre bien avec des propriétés similaires, et intègre les tendances actuelles du marché pour générer une fourchette de prix réaliste.</p>
+        <p>Notre algorithme analyse les transactions réelles à Bordeaux et sa métropole, compare votre bien avec des propriétés similaires, et intègre les tendances actuelles du marché pour générer une fourchette de prix réaliste.</p>
       </article>
 
       <article class="card faq-card">
@@ -264,7 +264,7 @@
 
       <article class="card faq-card">
         <h3><i class="fas fa-question-circle"></i> Qui peut utiliser le service ?</h3>
-        <p>Tous les propriétaires d'un bien immobilier situé en Gironde ou sa région. Appartements, maisons, studios... peu importe le type, nous estimons tous les biens.</p>
+        <p>Tous les propriétaires d'un bien immobilier situé à Bordeaux et sa métropole. Appartements, maisons, studios... peu importe le type, nous estimons tous les biens.</p>
       </article>
 
       <article class="card faq-card">
@@ -315,7 +315,7 @@
           <i class="fas fa-map-marker-alt"></i>
         </div>
         <h3>Proximité</h3>
-        <p>Basés à Bordeaux, nous connaissons les quartiers, les tendances locales et les dynamiques immobilières spécifiques de la Gironde et du Grand Bordeaux.</p>
+        <p>Basés à Bordeaux, nous connaissons les quartiers, les tendances locales et les dynamiques immobilières spécifiques de Bordeaux et sa métropole.</p>
       </article>
 
       <article class="card value-card">
@@ -351,7 +351,7 @@
           <i class="fas fa-database"></i>
         </div>
         <h3>Données locales réelles</h3>
-        <p>Notre moteur analyse les transactions réelles en Gironde, les prix de marché et les caractéristiques spécifiques de votre quartier.</p>
+        <p>Notre moteur analyse les transactions réelles à Bordeaux et sa métropole, les prix de marché et les caractéristiques spécifiques de votre quartier.</p>
       </article>
 
       <article class="card feature-card">
@@ -377,7 +377,7 @@
       <div class="stat-box card">
         <p class="stat-number">+2 000</p>
         <p class="stat-label">Estimations réalisées</p>
-        <p class="stat-desc">De propriétaires satisfaits en Gironde</p>
+        <p class="stat-desc">De propriétaires satisfaits à Bordeaux et sa métropole</p>
       </div>
 
       <div class="stat-box card">
@@ -452,7 +452,7 @@
       <div class="step-item">
         <div class="step-number">1</div>
         <h3>Données de référence</h3>
-        <p>Nous collectons les données réelles de transactions en Gironde : prix de vente, caractéristiques des biens, quartiers, dates de vente.</p>
+        <p>Nous collectons les données réelles de transactions à Bordeaux et sa métropole : prix de vente, caractéristiques des biens, quartiers, dates de vente.</p>
       </div>
 
       <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
@@ -505,7 +505,7 @@
     <div class="faq-grid">
       <article class="card faq-card">
         <h3><i class="fas fa-question-circle"></i> Comment l'estimation est-elle calculée ?</h3>
-        <p>Notre algorithme analyse les transactions réelles en Gironde, compare votre bien avec des propriétés similaires, et intègre les tendances actuelles du marché pour générer une fourchette de prix réaliste.</p>
+        <p>Notre algorithme analyse les transactions réelles à Bordeaux et sa métropole, compare votre bien avec des propriétés similaires, et intègre les tendances actuelles du marché pour générer une fourchette de prix réaliste.</p>
       </article>
 
       <article class="card faq-card">
@@ -515,7 +515,7 @@
 
       <article class="card faq-card">
         <h3><i class="fas fa-question-circle"></i> Qui peut utiliser le service ?</h3>
-        <p>Tous les propriétaires d'un bien immobilier situé en Gironde ou sa région. Appartements, maisons, studios... peu importe le type, nous estimons tous les biens.</p>
+        <p>Tous les propriétaires d'un bien immobilier situé à Bordeaux et sa métropole. Appartements, maisons, studios... peu importe le type, nous estimons tous les biens.</p>
       </article>
 
       <article class="card faq-card">

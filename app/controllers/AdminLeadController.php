@@ -397,51 +397,95 @@ final class AdminLeadController
 
         $tables = isset($_POST['tables']) ? (array) $_POST['tables'] : [];
         $created = [];
-        $errors = [];
 
-        $migrationFiles = [
-            'leads' => dirname(__DIR__, 2) . '/database/migration_leads.sql',
-            'lead_notes' => dirname(__DIR__, 2) . '/database/migration_lead_management.sql',
-            'lead_activities' => dirname(__DIR__, 2) . '/database/migration_lead_management.sql',
+        $sqlStatements = [
+            'leads' => "CREATE TABLE IF NOT EXISTS leads (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                website_id INT UNSIGNED NOT NULL,
+                lead_type ENUM('tendance','qualifie') NOT NULL DEFAULT 'qualifie',
+                nom VARCHAR(120) NULL DEFAULT NULL,
+                email VARCHAR(180) NULL DEFAULT NULL,
+                telephone VARCHAR(40) NULL DEFAULT NULL,
+                adresse VARCHAR(255) NULL DEFAULT NULL,
+                ville VARCHAR(120) NOT NULL,
+                type_bien VARCHAR(80) NULL,
+                surface_m2 DECIMAL(8,2) NULL,
+                pieces INT UNSIGNED NULL,
+                estimation DECIMAL(12,2) NOT NULL,
+                urgence VARCHAR(40) NULL DEFAULT NULL,
+                motivation VARCHAR(80) NULL DEFAULT NULL,
+                notes TEXT NULL,
+                partenaire_id INT UNSIGNED NULL,
+                commission_taux DECIMAL(5,2) NULL DEFAULT NULL,
+                commission_montant DECIMAL(12,2) NULL DEFAULT NULL,
+                assigne_a VARCHAR(180) NULL DEFAULT NULL,
+                date_mandat DATE NULL DEFAULT NULL,
+                date_compromis DATE NULL DEFAULT NULL,
+                date_signature DATE NULL DEFAULT NULL,
+                prix_vente DECIMAL(12,2) NULL DEFAULT NULL,
+                score ENUM('chaud','tiede','froid') NOT NULL DEFAULT 'froid',
+                statut ENUM('nouveau','contacte','rdv_pris','visite_realisee','mandat_simple','mandat_exclusif','compromis_vente','signe','co_signature_partenaire','assigne_autre') NOT NULL DEFAULT 'nouveau',
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_website_id (website_id),
+                INDEX idx_lead_type (lead_type),
+                INDEX idx_email (email),
+                INDEX idx_statut (statut),
+                INDEX idx_created_at (created_at),
+                INDEX idx_partenaire_id (partenaire_id),
+                INDEX idx_date_signature (date_signature)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            'lead_notes' => "CREATE TABLE IF NOT EXISTS lead_notes (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT UNSIGNED NOT NULL,
+                content TEXT NOT NULL,
+                author VARCHAR(120) NOT NULL DEFAULT 'Admin',
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_created_at (created_at),
+                CONSTRAINT fk_lead_notes_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            'lead_activities' => "CREATE TABLE IF NOT EXISTS lead_activities (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                lead_id INT UNSIGNED NOT NULL,
+                activity_type VARCHAR(50) NOT NULL,
+                description TEXT NOT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_lead_id (lead_id),
+                INDEX idx_activity_type (activity_type),
+                INDEX idx_created_at (created_at),
+                CONSTRAINT fk_lead_activities_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
         ];
 
         try {
             $pdo = Database::connection();
 
+            // Ensure 'leads' is created first (other tables depend on it)
+            if (in_array('lead_notes', $tables, true) || in_array('lead_activities', $tables, true)) {
+                if (!in_array('leads', $tables, true) && !Database::tableExists('leads')) {
+                    array_unshift($tables, 'leads');
+                }
+            }
+
             foreach ($tables as $table) {
-                if (!isset($migrationFiles[$table])) {
+                if (!isset($sqlStatements[$table])) {
                     continue;
                 }
 
                 if (Database::tableExists($table)) {
-                    // Table exists but may have missing columns — add them
                     $this->addMissingColumns($pdo, $table);
                     $created[] = $table . ' (colonnes mises à jour)';
                     continue;
                 }
 
-                $file = $migrationFiles[$table];
-                $sql = file_get_contents($file);
-                if ($sql === false) {
-                    $errors[] = "Fichier de migration introuvable pour '{$table}'.";
-                    continue;
-                }
-
-                // Remove comments
-                $sql = preg_replace('/--.*$/m', '', $sql);
-                $sql = trim($sql);
-
-                if ($sql !== '') {
-                    $pdo->exec($sql);
-                }
-
+                $pdo->exec($sqlStatements[$table]);
                 $created[] = $table;
             }
 
-            if (!empty($created) && empty($errors)) {
+            if (!empty($created)) {
                 $_SESSION['leads_flash'] = ['type' => 'success', 'message' => 'Tables créées avec succès : ' . implode(', ', $created)];
-            } elseif (!empty($errors)) {
-                $_SESSION['leads_flash'] = ['type' => 'error', 'message' => implode(' ', $errors)];
             }
         } catch (\Throwable $e) {
             $_SESSION['leads_flash'] = ['type' => 'error', 'message' => 'Erreur : ' . $e->getMessage()];

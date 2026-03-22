@@ -14,18 +14,13 @@ final class AuthController
 {
     public function loginForm(): void
     {
-        // Ne pas rediriger si l'utilisateur vient de se déconnecter
         $loggedOut = isset($_GET['logged_out']);
-
-        if (!$loggedOut && $this->isLoggedIn()) {
-            header('Location: /admin');
-            exit;
-        }
 
         View::renderBare('admin/login', [
             'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
             'step' => 'email',
             'success_message' => $loggedOut ? 'Vous avez été déconnecté avec succès.' : null,
+            'already_logged_in' => !$loggedOut && $this->isLoggedIn(),
         ]);
     }
 
@@ -209,8 +204,8 @@ final class AuthController
 
     public static function requireAuth(): void
     {
-        if (self::isDevSkipAuth()) {
-            // Auto-login en mode développeur
+        if (self::isDevSkipAuth() && empty($_SESSION['admin_logged_in'])) {
+            // Auto-login en mode développeur uniquement si pas déjà connecté
             $_SESSION['admin_logged_in'] = true;
             $_SESSION['admin_user_email'] = 'dev@localhost';
             $_SESSION['admin_user_name'] = 'Dev Admin';
@@ -225,9 +220,6 @@ final class AuthController
 
     public static function isLoggedIn(): bool
     {
-        if (self::isDevSkipAuth()) {
-            return true;
-        }
         return !empty($_SESSION['admin_logged_in']);
     }
 

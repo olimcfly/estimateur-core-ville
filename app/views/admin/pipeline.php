@@ -492,6 +492,7 @@
         try {
           var resp = JSON.parse(xhr.responseText);
           if (resp.success) {
+            if (resp.csrf_token) { csrfToken = resp.csrf_token; }
             showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
             setTimeout(function() { window.location.reload(); }, 800);
           } else {

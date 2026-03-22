@@ -566,13 +566,6 @@ final class AdminBlogController
             ]);
         }
 
-        // Ensure articles table uses InnoDB so foreign keys can reference it
-        try {
-            $pdo->exec('ALTER TABLE articles ENGINE=InnoDB');
-        } catch (\PDOException $e) {
-            // Ignore if already InnoDB or any issue
-        }
-
         if (!Database::tableExists('article_revisions')) {
             $pdo->exec('CREATE TABLE article_revisions (
                 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -588,10 +581,7 @@ final class AdminBlogController
                 status ENUM(\'draft\', \'published\') NOT NULL DEFAULT \'draft\',
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE KEY uniq_article_revision (article_id, revision_number),
-                INDEX idx_article_created_at (article_id, created_at),
-                CONSTRAINT fk_article_revisions_article
-                    FOREIGN KEY (article_id) REFERENCES articles(id)
-                    ON DELETE CASCADE
+                INDEX idx_article_created_at (article_id, created_at)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
         }
 
@@ -620,10 +610,7 @@ final class AdminBlogController
                 position INT UNSIGNED DEFAULT NULL,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 INDEX idx_keyword_article (article_id),
-                INDEX idx_keyword_type (keyword_type),
-                CONSTRAINT fk_article_keywords_article
-                    FOREIGN KEY (article_id) REFERENCES articles(id)
-                    ON DELETE CASCADE
+                INDEX idx_keyword_type (keyword_type)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
         }
     }

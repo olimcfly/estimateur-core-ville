@@ -350,6 +350,68 @@ final class AdminLeadController
         exit;
     }
 
+    public function quickUpdate(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $field = trim((string) ($_POST['field'] ?? ''));
+        $value = trim((string) ($_POST['value'] ?? ''));
+
+        if ($id <= 0 || $field === '' || $value === '') {
+            echo json_encode(['success' => false, 'error' => 'Paramètres manquants.']);
+            return;
+        }
+
+        if (!in_array($field, ['statut', 'score'], true)) {
+            echo json_encode(['success' => false, 'error' => 'Champ non autorisé.']);
+            return;
+        }
+
+        try {
+            $leadModel = new Lead();
+            $oldLead = $leadModel->findById($id);
+
+            if ($oldLead === null) {
+                echo json_encode(['success' => false, 'error' => 'Lead introuvable.']);
+                return;
+            }
+
+            $updated = false;
+
+            if ($field === 'statut') {
+                $updated = $leadModel->updateStatut($id, $value);
+                if ($updated && $oldLead['statut'] !== $value) {
+                    try {
+                        $activityModel = new LeadActivity();
+                        $activityModel->log($id, 'statut_change', 'Statut modifié de "' . ($oldLead['statut'] ?? '') . '" à "' . $value . '"');
+                    } catch (\Throwable) {
+                    }
+                }
+            } elseif ($field === 'score') {
+                $updated = $leadModel->updateScore($id, $value);
+                if ($updated && $oldLead['score'] !== $value) {
+                    try {
+                        $activityModel = new LeadActivity();
+                        $activityModel->log($id, 'score_change', 'Score modifié de "' . ($oldLead['score'] ?? '') . '" à "' . $value . '"');
+                    } catch (\Throwable) {
+                    }
+                }
+            }
+
+            if ($updated) {
+                echo json_encode(['success' => true, 'lead_id' => $id, 'field' => $field, 'value' => $value]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Valeur invalide ou aucune modification.']);
+            }
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur serveur : ' . $e->getMessage()]);
+        }
+    }
+
     public function delete(): void
     {
         AuthController::requireAuth();

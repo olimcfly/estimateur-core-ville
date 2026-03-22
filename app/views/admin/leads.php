@@ -249,6 +249,57 @@
 
   .leads-link-btn:hover { opacity: 0.9; }
 
+  .leads-inline-select {
+    padding: 0.25rem 0.4rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: inherit;
+    color: var(--admin-text, #1a1410);
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .leads-inline-select:focus {
+    outline: none;
+    border-color: var(--admin-primary, #8B1538);
+  }
+
+  .leads-inline-select.saving {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .leads-inline-select.saved {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 1px rgba(34,197,94,0.3);
+  }
+
+  .leads-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #1e293b;
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: leadsSlideUp 0.3s ease;
+  }
+
+  .leads-toast.success { border-left: 4px solid #22c55e; }
+  .leads-toast.error { border-left: 4px solid #ef4444; }
+
+  @keyframes leadsSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
   @media (max-width: 640px) {
     .leads-stats-grid { grid-template-columns: 1fr 1fr; }
     .leads-empty-steps { gap: 1rem; }
@@ -416,8 +467,33 @@
                     <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
                     <td><?= e((string) $lead['urgence']) ?></td>
                     <td><?= e((string) $lead['motivation']) ?></td>
-                    <td><span class="leads-badge <?= $scoreClass ?>"><?= e((string) $lead['score']) ?></span></td>
-                    <td><span class="leads-badge <?= $statutClass ?>"><?= e((string) $lead['statut']) ?></span></td>
+                    <td>
+                      <select class="leads-inline-select" data-lead-id="<?= (int) $lead['id'] ?>" data-field="score">
+                        <option value="chaud" <?= $score === 'chaud' ? 'selected' : '' ?>>chaud</option>
+                        <option value="tiede" <?= $score === 'tiede' || $score === 'tiède' ? 'selected' : '' ?>>tiede</option>
+                        <option value="froid" <?= $score === 'froid' ? 'selected' : '' ?>>froid</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="leads-inline-select" data-lead-id="<?= (int) $lead['id'] ?>" data-field="statut">
+                        <?php
+                          $allStatuts = [
+                            'nouveau' => 'Nouveau',
+                            'contacte' => 'Contacté',
+                            'rdv_pris' => 'RDV Pris',
+                            'visite_realisee' => 'Visite Réalisée',
+                            'mandat_simple' => 'Mandat Simple',
+                            'mandat_exclusif' => 'Mandat Exclusif',
+                            'compromis_vente' => 'Compromis',
+                            'signe' => 'Signé',
+                            'co_signature_partenaire' => 'Co-signature',
+                            'assigne_autre' => 'Assigné',
+                          ];
+                          foreach ($allStatuts as $sKey => $sLabel): ?>
+                            <option value="<?= $sKey ?>" <?= $statut === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
+                          <?php endforeach; ?>
+                      </select>
+                    </td>
                     <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
                   </tr>
                 <?php endforeach; ?>
@@ -429,3 +505,59 @@
 
     <?php endif; ?>
 </div>
+
+<!-- Toast notification -->
+<div class="leads-toast" id="leadsToast"></div>
+
+<script>
+(function() {
+  var csrfToken = <?= json_encode(\App\Controllers\AuthController::generateCsrfToken(), JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+
+  function showToast(message, type) {
+    var toast = document.getElementById('leadsToast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.className = 'leads-toast ' + type;
+    toast.style.display = 'block';
+    setTimeout(function() { toast.style.display = 'none'; }, 2500);
+  }
+
+  function quickUpdate(leadId, field, value, selectEl) {
+    selectEl.classList.add('saving');
+    var body = 'csrf_token=' + encodeURIComponent(csrfToken)
+      + '&id=' + encodeURIComponent(leadId)
+      + '&field=' + encodeURIComponent(field)
+      + '&value=' + encodeURIComponent(value);
+
+    fetch('/admin/leads/update-inline', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: body
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      selectEl.classList.remove('saving');
+      if (data.success) {
+        selectEl.classList.add('saved');
+        showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
+        setTimeout(function() { selectEl.classList.remove('saved'); }, 1500);
+      } else {
+        showToast(data.error || 'Erreur de mise \u00e0 jour', 'error');
+      }
+    })
+    .catch(function() {
+      selectEl.classList.remove('saving');
+      showToast('Erreur r\u00e9seau', 'error');
+    });
+  }
+
+  document.querySelectorAll('.leads-inline-select').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+      quickUpdate(this.dataset.leadId, this.dataset.field, this.value, this);
+    });
+  });
+})();
+</script>

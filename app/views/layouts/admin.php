@@ -1,3 +1,22 @@
+<?php
+// Compute role and module access for sidebar rendering
+$_adminCurrentRole = \App\Models\AdminUser::currentRole();
+$_adminIsSuperUser = ($_adminCurrentRole === \App\Models\AdminUser::ROLE_SUPERUSER);
+
+// Helper to check module access
+$_moduleAccess = function(string $slug) use ($_adminCurrentRole): bool {
+    return \App\Models\AdminModule::hasAccess($slug, $_adminCurrentRole);
+};
+
+// Notification count
+$_notifCount = 0;
+try {
+    $_notifCount = \App\Models\AdminNotification::countUnread(
+        $_adminCurrentRole,
+        (int) ($_SESSION['admin_user_id'] ?? 0)
+    );
+} catch (\Throwable $e) {}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -214,6 +233,14 @@
       text-overflow: ellipsis;
     }
 
+    .admin-sidebar-user-role {
+      font-size: 0.65rem;
+      color: var(--admin-accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
     .admin-sidebar-logout {
       display: flex;
       align-items: center;
@@ -293,6 +320,111 @@
       color: var(--admin-primary);
     }
 
+    /* Notification bell */
+    .admin-notif-bell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6b6459;
+      font-size: 1.1rem;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .admin-notif-bell:hover {
+      background: rgba(139,21,56,0.06);
+      color: var(--admin-primary);
+    }
+    .admin-notif-badge {
+      position: absolute;
+      top: 4px;
+      right: 2px;
+      background: #e24b4a;
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      line-height: 1;
+    }
+
+    /* Notification dropdown */
+    .admin-notif-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      width: 360px;
+      max-height: 420px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      border: 1px solid #e8dfd7;
+      overflow: hidden;
+      z-index: 600;
+    }
+    .admin-notif-dropdown.open { display: block; }
+    .admin-notif-dropdown-header {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e8dfd7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-notif-dropdown-header h4 { margin: 0; font-size: 0.9rem; color: #1a1410; }
+    .admin-notif-dropdown-list {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .admin-notif-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #f4f1ed;
+      text-decoration: none;
+      color: #1a1410;
+      transition: background 0.1s;
+    }
+    .admin-notif-item:hover { background: #faf9f7; }
+    .admin-notif-item.unread { background: #fef7f0; }
+    .admin-notif-item-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.8rem;
+    }
+    .admin-notif-item-text { flex: 1; min-width: 0; }
+    .admin-notif-item-title { font-size: 0.82rem; font-weight: 600; line-height: 1.3; }
+    .admin-notif-item-time { font-size: 0.72rem; color: #999; margin-top: 2px; }
+    .admin-notif-dropdown-footer {
+      padding: 0.6rem 1rem;
+      border-top: 1px solid #e8dfd7;
+      text-align: center;
+    }
+    .admin-notif-dropdown-footer a {
+      color: var(--admin-primary);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
     /* Mobile toggle */
     .admin-sidebar-toggle {
       display: none;
@@ -351,6 +483,11 @@
       .admin-content {
         padding: 1.25rem;
       }
+
+      .admin-notif-dropdown {
+        width: 300px;
+        right: -1rem;
+      }
     }
 
     @media (max-width: 640px) {
@@ -388,40 +525,113 @@
     <a href="/admin" class="admin-sidebar-link <?= ($admin_page ?? '') === 'dashboard' ? 'active' : '' ?>">
       <i class="fas fa-tachometer-alt"></i> Tableau de bord
     </a>
+    <?php if ($_moduleAccess('leads')): ?>
     <a href="/admin/leads" class="admin-sidebar-link <?= ($admin_page ?? '') === 'leads' ? 'active' : '' ?>">
       <i class="fas fa-users"></i> Leads
     </a>
     <a href="/admin/funnel" class="admin-sidebar-link <?= ($admin_page ?? '') === 'funnel' ? 'active' : '' ?>">
-      <i class="fas fa-filter"></i> Funnel
+      <i class="fas fa-filter"></i> Entonnoir de vente
     </a>
+    <a href="/admin/pipeline" class="admin-sidebar-link <?= ($admin_page ?? '') === 'pipeline' ? 'active' : '' ?>">
+      <i class="fas fa-columns"></i> Pipeline
+    </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('partenaires')): ?>
     <a href="/admin/partenaires" class="admin-sidebar-link <?= ($admin_page ?? '') === 'partenaires' ? 'active' : '' ?>">
       <i class="fas fa-handshake"></i> Partenaires
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('achats')): ?>
+    <a href="/admin/achats" class="admin-sidebar-link <?= ($admin_page ?? '') === 'achats' ? 'active' : '' ?>">
+      <i class="fas fa-shopping-cart"></i> Achats
+    </a>
+    <?php endif; ?>
 
     <div class="admin-sidebar-section">Contenu</div>
+    <?php if ($_moduleAccess('blog')): ?>
     <a href="/admin/blog" class="admin-sidebar-link <?= ($admin_page ?? '') === 'blog' ? 'active' : '' ?>">
       <i class="fas fa-pen-fancy"></i> Articles Blog
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('actualites')): ?>
     <a href="/admin/actualites" class="admin-sidebar-link <?= ($admin_page ?? '') === 'actualites' ? 'active' : '' ?>">
-      <i class="fas fa-newspaper"></i> Actualités
+      <i class="fas fa-newspaper"></i> Actualites
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('images')): ?>
     <a href="/admin/images" class="admin-sidebar-link <?= ($admin_page ?? '') === 'images' ? 'active' : '' ?>">
       <i class="fas fa-image"></i> Images IA
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('social_images')): ?>
+    <a href="/admin/social-images" class="admin-sidebar-link <?= ($admin_page ?? '') === 'social-images' ? 'active' : '' ?>">
+      <i class="fas fa-share-alt"></i> Images Sociaux
+    </a>
+    <?php endif; ?>
+
+    <?php if ($_moduleAccess('emails') || $_moduleAccess('sequences')): ?>
+    <div class="admin-sidebar-section">Communication</div>
+    <?php if ($_moduleAccess('emails')): ?>
+    <a href="/admin/emails" class="admin-sidebar-link <?= ($admin_page ?? '') === 'emails' ? 'active' : '' ?>">
+      <i class="fas fa-envelope-open-text"></i> Emails
+    </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('sequences')): ?>
+    <a href="/admin/sequences" class="admin-sidebar-link <?= ($admin_page ?? '') === 'sequences' ? 'active' : '' ?>">
+      <i class="fas fa-paper-plane"></i> Sequences
+    </a>
+    <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($_moduleAccess('notifications_internes')): ?>
+    <div class="admin-sidebar-section">Notifications</div>
+    <a href="/admin/notifications" class="admin-sidebar-link <?= ($admin_page ?? '') === 'notifications' ? 'active' : '' ?>">
+      <i class="fas fa-inbox"></i> Notifications
+      <?php if ($_notifCount > 0): ?>
+        <span class="badge"><?= $_notifCount ?></span>
+      <?php endif; ?>
+    </a>
+    <?php endif; ?>
 
     <div class="admin-sidebar-section">Outils</div>
+    <?php if ($_moduleAccess('api_management')): ?>
     <a href="/admin/api-management" class="admin-sidebar-link <?= ($admin_page ?? '') === 'api-management' ? 'active' : '' ?>">
       <i class="fas fa-key"></i> API
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('database')): ?>
     <a href="/admin/database" class="admin-sidebar-link <?= ($admin_page ?? '') === 'database' ? 'active' : '' ?>">
-      <i class="fas fa-database"></i> Base de données
+      <i class="fas fa-database"></i> Base de donnees
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('diagnostic')): ?>
     <a href="/admin/diagnostic" class="admin-sidebar-link <?= ($admin_page ?? '') === 'diagnostic' ? 'active' : '' ?>">
       <i class="fas fa-stethoscope"></i> Diagnostic
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('smtp')): ?>
     <a href="/admin/test-smtp" class="admin-sidebar-link <?= ($admin_page ?? '') === 'smtp' ? 'active' : '' ?>">
       <i class="fas fa-envelope"></i> SMTP
     </a>
+    <?php endif; ?>
+    <?php if ($_moduleAccess('google_ads')): ?>
+    <a href="/admin/google-ads" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads' ? 'active' : '' ?>">
+      <i class="fas fa-ad"></i> Google Ads
+    </a>
+    <?php endif; ?>
+
+    <?php if ($_adminIsSuperUser): ?>
+    <div class="admin-sidebar-section">Systeme</div>
+    <a href="/admin/modules" class="admin-sidebar-link <?= ($admin_page ?? '') === 'modules' ? 'active' : '' ?>">
+      <i class="fas fa-puzzle-piece"></i> Modules
+    </a>
+    <?php if ($_moduleAccess('user_management')): ?>
+    <a href="/admin/users" class="admin-sidebar-link <?= ($admin_page ?? '') === 'users' ? 'active' : '' ?>">
+      <i class="fas fa-user-shield"></i> Utilisateurs
+    </a>
+    <?php endif; ?>
+    <?php endif; ?>
+
     <a href="/" class="admin-sidebar-link" target="_blank">
       <i class="fas fa-external-link-alt"></i> Voir le site
     </a>
@@ -429,11 +639,12 @@
 
   <div class="admin-sidebar-footer">
     <div class="admin-sidebar-user">
-      <div class="admin-sidebar-avatar">
+      <div class="admin-sidebar-avatar" style="<?= $_adminIsSuperUser ? 'background:linear-gradient(135deg,#D4AF37,#B8941F);' : '' ?>">
         <?= strtoupper(mb_substr((string) ($_SESSION['admin_user_name'] ?? 'A'), 0, 1)) ?>
       </div>
       <div class="admin-sidebar-user-info">
         <div class="admin-sidebar-user-name"><?= htmlspecialchars((string) ($_SESSION['admin_user_name'] ?? 'Admin'), ENT_QUOTES, 'UTF-8') ?></div>
+        <div class="admin-sidebar-user-role"><?= $_adminIsSuperUser ? 'Super-utilisateur' : 'Administrateur' ?></div>
         <div class="admin-sidebar-user-email"><?= htmlspecialchars((string) ($_SESSION['admin_user_email'] ?? ''), ENT_QUOTES, 'UTF-8') ?></div>
       </div>
     </div>
@@ -453,6 +664,30 @@
       <span class="admin-topbar-title"><?= htmlspecialchars((string) ($admin_page_title ?? 'Administration'), ENT_QUOTES, 'UTF-8') ?></span>
     </div>
     <div class="admin-topbar-right">
+      <!-- Notification Bell -->
+      <?php if ($_moduleAccess('notifications_internes')): ?>
+      <div style="position:relative;" id="notif-container">
+        <button class="admin-notif-bell" id="notif-bell-btn" aria-label="Notifications" onclick="toggleNotifDropdown()">
+          <i class="fas fa-bell"></i>
+          <?php if ($_notifCount > 0): ?>
+            <span class="admin-notif-badge" id="notif-badge"><?= $_notifCount ?></span>
+          <?php endif; ?>
+        </button>
+        <div class="admin-notif-dropdown" id="notif-dropdown">
+          <div class="admin-notif-dropdown-header">
+            <h4>Notifications</h4>
+            <button onclick="markAllNotifRead()" style="background:none;border:none;color:#3b82f6;cursor:pointer;font-size:0.78rem;">Tout marquer lu</button>
+          </div>
+          <div class="admin-notif-dropdown-list" id="notif-list">
+            <div style="padding:2rem;text-align:center;color:#999;font-size:0.85rem;">Chargement...</div>
+          </div>
+          <div class="admin-notif-dropdown-footer">
+            <a href="/admin/notifications">Voir toutes les notifications</a>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
+
       <a href="/" class="admin-topbar-link" target="_blank">
         <i class="fas fa-external-link-alt"></i> <span>Voir le site</span>
       </a>
@@ -523,6 +758,110 @@
     navigator.sendBeacon('/admin/presence/clear', '');
   });
 })();
+
+// Notification bell functionality
+var _notifDropdownOpen = false;
+
+function toggleNotifDropdown() {
+  var dd = document.getElementById('notif-dropdown');
+  if (!dd) return;
+  _notifDropdownOpen = !_notifDropdownOpen;
+  dd.classList.toggle('open', _notifDropdownOpen);
+  if (_notifDropdownOpen) loadNotifications();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  var container = document.getElementById('notif-container');
+  if (container && !container.contains(e.target)) {
+    var dd = document.getElementById('notif-dropdown');
+    if (dd) dd.classList.remove('open');
+    _notifDropdownOpen = false;
+  }
+});
+
+function loadNotifications() {
+  fetch('/admin/notifications/fetch', { credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success) return;
+      var list = document.getElementById('notif-list');
+      var badge = document.getElementById('notif-badge');
+
+      if (badge) {
+        if (data.unread > 0) {
+          badge.textContent = data.unread;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+
+      if (!data.notifications || data.notifications.length === 0) {
+        list.innerHTML = '<div style="padding:2rem;text-align:center;color:#999;font-size:0.85rem;">Aucune notification</div>';
+        return;
+      }
+
+      var typeColors = { lead: '#8B1538', success: '#22c55e', warning: '#f97316', error: '#e24b4a', system: '#6b6459', info: '#3b82f6' };
+      var typeIcons = { lead: 'fa-user-plus', success: 'fa-check-circle', warning: 'fa-exclamation-triangle', error: 'fa-times-circle', system: 'fa-cog', info: 'fa-info-circle' };
+
+      var html = '';
+      data.notifications.forEach(function(n) {
+        var color = typeColors[n.type] || '#3b82f6';
+        var icon = typeIcons[n.type] || 'fa-info-circle';
+        var link = n.link || '/admin/notifications';
+        html += '<a href="' + link + '" class="admin-notif-item ' + (n.is_read ? '' : 'unread') + '" onclick="markNotifRead(' + n.id + ')">';
+        html += '<div class="admin-notif-item-icon" style="background:' + color + '15;color:' + color + ';"><i class="fas ' + icon + '"></i></div>';
+        html += '<div class="admin-notif-item-text"><div class="admin-notif-item-title">' + escHtml(n.title) + '</div>';
+        html += '<div class="admin-notif-item-time">' + escHtml(n.time_ago) + '</div></div></a>';
+      });
+      list.innerHTML = html;
+    })
+    .catch(function() {});
+}
+
+function markNotifRead(id) {
+  var fd = new FormData();
+  fd.append('id', id);
+  fetch('/admin/notifications/read', { method: 'POST', body: fd, credentials: 'same-origin' }).catch(function() {});
+}
+
+function markAllNotifRead() {
+  fetch('/admin/notifications/read-all', { method: 'POST', credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        var badge = document.getElementById('notif-badge');
+        if (badge) badge.style.display = 'none';
+        loadNotifications();
+      }
+    });
+}
+
+function escHtml(str) {
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// Auto-refresh notifications every 60 seconds
+setInterval(function() {
+  fetch('/admin/notifications/fetch', { credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success) return;
+      var badge = document.getElementById('notif-badge');
+      if (badge) {
+        if (data.unread > 0) {
+          badge.textContent = data.unread;
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    })
+    .catch(function() {});
+}, 60000);
 </script>
 
 </body>

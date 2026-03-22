@@ -58,6 +58,8 @@ final class AdminLeadController
     {
         AuthController::requireAuth();
 
+        $this->ensureLeadTables();
+
         $leads = [];
         $dbError = null;
         $tableExists = false;
@@ -109,6 +111,7 @@ final class AdminLeadController
     public function show(): void
     {
         AuthController::requireAuth();
+        $this->ensureLeadTables();
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if ($id <= 0) {
@@ -591,6 +594,45 @@ final class AdminLeadController
             }
             $def = $columnDefs[$table][$col] ?? 'TEXT NULL';
             $pdo->exec("ALTER TABLE `{$table}` ADD COLUMN `{$col}` {$def}");
+        }
+    }
+
+    private function ensureLeadTables(): void
+    {
+        try {
+            $pdo = Database::connection();
+
+            if (!Database::tableExists('leads')) {
+                return;
+            }
+
+            if (!Database::tableExists('lead_notes')) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS lead_notes (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    lead_id INT UNSIGNED NOT NULL,
+                    content TEXT NOT NULL,
+                    author VARCHAR(120) NOT NULL DEFAULT 'Admin',
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_lead_id (lead_id),
+                    INDEX idx_created_at (created_at),
+                    CONSTRAINT fk_lead_notes_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+
+            if (!Database::tableExists('lead_activities')) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS lead_activities (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    lead_id INT UNSIGNED NOT NULL,
+                    activity_type VARCHAR(50) NOT NULL,
+                    description TEXT NOT NULL,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_lead_id (lead_id),
+                    INDEX idx_activity_type (activity_type),
+                    INDEX idx_created_at (created_at),
+                    CONSTRAINT fk_lead_activities_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+        } catch (\Throwable) {
         }
     }
 }

@@ -103,17 +103,17 @@
   .leads-admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   .leads-admin-table thead { background: #f8fafc; }
 
   .leads-admin-table th {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
     text-align: left;
     font-weight: 600;
     color: var(--admin-muted, #6b6459);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     white-space: nowrap;
@@ -121,12 +121,72 @@
   }
 
   .leads-admin-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
     border-bottom: 1px solid #f1f5f9;
     color: var(--admin-text, #1a1410);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .leads-admin-table tbody tr:hover { background: #f8fafc; }
+
+  .leads-badge-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+  }
+
+  .leads-badge-qualifie { background: rgba(139,21,56,0.1); color: var(--admin-primary, #8B1538); }
+  .leads-badge-tendance { background: rgba(100,116,139,0.1); color: #475569; }
+
+  .leads-actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .leads-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    background: #fff;
+    color: var(--admin-muted, #6b6459);
+    cursor: pointer;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .leads-action-btn:hover { background: #f1f5f9; color: var(--admin-text, #1a1410); }
+  .leads-action-btn.view:hover { color: #2563eb; border-color: #93c5fd; background: rgba(59,130,246,0.06); }
+  .leads-action-btn.edit:hover { color: #d97706; border-color: #fcd34d; background: rgba(245,158,11,0.06); }
+  .leads-action-btn.delete:hover { color: #dc2626; border-color: #fca5a5; background: rgba(239,68,68,0.06); }
+
+  .leads-action-btn[title] { position: relative; }
+
+  .leads-statut-select {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.35rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--admin-text, #1a1410);
+    cursor: pointer;
+    max-width: 120px;
+  }
+
+  .leads-statut-select:hover { border-color: #93c5fd; }
+  .leads-statut-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15); }
 
   .leads-badge {
     display: inline-flex;
@@ -610,23 +670,104 @@
           </div>
 
         <?php else: ?>
-          <!-- LISTE VIEW (table) -->
-          <div class="leads-liste-view">
-            <div class="table-wrapper" style="overflow-x: auto;">
-              <table class="leads-admin-table">
-                <thead>
+          <?php
+          $statutLabels = [
+            'nouveau' => 'Nouveau',
+            'contacte' => 'Contacté',
+            'rdv_pris' => 'RDV pris',
+            'visite_realisee' => 'Visite réalisée',
+            'mandat_simple' => 'Mandat simple',
+            'mandat_exclusif' => 'Mandat exclusif',
+            'compromis_vente' => 'Compromis',
+            'signe' => 'Signé',
+            'co_signature_partenaire' => 'Co-signé',
+            'assigne_autre' => 'Assigné autre',
+          ];
+          $csrfToken = htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8');
+        ?>
+        <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="leads-admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Téléphone</th>
+                  <th>Adresse</th>
+                  <th>Ville</th>
+                  <th>Bien</th>
+                  <th>Surface</th>
+                  <th>Pièces</th>
+                  <th>Estimation</th>
+                  <th>Urgence</th>
+                  <th>Motivation</th>
+                  <th>Score</th>
+                  <th>Statut</th>
+                  <th>Créé le</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($allLeads as $lead): ?>
+                  <?php
+                    $leadId = (int) $lead['id'];
+                    $scoreClass = 'leads-badge-froid';
+                    $score = strtolower($lead['score'] ?? '');
+                    if ($score === 'chaud') $scoreClass = 'leads-badge-chaud';
+                    elseif ($score === 'tiede' || $score === 'tiède') $scoreClass = 'leads-badge-tiede';
+
+                    $statutKey = strtolower($lead['statut'] ?? 'nouveau');
+                    $statutClass = 'leads-badge-nouveau';
+                    if (in_array($statutKey, ['contacte', 'rdv_pris', 'visite_realisee'], true)) $statutClass = 'leads-badge-contacte';
+                    elseif (in_array($statutKey, ['mandat_simple', 'mandat_exclusif', 'compromis_vente', 'signe', 'co_signature_partenaire'], true)) $statutClass = 'leads-badge-converti';
+
+                    $typeClass = ($lead['lead_type'] ?? '') === 'qualifie' ? 'leads-badge-qualifie' : 'leads-badge-tendance';
+                    $typeLabel = ($lead['lead_type'] ?? '') === 'qualifie' ? 'Qualifié' : 'Tendance';
+                  ?>
                   <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Téléphone</th>
-                    <th>Ville</th>
-                    <th>Estimation</th>
-                    <th>Urgence</th>
-                    <th>Motivation</th>
-                    <th>Score</th>
-                    <th>Statut</th>
-                    <th>Créé le</th>
+                    <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
+                    <td><span class="leads-badge-type <?= $typeClass ?>"><?= $typeLabel ?></span></td>
+                    <td style="font-weight: 500;"><?= e((string) ($lead['nom'] ?? '-')) ?></td>
+                    <td><?= e((string) ($lead['email'] ?? '-')) ?></td>
+                    <td><?= e((string) ($lead['telephone'] ?? '-')) ?></td>
+                    <td title="<?= e((string) ($lead['adresse'] ?? '')) ?>"><?= e((string) ($lead['adresse'] ?? '-')) ?></td>
+                    <td><?= e((string) ($lead['ville'] ?? '-')) ?></td>
+                    <td><?= e((string) ($lead['type_bien'] ?? '-')) ?></td>
+                    <td><?= ($lead['surface_m2'] ?? null) ? e((string) $lead['surface_m2']) . ' m²' : '-' ?></td>
+                    <td><?= ($lead['pieces'] ?? null) ? e((string) $lead['pieces']) : '-' ?></td>
+                    <td style="font-weight: 600; white-space: nowrap;"><?= number_format((float) ($lead['estimation'] ?? 0), 0, ',', ' ') ?> €</td>
+                    <td><?= e((string) ($lead['urgence'] ?? '-')) ?></td>
+                    <td><?= e((string) ($lead['motivation'] ?? '-')) ?></td>
+                    <td><span class="leads-badge <?= $scoreClass ?>"><?= e((string) ($lead['score'] ?? 'froid')) ?></span></td>
+                    <td><span class="leads-badge <?= $statutClass ?>"><?= $statutLabels[$statutKey] ?? $statutKey ?></span></td>
+                    <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.78rem;"><?= e((string) ($lead['created_at'] ?? '')) ?></td>
+                    <td>
+                      <div class="leads-actions-cell">
+                        <a href="/admin/leads/detail?id=<?= $leadId ?>" class="leads-action-btn view" title="Voir la fiche">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="/admin/leads/edit?id=<?= $leadId ?>" class="leads-action-btn edit" title="Modifier">
+                          <i class="fas fa-pen"></i>
+                        </a>
+                        <form method="POST" action="/admin/leads/delete/<?= $leadId ?>" style="display:inline;" onsubmit="return confirm('Supprimer le lead #<?= $leadId ?> ?');">
+                          <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                          <input type="hidden" name="id" value="<?= $leadId ?>">
+                          <button type="submit" class="leads-action-btn delete" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                        <form method="POST" action="/admin/leads/statut/<?= $leadId ?>" class="leads-statut-form" style="display:inline;">
+                          <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                          <input type="hidden" name="id" value="<?= $leadId ?>">
+                          <select name="statut" class="leads-statut-select" onchange="this.form.submit()" title="Changer le statut">
+                            <?php foreach ($statutLabels as $sKey => $sLabel): ?>
+                              <option value="<?= $sKey ?>" <?= $statutKey === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
+                            <?php endforeach; ?>
+                          </select>
+                        </form>
+                      </div>
+                    </td>
                   </tr>
                 </thead>
                 <tbody>

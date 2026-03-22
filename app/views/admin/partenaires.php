@@ -282,7 +282,7 @@
                 <div class="actions-cell">
                   <a href="/admin/partenaires/edit?id=<?= (int)$p['id'] ?>" class="btn-edit"><i class="fas fa-pen"></i></a>
                   <form method="POST" action="/admin/partenaires/delete" style="display:inline;" onsubmit="return confirm('Supprimer ce partenaire ?');">
-                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="id" value="<?= (int)$p['id'] ?>">
                     <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
                   </form>

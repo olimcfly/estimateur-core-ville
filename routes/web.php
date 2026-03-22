@@ -119,12 +119,19 @@ $router->get('/tools/calculatrice', [ToolController::class, 'calculatrice']);
 // Admin blog routes
 $router->get('/admin/blog', [AdminBlogController::class, 'index']);
 $router->get('/admin/blog/create', [AdminBlogController::class, 'create']);
+$router->get('/admin/blog/wizard', [AdminBlogController::class, 'wizard']);
+$router->post('/admin/blog/wizard/generate', [AdminBlogController::class, 'wizardGenerate']);
 $router->post('/admin/blog/store', [AdminBlogController::class, 'store']);
 $router->get('/admin/blog/edit/{id}', [AdminBlogController::class, 'edit']);
 $router->post('/admin/blog/update/{id}', [AdminBlogController::class, 'update']);
 $router->post('/admin/blog/delete/{id}', [AdminBlogController::class, 'delete']);
 $router->post('/admin/blog/generate', [AdminBlogController::class, 'generate']);
 $router->post('/admin/blog/restore/{id}/{revisionId}', [AdminBlogController::class, 'restoreRevision']);
+$router->post('/admin/blog/api/analyze', [AdminBlogController::class, 'analyzeApi']);
+$router->get('/admin/blog/silos', [AdminBlogController::class, 'silos']);
+$router->post('/admin/blog/silos/create', [AdminBlogController::class, 'createSilo']);
+$router->post('/admin/blog/silos/delete/{id}', [AdminBlogController::class, 'deleteSilo']);
+$router->get('/admin/blog/seo-guide', [AdminBlogController::class, 'seoGuide']);
 
 // Admin actualités routes
 $router->get('/admin/actualites', [AdminActualiteController::class, 'index']);

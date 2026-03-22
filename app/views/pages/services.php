@@ -1,4 +1,4 @@
-<?php $page_title = 'Services - Estimation Immobilière Bordeaux | Accompagnement Complet'; ?>
+<?php $page_title = 'Services - Estimation Immobilière Bordeaux et sa Métropole | Accompagnement Complet'; ?>
 
 <!-- ============================================ -->
 <!-- HERO SECTION -->
@@ -11,7 +11,7 @@
       </p>
       <h1>Un accompagnement immobilier complet, de l'estimation à la signature</h1>
       <p class="lead">
-        Nous combinons technologie intelligente, expertise locale et suivi humain pour sécuriser votre projet de vente à Bordeaux.
+        Nous combinons technologie intelligente, expertise locale et suivi humain pour sécuriser votre projet de vente à Bordeaux et sa métropole.
       </p>
     </div>
   </div>
@@ -376,7 +376,7 @@
         </div>
         <h3>Experts Locaux</h3>
         <p>
-          Équipe basée à Bordeaux. Nous connaissons chaque quartier, chaque tendance du marché.
+          Équipe basée à Bordeaux. Nous connaissons chaque quartier de Bordeaux et sa métropole, chaque tendance du marché.
         </p>
       </article>
 
@@ -387,7 +387,7 @@
         </div>
         <h3>Fiable</h3>
         <p>
-          3 800+ estimations réalisées, 4.8/5 de satisfaction client. Référence du marché bordelais.
+          3 800+ estimations réalisées, 4.8/5 de satisfaction client. Référence du marché immobilier de Bordeaux et sa métropole.
         </p>
       </article>
     </div>
@@ -521,7 +521,7 @@
       <article class="card faq-card">
         <h3><i class="fas fa-question-circle"></i> À quelle précision m'attendre?</h3>
         <p>
-          Précision moyenne ±3% comparé au prix de vente final. Basée sur 5000+ transactions réelles à Bordeaux.
+          Précision moyenne ±3% comparé au prix de vente final. Basée sur 5000+ transactions réelles à Bordeaux et sa métropole.
         </p>
       </article>
 

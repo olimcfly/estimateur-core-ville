@@ -1,4 +1,4 @@
-<?php $page_title = 'Estimation Immobilière Bordeaux - Avis de Valeur Indicatif Gratuit'; ?>
+<?php $page_title = 'Estimation Immobilière Bordeaux et sa Métropole - Avis de Valeur Indicatif Gratuit'; ?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE -->
@@ -7,7 +7,7 @@
   <div class="container hero-grid">
     <div>
       <p class="eyebrow"><i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne</p>
-      <h1>Estimez votre bien immobilier à Bordeaux</h1>
+      <h1>Estimez votre bien immobilier à Bordeaux et sa métropole</h1>
       <p class="lead">
         Obtenez une fourchette de prix indicative en quelques secondes.
         Seulement 3 informations nécessaires.

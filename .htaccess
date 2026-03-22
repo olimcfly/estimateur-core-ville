@@ -1,4 +1,5 @@
 ServerSignature Off
+DirectorySlash Off
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -9,9 +10,10 @@ ServerSignature Off
   # Serve static assets from /public/assets when DocumentRoot is the project root.
   RewriteRule ^assets/(.*)$ public/assets/$1 [L]
 
-  # Front controller fallback.
+  # Front controller: route everything except real files through index.php.
+  # Note: we do NOT exclude directories (!-d) because Apache would serve
+  # physical dirs like public/admin/login/ instead of letting PHP route handle them.
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^ index.php [L,QSA]
 </IfModule>
 

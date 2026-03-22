@@ -71,7 +71,7 @@
 
           <?php if (!empty($tablesToCreate)): ?>
             <form method="POST" action="/admin/leads/create-tables" style="margin-top: 1rem;">
-              <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
               <?php foreach ($tablesToCreate as $t): ?>
                 <input type="hidden" name="tables[]" value="<?= e($t) ?>">
               <?php endforeach; ?>

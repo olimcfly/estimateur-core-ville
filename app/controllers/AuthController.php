@@ -91,6 +91,7 @@ final class AuthController
             // Auto-créer l'admin si c'est l'email configuré (ADMIN_EMAIL ou MAIL_FROM_ADDRESS)
             $configuredEmails = array_filter(array_unique(array_map('strtolower', array_map('trim', [
                 (string) ($_ENV['ADMIN_EMAIL'] ?? ''),
+                (string) ($_ENV['ADMIN_EMAIL_2'] ?? ''),
                 (string) ($_ENV['MAIL_FROM_ADDRESS'] ?? ''),
                 (string) ($_ENV['MAIL_USERNAME'] ?? ''),
                 'contact@estimation-immobilier-bordeaux.fr',
@@ -202,6 +203,21 @@ final class AuthController
 
     public function logout(): void
     {
+        // Clear admin presence before destroying session
+        $adminEmail = (string) ($_SESSION['admin_user_email'] ?? '');
+        if ($adminEmail !== '') {
+            try {
+                $pdo = Database::connection();
+                $tables = $pdo->query("SHOW TABLES LIKE 'admin_presence'")->fetchAll();
+                if (!empty($tables)) {
+                    $stmt = $pdo->prepare("DELETE FROM admin_presence WHERE admin_email = :email");
+                    $stmt->execute(['email' => $adminEmail]);
+                }
+            } catch (\Throwable $e) {
+                // Ignore - presence cleanup is best-effort
+            }
+        }
+
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {
@@ -651,6 +667,130 @@ final class AuthController
             ];
 
             echo json_encode(['success' => false, 'steps' => $steps]);
+        }
+    }
+
+    /**
+     * Admin heartbeat: record admin presence on a page.
+     * Called via AJAX from the admin panel every 30 seconds.
+     */
+    public function presenceHeartbeat(): void
+    {
+        self::requireAuth();
+        header('Content-Type: application/json; charset=utf-8');
+
+        $pagePath = trim((string) ($_POST['page'] ?? ''));
+        $adminEmail = (string) ($_SESSION['admin_user_email'] ?? '');
+        $adminName = (string) ($_SESSION['admin_user_name'] ?? 'Administrateur');
+
+        if ($pagePath === '' || $adminEmail === '') {
+            echo json_encode(['success' => false]);
+            return;
+        }
+
+        try {
+            $pdo = Database::connection();
+
+            // Create table if not exists
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS admin_presence (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    admin_email VARCHAR(180) NOT NULL UNIQUE,
+                    admin_name VARCHAR(120) NOT NULL DEFAULT '',
+                    page_path VARCHAR(500) NOT NULL,
+                    last_seen_at DATETIME NOT NULL,
+                    INDEX idx_presence_page (page_path),
+                    INDEX idx_presence_seen (last_seen_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            ");
+
+            // Clean old entries (older than 60 seconds = inactive)
+            $pdo->exec("DELETE FROM admin_presence WHERE last_seen_at < DATE_SUB(NOW(), INTERVAL 60 SECOND)");
+
+            // Upsert presence
+            $stmt = $pdo->prepare("
+                INSERT INTO admin_presence (admin_email, admin_name, page_path, last_seen_at)
+                VALUES (:email, :name, :page, NOW())
+                ON DUPLICATE KEY UPDATE admin_name = :name2, page_path = :page2, last_seen_at = NOW()
+            ");
+            $stmt->execute([
+                'email' => $adminEmail,
+                'name' => $adminName,
+                'page' => $pagePath,
+                'name2' => $adminName,
+                'page2' => $pagePath,
+            ]);
+
+            echo json_encode(['success' => true]);
+        } catch (\Throwable $e) {
+            error_log('Presence heartbeat error: ' . $e->getMessage());
+            echo json_encode(['success' => false]);
+        }
+    }
+
+    /**
+     * Public endpoint: check if an admin is currently active on the site.
+     * Returns minimal info (no auth details exposed).
+     */
+    public function presenceCheck(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            $pdo = Database::connection();
+
+            // Check if admin_presence table exists
+            $tables = $pdo->query("SHOW TABLES LIKE 'admin_presence'")->fetchAll();
+            if (empty($tables)) {
+                echo json_encode(['active' => false]);
+                return;
+            }
+
+            // Check for any admin active in the last 60 seconds
+            $stmt = $pdo->query("
+                SELECT admin_name, page_path FROM admin_presence
+                WHERE last_seen_at >= DATE_SUB(NOW(), INTERVAL 60 SECOND)
+                LIMIT 1
+            ");
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($row) {
+                echo json_encode([
+                    'active' => true,
+                    'admin_name' => $row['admin_name'] ?: 'L\'administrateur',
+                    'page' => $row['page_path'],
+                ]);
+            } else {
+                echo json_encode(['active' => false]);
+            }
+        } catch (\Throwable $e) {
+            echo json_encode(['active' => false]);
+        }
+    }
+
+    /**
+     * Admin: clear own presence on logout or navigation away.
+     */
+    public function presenceClear(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $adminEmail = (string) ($_SESSION['admin_user_email'] ?? '');
+        if ($adminEmail === '') {
+            echo json_encode(['success' => true]);
+            return;
+        }
+
+        try {
+            $pdo = Database::connection();
+            $tables = $pdo->query("SHOW TABLES LIKE 'admin_presence'")->fetchAll();
+            if (!empty($tables)) {
+                $stmt = $pdo->prepare("DELETE FROM admin_presence WHERE admin_email = :email");
+                $stmt->execute(['email' => $adminEmail]);
+            }
+            echo json_encode(['success' => true]);
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => true]);
         }
     }
 

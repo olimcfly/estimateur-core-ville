@@ -33,17 +33,25 @@ final class AdminAchatController
     {
         AuthController::requireAuth();
 
-        $model = new Achat();
-
-        $score = isset($_GET['score']) && in_array($_GET['score'], ['chaud', 'tiede', 'froid'], true) ? $_GET['score'] : null;
-        $statut = isset($_GET['statut']) && in_array($_GET['statut'], self::STATUTS, true) ? $_GET['statut'] : null;
-
-        $achats = $model->findAllFiltered($score, $statut);
-        $stats = $model->getStats();
-        $statutCounts = $model->countByStatut();
-
-        // Check if table exists
+        // Check if table exists before querying
         $tableExists = Database::tableExists('achats');
+
+        $achats = [];
+        $stats = [];
+        $statutCounts = [];
+        $score = null;
+        $statut = null;
+
+        if ($tableExists) {
+            $model = new Achat();
+
+            $score = isset($_GET['score']) && in_array($_GET['score'], ['chaud', 'tiede', 'froid'], true) ? $_GET['score'] : null;
+            $statut = isset($_GET['statut']) && in_array($_GET['statut'], self::STATUTS, true) ? $_GET['statut'] : null;
+
+            $achats = $model->findAllFiltered($score, $statut);
+            $stats = $model->getStats();
+            $statutCounts = $model->countByStatut();
+        }
 
         View::renderAdmin('admin/achats', [
             'page_title' => 'Achats - Admin CRM',

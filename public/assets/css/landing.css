@@ -875,6 +875,118 @@
   opacity: 0.7;
 }
 
+/* ─── Google-style Guide (Material Design) ─────────── */
+.guide-wrapper {
+  background: #f0f4f9;
+  margin: -1.5rem -2rem;
+  padding: 2.5rem 2rem;
+  min-height: calc(100vh - 60px);
+}
+
+.guide-header {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+}
+
+.guide-header h2 {
+  font-family: 'DM Sans', 'Google Sans', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #202124;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.guide-header p {
+  font-size: 0.95rem;
+  color: #5f6368;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.guide-nav {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.guide-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.guide-nav a:hover {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+}
+
+.guide-nav a i {
+  font-size: 0.78rem;
+}
+
+.guide-section {
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem 2rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid #e8eaed;
+}
+
+.guide-section h3 {
+  font-family: 'DM Sans', 'Google Sans', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+  padding: 0;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #202124;
+}
+
+.guide-section h3 i {
+  color: #1a73e8;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f0fe;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.guide-section > p:first-of-type {
+  color: #5f6368;
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.guide-section h4 {
+  font-family: 'DM Sans', 'Google Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #202124;
+  margin: 1.5rem 0 0.75rem;
+  padding: 0;
 /* ─── Admin Guide ───────────────────────────────────── */
 
 /* Container */
@@ -1211,6 +1323,9 @@
 /* Tables */
 .guide-table {
   width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.86rem;
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 1.5rem;
@@ -1223,12 +1338,20 @@
 
 .guide-table th,
 .guide-table td {
+  padding: 0.75rem 1rem;
   padding: 0.95rem 1.25rem;
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #e8eaed;
 }
 
 .guide-table th {
+  background: none;
+  font-weight: 500;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5f6368;
+  border-bottom: 2px solid #e8eaed;
   background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.08), rgba(var(--primary-rgb), 0.03));
   font-weight: 700;
   font-size: 0.76rem;
@@ -1239,6 +1362,24 @@
 
 .guide-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+.guide-table tr:hover td {
+  background: #f8f9fa;
+}
+
+.guide-table td {
+  color: #3c4043;
+}
+
+.guide-table code {
+  background: #e8f0fe;
+  color: #1a73e8;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', 'Google Sans Mono', monospace;
+  font-weight: 500;
 }
 
 .guide-table tbody tr {
@@ -1279,6 +1420,14 @@
 .guide-code {
   background: #1e1e2e;
   color: #cdd6f4;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  border: 1px solid #313244;
   padding: 1.5rem 1.75rem;
   border-radius: 14px;
   font-family: 'JetBrains Mono', Consolas, monospace;
@@ -1335,6 +1484,51 @@
 
 /* Tips / alerts */
 .guide-tip {
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin: 1rem 0 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.guide-tip strong {
+  display: inline;
+}
+
+.guide-tip-info {
+  background: #e8f0fe;
+  color: #174ea6;
+  border-left: none;
+}
+
+.guide-tip-info code {
+  background: rgba(26, 115, 232, 0.12);
+  color: #1a73e8;
+}
+
+.guide-tip-warning {
+  background: #fef7e0;
+  color: #8a6914;
+  border-left: none;
+}
+
+.guide-tip-warning code {
+  background: rgba(234, 134, 0, 0.12);
+  color: #a65d00;
+}
+
+.guide-tip-success {
+  background: #e6f4ea;
+  color: #137333;
+  border-left: none;
+}
+
+.guide-tip-success code {
+  background: rgba(24, 128, 56, 0.12);
+  color: #188038;
   padding: 1.25rem 1.5rem;
   border-radius: 14px;
   margin-bottom: 1.5rem;
@@ -1378,6 +1572,9 @@
   list-style: none;
   display: flex;
   flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
   gap: 0.4rem;
   padding: 0;
   margin: 0;
@@ -1387,6 +1584,15 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #f1f3f4;
+  color: #3c4043;
+}
+
+.guide-checklist li:last-child {
+  border-bottom: none;
   font-size: 0.88rem;
   line-height: 1.65;
   padding: 0.7rem 1.1rem;
@@ -1403,6 +1609,37 @@
 
 .guide-checklist li i {
   margin-top: 0.25rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.guide-checklist li .fa-check-circle { color: #188038; }
+.guide-checklist li .fa-times-circle { color: #c5221f; }
+.guide-checklist li .fa-info-circle { color: #1a73e8; }
+
+/* ─── Guide Responsive ──────────────────────────────── */
+@media (max-width: 768px) {
+  .guide-wrapper {
+    padding: 1.5rem 1rem;
+    margin: -1rem -1rem;
+  }
+  .guide-section {
+    padding: 1.25rem 1rem 1rem;
+    border-radius: 8px;
+  }
+  .guide-nav {
+    gap: 0.35rem;
+  }
+  .guide-nav a {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+  }
+  .guide-table {
+    font-size: 0.8rem;
+  }
+  .guide-table th,
+  .guide-table td {
+    padding: 0.5rem 0.6rem;
   font-size: 0.9rem;
   flex-shrink: 0;
 }

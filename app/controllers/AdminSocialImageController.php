@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Config;
 use App\Core\View;
 
 final class AdminSocialImageController
@@ -18,8 +19,8 @@ final class AdminSocialImageController
             'admin_page' => 'social-images',
             'breadcrumb' => 'Images Sociales',
             'images' => $images,
-            'quartiers' => QUARTIERS,
-            'prix_m2' => PRIX_M2_MOYEN,
+            'quartiers' => Config::get('city.quartiers'),
+            'prix_m2' => Config::get('city.prix_m2_moyen'),
         ]);
     }
 

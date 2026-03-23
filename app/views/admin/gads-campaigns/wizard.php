@@ -89,7 +89,7 @@ $cId    = $isEdit ? (int) $campaign['id'] : 0;
                         Zone géographique
                         <input type="text" id="gads-location" class="gads-input"
                             placeholder="Ex: Bordeaux"
-                            value="<?= e($campaign['target_location'] ?? CITY_NAME) ?>">
+                            value="<?= e($campaign['target_location'] ?? $config['city']['name'] ?? '') ?>">
                     </label>
 
                     <label class="gads-label">
@@ -214,7 +214,7 @@ window.GADS_INIT = {
     ads: <?= json_encode($ads, JSON_UNESCAPED_UNICODE) ?>,
     landingPages: <?= json_encode($landing_pages, JSON_UNESCAPED_UNICODE) ?>,
     hasAnthropic: <?= $has_anthropic ? 'true' : 'false' ?>,
-    cityName: <?= json_encode(CITY_NAME) ?>
+    cityName: <?= json_encode($config['city']['name'] ?? '') ?>
 };
 </script>
 <script src="/assets/js/google-ads.js"></script>

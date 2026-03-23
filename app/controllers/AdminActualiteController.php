@@ -10,6 +10,7 @@ use App\Models\Actualite;
 use App\Models\ActualiteAiConfig;
 use App\Models\RssArticle;
 use App\Services\ActualiteService;
+use App\Services\GmbService;
 
 final class AdminActualiteController
 {
@@ -99,6 +100,14 @@ final class AdminActualiteController
         try {
             $data = $this->validatedPayload($_POST);
             $id = $model->create($data);
+
+            // Auto-generate GMB publication if enabled
+            try {
+                $gmbService = new GmbService();
+                $gmbService->autoGenerateFromActualite($id);
+            } catch (\Throwable $gmbError) {
+                error_log('[actualites] GMB auto-generate error: ' . $gmbError->getMessage());
+            }
 
             // Mark RSS articles as used if provided
             $rssArticleIds = $_POST['rss_article_ids'] ?? '';

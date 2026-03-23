@@ -656,6 +656,11 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
       <i class="fas fa-magic"></i> Generateur Campagnes
     </a>
     <?php endif; ?>
+    <?php if ($_moduleAccess('gmb')): ?>
+    <a href="/admin/gmb" class="admin-sidebar-link <?= ($admin_page ?? '') === 'gmb' ? 'active' : '' ?>">
+      <i class="fab fa-google"></i> Google My Business
+    </a>
+    <?php endif; ?>
 
     <?php if ($_moduleAccess('emails') || $_moduleAccess('sequences') || $_moduleAccess('mailbox')): ?>
     <div class="admin-sidebar-section">Communication</div>

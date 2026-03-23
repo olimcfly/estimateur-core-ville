@@ -387,13 +387,61 @@ $semanticChecks = $hasAnalysis ? ($analysis['semantic_checks'] ?? []) : [];
             <?php endif; ?>
 
             <!-- Quick Links -->
-            <section class="card">
+            <section class="card" style="margin-bottom: 1rem;">
                 <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: #8B1538;">Ressources SEO</h3>
                 <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem;">
                     <li style="padding: 0.3rem 0;"><a href="/admin/blog/seo-guide" style="color: #8B1538;">Guide SEO Local Immobilier</a></li>
                     <li style="padding: 0.3rem 0;"><a href="/admin/blog/silos" style="color: #8B1538;">Gérer les Silos SEO</a></li>
                     <li style="padding: 0.3rem 0;"><a href="/admin/google-ads" style="color: #8B1538;">Guide Google Ads</a></li>
                 </ul>
+            </section>
+
+            <!-- GMB Publication -->
+            <?php
+            $gmbPub = $gmbPublication ?? null;
+            ?>
+            <section class="card" style="border: 1px solid #4285f4; border-radius: 8px;">
+                <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: #4285f4; display: flex; align-items: center; gap: 0.4rem;">
+                    <span style="font-weight: 800; font-size: 1.1rem;">G</span> Publication GMB
+                </h3>
+                <?php if ($gmbPub !== null): ?>
+                    <?php
+                    $gmbStatus = (string) ($gmbPub['status'] ?? 'draft');
+                    $gmbStatusColors = [
+                        'draft' => ['bg' => '#e8e8e8', 'color' => '#666'],
+                        'scheduled' => ['bg' => '#e8f0fe', 'color' => '#1a56db'],
+                        'notified' => ['bg' => '#fff3cd', 'color' => '#856404'],
+                        'published' => ['bg' => '#d4edda', 'color' => '#155724'],
+                        'expired' => ['bg' => '#f8d7da', 'color' => '#721c24'],
+                    ];
+                    $sc = $gmbStatusColors[$gmbStatus] ?? $gmbStatusColors['draft'];
+                    ?>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; background: <?= $sc['bg'] ?>; color: <?= $sc['color'] ?>;">
+                            <?= e(ucfirst($gmbStatus)) ?>
+                        </span>
+                        <?php if (!empty($gmbPub['scheduled_at'])): ?>
+                            <span style="font-size: 0.8rem; color: #888;">
+                                Planifiée : <?= e(date('d/m/Y H:i', strtotime((string) $gmbPub['scheduled_at']))) ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if (!empty($gmbPub['title'])): ?>
+                    <div style="font-size: 0.85rem; color: #333; margin-bottom: 0.5rem;">
+                        <strong><?= e((string) $gmbPub['title']) ?></strong>
+                    </div>
+                    <?php endif; ?>
+                    <a href="/admin/gmb/edit/<?= (int) $gmbPub['id'] ?>" class="btn btn-small" style="width: 100%; text-align: center; background: #4285f4; color: #fff; border: none;">
+                        Voir / Modifier la publication GMB
+                    </a>
+                <?php elseif (!empty($article['id'])): ?>
+                    <p style="font-size: 0.85rem; color: #888; margin: 0 0 0.75rem;">Aucune publication GMB pour cet article.</p>
+                    <a href="/admin/gmb/create?article_id=<?= (int) $article['id'] ?>" class="btn btn-small btn-ghost" style="width: 100%; text-align: center; border-color: #4285f4; color: #4285f4;">
+                        Générer la publication GMB
+                    </a>
+                <?php else: ?>
+                    <p style="font-size: 0.85rem; color: #888; margin: 0;">Sauvegardez l'article pour pouvoir générer une publication GMB.</p>
+                <?php endif; ?>
             </section>
         </div>
     </div>

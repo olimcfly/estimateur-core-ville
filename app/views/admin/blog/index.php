@@ -39,6 +39,8 @@ foreach ($silos as $silo) {
     }
 }
 sort($cities);
+
+$gmbByArticle = $gmbByArticle ?? [];
 ?>
 
 <style>
@@ -55,6 +57,12 @@ sort($cities);
 .type-standalone { background: #e8e8e8; color: #555; }
 .city-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; background: #e8f4f8; color: #1a6b8a; border: 1px solid #b8dde8; }
 .persona-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; color: #6b4c8a; background: #f3eef8; border: 1px solid #d8cce8; }
+.gmb-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 12px; font-size: 0.68rem; font-weight: 600; text-decoration: none; cursor: pointer; }
+.gmb-badge-draft { background: #e8e8e8; color: #666; }
+.gmb-badge-scheduled { background: #e8f0fe; color: #1a56db; }
+.gmb-badge-published { background: #d4edda; color: #155724; }
+.gmb-badge-notified { background: #fff3cd; color: #856404; }
+.gmb-badge-expired { background: #f8d7da; color: #721c24; }
 
 /* Silo group card */
 .silo-group { border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; border: 2px solid #e0e0e0; }
@@ -251,9 +259,17 @@ sort($cities);
                         data-type="<?= e($artType) ?>"
                         data-seo="<?= $artSeo ?>">
                         <td>
-                            <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" style="color: #8B1538; font-weight: 600; text-decoration: none;">
-                                <?= e((string) $article['title']) ?>
-                            </a>
+                            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" style="color: #8B1538; font-weight: 600; text-decoration: none;">
+                                    <?= e((string) $article['title']) ?>
+                                </a>
+                                <?php if (isset($gmbByArticle[(int) $article['id']])): ?>
+                                    <?php $gmb = $gmbByArticle[(int) $article['id']]; $gmbStatus = (string) ($gmb['status'] ?? 'draft'); ?>
+                                    <a href="/admin/gmb/edit/<?= (int) $gmb['id'] ?>" class="gmb-badge gmb-badge-<?= e($gmbStatus) ?>" title="Publication GMB : <?= e($gmbStatus) ?>">
+                                        <span style="font-weight: 800;">G</span> <?= e($gmbStatus) ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
                             <div style="font-size: 0.75rem; color: #999;"><?= e((string) $article['persona']) ?></div>
                         </td>
                         <td>
@@ -366,6 +382,12 @@ sort($cities);
                     <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                         <span class="type-badge type-<?= e($artType) ?>"><?= $artType === 'pilier' ? 'PILIER' : ($artType === 'satellite' ? 'SATELLITE' : 'INDÉP.') ?></span>
                         <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" class="article-title"><?= e((string) $article['title']) ?></a>
+                        <?php if (isset($gmbByArticle[(int) $article['id']])): ?>
+                            <?php $gmb = $gmbByArticle[(int) $article['id']]; $gmbStatus = (string) ($gmb['status'] ?? 'draft'); ?>
+                            <a href="/admin/gmb/edit/<?= (int) $gmb['id'] ?>" class="gmb-badge gmb-badge-<?= e($gmbStatus) ?>" title="Publication GMB : <?= e($gmbStatus) ?>">
+                                <span style="font-weight: 800;">G</span> <?= e($gmbStatus) ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
                     <?php if (($article['status'] ?? '') === 'draft'): ?>
                     <div class="article-sub">Brouillon</div>
@@ -424,6 +446,12 @@ sort($cities);
                     <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                         <span class="type-badge type-<?= e($artType) ?>"><?= $artType === 'pilier' ? 'PILIER' : ($artType === 'satellite' ? 'SATELLITE' : 'INDÉP.') ?></span>
                         <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" class="article-title"><?= e((string) $article['title']) ?></a>
+                        <?php if (isset($gmbByArticle[(int) $article['id']])): ?>
+                            <?php $gmb = $gmbByArticle[(int) $article['id']]; $gmbStatus = (string) ($gmb['status'] ?? 'draft'); ?>
+                            <a href="/admin/gmb/edit/<?= (int) $gmb['id'] ?>" class="gmb-badge gmb-badge-<?= e($gmbStatus) ?>" title="Publication GMB : <?= e($gmbStatus) ?>">
+                                <span style="font-weight: 800;">G</span> <?= e($gmbStatus) ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
                     <?php if (($article['status'] ?? '') === 'draft'): ?>
                     <div class="article-sub">Brouillon</div>

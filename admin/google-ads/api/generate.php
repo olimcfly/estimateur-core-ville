@@ -188,16 +188,16 @@ PROMPT;
    ================================================================ */
 function callClaudeApi(string $prompt, int $maxTokens): string
 {
-    $apiKey = getenv('ANTHROPIC_API_KEY');
-    if (!$apiKey) {
+    $apiKey = trim((string) getenv('ANTHROPIC_API_KEY'));
+    if ($apiKey === '') {
         // Fallback to a config file
         $configPath = dirname(__DIR__, 2) . '/config.php';
         if (file_exists($configPath)) {
             require_once $configPath;
-            $apiKey = defined('ANTHROPIC_API_KEY') ? ANTHROPIC_API_KEY : '';
+            $apiKey = defined('ANTHROPIC_API_KEY') ? trim((string) ANTHROPIC_API_KEY) : '';
         }
     }
-    if (!$apiKey) {
+    if ($apiKey === '') {
         throw new \RuntimeException('ANTHROPIC_API_KEY is not configured');
     }
 

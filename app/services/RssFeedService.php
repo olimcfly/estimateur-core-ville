@@ -195,7 +195,7 @@ PROMPT;
             ? $this->buildSingleArticlePrompt($rssArticles[0])
             : $this->buildMultiArticlePrompt($rssArticles);
 
-        $apiKey = (string) Config::get('anthropic.api_key', '');
+        $apiKey = trim((string) Config::get('anthropic.api_key', ''));
 
         // Try Anthropic first, fallback to OpenAI
         if ($apiKey !== '') {
@@ -239,8 +239,9 @@ PROMPT;
     private function callAnthropic(string $apiKey, string $prompt): array
     {
         $endpoint = 'https://api.anthropic.com/v1/messages';
+        $model = (string) Config::get('anthropic.model', 'claude-sonnet-4-20250514');
         $payload = [
-            'model' => 'claude-sonnet-4-20250514',
+            'model' => $model,
             'max_tokens' => 4096,
             'messages' => [
                 ['role' => 'user', 'content' => $prompt],
@@ -254,13 +255,17 @@ PROMPT;
         ]);
 
         if ($result['error'] !== null) {
-            return ['data' => null, 'error' => 'Anthropic API : ' . $result['error']];
+            $error = 'Anthropic API : ' . $result['error'];
+            if (str_contains($result['error'], '401') || str_contains($result['error'], 'invalid x-api-key')) {
+                $error .= '. Verifiez votre cle API dans Administration > API.';
+            }
+            return ['data' => null, 'error' => $error];
         }
 
         $inputTokens = (int) ($result['response']['usage']['input_tokens'] ?? 0);
         $outputTokens = (int) ($result['response']['usage']['output_tokens'] ?? 0);
         $cost = round(($inputTokens / 1000) * 0.003 + ($outputTokens / 1000) * 0.015, 6);
-        AdminSmtpApiController::logAiUsage('claude', 'claude-sonnet-4-20250514', $inputTokens, $outputTokens, $cost, 'article_generation');
+        AdminSmtpApiController::logAiUsage('claude', $model, $inputTokens, $outputTokens, $cost, 'article_generation');
 
         $text = $result['response']['content'][0]['text'] ?? '';
         $parsed = $this->extractJson($text);
@@ -515,15 +520,11 @@ PROMPT;
             $errorDetail = "HTTP {$httpCode}";
             $decoded = json_decode((string) $response, true);
             if (is_array($decoded)) {
-                // Anthropic error format
+                // Anthropic / OpenAI error format: {"error": {"message": "..."}}
                 if (isset($decoded['error']['message'])) {
                     $errorDetail .= ' - ' . $decoded['error']['message'];
                 }
-                // OpenAI error format
-                elseif (isset($decoded['error']['message'])) {
-                    $errorDetail .= ' - ' . $decoded['error']['message'];
-                }
-                // Generic
+                // Generic format: {"message": "..."}
                 elseif (isset($decoded['message'])) {
                     $errorDetail .= ' - ' . $decoded['message'];
                 }

@@ -628,6 +628,80 @@ final class AdminBlogController
         }
     }
 
+    /**
+     * AJAX endpoint: AI suggestions for wizard form fields.
+     */
+    public function aiSuggest(): void
+    {
+        AuthController::requireAuth();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $field = trim((string) ($_POST['field'] ?? ''));
+        $persona = trim((string) ($_POST['persona'] ?? ''));
+        $focusKeyword = trim((string) ($_POST['focus_keyword'] ?? ''));
+        $topic = trim((string) ($_POST['topic'] ?? ''));
+        $articleGoal = trim((string) ($_POST['article_goal_type'] ?? ''));
+
+        $apiKey = (string) ($_ENV['OPENAI_API_KEY'] ?? '');
+        if ($apiKey === '') {
+            echo json_encode(['success' => false, 'error' => 'Cle OpenAI non configuree. Configurez-la dans Parametres API.']);
+            return;
+        }
+
+        $prompt = match ($field) {
+            'target_audience' => "Tu es un expert marketing immobilier a Bordeaux. Pour un article cible sur le persona \"{$persona}\" avec l'objectif \"{$articleGoal}\", suggere une description d'audience cible detaillee (age, situation, budget, localisation, motivations). Reponds en 2-3 phrases maximum, en francais.",
+            'focus_keyword' => "Tu es un expert SEO immobilier a Bordeaux. Suggere 5 mots-cles focus SEO pertinents pour un article immobilier ciblant le persona \"{$persona}\". Formule : [Action] + [Type de bien] + [Specificite] + [Ville/Quartier]. Reponds avec une liste numerotee, un mot-cle par ligne, sans explication.",
+            'secondary_keywords' => "Tu es un expert SEO immobilier a Bordeaux. Le mot-cle principal est \"{$focusKeyword}\". Suggere 8-10 mots-cles secondaires/semantiques complementaires pour le SEO. Reponds avec les mots-cles separes par des virgules, sans explication.",
+            'topic' => "Tu es un redacteur immobilier expert a Bordeaux. Pour le persona \"{$persona}\" et le mot-cle \"{$focusKeyword}\", suggere 5 titres d'articles SEO accrocheurs et optimises. Reponds avec une liste numerotee, un titre par ligne, sans explication.",
+            default => null,
+        };
+
+        if ($prompt === null) {
+            echo json_encode(['success' => false, 'error' => 'Champ non supporte']);
+            return;
+        }
+
+        $endpoint = (string) ($_ENV['OPENAI_ENDPOINT'] ?? 'https://api.openai.com/v1/chat/completions');
+        $model = (string) ($_ENV['OPENAI_MODEL'] ?? 'gpt-4o-mini');
+
+        $ch = curl_init($endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => json_encode([
+                'model' => $model,
+                'temperature' => 0.7,
+                'max_tokens' => 300,
+                'messages' => [
+                    ['role' => 'system', 'content' => 'Tu es un assistant specialise en immobilier et SEO a Bordeaux. Reponds de maniere concise et pratique.'],
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ], JSON_THROW_ON_ERROR),
+            CURLOPT_TIMEOUT => 20,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $httpCode >= 400) {
+            $decoded = $response ? json_decode($response, true) : null;
+            $msg = $decoded['error']['message'] ?? 'Erreur API OpenAI (HTTP ' . $httpCode . ')';
+            echo json_encode(['success' => false, 'error' => $msg]);
+            return;
+        }
+
+        $decoded = json_decode($response, true);
+        $content = $decoded['choices'][0]['message']['content'] ?? '';
+
+        echo json_encode(['success' => true, 'suggestion' => trim($content)]);
+    }
+
     private function redirect(string $path): void
     {
         header('Location: ' . $path);

@@ -693,6 +693,12 @@ try {
       </div>
       <?php endif; ?>
 
+      <?php if ($_moduleAccess('api_management')): ?>
+      <a href="/admin/api-management" class="admin-topbar-link" title="Parametres API (OpenAI, Perplexity...)">
+        <i class="fas fa-key"></i> <span>API</span>
+      </a>
+      <?php endif; ?>
+
       <a href="/" class="admin-topbar-link" target="_blank">
         <i class="fas fa-external-link-alt"></i> <span>Voir le site</span>
       </a>

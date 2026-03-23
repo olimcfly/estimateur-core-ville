@@ -64,6 +64,7 @@ $router->get('/admin', [AdminDashboardController::class, 'index']);
 $router->get('/admin/leads', [AdminLeadController::class, 'index']);
 $router->post('/admin/leads/create-table', [AdminLeadController::class, 'createTable']);
 $router->get('/admin/leads/ajax-detail', [AdminLeadController::class, 'ajaxDetail']);
+$router->get('/admin/leads/export-csv', [AdminLeadController::class, 'exportCsv']);
 $router->get('/admin/leads/{id}', [AdminLeadController::class, 'show']);
 $router->get('/admin/leads/edit/{id}', [AdminLeadController::class, 'edit']);
 $router->post('/admin/leads/update/{id}', [AdminLeadController::class, 'update']);
@@ -72,6 +73,7 @@ $router->post('/admin/leads/note/{id}', [AdminLeadController::class, 'addNote'])
 $router->post('/admin/leads/note/delete/{id}', [AdminLeadController::class, 'deleteNote']);
 $router->post('/admin/leads/update-inline', [AdminLeadController::class, 'quickUpdate']);
 $router->post('/admin/leads/delete/{id}', [AdminLeadController::class, 'delete']);
+$router->post('/admin/leads/bulk-action', [AdminLeadController::class, 'bulkAction']);
 $router->post('/admin/leads/create-tables', [AdminLeadController::class, 'createTables']);
 
 // Admin funnel, pipeline & portfolio
@@ -292,6 +294,11 @@ $router->get('/admin/mailbox/compose', [AdminMailboxController::class, 'compose'
 $router->post('/admin/mailbox/send', [AdminMailboxController::class, 'send']);
 $router->post('/admin/mailbox/delete', [AdminMailboxController::class, 'delete']);
 $router->get('/admin/mailbox/unread-count', [AdminMailboxController::class, 'unreadCount']);
+$router->post('/admin/mailbox/ai-assist', [AdminMailboxController::class, 'aiAssist']);
+$router->get('/admin/mailbox/email-library', [AdminMailboxController::class, 'emailLibrary']);
+$router->post('/admin/mailbox/email-library/save', [AdminMailboxController::class, 'emailLibrarySave']);
+$router->post('/admin/mailbox/email-library/delete', [AdminMailboxController::class, 'emailLibraryDelete']);
+$router->post('/admin/mailbox/email-library/use', [AdminMailboxController::class, 'emailLibraryUse']);
 
 // Admin internal notifications routes
 $router->get('/admin/notifications', [AdminNotificationController::class, 'index']);

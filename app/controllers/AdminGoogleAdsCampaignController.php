@@ -202,7 +202,7 @@ final class AdminGoogleAdsCampaignController
             $keyword    = trim((string) ($input['keyword'] ?? ''));
             $landingUrl = trim((string) ($input['landing_url'] ?? ''));
             $tone       = trim((string) ($input['tone'] ?? 'professionnel et rassurant'));
-            $city       = trim((string) ($input['city'] ?? CITY_NAME));
+            $city       = trim((string) ($input['city'] ?? Config::get('city.name')));
 
             if ($keyword === '') {
                 throw new \RuntimeException('Mot-clé requis pour la génération.');
@@ -344,7 +344,7 @@ PROMPT;
                 'status'           => in_array($input['status'] ?? '', ['draft', 'ready', 'exported', 'active', 'paused', 'archived'], true)
                     ? $input['status'] : 'draft',
                 'daily_budget'     => max(0, (float) ($input['daily_budget'] ?? 0)),
-                'target_location'  => trim((string) ($input['target_location'] ?? CITY_NAME)),
+                'target_location'  => trim((string) ($input['target_location'] ?? Config::get('city.name'))),
                 'target_radius_km' => max(1, min(500, (int) ($input['target_radius_km'] ?? 30))),
                 'language'         => 'fr',
                 'bid_strategy'     => in_array($input['bid_strategy'] ?? '', ['manual_cpc', 'maximize_clicks', 'maximize_conversions', 'target_cpa'], true)

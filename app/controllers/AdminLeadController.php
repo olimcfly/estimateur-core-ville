@@ -64,6 +64,8 @@ final class AdminLeadController
         $leads = [];
         $dbError = null;
         $tableExists = false;
+        $total = 0;
+        $villes = [];
 
         try {
             $tableExists = Database::tableExists('leads');
@@ -71,31 +73,51 @@ final class AdminLeadController
             $dbError = 'Base de données indisponible : les leads ne peuvent pas être chargés.';
         }
 
+        // Read filters from query string
+        $search = isset($_GET['q']) ? trim((string) $_GET['q']) : null;
+        $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
+        $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
+        $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
+        $villeFilter = isset($_GET['ville']) ? trim((string) $_GET['ville']) : null;
+        $dateFrom = isset($_GET['date_from']) ? trim((string) $_GET['date_from']) : null;
+        $dateTo = isset($_GET['date_to']) ? trim((string) $_GET['date_to']) : null;
+        $sortBy = isset($_GET['sort']) ? trim((string) $_GET['sort']) : 'created_at';
+        $sortDir = isset($_GET['dir']) ? trim((string) $_GET['dir']) : 'DESC';
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $perPage = 25;
+
         if ($tableExists) {
-        try {
-            $leadModel = new Lead();
-            $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
-            $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
-            $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
-
-                $leads = $leadModel->findAllLeads();
-
-                if ($typeFilter !== null && in_array($typeFilter, ['tendance', 'qualifie'], true)) {
-                    $leads = array_filter($leads, fn($l) => ($l['lead_type'] ?? '') === $typeFilter);
-                    $leads = array_values($leads);
-                }
-                if ($scoreFilter !== null && in_array($scoreFilter, ['chaud', 'tiede', 'froid'], true)) {
-                    $leads = array_filter($leads, fn($l) => ($l['score'] ?? '') === $scoreFilter);
-                    $leads = array_values($leads);
-                }
-                if ($statutFilter !== null) {
-                    $leads = array_filter($leads, fn($l) => ($l['statut'] ?? '') === $statutFilter);
-                    $leads = array_values($leads);
-                }
+            try {
+                $leadModel = new Lead();
+                $result = $leadModel->searchLeads(
+                    $search, $scoreFilter, $statutFilter, $typeFilter,
+                    $villeFilter, $dateFrom, $dateTo,
+                    $sortBy, $sortDir, $page, $perPage
+                );
+                $leads = $result['leads'];
+                $total = $result['total'];
+                $villes = $leadModel->getDistinctVilles();
             } catch (\Throwable $e) {
                 $dbError = 'Erreur lors du chargement des leads : ' . $e->getMessage();
             }
-        } // end if ($tableExists)
+        }
+
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
+        // Count stats (unfiltered)
+        $allStats = ['total' => 0, 'chaud' => 0, 'today' => 0];
+        if ($tableExists) {
+            try {
+                $leadModel = $leadModel ?? new Lead();
+                $statsResult = $leadModel->searchLeads(null, null, null, null, null, null, null, 'id', 'DESC', 1, 1);
+                $allStats['total'] = $statsResult['total'];
+                $hotResult = $leadModel->searchLeads(null, 'chaud', null, null, null, null, null, 'id', 'DESC', 1, 1);
+                $allStats['chaud'] = $hotResult['total'];
+                $todayResult = $leadModel->searchLeads(null, null, null, null, null, date('Y-m-d'), date('Y-m-d'), 'id', 'DESC', 1, 1);
+                $allStats['today'] = $todayResult['total'];
+            } catch (\Throwable) {
+            }
+        }
 
         View::renderAdmin('admin/leads', [
             'page_title' => 'Leads - Admin CRM',
@@ -103,7 +125,23 @@ final class AdminLeadController
             'admin_page' => 'leads',
             'breadcrumb' => 'Leads',
             'leads' => $leads,
-            'leadCount' => count($leads),
+            'total' => $total,
+            'totalPages' => $totalPages,
+            'currentPage' => $page,
+            'perPage' => $perPage,
+            'villes' => $villes,
+            'allStats' => $allStats,
+            'filters' => [
+                'q' => $search,
+                'score' => $scoreFilter,
+                'type' => $typeFilter,
+                'statut' => $statutFilter,
+                'ville' => $villeFilter,
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+                'sort' => $sortBy,
+                'dir' => $sortDir,
+            ],
             'dbError' => $dbError,
             'tableExists' => $tableExists,
         ]);
@@ -548,6 +586,92 @@ final class AdminLeadController
         } catch (\Throwable $e) {
             echo json_encode(['success' => false, 'error' => 'Erreur serveur : ' . $e->getMessage()]);
         }
+    }
+
+    public function exportCsv(): void
+    {
+        AuthController::requireAuth();
+
+        $this->ensureLeadTables();
+
+        $search = isset($_GET['q']) ? trim((string) $_GET['q']) : null;
+        $scoreFilter = isset($_GET['score']) ? trim((string) $_GET['score']) : null;
+        $typeFilter = isset($_GET['type']) ? trim((string) $_GET['type']) : null;
+        $statutFilter = isset($_GET['statut']) ? trim((string) $_GET['statut']) : null;
+        $villeFilter = isset($_GET['ville']) ? trim((string) $_GET['ville']) : null;
+        $dateFrom = isset($_GET['date_from']) ? trim((string) $_GET['date_from']) : null;
+        $dateTo = isset($_GET['date_to']) ? trim((string) $_GET['date_to']) : null;
+
+        $leadModel = new Lead();
+        $leads = $leadModel->exportLeads($search, $scoreFilter, $statutFilter, $typeFilter, $villeFilter, $dateFrom, $dateTo);
+
+        $filename = 'leads_export_' . date('Y-m-d_His') . '.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $output = fopen('php://output', 'w');
+        // BOM for Excel UTF-8
+        fwrite($output, "\xEF\xBB\xBF");
+
+        fputcsv($output, ['ID', 'Type', 'Nom', 'Email', 'Telephone', 'Adresse', 'Ville', 'Type Bien', 'Surface m2', 'Pieces', 'Estimation', 'Urgence', 'Motivation', 'Score', 'Statut', 'Date Creation'], ';');
+
+        foreach ($leads as $lead) {
+            fputcsv($output, [
+                $lead['id'],
+                $lead['lead_type'] ?? '',
+                $lead['nom'] ?? '',
+                $lead['email'] ?? '',
+                $lead['telephone'] ?? '',
+                $lead['adresse'] ?? '',
+                $lead['ville'] ?? '',
+                $lead['type_bien'] ?? '',
+                $lead['surface_m2'] ?? '',
+                $lead['pieces'] ?? '',
+                $lead['estimation'] ?? '',
+                $lead['urgence'] ?? '',
+                $lead['motivation'] ?? '',
+                $lead['score'] ?? '',
+                $lead['statut'] ?? '',
+                $lead['created_at'] ?? '',
+            ], ';');
+        }
+
+        fclose($output);
+        exit;
+    }
+
+    public function bulkAction(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        $action = trim((string) ($_POST['bulk_action'] ?? ''));
+        $ids = isset($_POST['lead_ids']) ? array_map('intval', (array) $_POST['lead_ids']) : [];
+        $ids = array_filter($ids, fn($id) => $id > 0);
+
+        if (empty($ids) || $action === '') {
+            header('Location: /admin/leads');
+            exit;
+        }
+
+        $leadModel = new Lead();
+        $count = 0;
+
+        if ($action === 'delete') {
+            $count = $leadModel->deleteBulk($ids);
+            $_SESSION['leads_flash'] = ['type' => 'success', 'message' => $count . ' lead(s) supprimé(s).'];
+        } elseif (str_starts_with($action, 'score_')) {
+            $score = substr($action, 6);
+            $count = $leadModel->bulkUpdateScore($ids, $score);
+            $_SESSION['leads_flash'] = ['type' => 'success', 'message' => $count . ' lead(s) mis à jour (score: ' . $score . ').'];
+        } elseif (str_starts_with($action, 'statut_')) {
+            $statut = substr($action, 7);
+            $count = $leadModel->bulkUpdateStatut($ids, $statut);
+            $_SESSION['leads_flash'] = ['type' => 'success', 'message' => $count . ' lead(s) mis à jour (statut: ' . $statut . ').'];
+        }
+
+        header('Location: /admin/leads');
+        exit;
     }
 
     public function delete(): void

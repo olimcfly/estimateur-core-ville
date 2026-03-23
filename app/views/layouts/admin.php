@@ -32,6 +32,8 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- FontAwesome 6.4.0 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Bootstrap 5.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <!-- CSS Principal -->
   <link rel="stylesheet" href="/assets/css/app.css">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -571,6 +573,93 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
 
     @media (max-width: 768px) {
       .admin-page-header { flex-direction: column; }
+    }
+
+    /* Reset app.css .btn overrides so Bootstrap buttons work properly in admin */
+    .admin-main .btn {
+      background: none;
+      box-shadow: none;
+      border-radius: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      font-weight: 400;
+      font-size: 1rem;
+      position: static;
+      overflow: visible;
+      transform: none;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .admin-main .btn::after {
+      display: none;
+    }
+    .admin-main .btn:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .admin-main .btn-primary {
+      background-color: var(--admin-primary);
+      border-color: var(--admin-primary);
+      color: #fff;
+      font-size: 1rem;
+    }
+    .admin-main .btn-primary:hover {
+      background-color: #6b0f2d;
+      border-color: #6b0f2d;
+      color: #fff;
+    }
+    .admin-main .btn-outline-primary {
+      color: var(--admin-primary);
+      border: 1px solid var(--admin-primary);
+      background: transparent;
+    }
+    .admin-main .btn-outline-primary:hover {
+      background-color: var(--admin-primary);
+      border-color: var(--admin-primary);
+      color: #fff;
+    }
+    .admin-main .btn-outline-secondary {
+      color: #6c757d;
+      border: 1px solid #6c757d;
+      background: transparent;
+    }
+    .admin-main .btn-outline-secondary:hover {
+      background-color: #6c757d;
+      border-color: #6c757d;
+      color: #fff;
+    }
+    .admin-main .btn-outline-info {
+      color: #0dcaf0;
+      border: 1px solid #0dcaf0;
+      background: transparent;
+    }
+    .admin-main .btn-outline-info:hover {
+      background-color: #0dcaf0;
+      border-color: #0dcaf0;
+      color: #000;
+    }
+    .admin-main .btn-outline-success {
+      color: #198754;
+      border: 1px solid #198754;
+      background: transparent;
+    }
+    .admin-main .btn-outline-success:hover {
+      background-color: #198754;
+      border-color: #198754;
+      color: #fff;
+    }
+    .admin-main .btn-outline-danger {
+      color: #dc3545;
+      border: 1px solid #dc3545;
+      background: transparent;
+    }
+    .admin-main .btn-outline-danger:hover {
+      background-color: #dc3545;
+      border-color: #dc3545;
+      color: #fff;
+    }
+    .admin-main .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+      border-radius: 0.25rem;
     }
   </style>
 </head>

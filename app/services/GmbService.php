@@ -6,232 +6,313 @@ namespace App\Services;
 
 use App\Controllers\AdminSmtpApiController;
 use App\Core\Config;
+use App\Core\Database;
 use App\Models\GmbPublication;
 
 final class GmbService
 {
-    private GmbPublication $model;
+    private GmbPublication $publication;
 
     public function __construct()
     {
-        $this->model = new GmbPublication();
+        $this->publication = new GmbPublication();
     }
 
     // ──────────────────────────────────────────────
     // Generate from Article
     // ──────────────────────────────────────────────
 
-    /**
-     * Generate a GMB publication from a blog article.
-     *
-     * @param array $article Article data (title, content, slug, focus_keyword, meta_description, article_type)
-     * @return array|null Created publication data, or null on failure
-     */
     public function generateFromArticle(array $article): ?array
     {
-        // Determine post type based on article content
-        $postType = $this->detectPostType($article);
-        $ctaType = $this->detectCtaType($postType);
-        $ctaUrl = $this->buildCtaUrl($this->detectCtaPath($postType, $article), $postType);
+        $postType = $this->determinePostType((string) ($article['article_type'] ?? ''));
+        $ctaType = $this->determineCtaType($postType);
+        $ctaPath = $this->determineCtaPath($postType, (string) ($article['slug'] ?? ''));
+        $ctaUrl = $this->buildCtaUrl($ctaPath, 'gmb');
 
-        // Generate content via AI
-        $generated = $this->generateContent($article, $postType);
-        if ($generated === null) {
+        $aiContent = $this->generateContent($article, $postType);
+        if ($aiContent === null) {
             return null;
         }
 
-        // Find next available slot
-        $scheduledAt = $this->model->getNextAvailableSlot();
+        $scheduledAt = $this->publication->getNextAvailableSlot();
 
-        $pubId = $this->model->create([
+        $data = [
             'article_id'   => $article['id'] ?? null,
+            'actualite_id' => null,
             'post_type'    => $postType,
-            'title'        => $generated['title'] ?? null,
-            'content'      => $generated['content'],
+            'title'        => $aiContent['title'] ?? null,
+            'content'      => $aiContent['content'],
             'cta_type'     => $ctaType,
             'cta_url'      => $ctaUrl,
-            'image_path'   => $article['og_image'] ?? null,
+            'image_path'   => $article['image_path'] ?? null,
+            'offer_code'   => $postType === 'offer' ? 'ESTIMATION GRATUITE' : null,
+            'offer_terms'  => $postType === 'offer' ? 'Estimation gratuite et sans engagement à Bordeaux et alentours' : null,
             'status'       => 'scheduled',
             'scheduled_at' => $scheduledAt,
-        ]);
+        ];
 
-        return $this->model->findById($pubId);
+        $id = $this->publication->create($data);
+
+        return $this->publication->findById($id);
     }
 
     // ──────────────────────────────────────────────
     // Generate from Actualite
     // ──────────────────────────────────────────────
 
-    /**
-     * Generate a GMB publication from a news item.
-     *
-     * @param array $actualite Actualite data (title, content, slug, excerpt)
-     * @return array|null Created publication data, or null on failure
-     */
     public function generateFromActualite(array $actualite): ?array
     {
         $postType = 'update';
-        $ctaUrl = $this->buildCtaUrl('/actualites/' . ($actualite['slug'] ?? ''), $postType);
+        $ctaType = 'learn_more';
+        $ctaPath = '/actualites/' . ($actualite['slug'] ?? '');
+        $ctaUrl = $this->buildCtaUrl($ctaPath, 'gmb');
 
-        $generated = $this->generateContent([
-            'title'            => $actualite['title'] ?? '',
-            'content'          => $actualite['content'] ?? '',
-            'focus_keyword'    => '',
-            'meta_description' => $actualite['meta_description'] ?? $actualite['excerpt'] ?? '',
-            'article_type'     => 'actualite',
-        ], $postType);
-
-        if ($generated === null) {
+        $aiContent = $this->generateContent($actualite, $postType);
+        if ($aiContent === null) {
             return null;
         }
 
-        $scheduledAt = $this->model->getNextAvailableSlot();
+        $scheduledAt = $this->publication->getNextAvailableSlot();
 
-        $pubId = $this->model->create([
+        $data = [
+            'article_id'   => null,
             'actualite_id' => $actualite['id'] ?? null,
             'post_type'    => $postType,
-            'title'        => null,
-            'content'      => $generated['content'],
-            'cta_type'     => 'learn_more',
+            'title'        => $aiContent['title'] ?? null,
+            'content'      => $aiContent['content'],
+            'cta_type'     => $ctaType,
             'cta_url'      => $ctaUrl,
-            'image_path'   => $actualite['image_url'] ?? null,
+            'image_path'   => $actualite['image_path'] ?? null,
             'status'       => 'scheduled',
             'scheduled_at' => $scheduledAt,
-        ]);
+        ];
 
-        return $this->model->findById($pubId);
+        $id = $this->publication->create($data);
+
+        return $this->publication->findById($id);
     }
 
     // ──────────────────────────────────────────────
-    // Generate from free subject (manual)
+    // UTM URL Builder
     // ──────────────────────────────────────────────
 
-    /**
-     * Generate a GMB publication from a free-form subject.
-     *
-     * @param string $subject The topic/theme
-     * @param string $postType The GMB post type
-     * @return array|null Generated content {content, title}
-     */
-    public function generateManual(string $subject, string $postType = 'update'): ?array
+    public function buildCtaUrl(string $path, string $source = 'gmb'): string
     {
-        return $this->generateContent([
-            'title'            => $subject,
-            'content'          => '',
-            'focus_keyword'    => '',
-            'meta_description' => '',
-            'article_type'     => '',
-        ], $postType);
+        $baseUrl = rtrim((string) Config::get('base_url', ''), '/');
+        $path = '/' . ltrim($path, '/');
+
+        $params = http_build_query([
+            'utm_source'   => 'google_business',
+            'utm_medium'   => 'organic',
+            'utm_campaign' => 'gmb_post',
+            'utm_content'  => $source,
+        ]);
+
+        return $baseUrl . $path . '?' . $params;
+    }
+
+    // ──────────────────────────────────────────────
+    // Schedule Publication
+    // ──────────────────────────────────────────────
+
+    public function schedulePublication(int $websiteId, int $publicationId, ?string $preferredDate = null): bool
+    {
+        $publication = $this->publication->findById($publicationId);
+        if ($publication === null) {
+            return false;
+        }
+
+        if ($preferredDate !== null) {
+            $existing = $this->publication->getScheduledForDate($preferredDate);
+            if (count($existing) >= 2) {
+                return false;
+            }
+
+            $notificationHour = (int) $this->publication->getSetting('notification_hour', '8');
+            $scheduledAt = $preferredDate . ' ' . str_pad((string) $notificationHour, 2, '0', STR_PAD_LEFT) . ':00:00';
+        } else {
+            $scheduledAt = $this->publication->getNextAvailableSlot();
+        }
+
+        $publication['scheduled_at'] = $scheduledAt;
+        $publication['status'] = 'scheduled';
+        $this->publication->update($publicationId, $publication);
+
+        return true;
     }
 
     // ──────────────────────────────────────────────
     // Notification Email
     // ──────────────────────────────────────────────
 
-    /**
-     * Send notification email for a scheduled publication.
-     */
     public function sendNotificationEmail(array $publication): bool
     {
-        $email = $this->model->getSetting('notification_email', '');
-        if ($email === '' || $email === null) {
-            $email = (string) Config::get('mail.from', 'contact@estimation-immobilier-bordeaux.fr');
+        $adminEmail = (string) Config::get('mail.admin_email', 'contact@estimation-immobilier-bordeaux.fr');
+        $baseUrl = rtrim((string) Config::get('base_url', ''), '/');
+
+        $title = htmlspecialchars((string) ($publication['title'] ?? 'Publication GMB'), ENT_QUOTES, 'UTF-8');
+        $content = htmlspecialchars((string) ($publication['content'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $postType = htmlspecialchars((string) ($publication['post_type'] ?? 'update'), ENT_QUOTES, 'UTF-8');
+        $scheduledAt = (string) ($publication['scheduled_at'] ?? date('Y-m-d'));
+        $publicationId = (int) ($publication['id'] ?? 0);
+
+        $gmbUrl = htmlspecialchars((string) $this->publication->getSetting('gmb_url', 'https://business.google.com/'), ENT_QUOTES, 'UTF-8');
+        $markPublishedUrl = htmlspecialchars($baseUrl . '/admin/gmb/mark-published/' . $publicationId, ENT_QUOTES, 'UTF-8');
+
+        $imageHtml = '';
+        if (!empty($publication['image_path'])) {
+            $imageSrc = htmlspecialchars($baseUrl . '/' . ltrim((string) $publication['image_path'], '/'), ENT_QUOTES, 'UTF-8');
+            $imageHtml = '<tr><td style="padding:0 40px 20px;"><img src="' . $imageSrc . '" alt="Image publication" style="max-width:100%;border-radius:8px;"></td></tr>';
         }
 
-        $gmbUrl = $this->model->getSetting('gmb_profile_url', '');
-        $siteUrl = (string) Config::get('app.url', 'https://estimation-immobilier-bordeaux.fr');
-        $markPublishedUrl = $siteUrl . '/admin/gmb/mark-published/' . $publication['id'];
+        $subject = "\xF0\x9F\x93\x8C Publication GMB à poster aujourd'hui - {$title}";
 
-        $subject = "Publication GMB à poster - " . mb_substr($publication['title'] ?? $publication['content'], 0, 50);
+        $html = <<<HTML
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:30px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
 
-        $htmlBody = $this->buildNotificationHtml($publication, $gmbUrl, $markPublishedUrl);
+  <!-- Header -->
+  <tr>
+    <td style="background:#1a1410;padding:25px 40px;">
+      <h1 style="margin:0;color:#ffffff;font-size:18px;">📌 Publication GMB à poster</h1>
+      <p style="margin:5px 0 0;color:#D4AF37;font-size:14px;">Programmée le {$scheduledAt}</p>
+    </td>
+  </tr>
 
-        $sent = Mailer::send($email, $subject, $htmlBody);
+  <!-- Post type badge -->
+  <tr>
+    <td style="padding:25px 40px 0;">
+      <table cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background:#8B1538;color:#fff;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:bold;">
+            Type : {$postType}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 
-        if ($sent) {
-            $this->model->markAsNotified((int) $publication['id']);
+  <!-- Title -->
+  <tr>
+    <td style="padding:20px 40px 10px;">
+      <h2 style="margin:0;color:#1a1410;font-size:20px;">{$title}</h2>
+    </td>
+  </tr>
+
+  <!-- Content to copy -->
+  <tr>
+    <td style="padding:0 40px 20px;">
+      <div style="background:#faf9f7;border:1px solid #e8dfd7;border-radius:8px;padding:20px;">
+        <p style="margin:0 0 8px;color:#6b6459;font-size:12px;font-weight:bold;text-transform:uppercase;">Texte prêt à copier :</p>
+        <p style="margin:0;color:#1a1410;line-height:1.7;font-size:15px;">{$content}</p>
+      </div>
+    </td>
+  </tr>
+
+  <!-- Image -->
+  {$imageHtml}
+
+  <!-- Action buttons -->
+  <tr>
+    <td style="padding:0 40px 30px;">
+      <table cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="padding-right:10px;" width="50%">
+            <a href="{$gmbUrl}" style="background:#4285F4;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;display:block;text-align:center;font-size:14px;font-weight:bold;">Ouvrir Google Business</a>
+          </td>
+          <td style="padding-left:10px;" width="50%">
+            <a href="{$markPublishedUrl}" style="background:#16a34a;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;display:block;text-align:center;font-size:14px;font-weight:bold;">✅ Marquer comme publié</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Footer -->
+  <tr>
+    <td style="background:#faf9f7;padding:20px 40px;text-align:center;border-top:1px solid #e8dfd7;">
+      <p style="margin:0;font-size:12px;color:#6b6459;">
+        Notification automatique &mdash; Estimation Immobilier Bordeaux
+      </p>
+    </td>
+  </tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>
+HTML;
+
+        $sent = Mailer::send($adminEmail, $subject, $html);
+
+        if ($sent && $publicationId > 0) {
+            $this->publication->markAsNotified($publicationId);
         }
 
         return $sent;
     }
 
     // ──────────────────────────────────────────────
-    // Scheduling
+    // Expire old posts
     // ──────────────────────────────────────────────
 
-    /**
-     * Schedule a publication to a specific or next available date.
-     */
-    public function schedulePublication(int $publicationId, ?string $preferredDate = null): string
+    public function checkExpiredPosts(int $websiteId): int
     {
-        if ($preferredDate !== null) {
-            // Check if the day already has 2+ publications
-            $dateOnly = substr($preferredDate, 0, 10);
-            $existing = $this->model->getScheduledForDate($dateOnly);
-            if (count($existing) >= 2) {
-                // Fall back to next available
-                $preferredDate = null;
-            }
-        }
-
-        $scheduledAt = $preferredDate ?? $this->model->getNextAvailableSlot();
-
-        $pub = $this->model->findById($publicationId);
-        if ($pub === null) {
-            return $scheduledAt;
-        }
-
-        $this->model->update($publicationId, array_merge($pub, [
-            'status'       => 'scheduled',
-            'scheduled_at' => $scheduledAt,
-        ]));
-
-        return $scheduledAt;
-    }
-
-    /**
-     * Expire old unposted publications and return count.
-     */
-    public function checkExpiredPosts(): int
-    {
-        return $this->model->expireOldScheduled();
+        return $this->publication->expireOldScheduled();
     }
 
     // ──────────────────────────────────────────────
-    // UTM Builder
+    // Private helpers
     // ──────────────────────────────────────────────
 
-    public function buildCtaUrl(string $path, string $postType = 'update'): string
+    private function determinePostType(string $articleType): string
     {
-        $baseUrl = rtrim((string) Config::get('app.url', 'https://estimation-immobilier-bordeaux.fr'), '/');
-        $url = $baseUrl . '/' . ltrim($path, '/');
+        $type = strtolower($articleType);
 
-        $params = http_build_query([
-            'utm_source'   => 'google_business',
-            'utm_medium'   => 'organic',
-            'utm_campaign' => 'gmb_post',
-            'utm_content'  => $postType,
-        ]);
-
-        return $url . (str_contains($url, '?') ? '&' : '?') . $params;
-    }
-
-    // ──────────────────────────────────────────────
-    // Private — AI Generation
-    // ──────────────────────────────────────────────
-
-    private function generateContent(array $article, string $postType): ?array
-    {
-        $apiKey = (string) Config::get('openai.api_key', '');
-        if ($apiKey === '') {
-            return $this->fallbackContent($article, $postType);
+        if (str_contains($type, 'estimation') || str_contains($type, 'avis-valeur')) {
+            return 'offer';
+        }
+        if (str_contains($type, 'evenement') || str_contains($type, 'portes-ouvertes')) {
+            return 'event';
+        }
+        if (str_contains($type, 'vendre') || str_contains($type, 'achat')) {
+            return 'product';
         }
 
-        $endpoint = (string) Config::get('openai.endpoint', 'https://api.openai.com/v1/chat/completions');
-        $model = (string) Config::get('openai.model', 'gpt-4o-mini');
+        return 'update';
+    }
 
-        $systemPrompt = "Tu es un expert en marketing local et Google Business Profile pour une agence d'estimation immobilière à Bordeaux. "
-            . "Génère une publication Google My Business à partir du contenu fourni.\n\n"
+    private function determineCtaType(string $postType): string
+    {
+        return match ($postType) {
+            'offer'   => 'get_offer',
+            'product' => 'learn_more',
+            'event'   => 'book',
+            default   => 'learn_more',
+        };
+    }
+
+    private function determineCtaPath(string $postType, string $slug): string
+    {
+        return match ($postType) {
+            'offer' => '/lp/estimation-bordeaux',
+            default => '/blog/' . $slug,
+        };
+    }
+
+    private function generateContent(array $source, string $postType): ?array
+    {
+        $title = (string) ($source['title'] ?? '');
+        $content = (string) ($source['content'] ?? '');
+        $focusKeyword = (string) ($source['focus_keyword'] ?? '');
+        $metaDescription = (string) ($source['meta_description'] ?? '');
+
+        $systemPrompt = "Tu es un expert en marketing local et Google Business Profile pour une agence d'estimation immobilière à Bordeaux. Génère une publication Google My Business à partir de cet article de blog.\n"
             . "RÈGLES STRICTES :\n"
             . "- Maximum 300 caractères (idéal 150-250)\n"
             . "- Le mot-clé principal doit apparaître dans la première phrase\n"
@@ -241,24 +322,29 @@ final class GmbService
             . "- Pas de numéro de téléphone dans le texte\n"
             . "- Pas d'URL dans le texte (le CTA s'en charge)\n"
             . "- Terminer par une phrase d'appel à l'action\n"
-            . "- Maximum 1-2 émojis\n"
-            . "- TYPE DE POST : {$postType}\n\n"
-            . "Réponds UNIQUEMENT en JSON : {\"content\": \"...\", \"title\": \"...\"}\n"
-            . "Le title est requis UNIQUEMENT si le type est event, offer ou product (max 58 caractères). Sinon, title = null.";
+            . "- Ne pas utiliser d'émojis excessifs (1-2 max)\n"
+            . "TYPE DE POST : {$postType}\n"
+            . 'FORMAT : Retourne UNIQUEMENT un JSON : {"content": "...", "title": "..." (si event/offer/product, max 58 car)}';
 
-        $focusKeyword = $article['focus_keyword'] ?? '';
-        $userPrompt = "ARTICLE SOURCE :\n"
-            . "Titre : " . ($article['title'] ?? '') . "\n"
+        $userPrompt = "Titre de l'article : {$title}\n"
             . "Mot-clé principal : {$focusKeyword}\n"
-            . "Description : " . ($article['meta_description'] ?? '') . "\n"
-            . "Extrait du contenu : " . mb_substr(strip_tags($article['content'] ?? ''), 0, 500);
+            . "Meta description : {$metaDescription}\n"
+            . "Contenu (extrait) : " . mb_substr(strip_tags($content), 0, 500);
+
+        $apiKey = (string) Config::get('openai.api_key', '');
+        if ($apiKey === '') {
+            return $this->fallbackContent($title, $focusKeyword, $postType);
+        }
+
+        $endpoint = (string) Config::get('openai.endpoint', 'https://api.openai.com/v1/chat/completions');
+        $model = (string) Config::get('openai.model', 'gpt-4o-mini');
 
         $response = $this->postJson($endpoint, [
-            'model' => $model,
-            'temperature' => 0.7,
-            'max_tokens' => 300,
+            'model'           => $model,
+            'temperature'     => 0.7,
+            'max_tokens'      => 300,
             'response_format' => ['type' => 'json_object'],
-            'messages' => [
+            'messages'        => [
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $userPrompt],
             ],
@@ -268,216 +354,53 @@ final class GmbService
         ]);
 
         if (!is_array($response)) {
-            return $this->fallbackContent($article, $postType);
+            return $this->fallbackContent($title, $focusKeyword, $postType);
         }
 
-        // Log usage
         $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
         $outputTokens = (int) ($response['usage']['completion_tokens'] ?? 0);
         $cost = $this->estimateCost($model, $inputTokens, $outputTokens);
         AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'gmb_generation');
 
-        $content = $response['choices'][0]['message']['content'] ?? '';
-        $decoded = json_decode((string) $content, true);
+        $raw = $response['choices'][0]['message']['content'] ?? '';
+        $decoded = json_decode((string) $raw, true);
 
         if (!is_array($decoded) || !isset($decoded['content'])) {
-            return $this->fallbackContent($article, $postType);
+            return $this->fallbackContent($title, $focusKeyword, $postType);
         }
 
         return [
-            'content' => mb_substr((string) $decoded['content'], 0, 1500),
-            'title'   => isset($decoded['title']) ? mb_substr((string) $decoded['title'], 0, 58) : null,
+            'content' => (string) $decoded['content'],
+            'title'   => isset($decoded['title']) ? (string) $decoded['title'] : null,
         ];
     }
 
-    private function fallbackContent(array $article, string $postType): array
+    private function fallbackContent(string $title, string $focusKeyword, string $postType): array
     {
-        $title = $article['title'] ?? 'Estimation immobilière Bordeaux';
-        $keyword = $article['focus_keyword'] ?? 'estimation immobilière';
+        $keyword = $focusKeyword !== '' ? $focusKeyword : $title;
 
-        $templates = [
-            'update' => "{$keyword} à Bordeaux : découvrez notre dernier article sur {$title}. Nos experts vous accompagnent dans votre projet immobilier bordelais.",
-            'offer'  => "Profitez d'une estimation gratuite de votre bien à Bordeaux. Nos experts analysent le marché local pour vous donner une valorisation précise et fiable.",
-            'event'  => "Événement immobilier à Bordeaux : {$title}. Venez rencontrer nos experts pour une estimation personnalisée de votre bien.",
-            'product' => "{$title} à Bordeaux. Faites estimer votre bien par nos experts du marché immobilier bordelais.",
-        ];
-
-        $content = $templates[$postType] ?? $templates['update'];
+        $content = match ($postType) {
+            'offer'   => "{$keyword} à Bordeaux : profitez d'une estimation gratuite et sans engagement. Nos experts analysent votre bien pour vous donner un prix juste. Demandez votre estimation dès maintenant.",
+            'event'   => "{$keyword} à Bordeaux : participez à notre prochain événement immobilier. Rencontrez nos experts et obtenez des conseils personnalisés. Réservez votre place !",
+            'product' => "{$keyword} à Bordeaux : découvrez nos solutions pour votre projet immobilier. Accompagnement personnalisé et expertise locale. En savoir plus sur notre approche.",
+            default   => "{$keyword} à Bordeaux : retrouvez notre dernière analyse du marché immobilier local. Des conseils d'experts pour réussir votre projet. Consultez l'article complet.",
+        };
 
         return [
             'content' => mb_substr($content, 0, 300),
-            'title'   => in_array($postType, ['event', 'offer', 'product'], true)
-                ? mb_substr($title, 0, 58)
-                : null,
+            'title'   => in_array($postType, ['event', 'offer', 'product'], true) ? mb_substr($title, 0, 58) : null,
         ];
     }
-
-    // ──────────────────────────────────────────────
-    // Private — Post type detection
-    // ──────────────────────────────────────────────
-
-    private function detectPostType(array $article): string
-    {
-        $type = mb_strtolower($article['article_type'] ?? '');
-        $title = mb_strtolower($article['title'] ?? '');
-        $keyword = mb_strtolower($article['focus_keyword'] ?? '');
-        $combined = $type . ' ' . $title . ' ' . $keyword;
-
-        if (preg_match('/estimation|avis.?valeur|estimer/', $combined)) {
-            return 'offer';
-        }
-        if (preg_match('/evenement|événement|portes?.?ouvertes|salon|journée/', $combined)) {
-            return 'event';
-        }
-        if (preg_match('/vendre|vente|achat|acheter|mandat|prix.?de.?vente/', $combined)) {
-            return 'product';
-        }
-
-        return 'update';
-    }
-
-    private function detectCtaType(string $postType): string
-    {
-        return match ($postType) {
-            'offer'   => 'get_offer',
-            'event'   => 'book',
-            'product' => 'learn_more',
-            default   => 'learn_more',
-        };
-    }
-
-    private function detectCtaPath(string $postType, array $article): string
-    {
-        return match ($postType) {
-            'offer'  => '/lp/estimation-bordeaux',
-            'event'  => '/lp/estimation-bordeaux',
-            default  => '/blog/' . ($article['slug'] ?? ''),
-        };
-    }
-
-    // ──────────────────────────────────────────────
-    // Private — Notification HTML
-    // ──────────────────────────────────────────────
-
-    private function buildNotificationHtml(array $pub, string $gmbUrl, string $markPublishedUrl): string
-    {
-        $postTypeLabels = [
-            'update'  => 'Nouveauté',
-            'event'   => 'Événement',
-            'offer'   => 'Offre',
-            'product' => 'Produit/Service',
-        ];
-        $postTypeColors = [
-            'update'  => '#3B82F6',
-            'event'   => '#8B5CF6',
-            'offer'   => '#10B981',
-            'product' => '#F59E0B',
-        ];
-
-        $typeLabel = $postTypeLabels[$pub['post_type']] ?? 'Publication';
-        $typeColor = $postTypeColors[$pub['post_type']] ?? '#6B7280';
-        $title = htmlspecialchars($pub['title'] ?? '', ENT_QUOTES, 'UTF-8');
-        $content = htmlspecialchars($pub['content'] ?? '', ENT_QUOTES, 'UTF-8');
-        $articleTitle = htmlspecialchars($pub['article_title'] ?? $pub['actualite_title'] ?? '', ENT_QUOTES, 'UTF-8');
-
-        $titleBlock = $title !== '' ? "<p style=\"font-size:16px;font-weight:bold;margin:0 0 8px 0;\">{$title}</p>" : '';
-        $articleBlock = $articleTitle !== '' ? "<p style=\"font-size:13px;color:#6B7280;margin:12px 0 0 0;\">Article source : <strong>{$articleTitle}</strong></p>" : '';
-
-        $eventBlock = '';
-        if ($pub['post_type'] === 'event' && !empty($pub['event_start'])) {
-            $eventBlock = '<p style="font-size:13px;color:#8B5CF6;margin:8px 0 0 0;">Dates : '
-                . htmlspecialchars($pub['event_start'], ENT_QUOTES, 'UTF-8')
-                . (!empty($pub['event_end']) ? ' → ' . htmlspecialchars($pub['event_end'], ENT_QUOTES, 'UTF-8') : '')
-                . '</p>';
-        }
-
-        $offerBlock = '';
-        if ($pub['post_type'] === 'offer' && !empty($pub['offer_code'])) {
-            $offerBlock = '<p style="font-size:13px;color:#10B981;margin:8px 0 0 0;">Code promo : <strong>'
-                . htmlspecialchars($pub['offer_code'], ENT_QUOTES, 'UTF-8') . '</strong></p>';
-        }
-
-        $gmbButton = $gmbUrl !== '' && $gmbUrl !== null
-            ? "<a href=\"{$gmbUrl}\" style=\"display:inline-block;padding:12px 24px;background:#8B1538;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;margin-right:12px;\">Ouvrir ma fiche Google</a>"
-            : '';
-
-        return <<<HTML
-<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:24px 0;">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;">
-
-<!-- Header -->
-<tr><td style="background:#8B1538;padding:20px 24px;text-align:center;">
-    <p style="margin:0;color:#D4AF37;font-size:20px;font-weight:bold;">Estimation Immobilier Bordeaux</p>
-    <p style="margin:4px 0 0;color:#ffffff;font-size:13px;">Publication Google My Business</p>
-</td></tr>
-
-<!-- Body -->
-<tr><td style="padding:24px;">
-    <p style="font-size:15px;color:#374151;margin:0 0 16px 0;">
-        Bonjour, une publication Google My Business est prévue aujourd'hui.
-    </p>
-
-    <!-- Type badge -->
-    <span style="display:inline-block;padding:4px 12px;background:{$typeColor};color:#fff;border-radius:12px;font-size:12px;font-weight:bold;margin-bottom:12px;">
-        {$typeLabel}
-    </span>
-
-    <!-- Content block -->
-    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:12px 0;">
-        {$titleBlock}
-        <p style="font-size:14px;color:#1f2937;margin:0;line-height:1.6;white-space:pre-wrap;">{$content}</p>
-        {$eventBlock}
-        {$offerBlock}
-        {$articleBlock}
-    </div>
-
-    <!-- CTA info -->
-    <p style="font-size:13px;color:#6B7280;margin:12px 0;">
-        CTA prévu : <strong>{$pub['cta_type']}</strong>
-    </p>
-
-    <!-- Buttons -->
-    <div style="text-align:center;margin:24px 0 12px 0;">
-        {$gmbButton}
-        <a href="{$markPublishedUrl}" style="display:inline-block;padding:12px 24px;background:#10B981;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
-            Marquer comme publié
-        </a>
-    </div>
-</td></tr>
-
-<!-- Footer -->
-<tr><td style="background:#f9fafb;padding:16px 24px;text-align:center;border-top:1px solid #e5e7eb;">
-    <p style="margin:0;font-size:12px;color:#9CA3AF;">
-        Ce rappel a été généré automatiquement par votre plateforme Estimation Bordeaux.
-    </p>
-</td></tr>
-
-</table>
-</td></tr>
-</table>
-</body>
-</html>
-HTML;
-    }
-
-    // ──────────────────────────────────────────────
-    // Private — HTTP & Cost (same pattern as AIService)
-    // ──────────────────────────────────────────────
 
     private function postJson(string $endpoint, array $payload, array $headers): ?array
     {
         $ch = curl_init($endpoint);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => json_encode($payload, JSON_THROW_ON_ERROR),
-            CURLOPT_TIMEOUT => 25,
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_THROW_ON_ERROR),
+            CURLOPT_TIMEOUT        => 25,
         ]);
 
         $response = curl_exec($ch);
@@ -499,6 +422,8 @@ HTML;
             'gpt-4o-mini'  => [0.00015, 0.0006],
             'gpt-4.1'      => [0.002, 0.008],
             'gpt-4.1-mini' => [0.0004, 0.0016],
+            'sonar'        => [0.001, 0.001],
+            'sonar-pro'    => [0.003, 0.015],
         ];
 
         [$inRate, $outRate] = $rates[$model] ?? [0.001, 0.002];

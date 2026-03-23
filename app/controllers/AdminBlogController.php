@@ -529,12 +529,14 @@ final class AdminBlogController
             $name = Validator::string($_POST, 'name', 3, 255);
             $description = trim((string) ($_POST['description'] ?? ''));
             $color = trim((string) ($_POST['color'] ?? '#8B1538'));
+            $city = trim((string) ($_POST['city'] ?? 'Bordeaux'));
 
             $articleModel = new Article();
             $articleModel->createSilo([
                 'name' => $name,
                 'description' => $description,
                 'color' => $color,
+                'city' => $city !== '' ? $city : 'Bordeaux',
             ]);
 
             $this->redirect('/admin/blog/silos?message=' . urlencode('Silo créé avec succès.'));
@@ -738,10 +740,15 @@ final class AdminBlogController
                 description TEXT DEFAULT NULL,
                 pillar_article_id INT UNSIGNED DEFAULT NULL,
                 color VARCHAR(7) NOT NULL DEFAULT \'#8B1538\',
+                city VARCHAR(100) NOT NULL DEFAULT \'Bordeaux\',
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX idx_silo_website (website_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+        } else {
+            $this->addMissingColumns($pdo, 'article_silos', [
+                'city' => 'VARCHAR(100) NOT NULL DEFAULT \'Bordeaux\'',
+            ]);
         }
 
         if (!Database::tableExists('article_keywords')) {

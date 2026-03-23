@@ -8,6 +8,37 @@ $avgWords = (int) ($stats['avg_word_count'] ?? 0);
 $excellentSeo = (int) ($stats['excellent_seo'] ?? 0);
 $goodSeo = (int) ($stats['good_seo'] ?? 0);
 $poorSeo = (int) ($stats['poor_seo'] ?? 0);
+
+// Group articles by silo
+$articlesBySilo = [];
+$articlesNoSilo = [];
+$siloIndex = [];
+
+foreach ($silos as $silo) {
+    $siloId = (int) $silo['id'];
+    $siloIndex[$siloId] = $silo;
+    $articlesBySilo[$siloId] = ['pilier' => [], 'satellite' => [], 'standalone' => []];
+}
+
+foreach ($articles as $article) {
+    $sid = $article['silo_id'] ? (int) $article['silo_id'] : null;
+    $type = (string) ($article['article_type'] ?? 'standalone');
+    if ($sid !== null && isset($articlesBySilo[$sid])) {
+        $articlesBySilo[$sid][$type][] = $article;
+    } else {
+        $articlesNoSilo[] = $article;
+    }
+}
+
+// Collect unique cities for the filter
+$cities = [];
+foreach ($silos as $silo) {
+    $city = (string) ($silo['city'] ?? 'Bordeaux');
+    if ($city !== '' && !in_array($city, $cities, true)) {
+        $cities[] = $city;
+    }
+}
+sort($cities);
 ?>
 
 <style>
@@ -18,12 +49,40 @@ $poorSeo = (int) ($stats['poor_seo'] ?? 0);
 .seo-excellent { background: #d4edda; color: #155724; }
 .seo-good { background: #fff3cd; color: #856404; }
 .seo-poor { background: #f8d7da; color: #721c24; }
-.type-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+.type-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .type-pilier { background: #8B1538; color: #fff; }
 .type-satellite { background: #D4AF37; color: #1a1a1a; }
 .type-standalone { background: #e8e8e8; color: #555; }
-.score-inline { display: inline-flex; align-items: center; gap: 4px; }
-.score-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.city-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; background: #e8f4f8; color: #1a6b8a; border: 1px solid #b8dde8; }
+.persona-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; color: #6b4c8a; background: #f3eef8; border: 1px solid #d8cce8; }
+
+/* Silo group card */
+.silo-group { border-radius: 10px; margin-bottom: 1.5rem; overflow: hidden; border: 2px solid #e0e0e0; }
+.silo-group-header { padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.silo-group-header h3 { margin: 0; font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+.silo-group-meta { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
+.silo-group-body { background: #fff; }
+
+/* Pillar article row */
+.article-row { display: grid; grid-template-columns: 1fr 180px 80px 80px 90px 70px 130px; gap: 0.5rem; align-items: center; padding: 0.65rem 1.25rem; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; }
+.article-row:last-child { border-bottom: none; }
+.article-row-pillar { background: #fdf8f0; border-left: 4px solid #8B1538; }
+.article-row-satellite { padding-left: 2.5rem; border-left: 4px solid #D4AF37; }
+.article-row-standalone { border-left: 4px solid #e0e0e0; }
+
+.article-row .article-title { font-weight: 600; color: #8B1538; text-decoration: none; }
+.article-row .article-title:hover { text-decoration: underline; }
+.article-row .article-sub { font-size: 0.75rem; color: #999; margin-top: 2px; }
+
+/* Responsive: stack on mobile */
+@media (max-width: 900px) {
+    .article-row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .article-row > *:not(:first-child) { font-size: 0.75rem; }
+}
+
+/* Filter bar */
+.filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.filter-bar select, .filter-bar input[type="text"] { padding: 0.4rem 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem; }
 </style>
 
 <div class="container">
@@ -131,20 +190,27 @@ $poorSeo = (int) ($stats['poor_seo'] ?? 0);
         </details>
     </section>
 
-    <!-- Articles Table -->
-    <section class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-            <h2 style="margin: 0;">Articles (<?= count($articles) ?>)</h2>
-            <div style="display: flex; gap: 0.5rem;">
-                <input type="text" id="searchArticles" placeholder="Rechercher..." oninput="filterArticles()"
-                    style="padding: 0.4rem 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem;">
-                <select id="filterType" onchange="filterArticles()" style="padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem;">
+    <!-- Filters -->
+    <section class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+            <h2 style="margin: 0;">Articles par Silo (<?= count($articles) ?>)</h2>
+            <div class="filter-bar">
+                <input type="text" id="searchArticles" placeholder="Rechercher..." oninput="filterArticles()">
+                <select id="filterType" onchange="filterArticles()">
                     <option value="">Tous les types</option>
                     <option value="pilier">Pilier</option>
                     <option value="satellite">Satellite</option>
                     <option value="standalone">Indépendant</option>
                 </select>
-                <select id="filterSeo" onchange="filterArticles()" style="padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem;">
+                <?php if (count($cities) > 1): ?>
+                <select id="filterCity" onchange="filterArticles()">
+                    <option value="">Toutes les villes</option>
+                    <?php foreach ($cities as $city): ?>
+                    <option value="<?= e($city) ?>"><?= e($city) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <?php endif; ?>
+                <select id="filterSeo" onchange="filterArticles()">
                     <option value="">Tous scores</option>
                     <option value="excellent">SEO 80+</option>
                     <option value="good">SEO 50-79</option>
@@ -245,32 +311,174 @@ $poorSeo = (int) ($stats['poor_seo'] ?? 0);
         </div>
     </section>
 
-    <!-- Silos Summary -->
-    <?php if (!empty($silos)): ?>
-    <section class="card" style="margin-top: 1.5rem;">
-        <h2 style="margin: 0 0 1rem;">Silos SEO</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-            <?php foreach ($silos as $silo): ?>
-            <div style="border: 2px solid <?= e((string) $silo['color']) ?>; border-radius: 8px; padding: 1rem;">
-                <h3 style="margin: 0 0 0.5rem; color: <?= e((string) $silo['color']) ?>;"><?= e((string) $silo['name']) ?></h3>
-                <div style="font-size: 0.85rem; color: #666;">
-                    <div><?= (int) ($silo['article_count'] ?? 0) ?> articles</div>
-                    <div>Score SEO moyen: <?= (int) ($silo['avg_seo_score'] ?? 0) ?>/100</div>
+    <!-- Column headers -->
+    <div style="display: grid; grid-template-columns: 1fr 180px 80px 80px 90px 70px 130px; gap: 0.5rem; padding: 0.5rem 1.25rem; font-size: 0.75rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">
+        <div>Titre</div>
+        <div>Mot-clé Focus</div>
+        <div style="text-align: center;">SEO</div>
+        <div style="text-align: center;">Séma.</div>
+        <div>Persona</div>
+        <div>Mots</div>
+        <div>Actions</div>
+    </div>
+
+    <!-- Articles grouped by Silo -->
+    <?php foreach ($articlesBySilo as $siloId => $grouped): ?>
+    <?php
+    $silo = $siloIndex[$siloId];
+    $siloColor = e((string) $silo['color']);
+    $siloCity = e((string) ($silo['city'] ?? 'Bordeaux'));
+    $siloArticleCount = count($grouped['pilier']) + count($grouped['satellite']) + count($grouped['standalone']);
+    if ($siloArticleCount === 0) continue;
+    ?>
+    <div class="silo-group" data-city="<?= $siloCity ?>" style="border-color: <?= $siloColor ?>;">
+        <div class="silo-group-header" style="background: <?= $siloColor ?>15;">
+            <h3>
+                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: <?= $siloColor ?>;"></span>
+                <span style="color: <?= $siloColor ?>;"><?= e((string) $silo['name']) ?></span>
+            </h3>
+            <div class="silo-group-meta">
+                <span class="city-badge"><?= $siloCity ?></span>
+                <span style="color: #888;"><?= $siloArticleCount ?> articles</span>
+                <span style="color: #888;">|</span>
+                <span style="color: #888;">SEO moy. <?= (int) ($silo['avg_seo_score'] ?? 0) ?>/100</span>
+            </div>
+        </div>
+        <div class="silo-group-body">
+            <?php
+            // Render pillar articles first, then satellites, then standalone
+            $allGrouped = array_merge($grouped['pilier'], $grouped['satellite'], $grouped['standalone']);
+            foreach ($allGrouped as $article):
+                $artSeo = (int) ($article['seo_score'] ?? 0);
+                $artSem = (int) ($article['semantic_score'] ?? 0);
+                $artType = (string) ($article['article_type'] ?? 'standalone');
+                $seoBadgeClass = $artSeo >= 80 ? 'seo-excellent' : ($artSeo >= 50 ? 'seo-good' : 'seo-poor');
+                $semBadgeClass = $artSem >= 80 ? 'seo-excellent' : ($artSem >= 50 ? 'seo-good' : 'seo-poor');
+                $rowClass = 'article-row article-row-' . $artType;
+            ?>
+            <div class="<?= $rowClass ?>"
+                 data-title="<?= e(mb_strtolower((string) $article['title'])) ?>"
+                 data-keyword="<?= e(mb_strtolower((string) ($article['focus_keyword'] ?? ''))) ?>"
+                 data-type="<?= e($artType) ?>"
+                 data-seo="<?= $artSeo ?>">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <span class="type-badge type-<?= e($artType) ?>"><?= $artType === 'pilier' ? 'PILIER' : ($artType === 'satellite' ? 'SATELLITE' : 'INDÉP.') ?></span>
+                        <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" class="article-title"><?= e((string) $article['title']) ?></a>
+                    </div>
+                    <?php if (($article['status'] ?? '') === 'draft'): ?>
+                    <div class="article-sub">Brouillon</div>
+                    <?php endif; ?>
+                </div>
+                <div>
+                    <?php if (!empty($article['focus_keyword'])): ?>
+                    <code style="font-size: 0.78rem; background: #f5f5f5; padding: 2px 6px; border-radius: 3px;"><?= e((string) $article['focus_keyword']) ?></code>
+                    <?php else: ?>
+                    <span style="color: #ccc;">--</span>
+                    <?php endif; ?>
+                </div>
+                <div style="text-align: center;"><span class="seo-badge <?= $seoBadgeClass ?>"><?= $artSeo ?></span></div>
+                <div style="text-align: center;"><span class="seo-badge <?= $semBadgeClass ?>"><?= $artSem ?></span></div>
+                <div><span class="persona-badge"><?= e((string) ($article['persona'] ?? '')) ?></span></div>
+                <div style="font-size: 0.85rem; color: #666;"><?= number_format((int) ($article['word_count'] ?? 0)) ?></div>
+                <div style="display: flex; gap: 0.25rem;">
+                    <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" class="btn btn-small btn-ghost">Modifier</a>
+                    <form method="post" action="/admin/blog/delete/<?= (int) $article['id'] ?>" style="display:inline" onsubmit="return confirm('Supprimer cet article ?');">
+                        <button type="submit" class="btn btn-small" style="font-size: 0.75rem;">Suppr.</button>
+                    </form>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
+    </div>
+    <?php endforeach; ?>
+
+    <!-- Articles without silo -->
+    <?php if (!empty($articlesNoSilo)): ?>
+    <div class="silo-group" data-city="" style="border-color: #ccc;">
+        <div class="silo-group-header" style="background: #f5f5f5;">
+            <h3>
+                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ccc;"></span>
+                <span style="color: #888;">Sans silo</span>
+            </h3>
+            <div class="silo-group-meta">
+                <span style="color: #888;"><?= count($articlesNoSilo) ?> articles non assignés</span>
+            </div>
+        </div>
+        <div class="silo-group-body">
+            <?php foreach ($articlesNoSilo as $article):
+                $artSeo = (int) ($article['seo_score'] ?? 0);
+                $artSem = (int) ($article['semantic_score'] ?? 0);
+                $artType = (string) ($article['article_type'] ?? 'standalone');
+                $seoBadgeClass = $artSeo >= 80 ? 'seo-excellent' : ($artSeo >= 50 ? 'seo-good' : 'seo-poor');
+                $semBadgeClass = $artSem >= 80 ? 'seo-excellent' : ($artSem >= 50 ? 'seo-good' : 'seo-poor');
+                $rowClass = 'article-row article-row-' . $artType;
+            ?>
+            <div class="<?= $rowClass ?>"
+                 data-title="<?= e(mb_strtolower((string) $article['title'])) ?>"
+                 data-keyword="<?= e(mb_strtolower((string) ($article['focus_keyword'] ?? ''))) ?>"
+                 data-type="<?= e($artType) ?>"
+                 data-seo="<?= $artSeo ?>">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <span class="type-badge type-<?= e($artType) ?>"><?= $artType === 'pilier' ? 'PILIER' : ($artType === 'satellite' ? 'SATELLITE' : 'INDÉP.') ?></span>
+                        <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" class="article-title"><?= e((string) $article['title']) ?></a>
+                    </div>
+                    <?php if (($article['status'] ?? '') === 'draft'): ?>
+                    <div class="article-sub">Brouillon</div>
+                    <?php endif; ?>
+                </div>
+                <div>
+                    <?php if (!empty($article['focus_keyword'])): ?>
+                    <code style="font-size: 0.78rem; background: #f5f5f5; padding: 2px 6px; border-radius: 3px;"><?= e((string) $article['focus_keyword']) ?></code>
+                    <?php else: ?>
+                    <span style="color: #ccc;">--</span>
+                    <?php endif; ?>
+                </div>
+                <div style="text-align: center;"><span class="seo-badge <?= $seoBadgeClass ?>"><?= $artSeo ?></span></div>
+                <div style="text-align: center;"><span class="seo-badge <?= $semBadgeClass ?>"><?= $artSem ?></span></div>
+                <div><span class="persona-badge"><?= e((string) ($article['persona'] ?? '')) ?></span></div>
+                <div style="font-size: 0.85rem; color: #666;"><?= number_format((int) ($article['word_count'] ?? 0)) ?></div>
+                <div style="display: flex; gap: 0.25rem;">
+                    <a href="/admin/blog/edit/<?= (int) $article['id'] ?>" class="btn btn-small btn-ghost">Modifier</a>
+                    <form method="post" action="/admin/blog/delete/<?= (int) $article['id'] ?>" style="display:inline" onsubmit="return confirm('Supprimer cet article ?');">
+                        <button type="submit" class="btn btn-small" style="font-size: 0.75rem;">Suppr.</button>
+                    </form>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Empty state -->
+    <?php if ($totalArticles === 0): ?>
+    <section class="card" style="text-align: center; padding: 3rem;">
+        <p style="color: #888; font-size: 1.1rem; margin: 0 0 1rem;">Aucun article. Commencez par créer un silo et un article pilier.</p>
+        <a href="/admin/blog/wizard" class="btn" style="background: #D4AF37; color: #1a1a1a; font-weight: 600;">+ Créer un article avec l'IA</a>
     </section>
     <?php endif; ?>
+
+    <!-- Legend -->
+    <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: #fafafa; border-radius: 8px; font-size: 0.8rem; color: #888; display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center;">
+        <span style="font-weight: 600;">Légende :</span>
+        <span><span class="type-badge type-pilier">PILIER</span> Article principal du silo</span>
+        <span><span class="type-badge type-satellite">SATELLITE</span> Article de support</span>
+        <span><span class="type-badge type-standalone">INDÉP.</span> Article indépendant</span>
+        <span style="margin-left: auto;"><span class="city-badge">Ville</span> Ville cible du silo</span>
+    </div>
 </div>
 
 <script>
 function filterArticles() {
     const search = document.getElementById('searchArticles').value.toLowerCase();
     const type = document.getElementById('filterType').value;
+    const citySelect = document.getElementById('filterCity');
+    const city = citySelect ? citySelect.value : '';
     const seo = document.getElementById('filterSeo').value;
-    const rows = document.querySelectorAll('#articlesTable tbody tr');
 
+    // Filter individual article rows
+    const rows = document.querySelectorAll('.article-row');
     rows.forEach(row => {
         const title = row.dataset.title || '';
         const keyword = row.dataset.keyword || '';
@@ -285,6 +493,19 @@ function filterArticles() {
         if (seo === 'poor' && rowSeo >= 50) show = false;
 
         row.style.display = show ? '' : 'none';
+    });
+
+    // Filter silo groups by city and hide empty groups
+    const groups = document.querySelectorAll('.silo-group');
+    groups.forEach(group => {
+        const groupCity = group.dataset.city || '';
+        if (city && groupCity !== city && groupCity !== '') {
+            group.style.display = 'none';
+            return;
+        }
+
+        const visibleRows = group.querySelectorAll('.article-row:not([style*="display: none"])');
+        group.style.display = visibleRows.length > 0 ? '' : 'none';
     });
 }
 </script>

@@ -616,6 +616,9 @@ try {
     <?php endif; ?>
 
     <div class="admin-sidebar-section">Outils</div>
+    <a href="/admin/smtp-api" class="admin-sidebar-link <?= ($admin_page ?? '') === 'smtp-api-management' ? 'active' : '' ?>">
+      <i class="fas fa-cogs"></i> SMTP, API & IA
+    </a>
     <?php if ($_moduleAccess('api_management')): ?>
     <a href="/admin/api-management" class="admin-sidebar-link <?= ($admin_page ?? '') === 'api-management' ? 'active' : '' ?>">
       <i class="fas fa-key"></i> API

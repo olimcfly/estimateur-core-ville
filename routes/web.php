@@ -16,6 +16,7 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminSmtpApiController;
 use App\Controllers\AdminModuleController;
 use App\Controllers\AdminMailboxController;
 use App\Controllers\AdminNotificationController;
@@ -212,6 +213,12 @@ $router->post('/admin/rss/seed', [AdminRssController::class, 'seed']);
 // Admin: Installateur (copie fichiers admin vers un autre site)
 $router->get('/admin/installer', [AdminDashboardController::class, 'installer']);
 $router->post('/admin/installer', [AdminDashboardController::class, 'installer']);
+
+// Admin unified SMTP/API/IA management module
+$router->get('/admin/smtp-api', [AdminSmtpApiController::class, 'index']);
+$router->post('/admin/smtp-api/create-table', [AdminSmtpApiController::class, 'createTable']);
+$router->post('/admin/smtp-api/seed-data', [AdminSmtpApiController::class, 'seedSampleData']);
+$router->get('/admin/smtp-api/usage-stats', [AdminSmtpApiController::class, 'apiUsageStats']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);

@@ -78,9 +78,10 @@ final class Article
     public function findBySilo(int $siloId): array
     {
         $sql = 'SELECT ' . self::LIST_COLUMNS . '
-                FROM articles
-                WHERE website_id = :website_id AND silo_id = :silo_id
-                ORDER BY article_type ASC, created_at DESC';
+                FROM articles a
+                LEFT JOIN article_silos s ON a.silo_id = s.id
+                WHERE a.website_id = :website_id AND a.silo_id = :silo_id
+                ORDER BY a.article_type ASC, a.created_at DESC';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([':website_id' => $this->websiteId(), ':silo_id' => $siloId]);

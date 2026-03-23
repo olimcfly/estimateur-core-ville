@@ -145,6 +145,41 @@ final class RssArticle
         $stmt->execute([':id' => $id, ':wid' => $this->websiteId()]);
     }
 
+    /**
+     * Find recent unused articles suitable for Actualite generation.
+     * Prioritizes local (Bordeaux) sources and filters by age.
+     */
+    public function findForActualite(int $maxAgeDays = 7, ?string $zonePriority = 'local_first', int $limit = 30): array
+    {
+        $sql = 'SELECT ra.*, rs.name AS source_name, rs.zone AS source_zone, rs.category AS source_category
+                FROM rss_articles ra
+                JOIN rss_sources rs ON rs.id = ra.rss_source_id
+                WHERE ra.website_id = :wid
+                  AND ra.is_used = 0
+                  AND ra.actualite_id IS NULL
+                  AND rs.is_active = 1
+                  AND ra.pub_date >= DATE_SUB(NOW(), INTERVAL :days DAY)
+                ORDER BY
+                  CASE WHEN rs.zone = :local_zone THEN 0 ELSE 1 END,
+                  ra.pub_date DESC
+                LIMIT :limit';
+
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->bindValue(':wid', $this->websiteId(), \PDO::PARAM_INT);
+        $stmt->bindValue(':days', $maxAgeDays, \PDO::PARAM_INT);
+        $stmt->bindValue(':local_zone', 'Bordeaux/Nouvelle-Aquitaine', \PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function markAsUsedForActualite(int $id, ?int $actualiteId = null): void
+    {
+        $sql = 'UPDATE rss_articles SET is_used = 1, actualite_id = :actu_id WHERE id = :id AND website_id = :wid';
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([':id' => $id, ':wid' => $this->websiteId(), ':actu_id' => $actualiteId]);
+    }
+
     public function deleteOlderThan(int $days): int
     {
         $sql = 'DELETE FROM rss_articles WHERE website_id = :wid AND is_starred = 0 AND is_used = 0 AND created_at < DATE_SUB(NOW(), INTERVAL :days DAY)';

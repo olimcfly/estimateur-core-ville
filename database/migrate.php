@@ -396,6 +396,17 @@ $migrations = [
             INDEX idx_rss_blog_log_website (website_id, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     "],
+
+    ['actualite_ai_config', "
+        CREATE TABLE IF NOT EXISTS actualite_ai_config (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            website_id INT UNSIGNED NOT NULL,
+            config_key VARCHAR(100) NOT NULL,
+            config_value TEXT NOT NULL,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uq_actualite_ai_config (website_id, config_key)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    "],
 ];
 
 // Run migrations
@@ -421,6 +432,21 @@ foreach ($migrations as [$table, $sql]) {
     }
 }
 
+// Add new columns to existing tables (safe to run multiple times)
+echo "\n  Colonnes additionnelles...\n";
+$alterStatements = [
+    "ALTER TABLE rss_articles ADD COLUMN IF NOT EXISTS actualite_id INT UNSIGNED DEFAULT NULL AFTER blog_article_id",
+    "ALTER TABLE actualites ADD COLUMN IF NOT EXISTS rss_article_ids TEXT DEFAULT NULL AFTER source_results",
+];
+foreach ($alterStatements as $alterSql) {
+    try {
+        $pdo->exec($alterSql);
+    } catch (\PDOException) {
+        // Column may already exist or syntax not supported — ignore
+    }
+}
+echo "  OK\n";
+
 // Seed default admin if table was just created
 if (!in_array('admin_users', $existingTables, true)) {
     $adminEmail = $_ENV['ADMIN_EMAIL'] ?? 'contact@estimation-immobilier-bordeaux.fr';
@@ -440,7 +466,7 @@ echo "  Tables ignorées : {$skipped}\n";
 // Final verification
 $finalTables = $pdo->query("SHOW TABLES")->fetchAll(\PDO::FETCH_COLUMN);
 $requiredTables = ['articles', 'article_revisions', 'leads', 'partenaires', 'admin_users', 'newsletter_subscribers', 'design_templates', 'email_templates', 'email_logs', 'email_sequences', 'email_sequence_steps', 'lead_personas'];
-$requiredTables = ['articles', 'article_revisions', 'leads', 'partenaires', 'achats', 'admin_users', 'newsletter_subscribers', 'design_templates', 'actualites', 'actualites_cron_log', 'rss_sources', 'rss_articles', 'rss_blog_generation_log'];
+$requiredTables = ['articles', 'article_revisions', 'leads', 'partenaires', 'achats', 'admin_users', 'newsletter_subscribers', 'design_templates', 'actualites', 'actualites_cron_log', 'rss_sources', 'rss_articles', 'rss_blog_generation_log', 'actualite_ai_config'];
 $missing = array_diff($requiredTables, $finalTables);
 
 if (empty($missing)) {

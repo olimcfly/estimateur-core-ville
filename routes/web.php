@@ -169,6 +169,8 @@ $router->post('/admin/actualites/update/{id}', [AdminActualiteController::class,
 $router->post('/admin/actualites/delete/{id}', [AdminActualiteController::class, 'delete']);
 $router->post('/admin/actualites/search', [AdminActualiteController::class, 'search']);
 $router->post('/admin/actualites/generate', [AdminActualiteController::class, 'generate']);
+$router->post('/admin/actualites/generate-rss', [AdminActualiteController::class, 'generateFromRss']);
+$router->post('/admin/actualites/save-ai-config', [AdminActualiteController::class, 'saveAiConfig']);
 
 // Admin AI image generation routes
 $router->get('/admin/images', [AdminImageController::class, 'index']);

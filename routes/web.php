@@ -21,6 +21,7 @@ use App\Controllers\AdminModuleController;
 use App\Controllers\AdminMailboxController;
 use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminSettingsController;
 use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
@@ -237,6 +238,10 @@ $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
 $router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);
 $router->post('/admin/api/register-claude', [AdminApiController::class, 'registerClaude']);
+
+// Admin settings routes
+$router->get('/admin/settings', [AdminSettingsController::class, 'index']);
+$router->post('/admin/settings/save', [AdminSettingsController::class, 'save']);
 
 // Admin module management routes (superuser only)
 $router->get('/admin/modules', [AdminModuleController::class, 'index']);

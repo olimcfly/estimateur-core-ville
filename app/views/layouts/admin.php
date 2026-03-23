@@ -656,6 +656,9 @@ try {
 
     <?php if ($_adminIsSuperUser): ?>
     <div class="admin-sidebar-section">Systeme</div>
+    <a href="/admin/settings" class="admin-sidebar-link <?= ($admin_page ?? '') === 'settings' ? 'active' : '' ?>">
+      <i class="fas fa-cog"></i> Paramètres
+    </a>
     <a href="/admin/modules" class="admin-sidebar-link <?= ($admin_page ?? '') === 'modules' ? 'active' : '' ?>">
       <i class="fas fa-puzzle-piece"></i> Modules
     </a>

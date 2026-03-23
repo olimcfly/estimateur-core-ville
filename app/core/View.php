@@ -22,6 +22,7 @@ final class View
         $siteConfig = getSiteConfig();
         $data['colors'] = $siteConfig['colors'] ?? [];
         $data['rgbColors'] = $siteConfig['rgb_colors'] ?? [];
+        $data['google_site_verification'] = $siteConfig['google_site_verification'] ?? '';
 
         extract($data, EXTR_SKIP);
         include __DIR__ . '/../views/layouts/header.php';

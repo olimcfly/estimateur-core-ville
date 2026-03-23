@@ -559,6 +559,9 @@ try {
       <i class="fas fa-newspaper"></i> Actualites
     </a>
     <?php endif; ?>
+    <a href="/admin/rss" class="admin-sidebar-link <?= ($admin_page ?? '') === 'rss' ? 'active' : '' ?>">
+      <i class="fas fa-rss"></i> Veille RSS
+    </a>
     <?php if ($_moduleAccess('images')): ?>
     <a href="/admin/images" class="admin-sidebar-link <?= ($admin_page ?? '') === 'images' ? 'active' : '' ?>">
       <i class="fas fa-image"></i> Images IA

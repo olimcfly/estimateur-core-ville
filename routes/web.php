@@ -17,6 +17,7 @@ use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
 use App\Controllers\AdminModuleController;
+use App\Controllers\AdminMailboxController;
 use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
 use App\Controllers\AdminUserController;
@@ -208,6 +209,14 @@ $router->get('/admin/users', [AdminUserController::class, 'index']);
 $router->post('/admin/users/create', [AdminUserController::class, 'create']);
 $router->post('/admin/users/update', [AdminUserController::class, 'update']);
 $router->post('/admin/users/delete', [AdminUserController::class, 'delete']);
+
+// Admin mailbox (email client) routes
+$router->get('/admin/mailbox', [AdminMailboxController::class, 'index']);
+$router->get('/admin/mailbox/read', [AdminMailboxController::class, 'read']);
+$router->get('/admin/mailbox/compose', [AdminMailboxController::class, 'compose']);
+$router->post('/admin/mailbox/send', [AdminMailboxController::class, 'send']);
+$router->post('/admin/mailbox/delete', [AdminMailboxController::class, 'delete']);
+$router->get('/admin/mailbox/unread-count', [AdminMailboxController::class, 'unreadCount']);
 
 // Admin internal notifications routes
 $router->get('/admin/notifications', [AdminNotificationController::class, 'index']);

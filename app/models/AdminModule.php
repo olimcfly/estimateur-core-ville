@@ -62,6 +62,15 @@ final class AdminModule
                 'superuser_only' => false,
             ],
             [
+                'slug' => 'mailbox',
+                'name' => 'Boîte Email',
+                'description' => 'Boîte email intégrée — recevoir et envoyer des emails depuis l\'admin (contact@estimation-immobilier-bordeaux.fr)',
+                'icon' => 'fa-envelope',
+                'category' => 'communication',
+                'default_active' => true,
+                'superuser_only' => false,
+            ],
+            [
                 'slug' => 'emails',
                 'name' => 'Templates Email',
                 'description' => 'Gestion des modèles d\'emails et séquences',

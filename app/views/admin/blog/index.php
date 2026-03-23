@@ -97,6 +97,7 @@ sort($cities);
             </a>
             <a href="/admin/blog/create" class="btn btn-ghost">+ Article manuel</a>
             <a href="/admin/blog/silos" class="btn btn-ghost">Silos SEO</a>
+            <a href="/admin/blog/ideas" class="btn btn-ghost" style="border-color: #D4AF37; color: #D4AF37;">Planning articles</a>
             <a href="/admin/blog/seo-guide" class="btn btn-ghost">Guide SEO</a>
         </div>
     </div>

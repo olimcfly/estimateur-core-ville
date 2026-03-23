@@ -559,6 +559,9 @@ try {
       <i class="fas fa-pen-fancy"></i> Articles Blog
     </a>
     <?php endif; ?>
+    <a href="/admin/seo-hub" class="admin-sidebar-link <?= ($admin_page ?? '') === 'seo-hub' ? 'active' : '' ?>">
+      <i class="fas fa-chart-line"></i> SEO Hub (GSC)
+    </a>
     <?php if ($_moduleAccess('actualites')): ?>
     <a href="/admin/actualites" class="admin-sidebar-link <?= ($admin_page ?? '') === 'actualites' ? 'active' : '' ?>">
       <i class="fas fa-newspaper"></i> Actualites
@@ -616,6 +619,9 @@ try {
     <?php endif; ?>
 
     <div class="admin-sidebar-section">Outils</div>
+    <a href="/admin/smtp-api" class="admin-sidebar-link <?= ($admin_page ?? '') === 'smtp-api-management' ? 'active' : '' ?>">
+      <i class="fas fa-cogs"></i> SMTP, API & IA
+    </a>
     <?php if ($_moduleAccess('api_management')): ?>
     <a href="/admin/api-management" class="admin-sidebar-link <?= ($admin_page ?? '') === 'api-management' ? 'active' : '' ?>">
       <i class="fas fa-key"></i> API
@@ -650,6 +656,9 @@ try {
 
     <?php if ($_adminIsSuperUser): ?>
     <div class="admin-sidebar-section">Systeme</div>
+    <a href="/admin/settings" class="admin-sidebar-link <?= ($admin_page ?? '') === 'settings' ? 'active' : '' ?>">
+      <i class="fas fa-cog"></i> Paramètres
+    </a>
     <a href="/admin/modules" class="admin-sidebar-link <?= ($admin_page ?? '') === 'modules' ? 'active' : '' ?>">
       <i class="fas fa-puzzle-piece"></i> Modules
     </a>

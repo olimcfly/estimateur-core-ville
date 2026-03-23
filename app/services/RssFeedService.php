@@ -198,21 +198,24 @@ PROMPT;
 
         // Try Anthropic first, fallback to OpenAI
         if ($apiKey !== '') {
-            $result = $this->callAnthropic($apiKey, $prompt);
+            $apiResult = $this->callAnthropic($apiKey, $prompt);
         } else {
             $apiKey = (string) Config::get('openai.api_key', '');
             if ($apiKey !== '') {
-                $result = $this->callOpenAI($apiKey, $prompt);
+                $apiResult = $this->callOpenAI($apiKey, $prompt);
             } else {
                 $articleModel->logGeneration($rssArticleIds, null, $prompt, 'error', 'Aucune cle API configuree (ANTHROPIC_API_KEY ou OPENAI_API_KEY)');
-                return ['success' => false, 'error' => 'Aucune cle API configuree.'];
+                return ['success' => false, 'error' => 'Aucune cle API configuree (ANTHROPIC_API_KEY ou OPENAI_API_KEY dans .env).'];
             }
         }
 
-        if ($result === null) {
-            $articleModel->logGeneration($rssArticleIds, null, $prompt, 'error', 'Erreur appel API');
-            return ['success' => false, 'error' => 'Erreur lors de l\'appel a l\'API.'];
+        if ($apiResult['data'] === null) {
+            $errorMsg = $apiResult['error'] ?? 'Erreur inconnue';
+            $articleModel->logGeneration($rssArticleIds, null, $prompt, 'error', $errorMsg);
+            return ['success' => false, 'error' => 'Erreur lors de l\'appel a l\'API : ' . $errorMsg];
         }
+
+        $result = $apiResult['data'];
 
         // Mark RSS articles as used
         foreach ($rssArticleIds as $id) {
@@ -229,7 +232,10 @@ PROMPT;
         ];
     }
 
-    private function callAnthropic(string $apiKey, string $prompt): ?array
+    /**
+     * @return array{data: array|null, error: string|null}
+     */
+    private function callAnthropic(string $apiKey, string $prompt): array
     {
         $endpoint = 'https://api.anthropic.com/v1/messages';
         $payload = [
@@ -240,26 +246,35 @@ PROMPT;
             ],
         ];
 
-        $response = $this->postJson($endpoint, $payload, [
+        $result = $this->postJson($endpoint, $payload, [
             'x-api-key: ' . $apiKey,
             'anthropic-version: 2023-06-01',
             'Content-Type: application/json',
         ]);
 
-        if (!is_array($response)) {
-            return null;
+        if ($result['error'] !== null) {
+            return ['data' => null, 'error' => 'Anthropic API : ' . $result['error']];
         }
 
-        $text = $response['content'][0]['text'] ?? '';
-        return $this->extractJson($text);
+        $text = $result['response']['content'][0]['text'] ?? '';
+        $parsed = $this->extractJson($text);
+        if ($parsed === null) {
+            error_log('callAnthropic: failed to extract JSON from response text: ' . mb_substr($text, 0, 300));
+            return ['data' => null, 'error' => 'Reponse Anthropic invalide (JSON non extractible)'];
+        }
+
+        return ['data' => $parsed, 'error' => null];
     }
 
-    private function callOpenAI(string $apiKey, string $prompt): ?array
+    /**
+     * @return array{data: array|null, error: string|null}
+     */
+    private function callOpenAI(string $apiKey, string $prompt): array
     {
         $endpoint = (string) Config::get('openai.endpoint', 'https://api.openai.com/v1/chat/completions');
         $model = (string) Config::get('openai.model', 'gpt-4o-mini');
 
-        $response = $this->postJson($endpoint, [
+        $result = $this->postJson($endpoint, [
             'model' => $model,
             'temperature' => 0.7,
             'response_format' => ['type' => 'json_object'],
@@ -272,12 +287,18 @@ PROMPT;
             'Content-Type: application/json',
         ]);
 
-        if (!is_array($response)) {
-            return null;
+        if ($result['error'] !== null) {
+            return ['data' => null, 'error' => 'OpenAI API : ' . $result['error']];
         }
 
-        $text = $response['choices'][0]['message']['content'] ?? '';
-        return $this->extractJson($text);
+        $text = $result['response']['choices'][0]['message']['content'] ?? '';
+        $parsed = $this->extractJson($text);
+        if ($parsed === null) {
+            error_log('callOpenAI: failed to extract JSON from response text: ' . mb_substr($text, 0, 300));
+            return ['data' => null, 'error' => 'Reponse OpenAI invalide (JSON non extractible)'];
+        }
+
+        return ['data' => $parsed, 'error' => null];
     }
 
     private function extractJson(string $text): ?array
@@ -451,7 +472,10 @@ PROMPT;
         ];
     }
 
-    private function postJson(string $endpoint, array $payload, array $headers): ?array
+    /**
+     * @return array{response: array|null, error: string|null}
+     */
+    private function postJson(string $endpoint, array $payload, array $headers): array
     {
         $ch = curl_init($endpoint);
         curl_setopt_array($ch, [
@@ -463,14 +487,44 @@ PROMPT;
         ]);
 
         $response = curl_exec($ch);
+        $curlError = curl_error($ch);
         $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($response === false || $httpCode >= 400) {
-            return null;
+        if ($response === false) {
+            $error = 'Erreur cURL : ' . ($curlError !== '' ? $curlError : 'inconnue');
+            error_log('postJson cURL error for ' . $endpoint . ': ' . $error);
+            return ['response' => null, 'error' => $error];
         }
 
-        $decoded = json_decode($response, true);
-        return is_array($decoded) ? $decoded : null;
+        if ($httpCode >= 400) {
+            $body = mb_substr((string) $response, 0, 500);
+            $errorDetail = "HTTP {$httpCode}";
+            $decoded = json_decode((string) $response, true);
+            if (is_array($decoded)) {
+                // Anthropic error format
+                if (isset($decoded['error']['message'])) {
+                    $errorDetail .= ' - ' . $decoded['error']['message'];
+                }
+                // OpenAI error format
+                elseif (isset($decoded['error']['message'])) {
+                    $errorDetail .= ' - ' . $decoded['error']['message'];
+                }
+                // Generic
+                elseif (isset($decoded['message'])) {
+                    $errorDetail .= ' - ' . $decoded['message'];
+                }
+            }
+            error_log('postJson HTTP error for ' . $endpoint . ': ' . $errorDetail . ' | Body: ' . $body);
+            return ['response' => null, 'error' => $errorDetail];
+        }
+
+        $decoded = json_decode((string) $response, true);
+        if (!is_array($decoded)) {
+            error_log('postJson invalid JSON from ' . $endpoint . ': ' . mb_substr((string) $response, 0, 200));
+            return ['response' => null, 'error' => 'Reponse API invalide (JSON non parsable)'];
+        }
+
+        return ['response' => $decoded, 'error' => null];
     }
 }

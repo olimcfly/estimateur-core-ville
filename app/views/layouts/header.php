@@ -641,10 +641,10 @@
         <a href="/blog" class="nav-link">Blog</a>
         <ul class="dropdown-menu" aria-label="Sous-menu blog">
           <li><a href="/blog">Tous les articles</a></li>
-          <li><a href="/blog?cat=vendre">Vendre son bien</a></li>
-          <li><a href="/blog?cat=marche">Marché immobilier</a></li>
-          <li><a href="/blog?cat=conseil">Conseils &amp; astuces</a></li>
-          <li><a href="/blog?cat=legal">Aspect juridique</a></li>
+          <li><a href="/blog/vendre-son-bien">Vendre son bien</a></li>
+          <li><a href="/blog/marche-immobilier">Marché immobilier</a></li>
+          <li><a href="/blog/conseils-astuces">Conseils &amp; astuces</a></li>
+          <li><a href="/blog/aspects-juridiques">Aspects juridiques</a></li>
         </ul>
       </div>
 

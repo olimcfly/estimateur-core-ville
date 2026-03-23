@@ -106,6 +106,10 @@ $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation
 $router->get('/guides', [PageController::class, 'guides']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
 $router->get('/blog', [BlogController::class, 'index']);
+$router->get('/blog/marche-immobilier', [BlogController::class, 'category']);
+$router->get('/blog/vendre-son-bien', [BlogController::class, 'category']);
+$router->get('/blog/conseils-astuces', [BlogController::class, 'category']);
+$router->get('/blog/aspects-juridiques', [BlogController::class, 'category']);
 $router->get('/blog/{slug}', [BlogController::class, 'show']);
 
 // Actualités (news) routes

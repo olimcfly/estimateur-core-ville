@@ -18,11 +18,9 @@ final class Article
         status, published_at, created_at';
 
     private const LIST_COLUMNS = 'a.id, a.title, a.slug, a.persona, a.awareness_level, a.focus_keyword, a.seo_score,
-        a.semantic_score, a.word_count, a.article_type, a.silo_id, a.status, a.published_at, a.created_at,
+        a.semantic_score, a.word_count, a.article_type, a.silo_id, a.page_views, a.is_indexed, a.google_position,
+        a.status, a.published_at, a.created_at,
         s.name AS silo_name, s.color AS silo_color, s.city AS silo_city';
-    private const LIST_COLUMNS = 'id, title, slug, persona, awareness_level, focus_keyword, seo_score,
-        semantic_score, word_count, article_type, silo_id, page_views, is_indexed, google_position,
-        status, published_at, created_at';
 
     public function findPublished(): array
     {

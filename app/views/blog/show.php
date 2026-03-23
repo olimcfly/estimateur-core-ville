@@ -39,7 +39,6 @@ $jsonLd = array_filter($jsonLd, static fn (mixed $value): bool => $value !== nul
 
 <section class="section">
   <div class="container article-container">
-    <p class="eyebrow"><?= e((string) $article['persona']) ?> • <?= e((string) $article['awareness_level']) ?></p>
     <h1><?= e((string) $article['title']) ?></h1>
     <p class="muted"><?= e((string) $article['meta_description']) ?></p>
 

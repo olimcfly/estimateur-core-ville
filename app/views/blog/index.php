@@ -13,7 +13,6 @@
       <?php else: ?>
         <?php foreach ($articles as $article): ?>
           <article class="card blog-card">
-            <p class="badge"><?= e((string) $article['persona']) ?> • <?= e((string) $article['awareness_level']) ?></p>
             <h2><?= e((string) $article['title']) ?></h2>
             <p class="muted"><?= e((string) $article['meta_description']) ?></p>
             <a class="btn btn-small" href="/blog/<?= e((string) $article['slug']) ?>">Lire l'article</a>

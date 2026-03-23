@@ -21,6 +21,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
+  <?php if (!empty($google_site_verification)): ?>
+  <meta name="google-site-verification" content="<?= e((string) $google_site_verification) ?>">
+  <?php endif; ?>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
   <title><?= isset($page_title) ? $page_title : 'Estimation Immobilier Bordeaux et Métropole' ?></title>

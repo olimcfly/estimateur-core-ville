@@ -30,6 +30,7 @@ use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
+use App\Controllers\AdminFinancementController;
 use App\Controllers\AdminGoogleAdsCampaignController;
 use App\Controllers\AdminRssController;
 use App\Controllers\AdminSeoHubController;
@@ -86,6 +87,15 @@ $router->get('/admin/achats/edit', [AdminAchatController::class, 'edit']);
 $router->post('/admin/achats/save', [AdminAchatController::class, 'save']);
 $router->post('/admin/achats/delete', [AdminAchatController::class, 'delete']);
 $router->post('/admin/achats/create-table', [AdminAchatController::class, 'createTable']);
+
+// Admin financement routes (demandes de financement visiteurs — 2L Courtage)
+$router->get('/admin/financement', [AdminFinancementController::class, 'index']);
+$router->get('/admin/financement/edit', [AdminFinancementController::class, 'edit']);
+$router->post('/admin/financement/save', [AdminFinancementController::class, 'save']);
+$router->post('/admin/financement/delete', [AdminFinancementController::class, 'delete']);
+$router->post('/admin/financement/transmettre', [AdminFinancementController::class, 'transmettre']);
+$router->get('/admin/financement/export-courtier', [AdminFinancementController::class, 'exportCourtier']);
+$router->post('/admin/financement/create-table', [AdminFinancementController::class, 'createTable']);
 
 // Admin partenaires routes
 $router->get('/admin/partenaires', [AdminPartenaireController::class, 'index']);

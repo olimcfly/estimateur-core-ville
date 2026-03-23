@@ -161,6 +161,15 @@ final class AdminModule
                 'superuser_only' => false,
             ],
             [
+                'slug' => 'financement',
+                'name' => 'Demandes de Financement',
+                'description' => 'Demandes de financement des visiteurs — partenaire 2L Courtage',
+                'icon' => 'fa-credit-card',
+                'category' => 'principal',
+                'default_active' => true,
+                'superuser_only' => false,
+            ],
+            [
                 'slug' => 'social_images',
                 'name' => 'Images Réseaux Sociaux',
                 'description' => 'Génération d\'images pour les réseaux sociaux',

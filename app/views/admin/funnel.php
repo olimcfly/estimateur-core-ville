@@ -37,7 +37,7 @@
   /* ========================= */
   .funnel-kpis {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin-bottom: 2rem;
   }
@@ -210,19 +210,38 @@
   /* ========================= */
   /* FUNNEL VISUALIZATION       */
   /* ========================= */
+  /* ========================= */
+  /* TWO-COLUMN LAYOUT         */
+  /* ========================= */
+  .funnel-two-col {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .funnel-col-left {
+    min-width: 0;
+  }
+
+  .funnel-col-right {
+    position: sticky;
+    top: calc(var(--admin-header-height, 60px) + 1rem);
+  }
+
   .funnel-section {
     background: var(--admin-surface);
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius);
-    padding: 2rem;
-    margin-bottom: 2rem;
+    padding: 1.5rem;
+    margin-bottom: 0;
   }
 
   .funnel-section h3 {
     text-align: center;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
     color: var(--admin-text);
     display: flex;
     align-items: center;
@@ -233,14 +252,14 @@
   .funnel-section h3 i { color: var(--admin-primary); }
 
   .funnel-visual {
-    max-width: 750px;
+    max-width: 100%;
     margin: 0 auto;
   }
 
   .funnel-stage {
     position: relative;
     margin: 0 auto;
-    padding: 0.85rem 1.5rem;
+    padding: 0.7rem 1rem;
     color: #fff;
     font-weight: 600;
     display: flex;
@@ -284,8 +303,8 @@
   .funnel-stage-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.88rem;
+    gap: 0.4rem;
+    font-size: 0.78rem;
   }
 
   .funnel-stage-left i {
@@ -526,6 +545,21 @@
   /* ========================= */
   /* RESPONSIVE                 */
   /* ========================= */
+  @media (max-width: 1200px) {
+    .funnel-two-col {
+      grid-template-columns: 1fr 350px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .funnel-two-col {
+      grid-template-columns: 1fr;
+    }
+    .funnel-col-right {
+      position: static;
+    }
+  }
+
   @media (max-width: 768px) {
     .funnel-kpis { grid-template-columns: repeat(2, 1fr); }
     .score-cards { grid-template-columns: 1fr; }
@@ -629,6 +663,61 @@
   </div>
 <?php else: ?>
 
+<!-- TWO-COLUMN LAYOUT: Left = details, Right = Funnel -->
+<div class="funnel-two-col">
+<div class="funnel-col-right">
+<!-- FUNNEL VISUALIZATION -->
+<div class="funnel-section">
+  <h3><i class="fas fa-filter"></i> Entonnoir Prospect &rarr; Client</h3>
+
+  <div class="funnel-visual" id="funnelVisual">
+    <?php
+      $i = 0;
+      $stageKeys = array_keys($stages);
+      $prevCount = 0;
+
+      foreach ($stages as $key => [$label, $color, $icon]):
+        $count = $pipeline[$key]['count'] ?? 0;
+        $valeur = $pipeline[$key]['valeur'] ?? 0;
+        $pct = $totalQ > 0 ? round(($count / $totalQ) * 100, 1) : 0;
+        $widthPct = max(30, 100 - ($i * 8));
+
+        if ($i > 0 && $prevCount > 0) {
+          $convRate = round(($count / $prevCount) * 100, 1);
+          $convClass = $convRate >= 50 ? 'high' : ($convRate >= 25 ? 'mid' : 'low');
+    ?>
+      <div class="funnel-conv-arrow">
+        <i class="fas fa-chevron-down"></i>
+        <span class="conv-badge <?= $convClass ?>"><?= $convRate ?>%</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    <?php
+        }
+    ?>
+      <div class="funnel-stage" style="background: <?= $color ?>; width: <?= $widthPct ?>%;" data-delay="<?= $i * 80 ?>">
+        <div class="funnel-stage-left">
+          <i class="fas <?= $icon ?>"></i> <?= $label ?>
+        </div>
+        <div class="funnel-stage-right">
+          <div class="funnel-stage-meta">
+            <div class="funnel-stage-pct"><?= $pct ?>%</div>
+            <?php if ($valeur > 0): ?>
+              <div class="funnel-stage-value"><?= number_format($valeur, 0, ',', ' ') ?> &euro;</div>
+            <?php endif; ?>
+          </div>
+          <div class="funnel-stage-count"><?= $count ?></div>
+        </div>
+      </div>
+    <?php
+        $prevCount = $count;
+        $i++;
+      endforeach;
+    ?>
+  </div>
+</div>
+</div>
+
+<div class="funnel-col-left">
 <!-- KPI SUMMARY -->
 <div class="funnel-kpis">
   <div class="funnel-kpi">
@@ -690,58 +779,6 @@
     <?php else: ?>
       <div class="score-bar-segment cold" style="width: 100%; background: #e2e8f0; color: var(--admin-muted);">Aucun lead</div>
     <?php endif; ?>
-  </div>
-</div>
-
-<!-- FUNNEL VISUALIZATION -->
-<div class="funnel-section">
-  <h3><i class="fas fa-filter"></i> Entonnoir Prospect &rarr; Client</h3>
-
-  <div class="funnel-visual" id="funnelVisual">
-    <?php
-      $i = 0;
-      $stageKeys = array_keys($stages);
-      $prevCount = 0;
-
-      foreach ($stages as $key => [$label, $color, $icon]):
-        $count = $pipeline[$key]['count'] ?? 0;
-        $valeur = $pipeline[$key]['valeur'] ?? 0;
-        $pct = $totalQ > 0 ? round(($count / $totalQ) * 100, 1) : 0;
-        // Width narrows progressively
-        $widthPct = max(30, 100 - ($i * 8));
-
-        // Conversion from previous stage
-        if ($i > 0 && $prevCount > 0) {
-          $convRate = round(($count / $prevCount) * 100, 1);
-          $convClass = $convRate >= 50 ? 'high' : ($convRate >= 25 ? 'mid' : 'low');
-    ?>
-      <div class="funnel-conv-arrow">
-        <i class="fas fa-chevron-down"></i>
-        <span class="conv-badge <?= $convClass ?>"><?= $convRate ?>%</span>
-        <i class="fas fa-chevron-down"></i>
-      </div>
-    <?php
-        }
-    ?>
-      <div class="funnel-stage" style="background: <?= $color ?>; width: <?= $widthPct ?>%;" data-delay="<?= $i * 80 ?>">
-        <div class="funnel-stage-left">
-          <i class="fas <?= $icon ?>"></i> <?= $label ?>
-        </div>
-        <div class="funnel-stage-right">
-          <div class="funnel-stage-meta">
-            <div class="funnel-stage-pct"><?= $pct ?>%</div>
-            <?php if ($valeur > 0): ?>
-              <div class="funnel-stage-value"><?= number_format($valeur, 0, ',', ' ') ?> &euro;</div>
-            <?php endif; ?>
-          </div>
-          <div class="funnel-stage-count"><?= $count ?></div>
-        </div>
-      </div>
-    <?php
-        $prevCount = $count;
-        $i++;
-      endforeach;
-    ?>
   </div>
 </div>
 
@@ -809,6 +846,8 @@
     <?php endforeach; ?>
   </div>
 </div>
+</div><!-- /funnel-col-left -->
+</div><!-- /funnel-two-col -->
 
 <script>
 (function() {

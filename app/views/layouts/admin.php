@@ -568,6 +568,11 @@ try {
       <i class="fas fa-share-alt"></i> Images Sociaux
     </a>
     <?php endif; ?>
+    <?php if ($_moduleAccess('google_ads')): ?>
+    <a href="/admin/google-ads" class="admin-sidebar-link <?= str_starts_with(($admin_page ?? ''), 'google-ads') ? 'active' : '' ?>">
+      <i class="fas fa-bullhorn"></i> Google Ads
+    </a>
+    <?php endif; ?>
 
     <?php if ($_moduleAccess('emails') || $_moduleAccess('sequences')): ?>
     <div class="admin-sidebar-section">Communication</div>
@@ -614,11 +619,7 @@ try {
       <i class="fas fa-envelope"></i> SMTP
     </a>
     <?php endif; ?>
-    <?php if ($_moduleAccess('google_ads')): ?>
-    <a href="/admin/google-ads" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads' ? 'active' : '' ?>">
-      <i class="fas fa-ad"></i> Google Ads
-    </a>
-    <?php endif; ?>
+    <?php /* Google Ads moved to Contenu section */ ?>
 
     <?php if ($_adminIsSuperUser): ?>
     <div class="admin-sidebar-section">Systeme</div>

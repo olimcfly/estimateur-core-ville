@@ -443,8 +443,9 @@ try {
     }
 
     .admin-content .container {
-      width: min(1120px, 100%);
-      margin-inline: auto;
+      width: 100%;
+      max-width: 100%;
+      margin-inline: 0;
     }
 
     /* Mobile overlay */

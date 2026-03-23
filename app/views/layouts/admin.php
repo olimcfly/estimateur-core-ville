@@ -16,6 +16,9 @@ try {
         (int) ($_SESSION['admin_user_id'] ?? 0)
     );
 } catch (\Throwable $e) {}
+
+// Banner/toast notifications toggle
+$_bannerNotifEnabled = $_moduleAccess('notifications_banner');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -887,10 +890,12 @@ function escHtml(str) {
   return d.innerHTML;
 }
 
+// ─── Banner notifications toggle (controlled from backend modules) ───
+var _bannerNotifEnabled = <?= $_bannerNotifEnabled ? 'true' : 'false' ?>;
+
 // ─── Browser notifications permission ───
 (function() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    // Request permission after a short delay
+  if (_bannerNotifEnabled && 'Notification' in window && Notification.permission === 'default') {
     setTimeout(function() { Notification.requestPermission(); }, 3000);
   }
 })();
@@ -903,6 +908,8 @@ function escHtml(str) {
   document.body.appendChild(container);
 
   window.showToast = function(title, message, type, link) {
+    if (!_bannerNotifEnabled) return;
+
     var typeColors = { lead: '#8B1538', success: '#22c55e', warning: '#f97316', error: '#e24b4a', system: '#6b6459', info: '#3b82f6' };
     var typeIcons = { lead: 'fa-user-plus', success: 'fa-check-circle', warning: 'fa-exclamation-triangle', error: 'fa-times-circle', system: 'fa-cog', info: 'fa-info-circle' };
     var color = typeColors[type] || '#3b82f6';
@@ -928,6 +935,12 @@ setInterval(function() {
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (!data.success) return;
+
+      // Update banner toggle dynamically from backend
+      if (typeof data.banner_enabled !== 'undefined') {
+        _bannerNotifEnabled = data.banner_enabled;
+      }
+
       var badge = document.getElementById('notif-badge');
       if (badge) {
         if (data.unread > 0) {
@@ -938,8 +951,8 @@ setInterval(function() {
         }
       }
 
-      // Show toast + browser notification for new notifications
-      if (data.unread > _lastNotifCount && data.notifications && data.notifications.length > 0) {
+      // Show toast + browser notification for new notifications (only if banner enabled)
+      if (_bannerNotifEnabled && data.unread > _lastNotifCount && data.notifications && data.notifications.length > 0) {
         var newest = data.notifications[0];
         if (!newest.is_read) {
           showToast(newest.title, newest.message, newest.type, newest.link);

@@ -107,6 +107,15 @@ final class AdminModule
                 'superuser_only' => false,
             ],
             [
+                'slug' => 'notifications_banner',
+                'name' => 'Bannières de Notification',
+                'description' => 'Affichage des bandeaux toast et notifications navigateur en temps réel dans l\'admin',
+                'icon' => 'fa-comment-dots',
+                'category' => 'notifications',
+                'default_active' => true,
+                'superuser_only' => false,
+            ],
+            [
                 'slug' => 'api_management',
                 'name' => 'Gestion API',
                 'description' => 'Configuration et test des clés API',

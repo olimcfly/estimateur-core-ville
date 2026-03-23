@@ -179,6 +179,10 @@ $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 // Admin: Google Ads guide & best practices
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
 
+// Admin: Installateur (copie fichiers admin vers un autre site)
+$router->get('/admin/installer', [AdminDashboardController::class, 'installer']);
+$router->post('/admin/installer', [AdminDashboardController::class, 'installer']);
+
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);

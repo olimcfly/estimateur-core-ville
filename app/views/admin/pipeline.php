@@ -72,9 +72,31 @@
     font-size: 1rem;
   }
 
+  .pipeline-summary-item[data-filter] {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .pipeline-summary-item[data-filter]:hover {
+    border-color: var(--admin-primary);
+    box-shadow: 0 2px 8px rgba(139, 21, 56, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .pipeline-summary-item[data-filter].active {
+    border-color: var(--admin-primary);
+    background: rgba(139, 21, 56, 0.06);
+    box-shadow: 0 0 0 2px rgba(139, 21, 56, 0.15);
+  }
+
   .pipeline-summary-item.hot .count { color: #ef4444; }
   .pipeline-summary-item.warm .count { color: #f59e0b; }
   .pipeline-summary-item.cold .count { color: #64748b; }
+
+  .kanban-card.filtered-out {
+    display: none;
+  }
 
   /* Kanban board */
   .kanban-board {
@@ -384,19 +406,19 @@
 
 <!-- Score summary -->
 <div class="pipeline-summary">
-  <div class="pipeline-summary-item">
+  <div class="pipeline-summary-item" data-filter="all">
     <i class="fas fa-users" style="color: var(--admin-primary);"></i>
     <span class="count"><?= $totalLeads ?></span> leads qualifi&eacute;s
   </div>
-  <div class="pipeline-summary-item hot">
+  <div class="pipeline-summary-item hot" data-filter="score" data-score="chaud">
     <i class="fas fa-fire" style="color: #ef4444;"></i>
     <span class="count"><?= (int)($scoreData['chaud'] ?? 0) ?></span> Chauds
   </div>
-  <div class="pipeline-summary-item warm">
+  <div class="pipeline-summary-item warm" data-filter="score" data-score="tiede">
     <i class="fas fa-temperature-half" style="color: #f59e0b;"></i>
     <span class="count"><?= (int)($scoreData['tiede'] ?? 0) ?></span> Ti&egrave;des
   </div>
-  <div class="pipeline-summary-item cold">
+  <div class="pipeline-summary-item cold" data-filter="score" data-score="froid">
     <i class="fas fa-snowflake" style="color: #64748b;"></i>
     <span class="count"><?= (int)($scoreData['froid'] ?? 0) ?></span> Froids
   </div>
@@ -436,7 +458,7 @@
             $isTendance = ($lead['lead_type'] ?? 'qualifie') === 'tendance';
             $scoreKey = $lead['score'] ?? 'froid';
           ?>
-            <div class="kanban-card" draggable="true" data-lead-id="<?= (int)$lead['id'] ?>" data-statut="<?= $statutKey ?>">
+            <div class="kanban-card" draggable="true" data-lead-id="<?= (int)$lead['id'] ?>" data-statut="<?= $statutKey ?>" data-score="<?= htmlspecialchars($scoreKey, ENT_QUOTES, 'UTF-8') ?>">
               <div class="kanban-card-header">
                 <?php if ($isTendance): ?>
                   <div class="kanban-card-name anonymous">Anonyme</div>
@@ -651,7 +673,105 @@
 
   document.querySelectorAll('.kanban-score-select').forEach(function(sel) {
     sel.addEventListener('change', function() {
-      updateLead(this.dataset.leadId, 'score', this.value);
+      var leadId = this.dataset.leadId;
+      var newScore = this.value;
+      var card = this.closest('.kanban-card');
+      card.dataset.score = newScore;
+
+      // Update card score badge
+      var badge = card.querySelector('.kanban-card-score');
+      if (badge) {
+        badge.className = 'kanban-card-score ' + newScore;
+        var scoreLabels = {chaud: 'Chaud', tiede: 'Ti\u00e8de', froid: 'Froid'};
+        var scoreIcons = {chaud: 'fa-fire', tiede: 'fa-temperature-half', froid: 'fa-snowflake'};
+        badge.innerHTML = '<i class="fas ' + (scoreIcons[newScore] || 'fa-snowflake') + '"></i> ' + (scoreLabels[newScore] || 'Froid');
+      }
+
+      updateLead(leadId, 'score', newScore);
+
+      // Re-apply active filter
+      applyScoreFilter();
+    });
+  });
+
+  // --- Clickable stats cards filter ---
+  var activeFilter = null;
+
+  function applyScoreFilter() {
+    var cards = document.querySelectorAll('.kanban-card');
+    cards.forEach(function(card) {
+      if (!activeFilter) {
+        card.classList.remove('filtered-out');
+      } else {
+        if (card.dataset.score === activeFilter) {
+          card.classList.remove('filtered-out');
+        } else {
+          card.classList.add('filtered-out');
+        }
+      }
+    });
+
+    // Update column counts to reflect visible cards
+    document.querySelectorAll('.kanban-column-body').forEach(function(colBody) {
+      var column = colBody.closest('.kanban-column');
+      var countEl = column.querySelector('.kanban-column-count');
+      var visibleCards = colBody.querySelectorAll('.kanban-card:not(.filtered-out)');
+      var totalCards = colBody.querySelectorAll('.kanban-card');
+      if (activeFilter) {
+        countEl.textContent = visibleCards.length + '/' + totalCards.length;
+      } else {
+        countEl.textContent = totalCards.length;
+      }
+
+      // Show/hide empty message
+      var emptyMsg = colBody.querySelector('.kanban-empty');
+      if (visibleCards.length === 0 && totalCards.length > 0 && activeFilter) {
+        if (!emptyMsg) {
+          var div = document.createElement('div');
+          div.className = 'kanban-empty';
+          div.textContent = 'Aucun lead ' + activeFilter;
+          colBody.appendChild(div);
+        } else {
+          emptyMsg.textContent = 'Aucun lead ' + activeFilter;
+          emptyMsg.style.display = '';
+        }
+      } else if (visibleCards.length === 0 && totalCards.length === 0) {
+        if (!emptyMsg) {
+          var div = document.createElement('div');
+          div.className = 'kanban-empty';
+          div.textContent = 'Aucun lead';
+          colBody.appendChild(div);
+        }
+      } else if (visibleCards.length > 0 && emptyMsg) {
+        emptyMsg.remove();
+      }
+    });
+  }
+
+  document.querySelectorAll('.pipeline-summary-item[data-filter]').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var filterType = this.dataset.filter;
+      var allItems = document.querySelectorAll('.pipeline-summary-item[data-filter]');
+
+      if (filterType === 'all') {
+        // Reset filter
+        activeFilter = null;
+        allItems.forEach(function(el) { el.classList.remove('active'); });
+      } else {
+        var scoreValue = this.dataset.score;
+        if (activeFilter === scoreValue) {
+          // Toggle off
+          activeFilter = null;
+          allItems.forEach(function(el) { el.classList.remove('active'); });
+        } else {
+          // Activate this filter
+          activeFilter = scoreValue;
+          allItems.forEach(function(el) { el.classList.remove('active'); });
+          this.classList.add('active');
+        }
+      }
+
+      applyScoreFilter();
     });
   });
 })();

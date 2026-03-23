@@ -197,6 +197,13 @@ final class AdminAchatController
                 $pdo->exec($sql);
             }
 
+            // Try to add foreign key constraint (may fail if leads table has different collation)
+            try {
+                $pdo->exec('ALTER TABLE achats ADD CONSTRAINT fk_achats_lead FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE SET NULL');
+            } catch (\Throwable $fkError) {
+                // FK constraint is optional - the relationship works via application code
+            }
+
             $_SESSION['achat_flash'] = ['type' => 'success', 'message' => 'Table "achats" creee avec succes ! La page est maintenant fonctionnelle.'];
         } catch (\Throwable $e) {
             $_SESSION['achat_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];

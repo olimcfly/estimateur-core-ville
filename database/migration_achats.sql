@@ -37,8 +37,5 @@ CREATE TABLE IF NOT EXISTS achats (
     INDEX idx_score (score),
     INDEX idx_ville (ville),
     INDEX idx_created_at (created_at),
-    INDEX idx_partenaire_id (partenaire_id),
-    CONSTRAINT fk_achats_lead
-        FOREIGN KEY (lead_id) REFERENCES leads(id)
-        ON DELETE SET NULL
+    INDEX idx_partenaire_id (partenaire_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

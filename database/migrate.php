@@ -421,6 +421,23 @@ $migrations = [
             UNIQUE KEY uq_actualite_ai_config (website_id, config_key)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     "],
+
+    ['email_library', "
+        CREATE TABLE IF NOT EXISTS email_library (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            category VARCHAR(100) NOT NULL DEFAULT 'autre',
+            subject VARCHAR(255) NOT NULL,
+            body_html LONGTEXT NOT NULL,
+            tags TEXT DEFAULT NULL,
+            is_default TINYINT(1) NOT NULL DEFAULT 0,
+            usage_count INT UNSIGNED NOT NULL DEFAULT 0,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_email_library_category (category),
+            INDEX idx_email_library_usage (usage_count)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    "],
 ];
 
 // Run migrations
@@ -516,7 +533,7 @@ echo "  Tables ignorées : {$skipped}\n";
 // Final verification
 $finalTables = $pdo->query("SHOW TABLES")->fetchAll(\PDO::FETCH_COLUMN);
 $requiredTables = ['articles', 'article_revisions', 'leads', 'partenaires', 'admin_users', 'newsletter_subscribers', 'design_templates', 'email_templates', 'email_logs', 'email_sequences', 'email_sequence_steps', 'lead_personas'];
-$requiredTables = ['articles', 'article_revisions', 'leads', 'partenaires', 'achats', 'admin_users', 'newsletter_subscribers', 'design_templates', 'actualites', 'actualites_cron_log', 'rss_sources', 'rss_articles', 'rss_blog_generation_log', 'actualite_ai_config'];
+$requiredTables = ['articles', 'article_revisions', 'leads', 'partenaires', 'achats', 'admin_users', 'newsletter_subscribers', 'design_templates', 'actualites', 'actualites_cron_log', 'rss_sources', 'rss_articles', 'rss_blog_generation_log', 'actualite_ai_config', 'email_library'];
 $missing = array_diff($requiredTables, $finalTables);
 
 if (empty($missing)) {

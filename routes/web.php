@@ -16,6 +16,7 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminApiCostsController;
 use App\Controllers\AdminSmtpApiController;
 use App\Controllers\AdminModuleController;
 use App\Controllers\AdminMailboxController;
@@ -231,6 +232,10 @@ $router->get('/admin/smtp-api', [AdminSmtpApiController::class, 'index']);
 $router->post('/admin/smtp-api/create-table', [AdminSmtpApiController::class, 'createTable']);
 $router->post('/admin/smtp-api/seed-data', [AdminSmtpApiController::class, 'seedSampleData']);
 $router->get('/admin/smtp-api/usage-stats', [AdminSmtpApiController::class, 'apiUsageStats']);
+
+// Admin API costs dashboard
+$router->get('/admin/api-costs', [AdminApiCostsController::class, 'index']);
+$router->get('/admin/api-costs/stats', [AdminApiCostsController::class, 'apiStats']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);

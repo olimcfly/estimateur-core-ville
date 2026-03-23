@@ -161,6 +161,15 @@ final class AdminModule
                 'superuser_only' => false,
             ],
             [
+                'slug' => 'gads_campaigns',
+                'name' => 'Campagnes Google Ads',
+                'description' => 'Créer, gérer et exporter des campagnes Google Ads avec génération IA',
+                'icon' => 'fa-bullhorn',
+                'category' => 'marketing',
+                'default_active' => true,
+                'superuser_only' => false,
+            ],
+            [
                 'slug' => 'user_management',
                 'name' => 'Gestion Utilisateurs',
                 'description' => 'Gestion des comptes administrateurs et des rôles',

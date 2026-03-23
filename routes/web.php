@@ -25,6 +25,7 @@ use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
+use App\Controllers\AdminGoogleAdsCampaignController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
@@ -180,6 +181,16 @@ $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 // Admin: Google Ads guide & campaign generator
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
 $router->get('/admin/google-ads/campaigns', [LandingPageController::class, 'campaigns']);
+
+// Admin: Google Ads Campaign Manager
+$router->get('/admin/gads-campaigns', [AdminGoogleAdsCampaignController::class, 'index']);
+$router->get('/admin/gads-campaigns/wizard', [AdminGoogleAdsCampaignController::class, 'wizard']);
+$router->get('/admin/gads-campaigns/preview', [AdminGoogleAdsCampaignController::class, 'preview']);
+$router->get('/admin/gads-campaigns/export', [AdminGoogleAdsCampaignController::class, 'apiExport']);
+$router->post('/admin/gads-campaigns/api/generate', [AdminGoogleAdsCampaignController::class, 'apiGenerate']);
+$router->post('/admin/gads-campaigns/api/save', [AdminGoogleAdsCampaignController::class, 'apiSave']);
+$router->post('/admin/gads-campaigns/api/delete', [AdminGoogleAdsCampaignController::class, 'apiDelete']);
+$router->post('/admin/gads-campaigns/api/status', [AdminGoogleAdsCampaignController::class, 'apiStatus']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);

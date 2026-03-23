@@ -1,0 +1,716 @@
+/* ═══════════════════════════════════════════
+   Google Ads Campaign Manager — gads- prefix
+   ═══════════════════════════════════════════ */
+
+/* ── Stats Grid ─────────────────────────── */
+.gads-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.gads-stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e8dfd7;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s ease;
+}
+
+.gads-stat-card:hover {
+    border-color: var(--admin-primary, #8B1538);
+    box-shadow: 0 2px 8px rgba(139, 21, 56, 0.08);
+}
+
+.gads-stat-card.active {
+    border-color: var(--admin-primary, #8B1538);
+    background: rgba(139, 21, 56, 0.03);
+}
+
+.gads-stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.gads-stat-label {
+    font-size: 0.78rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+/* ── Badge ──────────────────────────────── */
+.gads-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ── Campaign List ──────────────────────── */
+.gads-campaign-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.gads-campaign-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8dfd7;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+}
+
+.gads-campaign-card:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.gads-campaign-header {
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.gads-campaign-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+}
+
+.gads-campaign-name a {
+    color: #1a1410;
+    text-decoration: none;
+}
+
+.gads-campaign-name a:hover {
+    color: var(--admin-primary, #8B1538);
+}
+
+.gads-campaign-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    color: #888;
+}
+
+.gads-campaign-meta i {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.gads-campaign-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.gads-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1px solid #e8dfd7;
+    background: #fff;
+    color: #6b6459;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.12s;
+}
+
+.gads-btn-icon:hover {
+    background: #f4f1ed;
+    color: var(--admin-primary, #8B1538);
+    border-color: #ccc;
+}
+
+.gads-btn-danger:hover {
+    background: #fef2f2;
+    color: #e24b4a;
+    border-color: #fca5a5;
+}
+
+.gads-campaign-footer {
+    padding: 0.6rem 1.25rem;
+    background: #faf9f7;
+    border-top: 1px solid #f0ece6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gads-campaign-date {
+    font-size: 0.78rem;
+    color: #999;
+}
+
+.gads-btn-sm {
+    padding: 0.3rem 0.75rem;
+    border-radius: 5px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: opacity 0.12s;
+}
+
+.gads-btn-sm:hover {
+    opacity: 0.85;
+}
+
+.gads-btn-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+/* ── Empty State ────────────────────────── */
+.gads-empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8dfd7;
+}
+
+.gads-empty-state i {
+    font-size: 2.5rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.gads-empty-state h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem;
+}
+
+.gads-empty-state p {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Wizard Steps ───────────────────────── */
+.gads-wizard-steps {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e8dfd7;
+    background: #fff;
+}
+
+.gads-wizard-step {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    background: #fff;
+    border: none;
+    border-right: 1px solid #e8dfd7;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.15s;
+}
+
+.gads-wizard-step:last-child {
+    border-right: none;
+}
+
+.gads-wizard-step:hover {
+    background: #faf9f7;
+    color: #666;
+}
+
+.gads-wizard-step.active {
+    background: var(--admin-primary, #8B1538);
+    color: #fff;
+}
+
+.gads-wizard-step.completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.gads-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.08);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.gads-wizard-step.active .gads-step-num {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.gads-wizard-step.completed .gads-step-num {
+    background: #155724;
+    color: #fff;
+}
+
+/* ── Form Elements ──────────────────────── */
+.gads-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.gads-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.gads-required {
+    color: var(--admin-accent, #D4AF37);
+}
+
+.gads-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.3rem;
+    border: 1px solid #d5cec5;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #fff;
+    color: #1a1410;
+    transition: border-color 0.15s;
+}
+
+.gads-input:focus {
+    outline: none;
+    border-color: var(--admin-primary, #8B1538);
+    box-shadow: 0 0 0 2px rgba(139, 21, 56, 0.1);
+}
+
+textarea.gads-input {
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* ── Wizard Nav ─────────────────────────── */
+.gads-wizard-nav {
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e8dfd7;
+}
+
+/* ── Ad Group Cards ─────────────────────── */
+.gads-adgroup-card {
+    background: #faf9f7;
+    border: 1px solid #e8dfd7;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.gads-adgroup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.gads-adgroup-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1a1410;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gads-remove-btn {
+    background: none;
+    border: none;
+    color: #e24b4a;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.3rem;
+    opacity: 0.7;
+    transition: opacity 0.12s;
+}
+
+.gads-remove-btn:hover {
+    opacity: 1;
+}
+
+/* ── Keywords ───────────────────────────── */
+.gads-kw-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: #e8dfd7;
+    font-size: 0.8rem;
+    color: #1a1410;
+}
+
+.gads-kw-negative {
+    background: #fef2f2;
+    color: #e24b4a;
+    text-decoration: line-through;
+}
+
+.gads-kw-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.gads-kw-row input[type="text"] {
+    flex: 1;
+}
+
+.gads-kw-row select {
+    width: 120px;
+}
+
+/* ── Headline / Description Inputs ──────── */
+.gads-headline-row,
+.gads-desc-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.gads-headline-row input,
+.gads-desc-row textarea {
+    flex: 1;
+}
+
+.gads-char-count {
+    font-size: 0.72rem;
+    color: #999;
+    white-space: nowrap;
+    min-width: 35px;
+    text-align: right;
+}
+
+.gads-char-count.gads-over {
+    color: #e24b4a;
+    font-weight: 700;
+}
+
+.gads-char-count.gads-ok {
+    color: #0d7a3e;
+}
+
+/* ── SERP Preview ───────────────────────── */
+.gads-serp-preview {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e8dfd7;
+}
+
+.gads-serp-preview:last-child {
+    border-bottom: none;
+}
+
+.gads-serp-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.gads-serp-card {
+    background: #fff;
+    border: 1px solid #e8dfd7;
+    border-radius: 8px;
+    padding: 1rem;
+    max-width: 600px;
+    font-family: Arial, sans-serif;
+}
+
+.gads-serp-ad-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #1a73e8;
+    margin-bottom: 0.2rem;
+}
+
+.gads-serp-url {
+    font-size: 0.82rem;
+    color: #202124;
+    margin-bottom: 0.15rem;
+}
+
+.gads-serp-title {
+    font-size: 1.15rem;
+    color: #1a0dab;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+}
+
+.gads-serp-title:hover {
+    text-decoration: underline;
+}
+
+.gads-serp-desc {
+    font-size: 0.85rem;
+    color: #4d5156;
+    line-height: 1.4;
+}
+
+.gads-serp-sitelinks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e8dfd7;
+}
+
+.gads-serp-sitelink-title {
+    font-size: 0.82rem;
+    color: #1a0dab;
+    font-weight: 400;
+}
+
+.gads-serp-sitelink-title:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.gads-serp-sitelink-desc {
+    font-size: 0.75rem;
+    color: #4d5156;
+    line-height: 1.3;
+}
+
+.gads-serp-callouts {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #4d5156;
+}
+
+.gads-serp-all-assets {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.gads-serp-all-assets h5 {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0 0 0.4rem;
+}
+
+.gads-serp-all-assets ol {
+    padding-left: 1.2rem;
+    margin: 0;
+    font-size: 0.82rem;
+    color: #333;
+}
+
+.gads-serp-all-assets li {
+    margin-bottom: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+/* ── Preview Group ──────────────────────── */
+.gads-preview-group {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e8dfd7;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.gads-preview-group-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e8dfd7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.gads-preview-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+/* ── AI Generate Button ─────────────────── */
+.gads-ai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.12s;
+}
+
+.gads-ai-btn:hover {
+    opacity: 0.9;
+}
+
+.gads-ai-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.gads-ai-btn i {
+    font-size: 0.85rem;
+}
+
+/* ── Spinner ────────────────────────────── */
+.gads-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: gads-spin 0.6s linear infinite;
+}
+
+@keyframes gads-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Summary ────────────────────────────── */
+.gads-summary-section {
+    margin-bottom: 1.5rem;
+}
+
+.gads-summary-section h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gads-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.gads-summary-table th,
+.gads-summary-table td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e8dfd7;
+}
+
+.gads-summary-table th {
+    color: #888;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* ── Toast ──────────────────────────────── */
+.gads-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    animation: gads-toast-in 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gads-toast.success { background: #0d7a3e; }
+.gads-toast.error { background: #e24b4a; }
+
+@keyframes gads-toast-in {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Responsive ─────────────────────────── */
+@media (max-width: 768px) {
+    .gads-wizard-steps {
+        flex-wrap: wrap;
+    }
+
+    .gads-wizard-step {
+        flex: 1 1 45%;
+        font-size: 0.75rem;
+    }
+
+    .gads-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gads-serp-all-assets {
+        grid-template-columns: 1fr;
+    }
+
+    .gads-serp-sitelinks {
+        grid-template-columns: 1fr;
+    }
+
+    .gads-campaign-header {
+        flex-direction: column;
+    }
+
+    .gads-wizard-nav {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}

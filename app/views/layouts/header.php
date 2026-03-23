@@ -272,44 +272,44 @@
     }
 
     .header-container {
-      width: min(1200px, calc(100% - 2.5rem));
+      width: min(1400px, calc(100% - 2rem));
       margin-inline: auto;
-      padding: 1rem 0;
+      padding: 0.8rem 0;
     }
 
     .header-wrapper {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 2rem;
+      gap: 1.2rem;
     }
 
     /* LOGO/BRAND */
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.6rem;
       text-decoration: none;
       margin: 0;
       font-family: 'Playfair Display', serif;
       font-weight: 700;
-      font-size: 1.4rem;
+      font-size: 1.15rem;
       letter-spacing: -0.02em;
       flex-shrink: 0;
-      min-width: 200px;
     }
 
     .brand-icon {
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: linear-gradient(135deg, var(--primary), #C41E3A);
-      border-radius: 10px;
+      border-radius: 8px;
       color: #fff;
-      font-size: 1.2rem;
+      font-size: 1rem;
       box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+      flex-shrink: 0;
     }
 
     .brand span {
@@ -321,8 +321,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.15rem;
       flex: 1;
+      min-width: 0;
     }
 
     .nav-item {
@@ -332,12 +333,12 @@
     .nav-link {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.8rem 0.9rem;
+      gap: 0.3rem;
+      padding: 0.6rem 0.65rem;
       text-decoration: none;
       color: var(--muted);
       font-weight: 500;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       border-radius: 8px;
       transition: all 0.2s ease;
       white-space: nowrap;
@@ -473,15 +474,15 @@
     .btn-cta {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.8rem 1.6rem;
+      gap: 0.4rem;
+      padding: 0.7rem 1.4rem;
       background: linear-gradient(135deg, var(--primary), #C41E3A);
       color: #fff;
       text-decoration: none;
       border: none;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
@@ -545,8 +546,8 @@
       }
 
       .nav-link {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
+        padding: 0.5rem 0.5rem;
+        font-size: 0.82rem;
       }
 
       .search-wrapper {
@@ -554,7 +555,16 @@
       }
 
       .header-wrapper {
-        gap: 1rem;
+        gap: 0.8rem;
+      }
+
+      .brand {
+        font-size: 1rem;
+      }
+
+      .btn-header-cta {
+        padding: 0.6rem 1rem;
+        font-size: 0.82rem;
       }
     }
 
@@ -726,11 +736,11 @@
 
     /* Header CTA button */
     .btn-header-cta {
-      padding: 0.9rem 2rem;
-      font-size: 1rem;
+      padding: 0.7rem 1.4rem;
+      font-size: 0.88rem;
       flex-shrink: 0;
-      min-width: 200px;
       text-align: center;
+      white-space: nowrap;
     }
 
     .nav-cta-mobile {

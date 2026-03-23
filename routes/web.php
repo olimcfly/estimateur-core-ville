@@ -16,10 +16,12 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminSmtpApiController;
 use App\Controllers\AdminModuleController;
 use App\Controllers\AdminMailboxController;
 use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminSettingsController;
 use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
@@ -28,6 +30,7 @@ use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
 use App\Controllers\AdminGoogleAdsCampaignController;
 use App\Controllers\AdminRssController;
+use App\Controllers\AdminSeoHubController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
@@ -107,6 +110,10 @@ $router->get('/exemples-estimation', [PageController::class, 'exemplesEstimation
 $router->get('/guides', [PageController::class, 'guides']);
 $router->post('/contact', [PageController::class, 'contactSubmit']);
 $router->get('/blog', [BlogController::class, 'index']);
+$router->get('/blog/marche-immobilier', [BlogController::class, 'category']);
+$router->get('/blog/vendre-son-bien', [BlogController::class, 'category']);
+$router->get('/blog/conseils-astuces', [BlogController::class, 'category']);
+$router->get('/blog/aspects-juridiques', [BlogController::class, 'category']);
 $router->get('/blog/{slug}', [BlogController::class, 'show']);
 
 // Actualités (news) routes
@@ -209,14 +216,36 @@ $router->post('/admin/rss/toggle-star/{id}', [AdminRssController::class, 'toggle
 $router->post('/admin/rss/generate', [AdminRssController::class, 'generate']);
 $router->post('/admin/rss/seed', [AdminRssController::class, 'seed']);
 
+// Admin SEO Hub (Google Search Console)
+$router->get('/admin/seo-hub', [AdminSeoHubController::class, 'index']);
+$router->get('/admin/seo-hub/connect', [AdminSeoHubController::class, 'connect']);
+$router->get('/admin/seo-hub/callback', [AdminSeoHubController::class, 'callback']);
+$router->get('/admin/seo-hub/select-site', [AdminSeoHubController::class, 'selectSite']);
+$router->post('/admin/seo-hub/confirm-site', [AdminSeoHubController::class, 'confirmSite']);
+$router->post('/admin/seo-hub/refresh', [AdminSeoHubController::class, 'refresh']);
+$router->post('/admin/seo-hub/disconnect', [AdminSeoHubController::class, 'disconnect']);
+$router->get('/admin/seo-hub/api/keywords', [AdminSeoHubController::class, 'apiKeywords']);
+$router->get('/admin/seo-hub/api/keywords-by-page', [AdminSeoHubController::class, 'apiKeywordsByPage']);
+
 // Admin: Installateur (copie fichiers admin vers un autre site)
 $router->get('/admin/installer', [AdminDashboardController::class, 'installer']);
 $router->post('/admin/installer', [AdminDashboardController::class, 'installer']);
+
+// Admin unified SMTP/API/IA management module
+$router->get('/admin/smtp-api', [AdminSmtpApiController::class, 'index']);
+$router->post('/admin/smtp-api/create-table', [AdminSmtpApiController::class, 'createTable']);
+$router->post('/admin/smtp-api/seed-data', [AdminSmtpApiController::class, 'seedSampleData']);
+$router->get('/admin/smtp-api/usage-stats', [AdminSmtpApiController::class, 'apiUsageStats']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
 $router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);
+$router->post('/admin/api/register-claude', [AdminApiController::class, 'registerClaude']);
+
+// Admin settings routes
+$router->get('/admin/settings', [AdminSettingsController::class, 'index']);
+$router->post('/admin/settings/save', [AdminSettingsController::class, 'save']);
 
 // Admin module management routes (superuser only)
 $router->get('/admin/modules', [AdminModuleController::class, 'index']);

@@ -162,6 +162,9 @@ $poorSeo = (int) ($stats['poor_seo'] ?? 0);
                         <th style="text-align: center;">SEO</th>
                         <th style="text-align: center;">Sémantique</th>
                         <th>Mots</th>
+                        <th style="text-align: center;">Visites</th>
+                        <th style="text-align: center;">Index</th>
+                        <th style="text-align: center;">Position</th>
                         <th>Statut</th>
                         <th>Actions</th>
                     </tr>
@@ -197,6 +200,31 @@ $poorSeo = (int) ($stats['poor_seo'] ?? 0);
                         <td style="text-align: center;"><span class="seo-badge <?= $seoBadgeClass ?>"><?= $artSeo ?></span></td>
                         <td style="text-align: center;"><span class="seo-badge <?= $semBadgeClass ?>"><?= $artSem ?></span></td>
                         <td style="font-size: 0.85rem;"><?= number_format((int) ($article['word_count'] ?? 0)) ?></td>
+                        <td style="text-align: center; font-size: 0.85rem;">
+                            <?php $views = (int) ($article['page_views'] ?? 0); ?>
+                            <?= $views > 0 ? number_format($views) : '<span style="color:#ccc;">0</span>' ?>
+                        </td>
+                        <td style="text-align: center;">
+                            <?php $indexed = (int) ($article['is_indexed'] ?? 0); ?>
+                            <?php if (($article['status'] ?? '') === 'published'): ?>
+                                <?php if ($indexed): ?>
+                                    <span style="color: #0d7a3e; font-weight: 700;" title="Indexée">&#10003;</span>
+                                <?php else: ?>
+                                    <span style="color: #c0392b;" title="Non indexée">&#10007;</span>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <span style="color:#ccc;">--</span>
+                            <?php endif; ?>
+                        </td>
+                        <td style="text-align: center; font-size: 0.85rem;">
+                            <?php $pos = $article['google_position'] ?? null; ?>
+                            <?php if ($pos !== null && (int) $pos > 0): ?>
+                                <?php $posColor = (int) $pos <= 3 ? '#0d7a3e' : ((int) $pos <= 10 ? '#D4AF37' : '#c0392b'); ?>
+                                <span style="color: <?= $posColor ?>; font-weight: 700;">#<?= (int) $pos ?></span>
+                            <?php else: ?>
+                                <span style="color:#ccc;">--</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <?php if (($article['status'] ?? '') === 'published'): ?>
                                 <span class="seo-badge seo-excellent">Publié</span>

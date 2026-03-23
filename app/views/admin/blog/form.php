@@ -158,9 +158,8 @@ $semanticChecks = $hasAnalysis ? ($analysis['semantic_checks'] ?? []) : [];
                     <small id="metaDescCount" style="color: #888;"><?= mb_strlen((string) ($article['meta_description'] ?? '')) ?>/160</small>
                 </label>
 
-                <label>Contenu HTML
-                    <textarea name="content" id="articleContent" rows="20" required style="font-family: 'Courier New', monospace; font-size: 0.85rem;"><?= e((string) ($article['content'] ?? '')) ?></textarea>
-                </label>
+                <label>Contenu HTML</label>
+                <textarea name="content" id="articleContent" rows="20" required style="font-family: 'Courier New', monospace; font-size: 0.85rem;"><?= e((string) ($article['content'] ?? '')) ?></textarea>
 
                 <!-- Open Graph -->
                 <details style="border: 1px solid #e0e0e0; border-radius: 6px; padding: 1rem;">
@@ -345,6 +344,48 @@ $semanticChecks = $hasAnalysis ? ($analysis['semantic_checks'] ?? []) : [];
 
             <?php endif; /* hasAnalysis */ ?>
 
+            <!-- Indexation & Position Google -->
+            <?php if (!empty($article['id']) && ($article['status'] ?? '') === 'published'): ?>
+            <section class="card" style="margin-bottom: 1rem;" id="indexingCard">
+                <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: #8B1538;">Google & Trafic</h3>
+
+                <!-- Page Views -->
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding: 0.75rem; background: #f8f8f8; border-radius: 6px;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #8B1538;" id="pageViewsCount"><?= (int) ($article['page_views'] ?? 0) ?></div>
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600;">Visites</div>
+                        <div style="font-size: 0.75rem; color: #888;">Depuis la publication</div>
+                    </div>
+                </div>
+
+                <!-- Indexation Status -->
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.85rem; font-weight: 600;">Indexation Google</span>
+                        <span id="indexStatus" style="font-size: 0.8rem; color: #888;">--</span>
+                    </div>
+                    <div id="indexStatusBar" style="height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
+                        <div id="indexStatusFill" style="height: 100%; width: 0; border-radius: 3px; transition: width 0.5s;"></div>
+                    </div>
+                </div>
+
+                <!-- Position in SERPs -->
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.85rem; font-weight: 600;">Position Google</span>
+                        <span id="serpPosition" style="font-size: 0.8rem; color: #888;">--</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: #999;" id="serpKeyword">
+                        Mot-clé : <?= e((string) ($article['focus_keyword'] ?? '')) ?>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-small btn-ghost" onclick="checkIndexing()" style="width: 100%; margin-top: 0.5rem;" id="checkIndexBtn">
+                    Vérifier indexation & position
+                </button>
+            </section>
+            <?php endif; ?>
+
             <!-- Quick Links -->
             <section class="card">
                 <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: #8B1538;">Ressources SEO</h3>
@@ -455,4 +496,89 @@ document.getElementById('articleTitle')?.addEventListener('input', function() {
     document.getElementById('articleSlug').value = slug;
     updateSerpPreview();
 });
+
+// Check Google indexation & position
+function checkIndexing() {
+    const btn = document.getElementById('checkIndexBtn');
+    const articleId = <?= (int) ($article['id'] ?? 0) ?>;
+    if (!articleId) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Vérification en cours...';
+
+    fetch('/admin/blog/api/check-indexing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ article_id: articleId })
+    })
+    .then(r => r.json())
+    .then(result => {
+        btn.disabled = false;
+        btn.textContent = 'Vérifier indexation & position';
+
+        if (result.success) {
+            const data = result.data;
+
+            // Indexation
+            const statusEl = document.getElementById('indexStatus');
+            const fillEl = document.getElementById('indexStatusFill');
+            if (data.is_indexed) {
+                statusEl.innerHTML = '<span style="color: #0d7a3e; font-weight: 600;">Indexée</span>';
+                fillEl.style.width = '100%';
+                fillEl.style.background = '#0d7a3e';
+            } else {
+                statusEl.innerHTML = '<span style="color: #c0392b; font-weight: 600;">Non indexée</span>';
+                fillEl.style.width = '100%';
+                fillEl.style.background = '#c0392b';
+            }
+
+            // Position
+            const posEl = document.getElementById('serpPosition');
+            if (data.position !== null && data.position > 0) {
+                const posColor = data.position <= 3 ? '#0d7a3e' : (data.position <= 10 ? '#D4AF37' : '#c0392b');
+                posEl.innerHTML = '<span style="color: ' + posColor + '; font-weight: 700; font-size: 1.1rem;">#' + data.position + '</span>';
+            } else if (data.is_indexed) {
+                posEl.innerHTML = '<span style="color: #888;">Non classée pour ce mot-clé</span>';
+            } else {
+                posEl.innerHTML = '<span style="color: #888;">Page non indexée</span>';
+            }
+
+            if (data.last_checked) {
+                btn.textContent = 'Vérifié le ' + new Date(data.last_checked).toLocaleDateString('fr-FR');
+            }
+        } else {
+            alert('Erreur: ' + (result.error || 'Erreur inconnue'));
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.textContent = 'Vérifier indexation & position';
+        alert('Erreur réseau: ' + err.message);
+    });
+}
+</script>
+
+<!-- TinyMCE Editor -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+if (typeof tinymce !== 'undefined') {
+    tinymce.init({
+        selector: '#articleContent',
+        height: 500,
+        language: 'fr_FR',
+        menubar: 'file edit view insert format tools table',
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
+        toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code fullscreen | removeformat help',
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 15px; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 1rem; }',
+        branding: false,
+        promotion: false,
+        valid_elements: '*[*]',
+        entity_encoding: 'raw',
+        setup: function(editor) {
+            editor.on('change keyup', function() {
+                editor.save();
+            });
+        }
+    });
+}
 </script>

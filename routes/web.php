@@ -130,6 +130,7 @@ $router->post('/admin/blog/delete/{id}', [AdminBlogController::class, 'delete'])
 $router->post('/admin/blog/generate', [AdminBlogController::class, 'generate']);
 $router->post('/admin/blog/restore/{id}/{revisionId}', [AdminBlogController::class, 'restoreRevision']);
 $router->post('/admin/blog/api/analyze', [AdminBlogController::class, 'analyzeApi']);
+$router->post('/admin/blog/api/check-indexing', [AdminBlogController::class, 'checkIndexing']);
 $router->get('/admin/blog/silos', [AdminBlogController::class, 'silos']);
 $router->post('/admin/blog/silos/create', [AdminBlogController::class, 'createSilo']);
 $router->post('/admin/blog/silos/delete/{id}', [AdminBlogController::class, 'deleteSilo']);

@@ -39,6 +39,39 @@ final class Article
         return $stmt->fetchAll();
     }
 
+    /**
+     * Find published articles matching a category via silo name or keyword patterns.
+     *
+     * @param string   $siloPattern     SQL LIKE pattern to match silo name (e.g. '%march%')
+     * @param string[] $keywordPatterns  Keywords to match in title or focus_keyword
+     */
+    public function findPublishedByCategory(string $siloPattern, array $keywordPatterns): array
+    {
+        $params = [
+            ':website_id' => $this->websiteId(),
+            ':status' => 'published',
+            ':silo_pattern' => $siloPattern,
+        ];
+
+        $keywordClauses = [];
+        foreach ($keywordPatterns as $i => $kw) {
+            $paramKey = ':kw' . $i;
+            $keywordClauses[] = "a.title LIKE {$paramKey} OR a.focus_keyword LIKE {$paramKey}";
+            $params[$paramKey] = '%' . $kw . '%';
+        }
+
+        $keywordWhere = '';
+        if ($keywordClauses !== []) {
+            $keywordWhere = 'OR (' . implode(' OR ', $keywordClauses) . ')';
+        }
+
+        $sql = 'SELECT ' . str_replace("\n", ' ', self::SEO_COLUMNS) . '
+                FROM articles a
+                LEFT JOIN article_silos s ON a.silo_id = s.id
+                WHERE a.website_id = :website_id
+                  AND a.status = :status
+                  AND (s.name LIKE :silo_pattern ' . $keywordWhere . ')
+                ORDER BY a.published_at DESC, a.created_at DESC';
     public function findPublishedByCategory(string $category): array
     {
         $categoryKeywords = [

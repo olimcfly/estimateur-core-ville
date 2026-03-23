@@ -6,6 +6,12 @@ $categoryUrl = $baseUrl !== '' ? rtrim((string) $baseUrl, '/') . $categoryPath :
 $jsonLd = [
     '@context' => 'https://schema.org',
     '@type' => 'CollectionPage',
+    'name' => (string) $h1,
+    'description' => (string) $meta_description,
+    'url' => $categoryUrl,
+    'isPartOf' => [
+        '@type' => 'WebSite',
+        'name' => 'Estimation Immobilier Bordeaux et Métropole',
     'name' => (string) $category['h1'],
     'description' => (string) $category['meta_description'],
     'url' => $categoryUrl,
@@ -21,17 +27,20 @@ $jsonLd = [
                 '@type' => 'ListItem',
                 'position' => 1,
                 'name' => 'Accueil',
+                'item' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') . '/' : '/',
                 'item' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr',
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
                 'name' => 'Blog',
+                'item' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') . '/blog' : '/blog',
                 'item' => ($baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr') . '/blog',
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 3,
+                'name' => (string) $h1,
                 'name' => (string) $category['h1'],
                 'item' => $categoryUrl,
             ],
@@ -43,6 +52,25 @@ $jsonLd = [
 
 <section class="section">
   <div class="container">
+
+    <nav class="breadcrumb" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> <span class="breadcrumb-sep">&rsaquo;</span>
+      <a href="/blog">Blog</a> <span class="breadcrumb-sep">&rsaquo;</span>
+      <span aria-current="page"><?= e((string) $h1) ?></span>
+    </nav>
+
+    <p class="eyebrow"><?= $eyebrow ?></p>
+    <h1><?= e((string) $h1) ?></h1>
+    <p class="lead"><?= e((string) $intro) ?></p>
+
+    <?php if (!empty($categories)): ?>
+    <nav class="category-nav" aria-label="Catégories du blog">
+      <a href="/blog" class="category-link">Tous les articles</a>
+      <?php foreach ($categories as $catSlug => $catData): ?>
+        <a href="/blog/<?= e($catSlug) ?>" class="category-link<?= $catSlug === $category_slug ? ' active' : '' ?>"><?= e($catData['h1']) ?></a>
+      <?php endforeach; ?>
+    </nav>
+    <?php endif; ?>
     <nav class="breadcrumb" aria-label="Fil d'Ariane">
       <a href="/">Accueil</a> &rsaquo;
       <a href="/blog">Blog</a> &rsaquo;
@@ -57,6 +85,7 @@ $jsonLd = [
       <?php if (empty($articles)): ?>
         <article class="card">
           <h2>Aucun article dans cette catégorie pour le moment</h2>
+          <p class="muted">Revenez prochainement ou consultez <a href="/blog">tous nos articles</a>.</p>
           <p class="muted">Revenez prochainement pour lire nos derniers articles sur ce sujet.</p>
           <a class="btn btn-small" href="/blog">Voir tous les articles</a>
         </article>
@@ -65,6 +94,12 @@ $jsonLd = [
           <article class="card blog-card">
             <h2><?= e((string) $article['title']) ?></h2>
             <?php if (!empty($article['published_at'])): ?>
+              <time class="article-date" datetime="<?= e(date('Y-m-d', strtotime((string) $article['published_at']))) ?>">
+                <i class="far fa-calendar-alt"></i>
+                <?= e(date('d/m/Y', strtotime((string) $article['published_at']))) ?>
+              </time>
+            <?php endif; ?>
+            <p class="muted"><?= e((string) $article['meta_description']) ?></p>
               <time class="blog-date" datetime="<?= e((new DateTimeImmutable((string) $article['published_at']))->format('Y-m-d')) ?>">
                 <?= e((new DateTimeImmutable((string) $article['published_at']))->format('d/m/Y')) ?>
               </time>
@@ -86,3 +121,59 @@ $jsonLd = [
     </section>
   </div>
 </section>
+
+<style>
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+.breadcrumb-sep {
+  color: var(--muted);
+  opacity: 0.5;
+}
+.category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+}
+.category-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+.category-link:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.05);
+}
+.category-link.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.article-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0.25rem 0 0.5rem;
+}
+</style>

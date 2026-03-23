@@ -373,4 +373,10 @@ final class AdminDashboardController
 
         echo json_encode(['success' => $updated]);
     }
+
+    public function installer(): void
+    {
+        AuthController::requireAuth();
+        require dirname(__DIR__, 2) . '/tools/install-admin.php';
+    }
 }

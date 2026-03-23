@@ -1,0 +1,9 @@
+# Bloquer tout accès direct aux scripts du dossier tools/
+# L'installateur est accessible via /admin/installer (routeur PHP)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule .* - [F,L]
+</IfModule>
+
+# Fallback si mod_rewrite est désactivé
+Require all denied

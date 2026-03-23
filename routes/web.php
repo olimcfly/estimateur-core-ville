@@ -290,6 +290,11 @@ $router->get('/admin/mailbox/compose', [AdminMailboxController::class, 'compose'
 $router->post('/admin/mailbox/send', [AdminMailboxController::class, 'send']);
 $router->post('/admin/mailbox/delete', [AdminMailboxController::class, 'delete']);
 $router->get('/admin/mailbox/unread-count', [AdminMailboxController::class, 'unreadCount']);
+$router->post('/admin/mailbox/ai-assist', [AdminMailboxController::class, 'aiAssist']);
+$router->get('/admin/mailbox/email-library', [AdminMailboxController::class, 'emailLibrary']);
+$router->post('/admin/mailbox/email-library/save', [AdminMailboxController::class, 'emailLibrarySave']);
+$router->post('/admin/mailbox/email-library/delete', [AdminMailboxController::class, 'emailLibraryDelete']);
+$router->post('/admin/mailbox/email-library/use', [AdminMailboxController::class, 'emailLibraryUse']);
 
 // Admin internal notifications routes
 $router->get('/admin/notifications', [AdminNotificationController::class, 'index']);

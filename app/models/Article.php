@@ -45,40 +45,33 @@ final class Article
      * @param string   $siloPattern     SQL LIKE pattern to match silo name (e.g. '%march%')
      * @param string[] $keywordPatterns  Keywords to match in title or focus_keyword
      */
-    public function findPublishedByCategory(string $category): array
+    public function findPublishedByCategory(string $siloPattern, array $keywordPatterns): array
     {
-        $categoryKeywords = [
-            'marche-immobilier' => ['marché', 'prix', 'immobilier bordeaux', 'tendance', 'évolution', 'transaction', 'quartier'],
-            'vendre-son-bien' => ['vendre', 'vente', 'estimation', 'mandat', 'mise en vente', 'prix de vente'],
-            'conseils-astuces' => ['conseil', 'astuce', 'erreur', 'guide', 'comment', 'optimiser', 'préparer'],
-            'aspects-juridiques' => ['juridique', 'loi', 'dpe', 'diagnostic', 'notaire', 'fiscalité', 'taxe', 'réglementation'],
-        ];
-
-        $keywords = $categoryKeywords[$category] ?? [];
-        if (empty($keywords)) {
-            return [];
-        }
-
-        $conditions = [];
         $params = [
             ':website_id' => $this->websiteId(),
             ':status' => 'published',
+            ':silo_pattern' => $siloPattern,
         ];
 
-        foreach ($keywords as $i => $keyword) {
-            $paramName = ':kw' . $i;
-            $conditions[] = "(LOWER(title) LIKE $paramName OR LOWER(focus_keyword) LIKE $paramName OR LOWER(secondary_keywords) LIKE $paramName)";
-            $params[$paramName] = '%' . mb_strtolower($keyword) . '%';
+        $keywordClauses = [];
+        foreach ($keywordPatterns as $i => $kw) {
+            $paramKey = ':kw' . $i;
+            $keywordClauses[] = "a.title LIKE {$paramKey} OR a.focus_keyword LIKE {$paramKey}";
+            $params[$paramKey] = '%' . $kw . '%';
         }
 
-        $whereKeywords = '(' . implode(' OR ', $conditions) . ')';
+        $keywordWhere = '';
+        if ($keywordClauses !== []) {
+            $keywordWhere = 'OR (' . implode(' OR ', $keywordClauses) . ')';
+        }
 
-        $sql = 'SELECT ' . self::SEO_COLUMNS . '
-                FROM articles
-                WHERE website_id = :website_id
-                  AND status = :status
-                  AND ' . $whereKeywords . '
-                ORDER BY published_at DESC, created_at DESC';
+        $sql = 'SELECT ' . str_replace("\n", ' ', self::SEO_COLUMNS) . '
+                FROM articles a
+                LEFT JOIN article_silos s ON a.silo_id = s.id
+                WHERE a.website_id = :website_id
+                  AND a.status = :status
+                  AND (s.name LIKE :silo_pattern ' . $keywordWhere . ')
+                ORDER BY a.published_at DESC, a.created_at DESC';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute($params);
@@ -276,7 +269,7 @@ final class Article
         $revision = $stmt->fetch();
 
         if (!is_array($revision)) {
-            throw new \InvalidArgumentException('Révision introuvable.');
+            throw new \InvalidArgumentException('Revision introuvable.');
         }
 
         $this->createRevisionSnapshot($articleId, $connection);

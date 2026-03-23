@@ -11,13 +11,7 @@ $jsonLd = [
     'url' => $categoryUrl,
     'isPartOf' => [
         '@type' => 'WebSite',
-        'name' => 'Estimation Immobilier Bordeaux et Métropole',
-    'name' => (string) $category['h1'],
-    'description' => (string) $category['meta_description'],
-    'url' => $categoryUrl,
-    'isPartOf' => [
-        '@type' => 'WebSite',
-        'name' => 'Estimation Immobilier Bordeaux',
+        'name' => 'Estimation Immobilier Bordeaux et Metropole',
         'url' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr',
     ],
     'breadcrumb' => [
@@ -28,20 +22,17 @@ $jsonLd = [
                 'position' => 1,
                 'name' => 'Accueil',
                 'item' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') . '/' : '/',
-                'item' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr',
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
                 'name' => 'Blog',
                 'item' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') . '/blog' : '/blog',
-                'item' => ($baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr') . '/blog',
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 3,
                 'name' => (string) $h1,
-                'name' => (string) $category['h1'],
                 'item' => $categoryUrl,
             ],
         ],
@@ -64,30 +55,19 @@ $jsonLd = [
     <p class="lead"><?= e((string) $intro) ?></p>
 
     <?php if (!empty($categories)): ?>
-    <nav class="category-nav" aria-label="Catégories du blog">
+    <nav class="category-nav" aria-label="Categories du blog">
       <a href="/blog" class="category-link">Tous les articles</a>
       <?php foreach ($categories as $catSlug => $catData): ?>
         <a href="/blog/<?= e($catSlug) ?>" class="category-link<?= $catSlug === $category_slug ? ' active' : '' ?>"><?= e($catData['h1']) ?></a>
       <?php endforeach; ?>
     </nav>
     <?php endif; ?>
-    <nav class="breadcrumb" aria-label="Fil d'Ariane">
-      <a href="/">Accueil</a> &rsaquo;
-      <a href="/blog">Blog</a> &rsaquo;
-      <span aria-current="page"><?= e((string) $category['h1']) ?></span>
-    </nav>
-
-    <p class="eyebrow">Blog immobilier Bordeaux</p>
-    <h1><?= e((string) $category['h1']) ?></h1>
-    <p class="lead"><?= e((string) $category['intro']) ?></p>
 
     <div class="blog-grid">
       <?php if (empty($articles)): ?>
         <article class="card">
-          <h2>Aucun article dans cette catégorie pour le moment</h2>
+          <h2>Aucun article dans cette categorie pour le moment</h2>
           <p class="muted">Revenez prochainement ou consultez <a href="/blog">tous nos articles</a>.</p>
-          <p class="muted">Revenez prochainement pour lire nos derniers articles sur ce sujet.</p>
-          <a class="btn btn-small" href="/blog">Voir tous les articles</a>
         </article>
       <?php else: ?>
         <?php foreach ($articles as $article): ?>
@@ -97,11 +77,6 @@ $jsonLd = [
               <time class="article-date" datetime="<?= e(date('Y-m-d', strtotime((string) $article['published_at']))) ?>">
                 <i class="far fa-calendar-alt"></i>
                 <?= e(date('d/m/Y', strtotime((string) $article['published_at']))) ?>
-              </time>
-            <?php endif; ?>
-            <p class="muted"><?= e((string) $article['meta_description']) ?></p>
-              <time class="blog-date" datetime="<?= e((new DateTimeImmutable((string) $article['published_at']))->format('Y-m-d')) ?>">
-                <?= e((new DateTimeImmutable((string) $article['published_at']))->format('d/m/Y')) ?>
               </time>
             <?php endif; ?>
             <p class="muted"><?= e((string) $article['meta_description']) ?></p>
@@ -115,8 +90,8 @@ $jsonLd = [
     </div>
 
     <section class="card cta-card">
-      <h2>Vous voulez connaître la valeur réelle de votre bien ?</h2>
-      <p class="muted">Obtenez une estimation précise en moins de 2 minutes.</p>
+      <h2>Vous voulez connaitre la valeur reelle de votre bien ?</h2>
+      <p class="muted">Obtenez une estimation precise en moins de 2 minutes.</p>
       <a class="btn" href="/estimation">Lancer mon estimation</a>
     </section>
   </div>

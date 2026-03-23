@@ -19,7 +19,11 @@ final class BlogController
             $articles = [];
         }
 
-        View::render('blog/index', ['articles' => $articles]);
+        View::render('blog/index', [
+            'articles' => $articles,
+            'page_title' => 'Blog Immobilier Bordeaux | Conseils, Prix et Tendances du Marché',
+            'meta_description' => 'Conseils immobiliers, analyses du marché bordelais, guides pratiques pour vendre ou acheter à Bordeaux et Métropole. Articles d\'experts locaux.',
+        ]);
     }
 
     public function show(string $slug): void

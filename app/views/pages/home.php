@@ -1,7 +1,5 @@
-<?php $page_title = 'Estimation Immobilier Bordeaux et sa Métropole | Avis de Valeur Gratuit'; ?>
-<?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux et sa métropole en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
-<?php $page_title = 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit'; ?>
-<?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux et Métropole en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
+<?php $page_title = 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit en 60s'; ?>
+<?php $meta_description = 'Obtenez une estimation immobilière gratuite à Bordeaux et Métropole en 60 secondes. Prix au m² par quartier, tendances du marché bordelais. 100% gratuit, sans engagement.'; ?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -14,7 +12,6 @@
         <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
       </p>
 
-      <h1>Estimez la valeur de votre bien immobilier à Bordeaux et sa métropole</h1>
       <h1>Estimez la valeur de votre bien immobilier à Bordeaux et Métropole</h1>
 
       <p class="lead">
@@ -42,8 +39,6 @@
         <p class="testimonial-label">
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
-        <p style="margin: 0; font-style: italic; color: var(--text); line-height: 1.6;">
-          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et dans la métropole !"
         <p class="testimonial-quote">
           "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et Métropole !"
         </p>
@@ -134,12 +129,9 @@
             <i class="fas fa-check-circle"></i>
             <span><strong>Résultat immédiat</strong> — en moins d'1 minute</span>
           </li>
-          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
-            <span><strong>Données réelles</strong> — 5000+ transactions à Bordeaux et sa métropole</span>
           <li>
             <i class="fas fa-check-circle"></i>
-            <span><strong>Données réelles</strong> — 5000+ transactions en Gironde</span>
+            <span><strong>Données réelles</strong> — 5000+ transactions à Bordeaux et Métropole</span>
           </li>
           <li>
             <i class="fas fa-check-circle"></i>
@@ -349,3 +341,53 @@
     </div>
   </div>
 </section>
+
+<!-- Schema.org FAQPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Cette estimation immobilière en ligne est-elle fiable ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Notre outil donne une indication statistique basée sur les données du marché. Pour fixer un prix de mise en vente précis, il est recommandé de demander un avis de valeur à un conseiller immobilier qui visitera votre bien."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qu'est-ce qu'un avis de valeur immobilier ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "C'est un document rédigé par un professionnel de l'immobilier (conseiller ou agent immobilier) après visite du bien. Il s'appuie sur l'analyse du marché local et sur les caractéristiques réelles de votre logement pour proposer un prix de mise en vente cohérent."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "L'estimation en ligne est-elle gratuite ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui, 100% gratuite et sans engagement. Vous obtenez une fourchette indicative en quelques secondes, sans donner vos coordonnées."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Pourquoi les outils d'estimation en ligne ne suffisent pas ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Les outils en ligne utilisent des statistiques générales (prix au m², tendances, historique des ventes). Ils ne voient pas l'état réel du bien, les travaux, la luminosité, la vue ou le voisinage. Seul un professionnel qui se rend sur place peut intégrer ces critères dans un avis de valeur."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Puis-je obtenir un avis de valeur après l'estimation en ligne ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui ! Après votre estimation en ligne, nous vous proposons de demander un avis de valeur réalisé par un conseiller immobilier pour une évaluation complète de votre bien."
+      }
+    }
+  ]
+}
+</script>

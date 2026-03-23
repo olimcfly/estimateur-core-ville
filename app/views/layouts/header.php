@@ -39,30 +39,53 @@
   <meta name="twitter:description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
   <meta name="twitter:image" content="https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png">
 
-  <!-- Schema.org JSON-LD -->
+  <!-- Schema.org JSON-LD: LocalBusiness + RealEstateAgent -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    "name": "Estimation Immobilier Bordeaux",
-    "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et sa métropole.",
     "name": "Estimation Immobilier Bordeaux et Métropole",
-    "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et en Gironde.",
+    "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et Métropole. Prix au m² par quartier, tendances du marché bordelais.",
     "url": "https://estimation-immobilier-bordeaux.fr",
-    "telephone": "+33556000000",
     "email": "contact@estimation-immobilier-bordeaux.fr",
     "address": {
       "@type": "PostalAddress",
+      "streetAddress": "Bordeaux",
       "addressLocality": "Bordeaux",
       "addressRegion": "Nouvelle-Aquitaine",
       "postalCode": "33000",
       "addressCountry": "FR"
     },
-    "areaServed": {
-      "@type": "Place",
-      "name": "Bordeaux et sa métropole"
-    },
-    "priceRange": "Gratuit"
+    "areaServed": [
+      { "@type": "City", "name": "Bordeaux" },
+      { "@type": "Place", "name": "Bordeaux Métropole" }
+    ],
+    "priceRange": "Gratuit",
+    "knowsAbout": ["estimation immobilière", "avis de valeur", "prix immobilier Bordeaux", "marché immobilier Gironde"]
+  }
+  </script>
+
+  <!-- Schema.org BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Accueil",
+        "item": "https://estimation-immobilier-bordeaux.fr"
+      },
+      <?php if ($canonicalPath !== '/'): ?>
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "<?= htmlspecialchars($page_title ?? '', ENT_QUOTES, 'UTF-8') ?>",
+        "item": "<?= e($canonicalUrl) ?>"
+      }
+      <?php endif; ?>
+    ]
   }
   </script>
 

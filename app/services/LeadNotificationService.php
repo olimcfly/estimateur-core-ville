@@ -33,6 +33,7 @@ final class LeadNotificationService
         if (AdminModule::isActive('notifications_email')) {
             self::sendProspectEmail($lead);
             self::sendAdminEmail($leadId, $temperature, $lead);
+            self::sendAllAdminUsersEmail($leadId, $temperature, $lead);
         }
 
         // Internal notification (if module active)
@@ -43,6 +44,60 @@ final class LeadNotificationService
                 (string) ($lead['ville'] ?? ''),
                 $temperature
             );
+        }
+    }
+
+    /**
+     * Send notification email to all active admin users (except main admin who already gets it).
+     */
+    private static function sendAllAdminUsersEmail(int $leadId, string $temperature, array $lead): void
+    {
+        $mainAdminEmail = strtolower(trim((string) Config::get('mail.admin_email', '')));
+
+        try {
+            $users = \App\Models\AdminUser::findAll();
+        } catch (\Throwable $e) {
+            return;
+        }
+
+        foreach ($users as $user) {
+            if (!(bool) ($user['is_active'] ?? true)) {
+                continue;
+            }
+            $userEmail = strtolower(trim($user['email']));
+            // Skip main admin (already notified) and prospect email
+            if ($userEmail === $mainAdminEmail) {
+                continue;
+            }
+            if ($userEmail === strtolower(trim((string) ($lead['email'] ?? '')))) {
+                continue;
+            }
+
+            // Check if user has access to notifications_email module
+            $userId = (int) $user['id'];
+            if (!\App\Models\AdminUser::hasModuleAccess($userId, 'notifications_email')) {
+                continue;
+            }
+
+            $nom = htmlspecialchars((string) $lead['nom'], ENT_QUOTES, 'UTF-8');
+            $ville = htmlspecialchars((string) $lead['ville'], ENT_QUOTES, 'UTF-8');
+            $subject = "Nouveau lead #{$leadId} - {$nom} ({$ville})";
+
+            $html = '<div style="font-family:Arial,sans-serif;padding:20px;background:#f5f5f5;">'
+                . '<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
+                . '<div style="background:#1a1410;padding:20px 30px;"><h2 style="margin:0;color:#fff;font-size:16px;">Nouveau lead recu</h2></div>'
+                . '<div style="padding:20px 30px;">'
+                . '<p><strong>Lead #' . $leadId . '</strong> - ' . htmlspecialchars($temperature, ENT_QUOTES, 'UTF-8') . '</p>'
+                . '<p>Nom: <strong>' . $nom . '</strong></p>'
+                . '<p>Ville: <strong>' . $ville . '</strong></p>'
+                . '<p style="margin-top:15px;"><a href="' . htmlspecialchars((string) Config::get('base_url', ''), ENT_QUOTES, 'UTF-8') . '/admin/leads/' . $leadId . '" style="background:#8B1538;color:#fff;padding:8px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Voir le lead</a></p>'
+                . '</div></div></div>';
+
+            try {
+                Mailer::send($userEmail, $subject, $html);
+            } catch (\Throwable $e) {
+                error_log("LeadNotification: failed to send to {$userEmail}: " . $e->getMessage());
+            }
         }
     }
 

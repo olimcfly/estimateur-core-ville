@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\View;
+use App\Models\AdminModule;
 use App\Models\AdminUser;
 
 final class AdminUserController
@@ -128,6 +129,74 @@ final class AdminUserController
         AdminUser::deleteUser($id);
 
         echo json_encode(['success' => true, 'message' => 'Utilisateur supprime.']);
+    }
+
+    public function userModules(int $id): void
+    {
+        AuthController::requireAuth();
+        self::requireSuperUser();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $user = AdminUser::findById($id);
+        if ($user === null) {
+            echo json_encode(['success' => false, 'error' => 'Utilisateur introuvable.']);
+            return;
+        }
+
+        $allModules = AdminModule::findAll();
+        $userModules = AdminUser::getUserModules($id);
+
+        $modules = [];
+        foreach ($allModules as $mod) {
+            if ((bool) $mod['superuser_only']) {
+                continue;
+            }
+            $enabled = empty($userModules) ? true : ($userModules[$mod['slug']] ?? true);
+            $modules[] = [
+                'slug' => $mod['slug'],
+                'name' => $mod['name'],
+                'icon' => $mod['icon'],
+                'category' => $mod['category'],
+                'is_active' => (bool) $mod['is_active'],
+                'enabled' => $enabled,
+            ];
+        }
+
+        echo json_encode([
+            'success' => true,
+            'user' => [
+                'id' => (int) $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+            ],
+            'modules' => $modules,
+        ]);
+    }
+
+    public function saveUserModules(): void
+    {
+        AuthController::requireAuth();
+        self::requireSuperUser();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $userId = (int) ($_POST['user_id'] ?? 0);
+        if ($userId <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Utilisateur non specifie.']);
+            return;
+        }
+
+        $user = AdminUser::findById($userId);
+        if ($user === null) {
+            echo json_encode(['success' => false, 'error' => 'Utilisateur introuvable.']);
+            return;
+        }
+
+        $enabledSlugs = isset($_POST['modules']) ? (array) $_POST['modules'] : [];
+        AdminUser::setUserModulesBulk($userId, $enabledSlugs);
+
+        echo json_encode(['success' => true, 'message' => "Modules mis a jour pour {$user['email']}."]);
     }
 
     private static function requireSuperUser(): void

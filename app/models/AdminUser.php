@@ -203,9 +203,17 @@ final class AdminUser
     public static function determineRoleForEmail(string $email): string
     {
         $email = strtolower(trim($email));
-        $superuserEmail = strtolower(trim((string) ($_ENV['ADMIN_EMAIL'] ?? '')));
 
-        if ($superuserEmail !== '' && $email === $superuserEmail) {
+        $superuserEmails = array_filter(array_map(
+            fn($v) => strtolower(trim((string) $v)),
+            [
+                $_ENV['ADMIN_EMAIL'] ?? '',
+                $_ENV['ADMIN_EMAIL_2'] ?? '',
+                $_ENV['MAIL_FROM_ADDRESS'] ?? $_ENV['MAIL_FROM'] ?? '',
+            ]
+        ));
+
+        if (in_array($email, $superuserEmails, true)) {
             return self::ROLE_SUPERUSER;
         }
 
@@ -261,5 +269,95 @@ final class AdminUser
             'name' => $name,
             'role' => $role,
         ]);
+    }
+
+    // ─── Per-user module permissions ───
+
+    public static function createUserModulesTable(): void
+    {
+        Database::connection()->exec("
+            CREATE TABLE IF NOT EXISTS admin_user_modules (
+                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                user_id INT UNSIGNED NOT NULL,
+                module_slug VARCHAR(100) NOT NULL,
+                is_enabled TINYINT(1) NOT NULL DEFAULT 1,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_user_module (user_id, module_slug),
+                INDEX idx_user_modules_user (user_id),
+                INDEX idx_user_modules_slug (module_slug),
+                CONSTRAINT fk_user_modules_user FOREIGN KEY (user_id) REFERENCES admin_users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+    }
+
+    public static function ensureUserModulesTable(): void
+    {
+        try {
+            $pdo = Database::connection();
+            $tables = $pdo->query("SHOW TABLES LIKE 'admin_user_modules'")->fetchAll();
+            if (empty($tables)) {
+                self::createUserModulesTable();
+            }
+        } catch (\PDOException $e) {
+            self::createUserModulesTable();
+        }
+    }
+
+    public static function getUserModules(int $userId): array
+    {
+        self::ensureUserModulesTable();
+        $stmt = Database::connection()->prepare(
+            'SELECT module_slug, is_enabled FROM admin_user_modules WHERE user_id = :uid'
+        );
+        $stmt->execute(['uid' => $userId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $map = [];
+        foreach ($rows as $row) {
+            $map[$row['module_slug']] = (bool) $row['is_enabled'];
+        }
+        return $map;
+    }
+
+    public static function setUserModule(int $userId, string $moduleSlug, bool $enabled): bool
+    {
+        self::ensureUserModulesTable();
+        $stmt = Database::connection()->prepare("
+            INSERT INTO admin_user_modules (user_id, module_slug, is_enabled)
+            VALUES (:uid, :slug, :enabled)
+            ON DUPLICATE KEY UPDATE is_enabled = :enabled2
+        ");
+        return $stmt->execute([
+            'uid' => $userId,
+            'slug' => $moduleSlug,
+            'enabled' => (int) $enabled,
+            'enabled2' => (int) $enabled,
+        ]);
+    }
+
+    public static function setUserModulesBulk(int $userId, array $enabledSlugs): void
+    {
+        self::ensureUserModulesTable();
+        $pdo = Database::connection();
+
+        // Get all non-superuser-only modules
+        $allModules = AdminModule::findAll();
+        foreach ($allModules as $mod) {
+            if ((bool) $mod['superuser_only']) {
+                continue;
+            }
+            $enabled = in_array($mod['slug'], $enabledSlugs, true);
+            self::setUserModule($userId, $mod['slug'], $enabled);
+        }
+    }
+
+    public static function hasModuleAccess(int $userId, string $moduleSlug): bool
+    {
+        $modules = self::getUserModules($userId);
+        if (empty($modules)) {
+            return true; // No per-user restrictions = all modules accessible
+        }
+        return $modules[$moduleSlug] ?? true;
     }
 }

@@ -210,6 +210,8 @@ $router->get('/admin/users', [AdminUserController::class, 'index']);
 $router->post('/admin/users/create', [AdminUserController::class, 'create']);
 $router->post('/admin/users/update', [AdminUserController::class, 'update']);
 $router->post('/admin/users/delete', [AdminUserController::class, 'delete']);
+$router->get('/admin/users/modules/{id}', [AdminUserController::class, 'userModules']);
+$router->post('/admin/users/modules/save', [AdminUserController::class, 'saveUserModules']);
 
 // Admin mailbox (email client) routes
 $router->get('/admin/mailbox', [AdminMailboxController::class, 'index']);

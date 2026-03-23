@@ -31,6 +31,7 @@ use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
 use App\Controllers\AdminFinancementController;
+use App\Controllers\AdminGmbController;
 use App\Controllers\AdminGoogleAdsCampaignController;
 use App\Controllers\AdminGmbController;
 use App\Controllers\AdminRssController;
@@ -318,6 +319,19 @@ $router->post('/admin/mailbox/save-draft', [AdminMailboxController::class, 'save
 $router->post('/admin/mailbox/schedule', [AdminMailboxController::class, 'schedule']);
 $router->post('/admin/mailbox/delete-draft', [AdminMailboxController::class, 'deleteDraft']);
 $router->get('/admin/mailbox/process-scheduled', [AdminMailboxController::class, 'processScheduled']);
+
+// Admin GMB (Google My Business) routes
+$router->get('/admin/gmb', [AdminGmbController::class, 'index']);
+$router->get('/admin/gmb/create', [AdminGmbController::class, 'create']);
+$router->post('/admin/gmb/store', [AdminGmbController::class, 'store']);
+$router->get('/admin/gmb/edit/{id}', [AdminGmbController::class, 'edit']);
+$router->post('/admin/gmb/update/{id}', [AdminGmbController::class, 'update']);
+$router->post('/admin/gmb/delete/{id}', [AdminGmbController::class, 'delete']);
+$router->post('/admin/gmb/publish/{id}', [AdminGmbController::class, 'markPublished']);
+$router->get('/admin/gmb/preview/{id}', [AdminGmbController::class, 'preview']);
+$router->get('/admin/gmb/guide', [AdminGmbController::class, 'guide']);
+$router->post('/admin/gmb/generate', [AdminGmbController::class, 'generate']);
+$router->post('/admin/gmb/settings', [AdminGmbController::class, 'saveSettings']);
 
 // Admin internal notifications routes
 $router->get('/admin/notifications', [AdminNotificationController::class, 'index']);

@@ -9,6 +9,7 @@ use App\Core\Validator;
 use App\Core\View;
 use App\Models\Article;
 use App\Services\AIService;
+use App\Services\GmbService;
 use App\Services\SeoAnalyzerService;
 
 final class AdminBlogController
@@ -175,7 +176,16 @@ final class AdminBlogController
             $payload['reading_time_minutes'] = $analysis['content_stats']['reading_time'] ?? 0;
             $payload['seo_analysis_json'] = json_encode($analysis, JSON_UNESCAPED_UNICODE);
 
-            $articleModel->create($payload);
+            $articleId = $articleModel->create($payload);
+
+            // Auto-generate GMB publication if enabled
+            try {
+                $gmbService = new GmbService();
+                $gmbService->autoGenerateFromArticle($articleId);
+            } catch (\Throwable $gmbError) {
+                error_log('[blog] GMB auto-generate error: ' . $gmbError->getMessage());
+            }
+
             $this->redirect('/admin/blog?message=' . urlencode('Article créé avec succès. Score SEO: ' . $analysis['seo_score'] . '/100'));
         } catch (\Throwable $throwable) {
             $silos = $articleModel->findAllSilos();

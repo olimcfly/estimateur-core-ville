@@ -103,6 +103,14 @@ final class AdminActualiteController
             $data = $this->validatedPayload($_POST);
             $id = $model->create($data);
 
+            // Auto-generate GMB publication if enabled
+            try {
+                $gmbService = new GmbService();
+                $gmbService->autoGenerateFromActualite($id);
+            } catch (\Throwable $gmbError) {
+                error_log('[actualites] GMB auto-generate error: ' . $gmbError->getMessage());
+            }
+
             // Mark RSS articles as used if provided
             $rssArticleIds = $_POST['rss_article_ids'] ?? '';
             if ($rssArticleIds !== '') {

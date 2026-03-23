@@ -570,8 +570,11 @@ try {
     </a>
     <?php endif; ?>
     <?php if ($_moduleAccess('google_ads')): ?>
-    <a href="/admin/google-ads" class="admin-sidebar-link <?= str_starts_with(($admin_page ?? ''), 'google-ads') ? 'active' : '' ?>">
-      <i class="fas fa-bullhorn"></i> Google Ads
+    <a href="/admin/google-ads" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads-guide' ? 'active' : '' ?>">
+      <i class="fas fa-book"></i> Guide Google Ads
+    </a>
+    <a href="/admin/google-ads/campaigns" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads-campaigns' ? 'active' : '' ?>">
+      <i class="fas fa-magic"></i> Generateur Campagnes
     </a>
     <?php endif; ?>
 

@@ -176,8 +176,9 @@ $router->get('/lp/vendre-maison-bordeaux', [LandingPageController::class, 'vendr
 $router->get('/lp/avis-valeur-gratuit', [LandingPageController::class, 'avisValeurGratuit']);
 $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 
-// Admin: Google Ads guide & best practices
+// Admin: Google Ads guide & campaign generator
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
+$router->get('/admin/google-ads/campaigns', [LandingPageController::class, 'campaigns']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);

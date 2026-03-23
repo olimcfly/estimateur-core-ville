@@ -7,7 +7,9 @@ namespace App\Controllers;
 use App\Core\Database;
 use App\Core\Validator;
 use App\Core\View;
+use App\Models\AdminNotification;
 use App\Models\Article;
+use App\Models\GmbPublication;
 use App\Services\AIService;
 use App\Services\GmbService;
 use App\Services\SeoAnalyzerService;
@@ -25,6 +27,20 @@ final class AdminBlogController
             $articles = $articleModel->findAll();
             $silos = $articleModel->findAllSilos();
             $stats = $articleModel->getSeoStats();
+
+            // Load GMB publications indexed by article_id
+            $gmbByArticle = [];
+            try {
+                $gmbModel = new GmbPublication();
+                foreach ($articles as $art) {
+                    $gmb = $gmbModel->getByArticle((int) $art['id']);
+                    if ($gmb !== null) {
+                        $gmbByArticle[(int) $art['id']] = $gmb;
+                    }
+                }
+            } catch (\Throwable $gmbErr) {
+                error_log('[blog] GMB data load error: ' . $gmbErr->getMessage());
+            }
         } catch (\Throwable $e) {
             error_log('[blog] index error: ' . $e->getMessage());
             View::renderAdmin('admin/blog/index', [
@@ -34,6 +50,7 @@ final class AdminBlogController
                 'articles' => [],
                 'silos' => [],
                 'stats' => [],
+                'gmbByArticle' => [],
                 'message' => '',
                 'error' => 'Erreur de base de données : ' . $e->getMessage(),
             ]);
@@ -47,6 +64,7 @@ final class AdminBlogController
             'articles' => $articles,
             'silos' => $silos,
             'stats' => $stats,
+            'gmbByArticle' => $gmbByArticle,
             'message' => (string) ($_GET['message'] ?? ''),
             'error' => (string) ($_GET['error'] ?? ''),
         ]);
@@ -178,13 +196,8 @@ final class AdminBlogController
 
             $articleId = $articleModel->create($payload);
 
-            // Auto-generate GMB publication if enabled
-            try {
-                $gmbService = new GmbService();
-                $gmbService->autoGenerateFromArticle($articleId);
-            } catch (\Throwable $gmbError) {
-                error_log('[blog] GMB auto-generate error: ' . $gmbError->getMessage());
-            }
+            // Auto-generate GMB publication
+            $this->tryAutoGenerateGmb('article', $articleId, $payload['title']);
 
             $this->redirect('/admin/blog?message=' . urlencode('Article créé avec succès. Score SEO: ' . $analysis['seo_score'] . '/100'));
         } catch (\Throwable $throwable) {
@@ -220,6 +233,15 @@ final class AdminBlogController
         $analysis = $seoService->analyze($article);
         $silos = $articleModel->findAllSilos();
 
+        // Load GMB publication for this article
+        $gmbPublication = null;
+        try {
+            $gmbModel = new GmbPublication();
+            $gmbPublication = $gmbModel->getByArticle((int) $id);
+        } catch (\Throwable $gmbErr) {
+            error_log('[blog] GMB load error: ' . $gmbErr->getMessage());
+        }
+
         View::renderAdmin('admin/blog/form', [
             'admin_page_title' => 'Modifier l\'article',
             'admin_page' => 'blog',
@@ -227,6 +249,7 @@ final class AdminBlogController
             'analysis' => $analysis,
             'silos' => $silos,
             'revisions' => $articleModel->findRevisionsByArticleId((int) $id),
+            'gmbPublication' => $gmbPublication,
             'errors' => [],
             'message' => (string) ($_GET['message'] ?? ''),
             'error' => (string) ($_GET['error'] ?? ''),
@@ -260,6 +283,10 @@ final class AdminBlogController
             $payload['seo_analysis_json'] = json_encode($analysis, JSON_UNESCAPED_UNICODE);
 
             $articleModel->update((int) $id, $payload);
+
+            // Auto-generate GMB publication
+            $this->tryAutoGenerateGmb('article', (int) $id, $payload['title']);
+
             $this->redirect('/admin/blog/edit/' . (int) $id . '?message=' . urlencode('Article mis à jour. Score SEO: ' . $analysis['seo_score'] . '/100'));
         } catch (\Throwable $throwable) {
             $article = $_POST;
@@ -883,6 +910,61 @@ final class AdminBlogController
         AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'seo_analysis');
 
         echo json_encode(['success' => true, 'suggestion' => trim($content)]);
+    }
+
+    /**
+     * Try to auto-generate a GMB publication for an article.
+     * Never blocks the main save flow — all errors are caught and logged.
+     */
+    private function tryAutoGenerateGmb(string $type, int $id, string $title): void
+    {
+        try {
+            $gmbModel = new GmbPublication();
+
+            // Check if auto_generate is enabled
+            if ($gmbModel->getSetting('auto_generate', '0') !== '1') {
+                return;
+            }
+
+            // Check no existing GMB publication for this article
+            if ($gmbModel->getByArticle($id) !== null) {
+                return;
+            }
+
+            // Fetch the full article to pass to the service
+            $articleModel = new Article();
+            $article = $articleModel->findById($id);
+
+            if ($article === null) {
+                return;
+            }
+
+            $gmbId = GmbService::generateFromArticle($article);
+
+            AdminNotification::create(
+                'Publication GMB créée automatiquement',
+                "Publication GMB créée automatiquement pour l'article : {$title}",
+                AdminNotification::TYPE_SUCCESS,
+                '/admin/gmb/edit/' . $gmbId,
+                'all'
+            );
+
+            error_log("[gmb-auto] Publication GMB #{$gmbId} créée pour l'article #{$id} : {$title}");
+        } catch (\Throwable $e) {
+            error_log("[gmb-auto] Erreur génération GMB pour l'article #{$id} : " . $e->getMessage());
+
+            try {
+                AdminNotification::create(
+                    'Erreur génération GMB automatique',
+                    "Impossible de créer la publication GMB pour l'article : {$title}. Erreur : " . $e->getMessage(),
+                    AdminNotification::TYPE_WARNING,
+                    null,
+                    'all'
+                );
+            } catch (\Throwable $notifError) {
+                error_log('[gmb-auto] Erreur notification : ' . $notifError->getMessage());
+            }
+        }
     }
 
     private function redirect(string $path): void

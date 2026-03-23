@@ -6,8 +6,10 @@ namespace App\Controllers;
 
 use App\Core\Validator;
 use App\Core\View;
-use App\Models\Actualite;
 use App\Models\ActualiteAiConfig;
+use App\Models\Actualite;
+use App\Models\AdminNotification;
+use App\Models\GmbPublication;
 use App\Models\RssArticle;
 use App\Services\ActualiteService;
 use App\Services\GmbService;
@@ -119,6 +121,9 @@ final class AdminActualiteController
                 }
             }
 
+            // Auto-generate GMB publication
+            $this->tryAutoGenerateGmbActualite($id, $data['title']);
+
             $this->redirect('/admin/actualites?message=' . urlencode('Actualité créée avec succès.'));
         } catch (\Throwable $e) {
             View::renderAdmin('admin/actualites/form', [
@@ -169,6 +174,10 @@ final class AdminActualiteController
         try {
             $data = $this->validatedPayload($_POST);
             $model->update((int) $id, $data);
+
+            // Auto-generate GMB publication
+            $this->tryAutoGenerateGmbActualite((int) $id, $data['title']);
+
             $this->redirect('/admin/actualites?message=' . urlencode('Actualité mise à jour.'));
         } catch (\Throwable $e) {
             $actualite = $_POST;
@@ -435,6 +444,58 @@ final class AdminActualiteController
         $text = trim($text, '-');
 
         return $text !== '' ? $text : 'actualite';
+    }
+
+    /**
+     * Try to auto-generate a GMB publication for an actualité.
+     * Never blocks the main save flow — all errors are caught and logged.
+     */
+    private function tryAutoGenerateGmbActualite(int $id, string $title): void
+    {
+        try {
+            $gmbModel = new GmbPublication();
+
+            if ($gmbModel->getSetting('auto_generate', '0') !== '1') {
+                return;
+            }
+
+            if ($gmbModel->getByActualite($id) !== null) {
+                return;
+            }
+
+            $actualiteModel = new Actualite();
+            $actualite = $actualiteModel->findById($id);
+
+            if ($actualite === null) {
+                return;
+            }
+
+            $gmbId = GmbService::generateFromActualite($actualite);
+
+            AdminNotification::create(
+                'Publication GMB créée automatiquement',
+                "Publication GMB créée automatiquement pour l'actualité : {$title}",
+                AdminNotification::TYPE_SUCCESS,
+                '/admin/gmb/edit/' . $gmbId,
+                'all'
+            );
+
+            error_log("[gmb-auto] Publication GMB #{$gmbId} créée pour l'actualité #{$id} : {$title}");
+        } catch (\Throwable $e) {
+            error_log("[gmb-auto] Erreur génération GMB pour l'actualité #{$id} : " . $e->getMessage());
+
+            try {
+                AdminNotification::create(
+                    'Erreur génération GMB automatique',
+                    "Impossible de créer la publication GMB pour l'actualité : {$title}. Erreur : " . $e->getMessage(),
+                    AdminNotification::TYPE_WARNING,
+                    null,
+                    'all'
+                );
+            } catch (\Throwable $notifError) {
+                error_log('[gmb-auto] Erreur notification : ' . $notifError->getMessage());
+            }
+        }
     }
 
     private function redirect(string $path): void

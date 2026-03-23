@@ -20,7 +20,8 @@ final class AdminLeadController
             'estimation', 'urgence', 'motivation', 'notes',
             'partenaire_id', 'commission_taux', 'commission_montant',
             'assigne_a', 'date_mandat', 'date_compromis', 'date_signature',
-            'prix_vente', 'score', 'statut', 'created_at',
+            'prix_vente', 'score', 'statut', 'neuropersona', 'niveau_conscience',
+            'created_at',
         ],
         'lead_notes' => ['id', 'lead_id', 'content', 'author', 'created_at'],
         'lead_activities' => ['id', 'lead_id', 'activity_type', 'description', 'created_at'],
@@ -350,6 +351,74 @@ final class AdminLeadController
         exit;
     }
 
+    public function profile(): void
+    {
+        AuthController::requireAuth();
+
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if ($id <= 0) {
+            header('Location: /admin/leads');
+            exit;
+        }
+
+        $leadModel = new Lead();
+        $lead = $leadModel->findById($id);
+        if ($lead === null) {
+            header('Location: /admin/leads');
+            exit;
+        }
+
+        $notes = [];
+        try {
+            $noteModel = new LeadNote();
+            $notes = $noteModel->findByLeadId($id);
+        } catch (\Throwable) {
+        }
+
+        View::renderAdmin('admin/lead-profile', [
+            'page_title' => 'Profil Prospect - ' . ($lead['nom'] ?: 'Lead #' . $id),
+            'admin_page_title' => 'Profil Prospect',
+            'admin_page' => 'leads',
+            'breadcrumb' => 'Profil Prospect',
+            'lead' => $lead,
+            'notes' => $notes,
+        ]);
+    }
+
+    public function saveProfile(): void
+    {
+        AuthController::requireAuth();
+        AuthController::verifyCsrfToken();
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        if ($id <= 0) {
+            header('Location: /admin/leads');
+            exit;
+        }
+
+        $allowedPersonas = ['analytique', 'expressif', 'directif', 'aimable'];
+        $allowedNiveaux = ['inconscient', 'probleme', 'solution', 'produit', 'tres_conscient'];
+
+        $neuropersona = trim((string) ($_POST['neuropersona'] ?? ''));
+        $niveauConscience = trim((string) ($_POST['niveau_conscience'] ?? ''));
+
+        $data = [];
+        $data['neuropersona'] = in_array($neuropersona, $allowedPersonas, true) ? $neuropersona : null;
+        $data['niveau_conscience'] = in_array($niveauConscience, $allowedNiveaux, true) ? $niveauConscience : null;
+
+        $leadModel = new Lead();
+        $leadModel->updateLeadDetails($id, $data);
+
+        try {
+            $activityModel = new LeadActivity();
+            $activityModel->log($id, 'profile_updated', 'Profil prospect mis à jour (persona: ' . ($data['neuropersona'] ?? '-') . ', conscience: ' . ($data['niveau_conscience'] ?? '-') . ')');
+        } catch (\Throwable) {
+        }
+
+        header('Location: /admin/leads/profile?id=' . $id);
+        exit;
+    }
+
     public function delete(): void
     {
         AuthController::requireAuth();
@@ -507,6 +576,8 @@ final class AdminLeadController
                 'prix_vente' => 'DECIMAL(12,2) NULL DEFAULT NULL',
                 'score' => "ENUM('chaud','tiede','froid') NOT NULL DEFAULT 'froid'",
                 'statut' => "ENUM('nouveau','contacte','rdv_pris','visite_realisee','mandat_simple','mandat_exclusif','compromis_vente','signe','co_signature_partenaire','assigne_autre') NOT NULL DEFAULT 'nouveau'",
+                'neuropersona' => "VARCHAR(30) NULL DEFAULT NULL",
+                'niveau_conscience' => "VARCHAR(30) NULL DEFAULT NULL",
                 'created_at' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
             ],
             'lead_notes' => [

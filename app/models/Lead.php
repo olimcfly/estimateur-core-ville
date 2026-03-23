@@ -117,7 +117,8 @@ final class Lead
         $params = [':id' => $id, ':website_id' => $this->websiteId()];
 
         $updatable = ['statut', 'partenaire_id', 'commission_taux', 'commission_montant',
-                      'assigne_a', 'date_mandat', 'date_compromis', 'date_signature', 'prix_vente', 'score'];
+                      'assigne_a', 'date_mandat', 'date_compromis', 'date_signature', 'prix_vente', 'score',
+                      'neuropersona', 'niveau_conscience'];
 
         foreach ($updatable as $field) {
             if (array_key_exists($field, $data)) {

@@ -587,7 +587,11 @@
             <button class="btn-test" onclick="testApi('<?= $apiKey ?>')" id="btn-test-<?= $apiKey ?>">
               <i class="fas fa-bolt"></i> Tester
             </button>
-            <?php if (!empty($api['env_keys'])): ?>
+            <?php if ($apiKey === 'claude'): ?>
+            <button class="btn-configure" onclick="openClaudeModal()" style="background: #d97706; color: #fff; border-color: #d97706;">
+              <i class="fas fa-key"></i> Enregistrer cl&eacute;
+            </button>
+            <?php elseif (!empty($api['env_keys'])): ?>
             <button class="btn-configure" onclick="openConfigModal('<?= $apiKey ?>')">
               <i class="fas fa-gear"></i> Configurer
             </button>
@@ -598,6 +602,41 @@
     </div>
   </div>
 <?php endforeach; ?>
+
+<!-- Claude Registration Modal -->
+<div class="api-modal-overlay" id="claude-modal">
+  <div class="api-modal">
+    <div class="api-modal-header">
+      <h3><i class="fas fa-robot" style="color: #d97706;"></i> Enregistrer une cl&eacute; API Claude</h3>
+      <button class="api-modal-close" onclick="closeClaudeModal()">&times;</button>
+    </div>
+    <form id="claude-form" onsubmit="registerClaude(event)">
+      <div class="api-modal-body">
+        <div class="api-modal-msg" id="claude-modal-msg"></div>
+        <div class="api-modal-field">
+          <label for="claude-api-key">ANTHROPIC_API_KEY <span style="color:#dc2626;">*</span></label>
+          <input type="password" name="api_key" id="claude-api-key" placeholder="sk-ant-..." autocomplete="off" required>
+          <div style="font-size: 0.75rem; color: #6b6459; margin-top: 0.3rem;">
+            Obtenez votre cl&eacute; sur <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style="color: var(--admin-primary); font-weight: 600;">console.anthropic.com</a>
+          </div>
+        </div>
+        <div class="api-modal-field">
+          <label for="claude-model">ANTHROPIC_MODEL (optionnel)</label>
+          <input type="text" name="model" id="claude-model" placeholder="claude-sonnet-4-20250514" autocomplete="off">
+          <div style="font-size: 0.75rem; color: #6b6459; margin-top: 0.3rem;">
+            Laissez vide pour utiliser le mod&egrave;le par d&eacute;faut (claude-sonnet-4-20250514)
+          </div>
+        </div>
+      </div>
+      <div class="api-modal-footer">
+        <button type="submit" class="btn-save" id="btn-register-claude">
+          <i class="fas fa-key"></i> Valider &amp; Enregistrer
+        </button>
+        <button type="button" class="btn-cancel" onclick="closeClaudeModal()">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- Configure Modal -->
 <div class="api-modal-overlay" id="config-modal">
@@ -771,13 +810,84 @@ function escHtml(str) {
   return div.innerHTML;
 }
 
+// ─── Claude Registration ─────────────────────────
+function openClaudeModal() {
+  var modal = document.getElementById('claude-modal');
+  var msg = document.getElementById('claude-modal-msg');
+  msg.style.display = 'none';
+  msg.className = 'api-modal-msg';
+  document.getElementById('claude-api-key').value = '';
+  document.getElementById('claude-model').value = '';
+  modal.classList.add('open');
+  document.getElementById('claude-api-key').focus();
+}
+
+function closeClaudeModal() {
+  document.getElementById('claude-modal').classList.remove('open');
+}
+
+function registerClaude(e) {
+  e.preventDefault();
+  var msg = document.getElementById('claude-modal-msg');
+  var btn = document.getElementById('btn-register-claude');
+  var form = document.getElementById('claude-form');
+  var data = new FormData(form);
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validation en cours...';
+  msg.className = 'api-modal-msg loading';
+  msg.textContent = 'Test de la cle API en cours...';
+  msg.style.display = 'block';
+
+  fetch('/admin/api/register-claude', {
+    method: 'POST',
+    body: data,
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-key"></i> Valider & Enregistrer';
+
+    if (result.success) {
+      var text = result.message || 'Cle API enregistree !';
+      if (result.model) {
+        text += ' (Modele: ' + result.model + ')';
+      }
+      if (result.latency_ms) {
+        text += ' - ' + result.latency_ms + ' ms';
+      }
+      msg.className = 'api-modal-msg success';
+      msg.textContent = text;
+      msg.style.display = 'block';
+      setTimeout(function() { location.reload(); }, 1500);
+    } else {
+      msg.className = 'api-modal-msg error';
+      msg.textContent = result.error || 'Erreur lors de l\'enregistrement';
+      msg.style.display = 'block';
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-key"></i> Valider & Enregistrer';
+    msg.className = 'api-modal-msg error';
+    msg.textContent = 'Erreur reseau: ' + err.message;
+    msg.style.display = 'block';
+  });
+}
+
 // Close modal on overlay click
 document.getElementById('config-modal').addEventListener('click', function(e) {
   if (e.target === this) closeConfigModal();
 });
+document.getElementById('claude-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeClaudeModal();
+});
 
 // Close modal on Escape
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeConfigModal();
+  if (e.key === 'Escape') {
+    closeConfigModal();
+    closeClaudeModal();
+  }
 });
 </script>

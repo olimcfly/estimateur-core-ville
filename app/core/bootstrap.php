@@ -28,6 +28,8 @@ if (is_file($envFile)) {
             // Retirer les guillemets entourant la valeur
             if (strlen($value) >= 2 && $value[0] === '"' && $value[-1] === '"') {
                 $value = substr($value, 1, -1);
+            } elseif (strlen($value) >= 2 && $value[0] === "'" && $value[-1] === "'") {
+                $value = substr($value, 1, -1);
             }
             $_ENV[$key] = $value;
             $_SERVER[$key] = $value;

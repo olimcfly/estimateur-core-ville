@@ -189,7 +189,7 @@ final class AdminGoogleAdsCampaignController
         header('Content-Type: application/json; charset=utf-8');
 
         try {
-            $apiKey = (string) Config::get('anthropic.api_key', '');
+            $apiKey = trim((string) Config::get('anthropic.api_key', ''));
             if ($apiKey === '') {
                 throw new \RuntimeException('Clé API Anthropic non configurée.');
             }

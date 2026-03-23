@@ -366,12 +366,12 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
       <h2>Visualisez les quartiers sur la carte</h2>
     </div>
 
-    <div class="card" style="padding: var(--space-6);">
-      <p style="color: var(--text-secondary); margin-bottom: var(--space-4); font-size: var(--size-sm); display: flex; align-items: center; gap: var(--space-2);">
+    <div class="card">
+      <p class="quartier-card-description" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
         <i class="fas fa-info-circle"></i> Cliquez sur un quartier pour centrer la carte et découvrir ses caractéristiques.
       </p>
 
-      <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-6);">
+      <div class="quartier-card-badges-list" style="margin-bottom: 1.5rem;">
         <?php foreach ($quartiers as $index => $quartier): ?>
           <button
             type="button"
@@ -392,7 +392,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
         src="https://maps.google.com/maps?q=44.8378,-0.5792&z=13&output=embed"
         width="100%"
         height="480"
-        style="border: 0; border-radius: var(--radius-xl); display: block;"
+        style="border: 0; border-radius: 14px; display: block;"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
       ></iframe>
@@ -412,48 +412,46 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
       <h2>Prix et caractéristiques clés</h2>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-6);">
-      <?php foreach ($quartiers as $index => $quartier): ?>
+    <!-- Quartiers de Bordeaux -->
+    <h3 class="quartier-zone-title">
+      <i class="fas fa-city"></i> Quartiers de Bordeaux
+    </h3>
+    <div class="quartier-grid">
+      <?php foreach ($quartiersBordeaux as $index => $quartier): ?>
         <article class="card quartier-card" data-quartier="<?= htmlspecialchars($quartier['nom']); ?>">
-          <!-- En-tête avec prix et tendance -->
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid var(--border-light);">
-            <div style="flex: 1;">
-              <h3 style="margin: 0 0 var(--space-1) 0; font-size: var(--size-2xl);"><?= htmlspecialchars($quartier['nom']); ?></h3>
-              <p style="margin: 0; font-size: var(--size-sm); color: var(--text-muted);">
+          <div class="quartier-card-header">
+            <div>
+              <h3><?= htmlspecialchars($quartier['nom']); ?></h3>
+              <p class="quartier-card-population">
                 <i class="fas fa-users"></i> <?= htmlspecialchars($quartier['population']); ?>
               </p>
             </div>
-            <div style="text-align: right;">
-              <div style="background: linear-gradient(135deg, rgba(139, 21, 56, 0.1), rgba(212, 175, 55, 0.08)); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4);">
-                <p style="margin: 0; font-weight: 700; font-size: var(--size-lg); color: var(--primary);">
-                  <?= number_format((int) $quartier['prix_m2'], 0, ',', ' '); ?> €/m²
-                </p>
-                <p style="margin: var(--space-1) 0 0 0; font-size: var(--size-xs); color: var(--text-secondary);">
-                  <i class="fas fa-arrow-trend-up"></i> <?= htmlspecialchars($quartier['tendance']); ?>
-                </p>
-              </div>
+            <div class="quartier-card-price">
+              <p class="quartier-card-price-value">
+                <?= number_format((int) $quartier['prix_m2'], 0, ',', ' '); ?> €/m²
+              </p>
+              <p class="quartier-card-price-trend">
+                <i class="fas fa-arrow-trend-up"></i> <?= htmlspecialchars($quartier['tendance']); ?>
+              </p>
             </div>
           </div>
 
-          <!-- Description -->
-          <p style="color: var(--text-secondary); font-size: var(--size-sm); margin-bottom: var(--space-4); line-height: var(--line-lg);">
+          <p class="quartier-card-description">
             <?= htmlspecialchars($quartier['description']); ?>
           </p>
 
-          <!-- Prix moyen -->
-          <div style="background: var(--bg-alt); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); border-left: 4px solid var(--accent);">
-            <p style="margin: 0; font-size: var(--size-xs); color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Prix moyen estimé</p>
-            <p style="margin: var(--space-1) 0 0 0; font-family: var(--font-primary); font-size: var(--size-2xl); font-weight: 800; color: var(--primary);">
+          <div class="quartier-card-estimated">
+            <p class="quartier-card-estimated-label">Prix moyen estimé</p>
+            <p class="quartier-card-estimated-value">
               <?= number_format((int) $quartier['prix_moyen'], 0, ',', ' '); ?> €
             </p>
           </div>
 
-          <!-- Caractéristiques -->
-          <div style="margin-bottom: var(--space-4);">
-            <p style="font-size: var(--size-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: var(--space-2);">
+          <div class="quartier-card-badges">
+            <p class="quartier-card-badges-label">
               <i class="fas fa-check-circle"></i> Caractéristiques
             </p>
-            <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+            <div class="quartier-card-badges-list">
               <?php foreach ($quartier['caracteristiques'] as $caracteristique): ?>
                 <span class="badge badge-primary">
                   <?= htmlspecialchars($caracteristique); ?>
@@ -462,27 +460,99 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
             </div>
           </div>
 
-          <!-- Infos détaillées -->
-          <div style="display: grid; gap: var(--space-3); font-size: var(--size-sm); margin-bottom: var(--space-4); padding: var(--space-4) 0; border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
-            <div style="display: flex; gap: var(--space-3);">
-              <span style="color: var(--primary); font-weight: 600; min-width: 120px;">
+          <div class="quartier-card-info">
+            <div class="quartier-card-info-row">
+              <span class="quartier-card-info-label">
                 <i class="fas fa-bus"></i> Transports
               </span>
-              <span style="color: var(--text-secondary);">
+              <span class="quartier-card-info-value">
                 <?= htmlspecialchars($quartier['transports']); ?>
               </span>
             </div>
-            <div style="display: flex; gap: var(--space-3);">
-              <span style="color: var(--primary); font-weight: 600; min-width: 120px;">
+            <div class="quartier-card-info-row">
+              <span class="quartier-card-info-label">
                 <i class="fas fa-star"></i> Attractivité
               </span>
-              <span style="color: var(--text-secondary);">
+              <span class="quartier-card-info-value">
                 <?= htmlspecialchars($quartier['attractivite']); ?>
               </span>
             </div>
           </div>
 
-          <!-- CTA Bouton -->
+          <a href="/estimation#form-estimation" class="btn btn-primary full-width">
+            <i class="fas fa-calculator"></i> Estimer mon bien ici
+          </a>
+        </article>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- Communes de la Métropole -->
+    <h3 class="quartier-zone-title">
+      <i class="fas fa-map-marked-alt"></i> Communes de la Métropole
+    </h3>
+    <div class="quartier-grid">
+      <?php foreach ($quartiersMetropole as $index => $quartier): ?>
+        <article class="card quartier-card" data-quartier="<?= htmlspecialchars($quartier['nom']); ?>">
+          <div class="quartier-card-header">
+            <div>
+              <h3><?= htmlspecialchars($quartier['nom']); ?></h3>
+              <p class="quartier-card-population">
+                <i class="fas fa-users"></i> <?= htmlspecialchars($quartier['population']); ?>
+              </p>
+            </div>
+            <div class="quartier-card-price">
+              <p class="quartier-card-price-value">
+                <?= number_format((int) $quartier['prix_m2'], 0, ',', ' '); ?> €/m²
+              </p>
+              <p class="quartier-card-price-trend">
+                <i class="fas fa-arrow-trend-up"></i> <?= htmlspecialchars($quartier['tendance']); ?>
+              </p>
+            </div>
+          </div>
+
+          <p class="quartier-card-description">
+            <?= htmlspecialchars($quartier['description']); ?>
+          </p>
+
+          <div class="quartier-card-estimated">
+            <p class="quartier-card-estimated-label">Prix moyen estimé</p>
+            <p class="quartier-card-estimated-value">
+              <?= number_format((int) $quartier['prix_moyen'], 0, ',', ' '); ?> €
+            </p>
+          </div>
+
+          <div class="quartier-card-badges">
+            <p class="quartier-card-badges-label">
+              <i class="fas fa-check-circle"></i> Caractéristiques
+            </p>
+            <div class="quartier-card-badges-list">
+              <?php foreach ($quartier['caracteristiques'] as $caracteristique): ?>
+                <span class="badge badge-primary">
+                  <?= htmlspecialchars($caracteristique); ?>
+                </span>
+              <?php endforeach; ?>
+            </div>
+          </div>
+
+          <div class="quartier-card-info">
+            <div class="quartier-card-info-row">
+              <span class="quartier-card-info-label">
+                <i class="fas fa-bus"></i> Transports
+              </span>
+              <span class="quartier-card-info-value">
+                <?= htmlspecialchars($quartier['transports']); ?>
+              </span>
+            </div>
+            <div class="quartier-card-info-row">
+              <span class="quartier-card-info-label">
+                <i class="fas fa-star"></i> Attractivité
+              </span>
+              <span class="quartier-card-info-value">
+                <?= htmlspecialchars($quartier['attractivite']); ?>
+              </span>
+            </div>
+          </div>
+
           <a href="/estimation#form-estimation" class="btn btn-primary full-width">
             <i class="fas fa-calculator"></i> Estimer mon bien ici
           </a>
@@ -504,25 +574,15 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
       <h2>Évolution des prix au m² par quartier</h2>
     </div>
 
-    <div class="card" style="padding: var(--space-8); overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: var(--size-sm);">
+    <div class="card" style="overflow-x: auto;">
+      <table class="quartier-table">
         <thead>
-          <tr style="border-bottom: 2px solid var(--border);">
-            <th style="padding: var(--space-3) var(--space-4); text-align: left; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em;">
-              Quartier
-            </th>
-            <th style="padding: var(--space-3) var(--space-4); text-align: right; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em;">
-              Prix/m²
-            </th>
-            <th style="padding: var(--space-3) var(--space-4); text-align: right; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em;">
-              Prix Moyen
-            </th>
-            <th style="padding: var(--space-3) var(--space-4); text-align: center; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em;">
-              Tendance
-            </th>
-            <th style="padding: var(--space-3) var(--space-4); text-align: center; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em;">
-              Dynamisme
-            </th>
+          <tr>
+            <th>Quartier</th>
+            <th>Prix/m²</th>
+            <th>Prix Moyen</th>
+            <th>Tendance</th>
+            <th>Dynamisme</th>
           </tr>
         </thead>
         <tbody>
@@ -537,23 +597,17 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
               default => '★★★'
             };
           ?>
-            <tr style="border-bottom: 1px solid var(--border-light); transition: background var(--trans-fast);" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='transparent'">
-              <td style="padding: var(--space-3) var(--space-4); font-weight: 600; color: var(--text);">
-                <?= htmlspecialchars($quartier['nom']); ?>
-              </td>
-              <td style="padding: var(--space-3) var(--space-4); text-align: right; color: var(--primary); font-weight: 700;">
-                <?= number_format($prix_m2, 0, ',', ' '); ?> €
-              </td>
-              <td style="padding: var(--space-3) var(--space-4); text-align: right; color: var(--text-secondary);">
-                <?= number_format($prix_moyen, 0, ',', ' '); ?> €
-              </td>
-              <td style="padding: var(--space-3) var(--space-4); text-align: center;">
-                <span style="background: rgba(16, 185, 129, 0.1); color: var(--success); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-weight: 700; font-size: var(--size-xs);">
+            <tr>
+              <td><?= htmlspecialchars($quartier['nom']); ?></td>
+              <td><?= number_format($prix_m2, 0, ',', ' '); ?> €</td>
+              <td><?= number_format($prix_moyen, 0, ',', ' '); ?> €</td>
+              <td>
+                <span class="quartier-table-trend">
                   <?= htmlspecialchars($tendance); ?>
                 </span>
               </td>
-              <td style="padding: var(--space-3) var(--space-4); text-align: center; color: var(--accent); font-weight: 700; font-size: var(--size-sm);">
-                <?= $dynamisme; ?>
+              <td>
+                <span class="quartier-table-stars"><?= $dynamisme; ?></span>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -575,105 +629,81 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
       <h2>Ambiances et paysages de Bordeaux</h2>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-4);">
-      <!-- Chartrons -->
-      <figure style="margin: 0;">
-        <div style="position: relative; overflow: hidden; border-radius: var(--radius-xl); height: 240px; background: var(--bg-alt);">
+    <div class="quartier-gallery">
+      <figure>
+        <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=500&q=80"
             alt="Quartier des Chartrons à Bordeaux"
-            style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--trans-base);"
-            onmouseover="this.style.transform='scale(1.08)'"
-            onmouseout="this.style.transform='scale(1)'"
+            loading="lazy"
           >
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4)); border-radius: var(--radius-xl);"></div>
         </div>
-        <figcaption style="font-weight: 600; color: var(--text); margin-top: var(--space-2); font-size: var(--size-sm);">
+        <figcaption>
           <i class="fas fa-wine-glass-alt"></i> Chartrons
         </figcaption>
       </figure>
 
-      <!-- Saint-Pierre -->
-      <figure style="margin: 0;">
-        <div style="position: relative; overflow: hidden; border-radius: var(--radius-xl); height: 240px; background: var(--bg-alt);">
+      <figure>
+        <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=500&q=80"
             alt="Quartier Saint-Pierre Bordeaux"
-            style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--trans-base);"
-            onmouseover="this.style.transform='scale(1.08)'"
-            onmouseout="this.style.transform='scale(1)'"
+            loading="lazy"
           >
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4)); border-radius: var(--radius-xl);"></div>
         </div>
-        <figcaption style="font-weight: 600; color: var(--text); margin-top: var(--space-2); font-size: var(--size-sm);">
+        <figcaption>
           <i class="fas fa-landmark"></i> Saint-Pierre
         </figcaption>
       </figure>
 
-      <!-- Saint-Michel -->
-      <figure style="margin: 0;">
-        <div style="position: relative; overflow: hidden; border-radius: var(--radius-xl); height: 240px; background: var(--bg-alt);">
+      <figure>
+        <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80"
             alt="Quartier Saint-Michel Bordeaux"
-            style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--trans-base);"
-            onmouseover="this.style.transform='scale(1.08)'"
-            onmouseout="this.style.transform='scale(1)'"
+            loading="lazy"
           >
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4)); border-radius: var(--radius-xl);"></div>
         </div>
-        <figcaption style="font-weight: 600; color: var(--text); margin-top: var(--space-2); font-size: var(--size-sm);">
+        <figcaption>
           <i class="fas fa-church"></i> Saint-Michel
         </figcaption>
       </figure>
 
-      <!-- Caudéran -->
-      <figure style="margin: 0;">
-        <div style="position: relative; overflow: hidden; border-radius: var(--radius-xl); height: 240px; background: var(--bg-alt);">
+      <figure>
+        <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=500&q=80"
             alt="Quartier résidentiel Caudéran"
-            style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--trans-base);"
-            onmouseover="this.style.transform='scale(1.08)'"
-            onmouseout="this.style.transform='scale(1)'"
+            loading="lazy"
           >
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4)); border-radius: var(--radius-xl);"></div>
         </div>
-        <figcaption style="font-weight: 600; color: var(--text); margin-top: var(--space-2); font-size: var(--size-sm);">
+        <figcaption>
           <i class="fas fa-home"></i> Caudéran
         </figcaption>
       </figure>
 
-      <!-- Bastide -->
-      <figure style="margin: 0;">
-        <div style="position: relative; overflow: hidden; border-radius: var(--radius-xl); height: 240px; background: var(--bg-alt);">
+      <figure>
+        <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80"
             alt="Quartier Bastide - rive droite"
-            style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--trans-base);"
-            onmouseover="this.style.transform='scale(1.08)'"
-            onmouseout="this.style.transform='scale(1)'"
+            loading="lazy"
           >
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4)); border-radius: var(--radius-xl);"></div>
         </div>
-        <figcaption style="font-weight: 600; color: var(--text); margin-top: var(--space-2); font-size: var(--size-sm);">
+        <figcaption>
           <i class="fas fa-water"></i> Bastide
         </figcaption>
       </figure>
 
-      <!-- Mériadeck -->
-      <figure style="margin: 0;">
-        <div style="position: relative; overflow: hidden; border-radius: var(--radius-xl); height: 240px; background: var(--bg-alt);">
+      <figure>
+        <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=500&q=80"
             alt="Quartier Mériadeck"
-            style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--trans-base);"
-            onmouseover="this.style.transform='scale(1.08)'"
-            onmouseout="this.style.transform='scale(1)'"
+            loading="lazy"
           >
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4)); border-radius: var(--radius-xl);"></div>
         </div>
-        <figcaption style="font-weight: 600; color: var(--text); margin-top: var(--space-2); font-size: var(--size-sm);">
+        <figcaption>
           <i class="fas fa-building"></i> Mériadeck
         </figcaption>
       </figure>

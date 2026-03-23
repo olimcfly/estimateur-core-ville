@@ -877,6 +877,12 @@
 
 /* ─── Admin Guide ───────────────────────────────────── */
 
+/* Container */
+.guide-container {
+  max-width: 960px;
+  scroll-behavior: smooth;
+}
+
 /* Hero header */
 .guide-hero {
   background: linear-gradient(135deg, var(--primary) 0%, #4a0a20 50%, var(--primary-dark) 100%);
@@ -886,6 +892,7 @@
   color: #fff;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(139, 21, 56, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .guide-hero::before {
@@ -897,6 +904,12 @@
   height: 400px;
   background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
   border-radius: 50%;
+  animation: guideFloat 8s ease-in-out infinite;
+}
+
+@keyframes guideFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-15px, 10px); }
 }
 
 .guide-hero::after {
@@ -912,7 +925,7 @@
 
 .guide-hero h2 {
   font-family: 'Playfair Display', serif;
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 800;
   margin-bottom: 0.75rem;
   color: #fff;
@@ -934,7 +947,7 @@
   z-index: 1;
   margin: 0;
   max-width: 600px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .guide-hero-badges {
@@ -952,23 +965,62 @@
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding: 0.55rem 1.1rem;
   border-radius: 24px;
   font-size: 0.82rem;
   font-weight: 600;
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
 }
 
 .guide-hero-badge:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .guide-hero-badge i {
   color: var(--accent);
   font-size: 0.75rem;
+}
+
+/* Hero CTA button */
+.guide-hero-cta {
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.guide-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  letter-spacing: 0.01em;
+}
+
+.guide-hero-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+.guide-hero-btn i {
+  font-size: 0.85rem;
+  color: var(--accent);
 }
 
 /* Table of contents */
@@ -979,6 +1031,19 @@
   padding: 2rem 2.5rem;
   margin-bottom: 2.5rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.guide-toc::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+  opacity: 0.6;
 }
 
 .guide-toc-title {
@@ -1008,33 +1073,42 @@
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0.55rem 0.75rem;
+  padding: 0.6rem 0.85rem;
   border-radius: 10px;
   font-size: 0.88rem;
   font-weight: 500;
   color: var(--text);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
 }
 
 .guide-toc-item:hover {
   background: rgba(var(--primary-rgb), 0.06);
   color: var(--primary);
-  transform: translateX(3px);
+  transform: translateX(4px);
+  border-color: rgba(var(--primary-rgb), 0.08);
+}
+
+.guide-toc-item:hover .guide-toc-num {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(139, 21, 56, 0.25);
 }
 
 .guide-toc-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.05));
   color: var(--primary);
   font-size: 0.75rem;
   font-weight: 700;
   flex-shrink: 0;
+  transition: all 0.25s ease;
 }
 
 /* Section cards */
@@ -1042,14 +1116,16 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 2.25rem 2.25rem 1.75rem;
+  padding: 2.25rem 2.5rem 2rem;
   margin-bottom: 1.75rem;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .guide-section:hover {
   box-shadow: 0 12px 40px rgba(139, 21, 56, 0.07);
   border-color: rgba(var(--primary-rgb), 0.15);
+  transform: translateY(-1px);
 }
 
 /* Variant: danger section (erreurs a eviter) */
@@ -1098,20 +1174,20 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 11px;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
   font-size: 0.85rem;
   font-weight: 800;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(139, 21, 56, 0.2);
+  box-shadow: 0 3px 10px rgba(139, 21, 56, 0.25);
 }
 
 .guide-section h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
   display: flex;
@@ -1142,11 +1218,12 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .guide-table th,
 .guide-table td {
-  padding: 0.9rem 1.15rem;
+  padding: 0.95rem 1.25rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
 }
@@ -1154,9 +1231,9 @@
 .guide-table th {
   background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.08), rgba(var(--primary-rgb), 0.03));
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--primary);
 }
 
@@ -1165,17 +1242,21 @@
 }
 
 .guide-table tbody tr {
-  transition: background 0.15s;
+  transition: background 0.2s ease;
+}
+
+.guide-table tbody tr:nth-child(even) {
+  background: rgba(var(--primary-rgb), 0.012);
 }
 
 .guide-table tr:hover td {
-  background: rgba(var(--primary-rgb), 0.025);
+  background: rgba(var(--primary-rgb), 0.04);
 }
 
 .guide-table code {
   background: rgba(var(--primary-rgb), 0.07);
-  padding: 0.2rem 0.5rem;
-  border-radius: 5px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
   font-size: 0.8rem;
   font-family: 'JetBrains Mono', monospace;
   color: var(--primary-dark);
@@ -1191,11 +1272,12 @@
   font-weight: 700;
   color: var(--primary);
   font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
 }
 
 /* Code blocks */
 .guide-code {
-  background: #1a1b2e;
+  background: #1e1e2e;
   color: #cdd6f4;
   padding: 1.5rem 1.75rem;
   border-radius: 14px;
@@ -1204,25 +1286,25 @@
   line-height: 1.85;
   overflow-x: auto;
   margin-bottom: 1.5rem;
-  border: 1px solid #2a2b3d;
+  border: 1px solid #313244;
   position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .guide-code::before {
   content: '';
   position: absolute;
-  top: 12px;
-  left: 14px;
-  width: 9px;
-  height: 9px;
+  top: 14px;
+  left: 16px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #f38ba8;
-  box-shadow: 16px 0 0 #fab387, 32px 0 0 #a6e3a1;
+  box-shadow: 18px 0 0 #fab387, 36px 0 0 #a6e3a1;
 }
 
 .guide-code {
-  padding-top: 2.25rem;
+  padding-top: 2.5rem;
 }
 
 .guide-code .comment { color: #6c7086; font-style: italic; }
@@ -1232,29 +1314,40 @@
 
 /* Campaign ad cards */
 .guide-ad-card {
-  background: linear-gradient(to right, rgba(var(--primary-rgb), 0.03), transparent);
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.03), rgba(var(--primary-rgb), 0.01));
   border: 1px solid rgba(var(--primary-rgb), 0.1);
   border-radius: 14px;
-  padding: 1.5rem 1.75rem;
+  padding: 1.75rem 2rem;
   margin-bottom: 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.guide-ad-card:hover {
+  border-color: rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 4px 16px rgba(139, 21, 56, 0.06);
 }
 
 .guide-ad-card h4 {
   margin-top: 0 !important;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.85rem;
   border-bottom: 1px solid rgba(var(--primary-rgb), 0.08);
 }
 
 /* Tips / alerts */
 .guide-tip {
-  padding: 1.15rem 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-radius: 14px;
   margin-bottom: 1.5rem;
   font-size: 0.88rem;
   line-height: 1.7;
   display: flex;
   align-items: flex-start;
-  gap: 0.3rem;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.guide-tip:hover {
+  transform: translateX(2px);
 }
 
 .guide-tip strong {
@@ -1264,15 +1357,19 @@
 .guide-tip-info {
   background: rgba(59, 130, 246, 0.05);
   border-left: 4px solid var(--info, #3b82f6);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-left: 4px solid var(--info, #3b82f6);
 }
 
 .guide-tip-warning {
   background: rgba(249, 115, 22, 0.05);
+  border: 1px solid rgba(249, 115, 22, 0.1);
   border-left: 4px solid var(--warning);
 }
 
 .guide-tip-success {
   background: rgba(var(--success-rgb, 34, 197, 94), 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.1);
   border-left: 4px solid var(--success, #22c55e);
 }
 
@@ -1289,18 +1386,19 @@
 .guide-checklist li {
   display: flex;
   align-items: flex-start;
-  gap: 0.7rem;
+  gap: 0.75rem;
   font-size: 0.88rem;
   line-height: 1.65;
-  padding: 0.65rem 1rem;
+  padding: 0.7rem 1.1rem;
   border-radius: 10px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   border: 1px solid transparent;
 }
 
 .guide-checklist li:hover {
   background: rgba(var(--primary-rgb), 0.03);
-  border-color: rgba(var(--primary-rgb), 0.06);
+  border-color: rgba(var(--primary-rgb), 0.08);
+  transform: translateX(3px);
 }
 
 .guide-checklist li i {
@@ -1320,48 +1418,55 @@
 }
 
 .guide-section--danger .guide-checklist li:hover {
-  background: rgba(239, 68, 68, 0.05);
-  border-color: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.18);
+  transform: translateX(3px);
 }
 
 /* Sub-headings inside sections */
 .guide-section h4 {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   font-weight: 700;
   margin: 1.75rem 0 1rem;
   color: var(--text);
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.65rem;
 }
 
 .guide-section h4 .guide-step-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), #c9a432);
   color: #fff;
   font-size: 0.74rem;
   font-weight: 800;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+  transition: all 0.2s ease;
+}
+
+.guide-section h4:hover .guide-step-badge {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
 
 /* Section divider */
 .guide-divider {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin: 2.5rem 0;
+  gap: 1.25rem;
+  margin: 2.75rem 0;
   color: var(--muted);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
 
 .guide-divider::before,
@@ -1385,6 +1490,13 @@
 
   .guide-hero p {
     font-size: 0.92rem;
+  }
+
+  .guide-hero-btn {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.85rem;
+    width: 100%;
+    justify-content: center;
   }
 
   .guide-toc {
@@ -1420,6 +1532,14 @@
 
   .guide-ad-card {
     padding: 1.25rem;
+  }
+
+  .guide-checklist li:hover {
+    transform: none;
+  }
+
+  .guide-section:hover {
+    transform: none;
   }
 }
 

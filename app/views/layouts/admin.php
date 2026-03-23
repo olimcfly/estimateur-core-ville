@@ -491,6 +491,11 @@ try {
       }
     }
 
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
     @media (max-width: 640px) {
       .admin-topbar {
         padding: 0 1rem;
@@ -873,7 +878,42 @@ function escHtml(str) {
   return d.innerHTML;
 }
 
-// Auto-refresh notifications every 60 seconds
+// ─── Browser notifications permission ───
+(function() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    // Request permission after a short delay
+    setTimeout(function() { Notification.requestPermission(); }, 3000);
+  }
+})();
+
+// ─── Toast notification container ───
+(function() {
+  var container = document.createElement('div');
+  container.id = 'toast-container';
+  container.style.cssText = 'position:fixed;top:80px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none;';
+  document.body.appendChild(container);
+
+  window.showToast = function(title, message, type, link) {
+    var typeColors = { lead: '#8B1538', success: '#22c55e', warning: '#f97316', error: '#e24b4a', system: '#6b6459', info: '#3b82f6' };
+    var typeIcons = { lead: 'fa-user-plus', success: 'fa-check-circle', warning: 'fa-exclamation-triangle', error: 'fa-times-circle', system: 'fa-cog', info: 'fa-info-circle' };
+    var color = typeColors[type] || '#3b82f6';
+    var icon = typeIcons[type] || 'fa-info-circle';
+
+    var toast = document.createElement('div');
+    toast.style.cssText = 'pointer-events:auto;background:#fff;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);border-left:4px solid ' + color + ';padding:0.75rem 1rem;display:flex;align-items:flex-start;gap:0.75rem;max-width:380px;animation:slideInRight 0.3s ease;cursor:pointer;';
+    toast.innerHTML = '<div style="width:28px;height:28px;border-radius:6px;background:' + color + '15;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas ' + icon + '" style="color:' + color + ';font-size:0.8rem;"></i></div>'
+      + '<div style="flex:1;"><div style="font-size:0.85rem;font-weight:600;color:#1a1410;">' + escHtml(title) + '</div>'
+      + (message ? '<div style="font-size:0.78rem;color:#6b6459;margin-top:2px;">' + escHtml(message) + '</div>' : '')
+      + '</div><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#999;cursor:pointer;font-size:0.9rem;padding:0;">&times;</button>';
+
+    if (link) toast.addEventListener('click', function(e) { if (e.target.tagName !== 'BUTTON') window.location.href = link; });
+    container.appendChild(toast);
+    setTimeout(function() { if (toast.parentElement) toast.remove(); }, 8000);
+  };
+})();
+
+// ─── Auto-refresh notifications every 30 seconds with browser + toast alerts ───
+var _lastNotifCount = <?= $_notifCount ?>;
 setInterval(function() {
   fetch('/admin/notifications/fetch', { credentials: 'same-origin' })
     .then(function(r) { return r.json(); })
@@ -888,9 +928,28 @@ setInterval(function() {
           badge.style.display = 'none';
         }
       }
+
+      // Show toast + browser notification for new notifications
+      if (data.unread > _lastNotifCount && data.notifications && data.notifications.length > 0) {
+        var newest = data.notifications[0];
+        if (!newest.is_read) {
+          showToast(newest.title, newest.message, newest.type, newest.link);
+
+          // Browser push notification
+          if ('Notification' in window && Notification.permission === 'granted') {
+            var n = new Notification(newest.title, {
+              body: newest.message || '',
+              icon: '/favicon.svg',
+              tag: 'notif-' + newest.id
+            });
+            if (newest.link) n.onclick = function() { window.focus(); window.location.href = newest.link; };
+          }
+        }
+      }
+      _lastNotifCount = data.unread;
     })
     .catch(function() {});
-}, 60000);
+}, 30000);
 </script>
 
 </body>

@@ -281,6 +281,7 @@ final class AdminModule
     /**
      * Check if current user has access to a module.
      * Superuser-only modules are hidden from admin role.
+     * Per-user module permissions are checked for non-superuser users.
      */
     public static function hasAccess(string $slug, string $userRole = ''): bool
     {
@@ -299,6 +300,17 @@ final class AdminModule
 
         if ((bool) $mod['superuser_only'] && $userRole !== AdminUser::ROLE_SUPERUSER) {
             return false;
+        }
+
+        // Superusers always have full access
+        if ($userRole === AdminUser::ROLE_SUPERUSER) {
+            return true;
+        }
+
+        // Check per-user module permissions
+        $userId = (int) ($_SESSION['admin_user_id'] ?? 0);
+        if ($userId > 0) {
+            return AdminUser::hasModuleAccess($userId, $slug);
         }
 
         return true;

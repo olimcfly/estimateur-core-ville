@@ -648,6 +648,12 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
       <i class="fas fa-share-alt"></i> Images Sociaux
     </a>
     <?php endif; ?>
+    <a href="/admin/gmb" class="admin-sidebar-link <?= str_starts_with($admin_page ?? '', 'gmb') ? 'active' : '' ?>">
+      <i class="fas fa-map-marker-alt"></i> Google My Business
+    </a>
+    <a href="/admin/gmb/guide" class="admin-sidebar-link <?= ($admin_page ?? '') === 'gmb-guide' ? 'active' : '' ?>" style="padding-left: 2.5rem; font-size: 0.85rem;">
+      <i class="fas fa-book-open"></i> Guide GMB
+    </a>
     <?php if ($_moduleAccess('google_ads')): ?>
     <a href="/admin/google-ads" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads-guide' ? 'active' : '' ?>">
       <i class="fas fa-book"></i> Guide Google Ads

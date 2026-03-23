@@ -223,13 +223,13 @@ $router->post('/admin/gads-campaigns/api/save', [AdminGoogleAdsCampaignControlle
 $router->post('/admin/gads-campaigns/api/delete', [AdminGoogleAdsCampaignController::class, 'apiDelete']);
 $router->post('/admin/gads-campaigns/api/status', [AdminGoogleAdsCampaignController::class, 'apiStatus']);
 
-// GMB Publications
+// ===== GMB Publications =====
 $router->get('/admin/gmb', [AdminGmbController::class, 'index']);
 $router->get('/admin/gmb/guide', [AdminGmbController::class, 'guide']);
 $router->get('/admin/gmb/create', [AdminGmbController::class, 'create']);
 $router->get('/admin/gmb/edit/{id}', [AdminGmbController::class, 'edit']);
 $router->post('/admin/gmb/save', [AdminGmbController::class, 'save']);
-$router->post('/admin/gmb/delete/{id}', [AdminGmbController::class, 'delete']);
+$router->post('/admin/gmb/delete', [AdminGmbController::class, 'delete']);
 $router->get('/admin/gmb/mark-published/{id}', [AdminGmbController::class, 'markPublished']);
 $router->post('/admin/gmb/api/generate-from-article', [AdminGmbController::class, 'generateFromArticle']);
 $router->post('/admin/gmb/api/generate', [AdminGmbController::class, 'generateManual']);

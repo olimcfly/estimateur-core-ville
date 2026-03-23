@@ -930,23 +930,23 @@
   .leads-toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
     margin-bottom: 1rem;
-    align-items: flex-end;
+    align-items: center;
   }
 
   .leads-search-box {
     position: relative;
-    flex: 1 1 280px;
-    min-width: 200px;
+    flex: 0 1 220px;
+    min-width: 160px;
   }
 
   .leads-search-box input {
     width: 100%;
-    padding: 0.55rem 0.75rem 0.55rem 2.2rem;
+    padding: 0.45rem 0.65rem 0.45rem 2rem;
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     background: var(--admin-surface, #fff);
     color: var(--admin-text, #1a1410);
     transition: border-color 0.15s;
@@ -960,29 +960,30 @@
 
   .leads-search-box i {
     position: absolute;
-    left: 0.75rem;
+    left: 0.65rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--admin-muted, #6b6459);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .leads-filter-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.4rem;
     align-items: center;
+    flex: 1;
   }
 
   .leads-filter-select {
-    padding: 0.5rem 0.65rem;
+    padding: 0.45rem 0.5rem;
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     background: var(--admin-surface, #fff);
     color: var(--admin-text, #1a1410);
     cursor: pointer;
-    min-width: 110px;
+    flex: 0 1 auto;
   }
 
   .leads-filter-select:focus {
@@ -991,12 +992,14 @@
   }
 
   .leads-filter-date {
-    padding: 0.48rem 0.6rem;
+    padding: 0.42rem 0.5rem;
     border: 1px solid var(--admin-border, #e8dfd7);
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     background: var(--admin-surface, #fff);
     color: var(--admin-text, #1a1410);
+    flex: 0 1 auto;
+    max-width: 140px;
   }
 
   .leads-filter-date:focus {
@@ -1006,7 +1009,7 @@
 
   .leads-toolbar-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
     align-items: center;
     flex-shrink: 0;
   }

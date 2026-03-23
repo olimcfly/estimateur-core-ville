@@ -111,67 +111,76 @@ $gadsFilterUrl = function (array $override = []): string {
 
 <!-- Hero banner -->
 <div class="gads-hero">
-  <h1><i class="fas fa-magic"></i> Generateur de Campagnes Google Ads</h1>
-  <p>Creez et gerez vos campagnes, annonces et landing pages avec l'IA</p>
-  <div style="margin-top:1rem;">
+  <h1><i class="fas fa-rocket"></i> Generateur de Campagnes</h1>
+  <p>Creez et gerez vos campagnes Google Ads, annonces et landing pages avec l'IA</p>
+  <div class="gads-hero-actions">
     <a href="/admin/google-ads/wizard.php" class="gads-btn gads-btn--primary"><i class="fas fa-plus"></i> Nouvelle campagne</a>
-    <a href="/admin/google-ads" class="gads-btn gads-btn--secondary" style="margin-left:0.5rem;"><i class="fas fa-book"></i> Voir le guide</a>
+    <a href="/admin/google-ads" class="gads-btn gads-btn--secondary"><i class="fas fa-book-open"></i> Guide Google Ads</a>
   </div>
 </div>
 
 <!-- KPI Cards -->
 <div class="gads-kpi-grid">
   <div class="gads-kpi-card">
+    <div class="gads-kpi-icon gads-kpi-icon--blue"><i class="fas fa-bullhorn"></i></div>
     <div class="gads-kpi-value"><?= (int) $kpi['total'] ?></div>
     <div class="gads-kpi-label">Total campagnes</div>
   </div>
   <div class="gads-kpi-card">
+    <div class="gads-kpi-icon gads-kpi-icon--green"><i class="fas fa-play-circle"></i></div>
     <div class="gads-kpi-value"><?= (int) $kpi['active'] ?></div>
     <div class="gads-kpi-label">Actives</div>
   </div>
   <div class="gads-kpi-card">
+    <div class="gads-kpi-icon gads-kpi-icon--yellow"><i class="fas fa-pencil-alt"></i></div>
     <div class="gads-kpi-value"><?= (int) $kpi['draft'] ?></div>
     <div class="gads-kpi-label">Brouillons</div>
   </div>
   <div class="gads-kpi-card">
+    <div class="gads-kpi-icon gads-kpi-icon--purple"><i class="fas fa-file-code"></i></div>
     <div class="gads-kpi-value"><?= (int) $kpi['with_landing'] ?></div>
     <div class="gads-kpi-label">Avec landing</div>
   </div>
 </div>
 
 <!-- Filter bar -->
-<div class="gads-section" style="margin-bottom:1.5rem;">
-  <form method="GET" action="/admin/google-ads/campaigns" id="gads-filter-form" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
-    <div class="gads-form-group" style="margin-bottom:0;flex:1;min-width:150px;">
-      <label>Type</label>
+<div class="gads-filter-bar">
+  <form method="GET" action="/admin/google-ads/campaigns" id="gads-filter-form">
+    <div class="gads-form-group">
+      <label><i class="fas fa-tag"></i> Type</label>
       <select name="campaign_type" class="gads-select" onchange="this.form.submit()">
-        <option value="">Tous</option>
+        <option value="">Tous les types</option>
         <?php foreach ($type_labels as $val => $lbl): ?>
         <option value="<?= $val ?>" <?= $filterType === $val ? 'selected' : '' ?>><?= $lbl ?></option>
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="gads-form-group" style="margin-bottom:0;flex:1;min-width:150px;">
-      <label>Statut</label>
+    <div class="gads-form-group">
+      <label><i class="fas fa-toggle-on"></i> Statut</label>
       <select name="status" class="gads-select" onchange="this.form.submit()">
-        <option value="">Tous</option>
+        <option value="">Tous les statuts</option>
         <?php foreach ($status_labels as $val => $lbl): ?>
         <option value="<?= $val ?>" <?= $filterStatus === $val ? 'selected' : '' ?>><?= $lbl ?></option>
         <?php endforeach; ?>
       </select>
     </div>
-    <div class="gads-form-group" style="margin-bottom:0;flex:1;min-width:200px;">
-      <label>Ville</label>
-      <input type="text" name="ville" class="gads-input" value="<?= htmlspecialchars($filterVille) ?>" placeholder="Rechercher une ville..." id="gads-filter-ville">
+    <div class="gads-form-group" style="min-width:220px;">
+      <label><i class="fas fa-map-marker-alt"></i> Ville</label>
+      <div class="gads-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" name="ville" class="gads-input" value="<?= htmlspecialchars($filterVille) ?>" placeholder="Rechercher une ville..." id="gads-filter-ville">
+      </div>
     </div>
   </form>
 </div>
 
 <?php if (empty($campaigns)): ?>
 <!-- Empty state -->
-<div class="gads-section" style="text-align:center;padding:3rem;">
-  <p style="font-size:1.1rem;color:#718096;margin-bottom:1rem;">Aucune campagne trouvee</p>
-  <a href="/admin/google-ads/wizard.php" class="gads-btn gads-btn--primary">Creer une campagne</a>
+<div class="gads-empty-state">
+  <div class="gads-empty-icon"><i class="fas fa-bullhorn"></i></div>
+  <p>Aucune campagne trouvee</p>
+  <div class="gads-empty-hint">Commencez par creer votre premiere campagne Google Ads avec l'IA</div>
+  <a href="/admin/google-ads/wizard.php" class="gads-btn gads-btn--primary"><i class="fas fa-plus"></i> Creer une campagne</a>
 </div>
 
 <?php else: ?>
@@ -184,52 +193,63 @@ $gadsFilterUrl = function (array $override = []): string {
     $qs = (int) $c['quality_score'];
     $qsColor = $qs >= 7 ? 'var(--gads-green)' : ($qs >= 5 ? 'var(--gads-yellow)' : 'var(--gads-red)');
     $typeIcon = $type_icons[$c['campaign_type']] ?? 'fas fa-bullhorn';
+    $typeClass = $c['campaign_type'] ?? 'estimation';
   ?>
   <div class="gads-campaign-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-      <h3><i class="<?= $typeIcon ?>" style="margin-right:0.4rem;color:var(--gads-accent);"></i><?= htmlspecialchars($c['campaign_label']) ?></h3>
+    <div class="gads-card-header">
+      <div class="gads-card-type-icon gads-card-type-icon--<?= $typeClass ?>">
+        <i class="<?= $typeIcon ?>"></i>
+      </div>
+      <div class="gads-card-title-wrap">
+        <h3><?= htmlspecialchars($c['campaign_label']) ?></h3>
+        <div class="gads-card-subtitle">
+          <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($c['ville']) ?> &middot; <?= $type_labels[$c['campaign_type']] ?? $c['campaign_type'] ?>
+        </div>
+      </div>
       <span class="gads-badge gads-badge--<?= $status_colors[$c['status']] ?? 'draft' ?>">
         <?= $status_labels[$c['status']] ?? $c['status'] ?>
       </span>
     </div>
-    <div style="font-size:0.85rem;color:#718096;margin-bottom:0.75rem;">
-      <?= htmlspecialchars($c['ville']) ?> &middot; <?= $type_labels[$c['campaign_type']] ?? $c['campaign_type'] ?>
-    </div>
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;font-size:0.82rem;">
-      <span style="background:#ebf5ff;color:#1a73e8;padding:0.15rem 0.5rem;border-radius:6px;">
-        <?= $adsData ? 'Annonces OK' : 'Pas d\'annonce' ?>
-      </span>
-      <span style="background:#ebf5ff;color:#1a73e8;padding:0.15rem 0.5rem;border-radius:6px;">
-        <?= count($kwData) ?> mots-cles
-      </span>
-      <?php if ($hasLanding): ?>
-      <span style="background:#ecfdf5;color:#0d9f6e;padding:0.15rem 0.5rem;border-radius:6px;">Landing OK</span>
-      <?php endif; ?>
-      <span style="padding:0.15rem 0.5rem;border-radius:6px;background:#f7fafc;color:#4a5568;">
-        <?= number_format((float) $c['budget_daily'], 2) ?> &euro;/jour
-      </span>
-    </div>
 
-    <?php if ($qs > 0): ?>
-    <div style="margin-bottom:0.75rem;">
-      <div style="font-size:0.75rem;color:#718096;margin-bottom:0.2rem;">Quality Score: <?= $qs ?>/10</div>
-      <div style="background:var(--gads-border);border-radius:4px;height:6px;overflow:hidden;">
-        <div style="width:<?= $qs * 10 ?>%;height:100%;background:<?= $qsColor ?>;border-radius:4px;"></div>
+    <div class="gads-card-body">
+      <div class="gads-card-tags">
+        <?php if ($adsData): ?>
+        <span class="gads-card-tag gads-card-tag--success"><i class="fas fa-check-circle"></i> Annonces</span>
+        <?php else: ?>
+        <span class="gads-card-tag gads-card-tag--neutral"><i class="fas fa-times-circle"></i> Pas d'annonce</span>
+        <?php endif; ?>
+        <span class="gads-card-tag gads-card-tag--info"><i class="fas fa-key"></i> <?= count($kwData) ?> mots-cles</span>
+        <?php if ($hasLanding): ?>
+        <span class="gads-card-tag gads-card-tag--success"><i class="fas fa-file-alt"></i> Landing</span>
+        <?php endif; ?>
+        <span class="gads-card-tag gads-card-tag--neutral"><i class="fas fa-coins"></i> <?= number_format((float) $c['budget_daily'], 2) ?> &euro;/j</span>
       </div>
-    </div>
-    <?php endif; ?>
 
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-      <a href="/admin/google-ads/wizard.php?id=<?= $c['id'] ?>" class="gads-btn gads-btn--secondary" style="font-size:0.82rem;">Modifier</a>
+      <?php if ($qs > 0): ?>
+      <div class="gads-qs-bar">
+        <div class="gads-qs-header">
+          <span>Quality Score</span>
+          <span><?= $qs ?>/10</span>
+        </div>
+        <div class="gads-qs-track">
+          <div class="gads-qs-fill" style="width:<?= $qs * 10 ?>%;background:<?= $qsColor ?>;"></div>
+        </div>
+      </div>
+      <?php endif; ?>
+    </div>
+
+    <div class="gads-card-footer">
+      <a href="/admin/google-ads/wizard.php?id=<?= $c['id'] ?>" class="gads-btn gads-btn--secondary" style="font-size:0.82rem;"><i class="fas fa-edit"></i> Modifier</a>
       <?php if ($hasLanding): ?>
-      <a href="/admin/google-ads/preview.php?id=<?= $c['id'] ?>" target="_blank" class="gads-btn gads-btn--secondary" style="font-size:0.82rem;">Previsualiser</a>
+      <a href="/admin/google-ads/preview.php?id=<?= $c['id'] ?>" target="_blank" class="gads-btn gads-btn--secondary" style="font-size:0.82rem;"><i class="fas fa-eye"></i> Preview</a>
       <?php endif; ?>
       <?php
         $toggleStatus = $c['status'] === 'active' ? 'paused' : 'active';
         $toggleLabel  = $c['status'] === 'active' ? 'Pause' : 'Activer';
+        $toggleIcon   = $c['status'] === 'active' ? 'fa-pause' : 'fa-play';
       ?>
-      <button class="gads-btn gads-btn--primary" style="font-size:0.82rem;"
-        onclick="gadsToggle(<?= $c['id'] ?>, '<?= $toggleStatus ?>')"><?= $toggleLabel ?></button>
+      <button class="gads-btn gads-btn--primary" style="font-size:0.82rem;margin-left:auto;"
+        onclick="gadsToggle(<?= $c['id'] ?>, '<?= $toggleStatus ?>')"><i class="fas <?= $toggleIcon ?>"></i> <?= $toggleLabel ?></button>
     </div>
   </div>
   <?php endforeach; ?>
@@ -237,17 +257,16 @@ $gadsFilterUrl = function (array $override = []): string {
 
 <!-- Pagination -->
 <?php if ($totalPages > 1): ?>
-<div style="display:flex;justify-content:center;gap:0.5rem;margin-bottom:2rem;">
+<div class="gads-pagination">
   <?php if ($page > 1): ?>
-    <a href="<?= $gadsFilterUrl(['page' => $page - 1]) ?>" class="gads-btn gads-btn--secondary">&laquo; Precedent</a>
+    <a href="<?= $gadsFilterUrl(['page' => $page - 1]) ?>" class="gads-btn gads-btn--secondary"><i class="fas fa-chevron-left"></i></a>
   <?php endif; ?>
   <?php for ($p = 1; $p <= $totalPages; $p++): ?>
     <a href="<?= $gadsFilterUrl(['page' => $p]) ?>"
-       class="gads-btn <?= $p === $page ? 'gads-btn--primary' : 'gads-btn--secondary' ?>"
-       style="min-width:2.5rem;text-align:center;"><?= $p ?></a>
+       class="gads-btn <?= $p === $page ? 'gads-btn--primary' : 'gads-btn--secondary' ?>"><?= $p ?></a>
   <?php endfor; ?>
   <?php if ($page < $totalPages): ?>
-    <a href="<?= $gadsFilterUrl(['page' => $page + 1]) ?>" class="gads-btn gads-btn--secondary">Suivant &raquo;</a>
+    <a href="<?= $gadsFilterUrl(['page' => $page + 1]) ?>" class="gads-btn gads-btn--secondary"><i class="fas fa-chevron-right"></i></a>
   <?php endif; ?>
 </div>
 <?php endif; ?>

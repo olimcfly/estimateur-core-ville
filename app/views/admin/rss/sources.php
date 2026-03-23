@@ -158,44 +158,13 @@
 </div>
 
 <style>
-  .admin-page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap; }
-  .admin-page-title { font-size: 1.5rem; font-weight: 700; color: var(--admin-text); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-  .admin-page-desc { font-size: 0.9rem; color: var(--admin-muted); margin-top: 0.25rem; }
-  .admin-card { background: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--admin-radius, 8px); margin-bottom: 1.5rem; overflow: hidden; }
-  .admin-card-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--admin-border); }
-  .admin-card-header h2 { font-size: 1rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-  .admin-card-body { padding: 1.5rem; }
-  .admin-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.15s ease; }
-  .admin-btn-primary { background: var(--admin-primary); color: #fff; }
-  .admin-btn-primary:hover { opacity: 0.9; }
-  .admin-btn-secondary { background: var(--admin-bg); color: var(--admin-text); border: 1px solid var(--admin-border); }
-  .admin-btn-ghost { background: transparent; color: var(--admin-muted); padding: 0.4rem 0.6rem; }
-  .admin-btn-ghost:hover { color: var(--admin-primary); background: rgba(139,21,56,0.06); }
-  .admin-btn-danger { background: transparent; color: #dc2626; padding: 0.4rem 0.6rem; }
-  .admin-btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
-  .admin-btn-sm { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
-  .admin-badge { background: var(--admin-bg); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; color: var(--admin-muted); font-weight: 600; }
-  .admin-alert { padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
-  .admin-alert-success { background: rgba(34, 197, 94, 0.1); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.2); }
-  .admin-alert-danger { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
-  .admin-status { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-  .admin-status-success { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
-  .admin-actions { display: flex; gap: 0.25rem; }
-  .admin-table-responsive { overflow-x: auto; }
-  .admin-table { width: 100%; border-collapse: collapse; }
-  .admin-table th { padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-muted); border-bottom: 1px solid var(--admin-border); background: var(--admin-bg); }
-  .admin-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--admin-border); font-size: 0.9rem; }
-  .admin-table tbody tr:hover { background: rgba(0,0,0,0.02); }
-  .admin-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--admin-muted); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.03em; }
-  .admin-input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.9rem; font-family: inherit; background: #fff; }
-  .admin-input:focus { outline: none; border-color: var(--admin-primary); box-shadow: 0 0 0 3px rgba(139,21,56,0.1); }
+  /* Sources page — page-specific styles */
   .rss-form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; align-items: end; }
   .rss-source-badge { font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
   .rss-zone-local { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
   .rss-zone-national { background: rgba(139, 21, 56, 0.08); color: var(--admin-primary); }
 
   @media (max-width: 768px) {
-    .admin-page-header { flex-direction: column; }
     .rss-form-grid { grid-template-columns: 1fr; }
   }
 </style>

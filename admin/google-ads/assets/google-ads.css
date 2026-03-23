@@ -1,0 +1,644 @@
+/* ============================================================
+   Google Ads Campaign Manager — gads-* namespace
+   ============================================================ */
+
+:root {
+  --gads-bg: #f5f7fa;
+  --gads-surface: #ffffff;
+  --gads-border: #e2e6ea;
+  --gads-accent: #1a73e8;
+  --gads-green: #0d9f6e;
+  --gads-red: #e53e3e;
+  --gads-purple: #7c3aed;
+  --gads-yellow: #f59e0b;
+}
+
+/* ── Reset scoped ─────────────────────────────────────────── */
+.gads-wrap *,
+.gads-wrap *::before,
+.gads-wrap *::after {
+  box-sizing: border-box;
+}
+
+.gads-wrap {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1a202c;
+  background: var(--gads-bg);
+  line-height: 1.5;
+}
+
+/* ── Hero banner ──────────────────────────────────────────── */
+.gads-hero {
+  background: linear-gradient(135deg, var(--gads-accent), var(--gads-purple));
+  color: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.gads-hero h1 {
+  font-size: 1.75rem;
+  margin: 0 0 0.5rem;
+}
+
+.gads-hero p {
+  opacity: 0.9;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* ── KPI grid ─────────────────────────────────────────────── */
+.gads-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.gads-kpi-card {
+  background: var(--gads-surface);
+  border: 1px solid var(--gads-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.gads-kpi-card .gads-kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gads-accent);
+}
+
+.gads-kpi-card .gads-kpi-label {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-top: 0.25rem;
+}
+
+/* ── Campaign cards ───────────────────────────────────────── */
+.gads-campaign-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.gads-campaign-card {
+  background: var(--gads-surface);
+  border: 1px solid var(--gads-border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.gads-campaign-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.gads-campaign-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.gads-campaign-card .gads-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.gads-badge--draft    { background: #edf2f7; color: #4a5568; }
+.gads-badge--active   { background: #c6f6d5; color: #22543d; }
+.gads-badge--paused   { background: #fefcbf; color: #744210; }
+.gads-badge--archived { background: #fed7d7; color: #9b2c2c; }
+
+/* ── Wizard step indicator ────────────────────────────────── */
+.gads-steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  counter-reset: step;
+}
+
+.gads-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding-top: 2.5rem;
+  font-size: 0.85rem;
+  color: #a0aec0;
+}
+
+.gads-step::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--gads-border);
+  color: #718096;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  z-index: 1;
+}
+
+.gads-step::after {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  left: calc(50% + 1rem);
+  width: calc(100% - 2rem);
+  height: 2px;
+  background: var(--gads-border);
+}
+
+.gads-step:last-child::after {
+  display: none;
+}
+
+.gads-step.is-active::before,
+.gads-step.is-done::before {
+  background: var(--gads-accent);
+  color: #fff;
+}
+
+.gads-step.is-active {
+  color: var(--gads-accent);
+  font-weight: 600;
+}
+
+.gads-step.is-done {
+  color: var(--gads-green);
+}
+
+.gads-step.is-done::before {
+  background: var(--gads-green);
+  content: '\2713';
+}
+
+.gads-step.is-done::after {
+  background: var(--gads-green);
+}
+
+/* ── Form fields ──────────────────────────────────────────── */
+.gads-form-group {
+  margin-bottom: 1.25rem;
+}
+
+.gads-form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.gads-input,
+.gads-select,
+.gads-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--gads-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: var(--gads-surface);
+  transition: border-color 0.15s;
+}
+
+.gads-input:focus,
+.gads-select:focus,
+.gads-textarea:focus {
+  outline: none;
+  border-color: var(--gads-accent);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+.gads-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* ── Ads grid (titre 1-2-3 + desc 1-2) ───────────────────── */
+.gads-ads-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.gads-ad-card {
+  background: var(--gads-surface);
+  border: 1px solid var(--gads-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.gads-ad-card h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--gads-purple);
+}
+
+.gads-ad-field {
+  margin-bottom: 0.6rem;
+}
+
+.gads-ad-field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gads-ad-field-value {
+  font-size: 0.95rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed var(--gads-border);
+}
+
+.gads-ad-field-value .gads-char-count {
+  float: right;
+  font-size: 0.75rem;
+  color: #a0aec0;
+}
+
+.gads-ad-field-value .gads-char-over {
+  color: var(--gads-red);
+  font-weight: 700;
+}
+
+/* ── UTM code blocks ──────────────────────────────────────── */
+.gads-code-block {
+  background: #1a202c;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.gads-code-block .gads-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+/* ── Keyword tags ─────────────────────────────────────────── */
+.gads-keyword-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gads-keyword {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.gads-keyword--broad   { background: #ebf5ff; color: #1a73e8; }
+.gads-keyword--phrase  { background: #ecfdf5; color: #0d9f6e; }
+.gads-keyword--exact   { background: #fef2f2; color: #e53e3e; }
+
+/* ── Checklist ────────────────────────────────────────────── */
+.gads-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.gads-checklist li {
+  padding: 0.5rem 0;
+  padding-left: 1.75rem;
+  position: relative;
+  border-bottom: 1px solid var(--gads-border);
+  font-size: 0.9rem;
+}
+
+.gads-checklist li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.65rem;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--gads-border);
+  border-radius: 4px;
+}
+
+.gads-checklist li.is-checked::before {
+  background: var(--gads-green);
+  border-color: var(--gads-green);
+  /* checkmark via box-shadow trick */
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+/* ── Pixel tabs ───────────────────────────────────────────── */
+.gads-pixel-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gads-border);
+  margin-bottom: 1rem;
+}
+
+.gads-pixel-tab {
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #718096;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.gads-pixel-tab.is-active {
+  color: var(--gads-accent);
+  border-bottom-color: var(--gads-accent);
+}
+
+.gads-pixel-panel {
+  display: none;
+}
+
+.gads-pixel-panel.is-active {
+  display: block;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.gads-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.gads-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gads-btn--primary {
+  background: var(--gads-accent);
+  color: #fff;
+}
+
+.gads-btn--primary:hover:not(:disabled) {
+  background: #1557b0;
+}
+
+.gads-btn--secondary {
+  background: var(--gads-surface);
+  color: var(--gads-accent);
+  border: 1px solid var(--gads-border);
+}
+
+.gads-btn--secondary:hover:not(:disabled) {
+  background: #f7fafc;
+}
+
+.gads-btn--green {
+  background: var(--gads-green);
+  color: #fff;
+}
+
+.gads-btn--green:hover:not(:disabled) {
+  background: #0b8a5e;
+}
+
+.gads-btn--red {
+  background: var(--gads-red);
+  color: #fff;
+}
+
+.gads-copy-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gads-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Modal (landing preview) ──────────────────────────────── */
+.gads-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.gads-modal-overlay.is-open {
+  display: flex;
+}
+
+.gads-modal {
+  background: var(--gads-surface);
+  border-radius: 12px;
+  width: 90vw;
+  max-width: 1100px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.gads-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--gads-border);
+}
+
+.gads-modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.gads-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #718096;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.gads-modal-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.gads-modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.gads-modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--gads-border);
+}
+
+/* ── Section panels ───────────────────────────────────────── */
+.gads-section {
+  background: var(--gads-surface);
+  border: 1px solid var(--gads-border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.gads-section h2 {
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+}
+
+/* ── Step panels visibility ───────────────────────────────── */
+.gads-step-panel {
+  display: none;
+}
+
+.gads-step-panel.is-active {
+  display: block;
+}
+
+/* ── Type selector cards ──────────────────────────────────── */
+.gads-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.gads-type-card {
+  background: var(--gads-surface);
+  border: 2px solid var(--gads-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gads-type-card:hover {
+  border-color: var(--gads-accent);
+}
+
+.gads-type-card.is-selected {
+  border-color: var(--gads-accent);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+.gads-type-card h4 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1rem;
+}
+
+.gads-type-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #718096;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .gads-hero {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .gads-hero h1 {
+    font-size: 1.35rem;
+  }
+
+  .gads-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gads-campaign-list {
+    grid-template-columns: 1fr;
+  }
+
+  .gads-ads-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gads-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gads-steps {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .gads-step {
+    text-align: left;
+    padding-top: 0;
+    padding-left: 2.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .gads-step::before {
+    left: 0;
+    top: 0;
+    transform: none;
+  }
+
+  .gads-step::after {
+    display: none;
+  }
+
+  .gads-modal {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .gads-modal-footer {
+    flex-wrap: wrap;
+  }
+
+  .gads-section {
+    padding: 1rem;
+  }
+}

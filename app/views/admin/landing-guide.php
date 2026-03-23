@@ -10,6 +10,11 @@
       <span class="guide-hero-badge"><i class="fas fa-bullseye"></i> Conversion optimisée</span>
       <span class="guide-hero-badge"><i class="fas fa-mobile-alt"></i> Mobile-first</span>
     </div>
+    <div style="margin-top:1rem;">
+      <a href="/admin/google-ads/campaigns" style="display:inline-block;background:#8B1538;color:#fff;padding:0.6rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.95rem;">
+        <i class="fas fa-magic"></i> Acceder au Generateur de Campagnes
+      </a>
+    </div>
   </div>
 
   <!-- ═══════════════ TABLE OF CONTENTS ═══════════════ -->

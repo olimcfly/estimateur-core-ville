@@ -291,6 +291,9 @@ $migrations = [
             CONSTRAINT fk_persona_lead
                 FOREIGN KEY (lead_id) REFERENCES leads(id)
                 ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    "],
+
     ['actualites', "
         CREATE TABLE IF NOT EXISTS actualites (
             id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

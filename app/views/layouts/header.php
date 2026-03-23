@@ -22,22 +22,28 @@
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
   <title><?= isset($page_title) ? $page_title : 'Estimation Immobilier Bordeaux et Métropole' ?></title>
 
+  <?php
+    $ogTitle = htmlspecialchars((string) ($og_title ?? $page_title ?? 'Estimation Immobilier Bordeaux et Métropole'), ENT_QUOTES, 'UTF-8');
+    $ogDesc = htmlspecialchars((string) ($og_description ?? $meta_description ?? 'Obtenez votre avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8');
+    $ogImg = htmlspecialchars((string) ($og_image ?? 'https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png'), ENT_QUOTES, 'UTF-8');
+    $ogType = !empty($article) ? 'article' : 'website';
+  ?>
   <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="<?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Estimation Immobilier Bordeaux et Métropole' ?>">
-  <meta property="og:description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Obtenez votre avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta property="og:type" content="<?= $ogType ?>">
+  <meta property="og:title" content="<?= $ogTitle ?>">
+  <meta property="og:description" content="<?= $ogDesc ?>">
   <meta property="og:url" content="<?= e($canonicalUrl) ?>">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="Estimation Immobilier Bordeaux et Métropole">
-  <meta property="og:image" content="https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png">
+  <meta property="og:image" content="<?= $ogImg ?>">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="<?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Estimation Immobilier Bordeaux et Métropole' ?>">
-  <meta name="twitter:description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
-  <meta name="twitter:image" content="https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png">
+  <meta name="twitter:title" content="<?= $ogTitle ?>">
+  <meta name="twitter:description" content="<?= $ogDesc ?>">
+  <meta name="twitter:image" content="<?= $ogImg ?>">
 
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
@@ -641,10 +647,10 @@
         <a href="/blog" class="nav-link">Blog</a>
         <ul class="dropdown-menu" aria-label="Sous-menu blog">
           <li><a href="/blog">Tous les articles</a></li>
-          <li><a href="/blog?cat=vendre">Vendre son bien</a></li>
-          <li><a href="/blog?cat=marche">Marché immobilier</a></li>
-          <li><a href="/blog?cat=conseil">Conseils &amp; astuces</a></li>
-          <li><a href="/blog?cat=legal">Aspect juridique</a></li>
+          <li><a href="/blog/vendre-son-bien">Vendre son bien</a></li>
+          <li><a href="/blog/marche-immobilier">Marché immobilier</a></li>
+          <li><a href="/blog/conseils-astuces">Conseils &amp; astuces</a></li>
+          <li><a href="/blog/aspect-juridique">Aspect juridique</a></li>
         </ul>
       </div>
 

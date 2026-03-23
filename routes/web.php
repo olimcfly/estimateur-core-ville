@@ -32,6 +32,7 @@ use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
 use App\Controllers\AdminFinancementController;
 use App\Controllers\AdminGoogleAdsCampaignController;
+use App\Controllers\AdminGmbController;
 use App\Controllers\AdminRssController;
 use App\Controllers\AdminSeoHubController;
 use App\Controllers\ToolController;
@@ -220,6 +221,20 @@ $router->post('/admin/gads-campaigns/api/generate', [AdminGoogleAdsCampaignContr
 $router->post('/admin/gads-campaigns/api/save', [AdminGoogleAdsCampaignController::class, 'apiSave']);
 $router->post('/admin/gads-campaigns/api/delete', [AdminGoogleAdsCampaignController::class, 'apiDelete']);
 $router->post('/admin/gads-campaigns/api/status', [AdminGoogleAdsCampaignController::class, 'apiStatus']);
+
+// GMB Publications
+$router->get('/admin/gmb', [AdminGmbController::class, 'index']);
+$router->get('/admin/gmb/guide', [AdminGmbController::class, 'guide']);
+$router->get('/admin/gmb/create', [AdminGmbController::class, 'create']);
+$router->get('/admin/gmb/edit/{id}', [AdminGmbController::class, 'edit']);
+$router->post('/admin/gmb/save', [AdminGmbController::class, 'save']);
+$router->post('/admin/gmb/delete/{id}', [AdminGmbController::class, 'delete']);
+$router->get('/admin/gmb/mark-published/{id}', [AdminGmbController::class, 'markPublished']);
+$router->post('/admin/gmb/api/generate-from-article', [AdminGmbController::class, 'generateFromArticle']);
+$router->post('/admin/gmb/api/generate', [AdminGmbController::class, 'generateManual']);
+$router->post('/admin/gmb/api/preview', [AdminGmbController::class, 'preview']);
+$router->post('/admin/gmb/save-settings', [AdminGmbController::class, 'saveSettings']);
+$router->get('/admin/gmb/api/calendar/{month}/{year}', [AdminGmbController::class, 'calendarData']);
 
 // Admin RSS feed management routes
 $router->get('/admin/rss', [AdminRssController::class, 'index']);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Controllers\AdminSmtpApiController;
 use App\Core\Config;
 use App\Models\RssArticle;
 use App\Models\RssSource;
@@ -256,6 +257,11 @@ PROMPT;
             return ['data' => null, 'error' => 'Anthropic API : ' . $result['error']];
         }
 
+        $inputTokens = (int) ($result['response']['usage']['input_tokens'] ?? 0);
+        $outputTokens = (int) ($result['response']['usage']['output_tokens'] ?? 0);
+        $cost = round(($inputTokens / 1000) * 0.003 + ($outputTokens / 1000) * 0.015, 6);
+        AdminSmtpApiController::logAiUsage('claude', 'claude-sonnet-4-20250514', $inputTokens, $outputTokens, $cost, 'article_generation');
+
         $text = $result['response']['content'][0]['text'] ?? '';
         $parsed = $this->extractJson($text);
         if ($parsed === null) {
@@ -290,6 +296,13 @@ PROMPT;
         if ($result['error'] !== null) {
             return ['data' => null, 'error' => 'OpenAI API : ' . $result['error']];
         }
+
+        $inputTokens = (int) ($result['response']['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($result['response']['usage']['completion_tokens'] ?? 0);
+        $inRate = str_contains($model, '4o-mini') ? 0.00015 : 0.0025;
+        $outRate = str_contains($model, '4o-mini') ? 0.0006 : 0.0100;
+        $cost = round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
+        AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'article_generation');
 
         $text = $result['response']['choices'][0]['message']['content'] ?? '';
         $parsed = $this->extractJson($text);

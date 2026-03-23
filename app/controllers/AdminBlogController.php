@@ -865,6 +865,13 @@ final class AdminBlogController
         $decoded = json_decode($response, true);
         $content = $decoded['choices'][0]['message']['content'] ?? '';
 
+        $inputTokens = (int) ($decoded['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($decoded['usage']['completion_tokens'] ?? 0);
+        $inRate = str_contains($model, '4o-mini') ? 0.00015 : 0.0025;
+        $outRate = str_contains($model, '4o-mini') ? 0.0006 : 0.0100;
+        $cost = round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
+        AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'seo_analysis');
+
         echo json_encode(['success' => true, 'suggestion' => trim($content)]);
     }
 

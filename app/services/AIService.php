@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Controllers\AdminSmtpApiController;
 use App\Core\Config;
 
 final class AIService
@@ -44,6 +45,11 @@ final class AIService
         if (!is_array($response)) {
             return $fallback;
         }
+
+        $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($response['usage']['completion_tokens'] ?? 0);
+        $cost = $this->estimateCost($model, $inputTokens, $outputTokens);
+        AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'article_generation');
 
         $content = $response['choices'][0]['message']['content'] ?? '';
         $decoded = json_decode((string) $content, true);
@@ -91,6 +97,11 @@ final class AIService
             return 'Tendance locale stable, demande soutenue sur Bordeaux intra-rocade, forte sensibilité au prix juste.';
         }
 
+        $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($response['usage']['completion_tokens'] ?? 0);
+        $cost = $this->estimateCost($model, $inputTokens, $outputTokens);
+        AdminSmtpApiController::logAiUsage('perplexity', $model, $inputTokens, $outputTokens, $cost, 'market_research');
+
         $content = $response['choices'][0]['message']['content'] ?? '';
         return trim((string) $content) !== '' ? (string) $content : 'Tendance locale stable avec délais de vente variables selon quartier.';
     }
@@ -116,6 +127,22 @@ final class AIService
 
         $decoded = json_decode($response, true);
         return is_array($decoded) ? $decoded : null;
+    }
+
+    private function estimateCost(string $model, int $inputTokens, int $outputTokens): float
+    {
+        $rates = [
+            'gpt-4o'       => [0.0025, 0.0100],
+            'gpt-4o-mini'  => [0.00015, 0.0006],
+            'gpt-4.1'      => [0.002, 0.008],
+            'gpt-4.1-mini' => [0.0004, 0.0016],
+            'sonar'        => [0.001, 0.001],
+            'sonar-pro'    => [0.003, 0.015],
+        ];
+
+        [$inRate, $outRate] = $rates[$model] ?? [0.001, 0.002];
+
+        return round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
     }
 
     private function fallbackArticle(string $persona, string $awarenessLevel, string $topic, string $trendInsights): array

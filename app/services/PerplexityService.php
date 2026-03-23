@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Controllers\AdminSmtpApiController;
 use App\Core\Config;
 
 final class PerplexityService
@@ -51,6 +52,14 @@ final class PerplexityService
         }
 
         $decoded = json_decode($response, true);
+
+        $inputTokens = (int) ($decoded['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($decoded['usage']['completion_tokens'] ?? 0);
+        $inRate = str_contains($model, 'pro') ? 0.003 : 0.001;
+        $outRate = str_contains($model, 'pro') ? 0.015 : 0.001;
+        $cost = round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
+        AdminSmtpApiController::logAiUsage('perplexity', $model, $inputTokens, $outputTokens, $cost, 'market_research');
+
         $content = $decoded['choices'][0]['message']['content'] ?? '';
         $market = json_decode((string) $content, true);
 

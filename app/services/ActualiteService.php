@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Controllers\AdminSmtpApiController;
 use App\Core\Config;
 
 final class ActualiteService
@@ -65,6 +66,13 @@ final class ActualiteService
                 'source' => 'fallback',
             ];
         }
+
+        $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($response['usage']['completion_tokens'] ?? 0);
+        $inRate = str_contains($model, 'pro') ? 0.003 : 0.001;
+        $outRate = str_contains($model, 'pro') ? 0.015 : 0.001;
+        $cost = round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
+        AdminSmtpApiController::logAiUsage('perplexity', $model, $inputTokens, $outputTokens, $cost, 'market_research');
 
         $content = $response['choices'][0]['message']['content'] ?? '';
         $content = trim((string) $content);
@@ -136,6 +144,11 @@ final class ActualiteService
         if (!is_array($response)) {
             return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière Bordeaux']);
         }
+
+        $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
+        $outputTokens = (int) ($response['usage']['completion_tokens'] ?? 0);
+        $cost = $this->estimateCost($model, $inputTokens, $outputTokens);
+        AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'article_generation');
 
         $content = $response['choices'][0]['message']['content'] ?? '';
         $decoded = json_decode((string) $content, true);
@@ -213,6 +226,16 @@ final class ActualiteService
                 'source_query' => $query,
             ],
         ];
+    }
+
+    private function estimateCost(string $model, int $inputTokens, int $outputTokens): float
+    {
+        $rates = [
+            'gpt-4o' => [0.0025, 0.0100],
+            'gpt-4o-mini' => [0.00015, 0.0006],
+        ];
+        [$inRate, $outRate] = $rates[$model] ?? [0.001, 0.002];
+        return round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
     }
 
     private function fallbackNewsResults(string $query): array

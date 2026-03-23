@@ -52,6 +52,8 @@ final class BlogController
 
         View::render('blog/index', [
             'articles' => $articles,
+            'page_title' => 'Blog Immobilier Bordeaux | Conseils, Prix et Tendances du Marché',
+            'meta_description' => 'Conseils immobiliers, analyses du marché bordelais, guides pratiques pour vendre ou acheter à Bordeaux et Métropole. Articles d\'experts locaux.',
             'page_title' => 'Blog Immobilier Bordeaux — Conseils, Analyses & Guides',
             'meta_description' => 'Découvrez nos articles sur l\'immobilier à Bordeaux : analyses du marché, conseils de vente, guides pratiques et actualités par quartier.',
         ]);

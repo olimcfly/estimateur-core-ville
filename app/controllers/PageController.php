@@ -14,21 +14,21 @@ final class PageController
     public function home(): void
     {
         View::render('pages/home', [
-            'page_title' => 'Accueil - Estimation Immobilier Bordeaux',
+            'page_title' => 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit',
         ]);
     }
 
     public function services(): void
     {
         View::render('pages/services', [
-            'page_title' => 'Nos Services - Estimation Immobilier Bordeaux',
+            'page_title' => 'Services d\'Estimation Immobilière | Bordeaux et Métropole',
         ]);
     }
 
     public function about(): void
     {
         View::render('pages/a_propos', [
-            'page_title' => 'À Propos - Estimation Immobilier Bordeaux',
+            'page_title' => 'À Propos | Estimation Immobilier Bordeaux et Métropole',
         ]);
     }
 
@@ -40,14 +40,14 @@ final class PageController
     public function processusEstimation(): void
     {
         View::render('pages/processus_estimation', [
-            'page_title' => 'Processus d\'Estimation - Estimation Immobilier Bordeaux',
+            'page_title' => 'Notre Processus d\'Estimation Immobilière | Bordeaux et Métropole',
         ]);
     }
 
     public function newsletter(): void
     {
         View::render('pages/newsletter', [
-            'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+            'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
         ]);
     }
 
@@ -70,14 +70,14 @@ final class PageController
     public function quartiers(): void
     {
         View::render('pages/quartiers', [
-            'page_title' => 'Quartiers de Bordeaux - Estimation Immobilier Bordeaux',
+            'page_title' => 'Prix Immobilier par Quartier à Bordeaux et Métropole | Guide 2026',
         ]);
     }
 
     public function contact(): void
     {
         View::render('pages/contact', [
-            'page_title' => 'Contact - Estimation Immobilier Bordeaux',
+            'page_title' => 'Contact | Estimation Immobilier Bordeaux et Métropole',
         ]);
     }
 
@@ -90,7 +90,7 @@ final class PageController
             $email = mb_strtolower(Validator::email($_POST, 'newsletter_email'));
         } catch (\InvalidArgumentException) {
             View::render('pages/newsletter', [
-                'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+                'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
                 'error_message' => 'Adresse email invalide. Merci de vérifier votre saisie.',
             ]);
             return;
@@ -98,7 +98,7 @@ final class PageController
 
         if (!$hasConsent) {
             View::render('pages/newsletter', [
-                'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+                'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
                 'error_message' => 'Le consentement RGPD est requis pour finaliser votre inscription.',
             ]);
             return;
@@ -109,14 +109,14 @@ final class PageController
 
         if (!$this->sendNewsletterConfirmationEmail($email, $confirmLink)) {
             View::render('pages/newsletter', [
-                'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+                'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
                 'error_message' => 'Impossible d\'envoyer l\'email de confirmation pour le moment. Réessayez dans quelques minutes.',
             ]);
             return;
         }
 
         View::render('pages/newsletter', [
-            'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+            'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
             'success_message' => 'Un email de confirmation vient d\'être envoyé. Cliquez sur le lien reçu pour activer votre abonnement.',
         ]);
     }
@@ -127,7 +127,7 @@ final class PageController
 
         if ($token === '') {
             View::render('pages/newsletter', [
-                'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+                'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
                 'error_message' => 'Lien de confirmation invalide.',
             ]);
             return;
@@ -136,7 +136,7 @@ final class PageController
         $email = $this->validateNewsletterToken($token);
         if ($email === null) {
             View::render('pages/newsletter', [
-                'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+                'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
                 'error_message' => 'Le lien de confirmation est invalide ou expiré.',
             ]);
             return;
@@ -146,7 +146,7 @@ final class PageController
         $subscriberModel->confirmByEmail($email);
 
         View::render('pages/newsletter', [
-            'page_title' => 'Newsletter - Estimation Immobilier Bordeaux',
+            'page_title' => 'Newsletter Immobilier | Bordeaux et Métropole',
             'success_message' => 'Inscription confirmée ✅ Vous recevrez désormais notre newsletter.',
         ]);
     }
@@ -154,7 +154,7 @@ final class PageController
     public function contactSubmit(): void
     {
         View::render('pages/contact', [
-            'page_title' => 'Contact - Estimation Immobilier Bordeaux',
+            'page_title' => 'Contact | Estimation Immobilier Bordeaux et Métropole',
             'success_message' => 'Merci ! Votre message a bien été reçu. Nous vous répondrons sous 24h.',
         ]);
     }
@@ -163,28 +163,28 @@ final class PageController
     public function mentionsLegales(): void
     {
         View::render('legal/mentions', [
-            'page_title' => 'Mentions légales - Estimation Immobilier Bordeaux',
+            'page_title' => 'Mentions Légales | Estimation Immobilier Bordeaux et Métropole',
         ]);
     }
 
     public function politiqueConfidentialite(): void
     {
         View::render('legal/confidentialite', [
-            'page_title' => 'Politique de confidentialité - Estimation Immobilier Bordeaux',
+            'page_title' => 'Politique de Confidentialité | Estimation Immobilier Bordeaux et Métropole',
         ]);
     }
 
     public function conditionsUtilisation(): void
     {
         View::render('legal/cgu', [
-            'page_title' => 'Conditions d\'utilisation - Estimation Immobilier Bordeaux',
+            'page_title' => 'Conditions d\'Utilisation | Estimation Immobilier Bordeaux et Métropole',
         ]);
     }
 
     public function rgpd(): void
     {
         View::render('legal/rgpd', [
-            'page_title' => 'RGPD - Estimation Immobilier Bordeaux',
+            'page_title' => 'RGPD | Estimation Immobilier Bordeaux et Métropole',
         ]);
     }
 

@@ -23,6 +23,7 @@ final class View
         $data['colors'] = $siteConfig['colors'] ?? [];
         $data['rgbColors'] = $siteConfig['rgb_colors'] ?? [];
         $data['google_site_verification'] = $siteConfig['google_site_verification'] ?? '';
+        $data['tracking'] = $siteConfig['tracking'] ?? [];
 
         extract($data, EXTR_SKIP);
         include __DIR__ . '/../views/layouts/header.php';

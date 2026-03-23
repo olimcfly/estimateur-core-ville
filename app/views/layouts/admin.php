@@ -665,6 +665,9 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
     <a href="/admin/settings" class="admin-sidebar-link <?= ($admin_page ?? '') === 'settings' ? 'active' : '' ?>">
       <i class="fas fa-cog"></i> Paramètres
     </a>
+    <a href="/admin/analytics-settings" class="admin-sidebar-link <?= ($admin_page ?? '') === 'analytics-settings' ? 'active' : '' ?>">
+      <i class="fas fa-chart-pie"></i> Analytics & Tracking
+    </a>
     <a href="/admin/modules" class="admin-sidebar-link <?= ($admin_page ?? '') === 'modules' ? 'active' : '' ?>">
       <i class="fas fa-puzzle-piece"></i> Modules
     </a>

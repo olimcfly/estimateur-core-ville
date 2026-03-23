@@ -22,6 +22,7 @@ use App\Controllers\AdminModuleController;
 use App\Controllers\AdminMailboxController;
 use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminAnalyticsSettingsController;
 use App\Controllers\AdminSettingsController;
 use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
@@ -251,6 +252,11 @@ $router->post('/admin/api/register-claude', [AdminApiController::class, 'registe
 // Admin settings routes
 $router->get('/admin/settings', [AdminSettingsController::class, 'index']);
 $router->post('/admin/settings/save', [AdminSettingsController::class, 'save']);
+
+// Admin analytics & tracking settings routes
+$router->get('/admin/analytics-settings', [AdminAnalyticsSettingsController::class, 'index']);
+$router->post('/admin/analytics-settings/save', [AdminAnalyticsSettingsController::class, 'save']);
+$router->get('/admin/analytics-settings/status', [AdminAnalyticsSettingsController::class, 'status']);
 
 // Admin module management routes (superuser only)
 $router->get('/admin/modules', [AdminModuleController::class, 'index']);

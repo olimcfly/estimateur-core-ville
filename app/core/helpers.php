@@ -47,17 +47,24 @@ if (!function_exists('getSiteConfig')) {
     {
         $defaultColors = (array) Config::get('site.colors', []);
         $colors = $defaultColors;
+        $googleSiteVerification = '';
 
         try {
-            $statement = Database::connection()->query("SELECT `key`, `value` FROM settings WHERE `key` LIKE 'site.colors.%'");
+            $statement = Database::connection()->query("SELECT `key`, `value` FROM settings WHERE `key` LIKE 'site.colors.%' OR `key` = 'google_site_verification'");
             $rows = $statement !== false ? $statement->fetchAll() : [];
 
             foreach ($rows as $row) {
-                $colorKey = str_replace('site.colors.', '', (string) ($row['key'] ?? ''));
-                $colorValue = trim((string) ($row['value'] ?? ''));
+                $key = (string) ($row['key'] ?? '');
+                $val = trim((string) ($row['value'] ?? ''));
 
-                if ($colorKey !== '' && $colorValue !== '') {
-                    $colors[$colorKey] = $colorValue;
+                if ($key === 'google_site_verification') {
+                    $googleSiteVerification = $val;
+                    continue;
+                }
+
+                $colorKey = str_replace('site.colors.', '', $key);
+                if ($colorKey !== '' && $val !== '') {
+                    $colors[$colorKey] = $val;
                 }
             }
         } catch (Throwable) {
@@ -75,6 +82,7 @@ if (!function_exists('getSiteConfig')) {
         return [
             'colors' => $colors,
             'rgb_colors' => $rgbColors,
+            'google_site_verification' => $googleSiteVerification,
         ];
     }
 }

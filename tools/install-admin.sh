@@ -160,6 +160,8 @@ ADMIN_MODELS=(
     "app/models/Partenaire.php"
     "app/models/DesignTemplate.php"
     "app/models/NewsletterSubscriber.php"
+    "app/models/RssSource.php"
+    "app/models/RssArticle.php"
 )
 for model in "${ADMIN_MODELS[@]}"; do
     if [ -f "$SOURCE/$model" ]; then
@@ -184,6 +186,7 @@ ADMIN_SERVICES=(
     "app/services/SmtpAuthClient.php"
     "app/services/SmtpLogger.php"
     "app/services/UtmTrackingService.php"
+    "app/services/RssFeedService.php"
 )
 for service in "${ADMIN_SERVICES[@]}"; do
     if [ -f "$SOURCE/$service" ]; then
@@ -228,6 +231,8 @@ echo -e "${YELLOW}RAPPELS:${NC}"
 echo -e "  1. Vérifier que ${GREEN}config/config.php${NC} existe sur le site cible"
 echo -e "  2. Vérifier que ${GREEN}.env${NC} est configuré sur le site cible"
 echo -e "  3. Lancer ${GREEN}composer install${NC} si vendor/ n'existe pas"
-echo -e "  4. Exécuter les migrations SQL si nécessaire"
+echo -e "  4. Exécuter les migrations SQL si nécessaire:"
+echo -e "     ${GREEN}mysql -u USER -p DATABASE < database/migration_rss.sql${NC}"
+echo -e "     ${GREEN}mysql -u USER -p DATABASE < database/migration_leads.sql${NC}"
 echo ""
 echo -e "${GREEN}Installation terminée !${NC}"

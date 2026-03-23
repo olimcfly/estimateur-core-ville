@@ -83,20 +83,7 @@
 <?php endif; ?>
 
 <style>
-  .admin-page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap; }
-  .admin-page-title { font-size: 1.5rem; font-weight: 700; color: var(--admin-text); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-  .admin-page-desc { font-size: 0.9rem; color: var(--admin-muted); margin-top: 0.25rem; }
-  .admin-card { background: var(--admin-surface); border: 1px solid var(--admin-border); border-radius: var(--admin-radius, 8px); margin-bottom: 1.5rem; overflow: hidden; }
-  .admin-card-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--admin-border); }
-  .admin-card-header h2 { font-size: 1rem; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-  .admin-card-body { padding: 1.5rem; }
-  .admin-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.2rem; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.15s ease; }
-  .admin-btn-primary { background: var(--admin-primary); color: #fff; }
-  .admin-btn-secondary { background: var(--admin-bg); color: var(--admin-text); border: 1px solid var(--admin-border); }
-  .admin-badge { background: var(--admin-bg); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; color: var(--admin-muted); font-weight: 600; }
-  .admin-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--admin-muted); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.03em; }
-  .admin-input { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--admin-border); border-radius: 6px; font-size: 0.9rem; font-family: inherit; background: #fff; }
-
+  /* Generated article page — page-specific styles */
   .article-preview h1 { font-size: 1.5rem; color: var(--admin-text); }
   .article-preview h2 { font-size: 1.2rem; color: var(--admin-primary); margin-top: 1.5rem; }
   .article-preview h3 { font-size: 1.05rem; color: var(--admin-text); margin-top: 1rem; }

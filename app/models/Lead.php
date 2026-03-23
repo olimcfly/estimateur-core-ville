@@ -234,6 +234,211 @@ final class Lead
         return $stmt->rowCount() > 0;
     }
 
+    /**
+     * Advanced search/filter with pagination support.
+     *
+     * @return array{leads: array, total: int}
+     */
+    public function searchLeads(
+        ?string $search = null,
+        ?string $score = null,
+        ?string $statut = null,
+        ?string $type = null,
+        ?string $ville = null,
+        ?string $dateFrom = null,
+        ?string $dateTo = null,
+        string $sortBy = 'created_at',
+        string $sortDir = 'DESC',
+        int $page = 1,
+        int $perPage = 25
+    ): array {
+        $conditions = ['website_id = :website_id'];
+        $params = [':website_id' => $this->websiteId()];
+
+        if ($search !== null && $search !== '') {
+            $conditions[] = '(nom LIKE :search OR email LIKE :search OR telephone LIKE :search OR ville LIKE :search OR adresse LIKE :search)';
+            $params[':search'] = '%' . $search . '%';
+        }
+        if ($score !== null && in_array($score, ['chaud', 'tiede', 'froid'], true)) {
+            $conditions[] = 'score = :score';
+            $params[':score'] = $score;
+        }
+        if ($statut !== null && $statut !== '') {
+            $conditions[] = 'statut = :statut';
+            $params[':statut'] = $statut;
+        }
+        if ($type !== null && in_array($type, ['tendance', 'qualifie'], true)) {
+            $conditions[] = 'lead_type = :lead_type';
+            $params[':lead_type'] = $type;
+        }
+        if ($ville !== null && $ville !== '') {
+            $conditions[] = 'ville = :ville';
+            $params[':ville'] = $ville;
+        }
+        if ($dateFrom !== null && $dateFrom !== '') {
+            $conditions[] = 'DATE(created_at) >= :date_from';
+            $params[':date_from'] = $dateFrom;
+        }
+        if ($dateTo !== null && $dateTo !== '') {
+            $conditions[] = 'DATE(created_at) <= :date_to';
+            $params[':date_to'] = $dateTo;
+        }
+
+        $where = implode(' AND ', $conditions);
+
+        $allowedSort = ['id', 'nom', 'email', 'ville', 'estimation', 'score', 'statut', 'created_at'];
+        if (!in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'created_at';
+        }
+        $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+
+        // Count total
+        $countSql = "SELECT COUNT(*) FROM leads WHERE {$where}";
+        $countStmt = Database::connection()->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+
+        // Fetch page
+        $offset = max(0, ($page - 1) * $perPage);
+        $sql = "SELECT id, lead_type, nom, email, telephone, adresse, ville, type_bien, surface_m2, pieces, estimation, urgence, motivation, score, statut, created_at
+                FROM leads
+                WHERE {$where}
+                ORDER BY {$sortBy} {$sortDir}
+                LIMIT {$perPage} OFFSET {$offset}";
+
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute($params);
+        $leads = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+        return ['leads' => $leads, 'total' => $total];
+    }
+
+    /**
+     * Get distinct cities for filter dropdown.
+     * @return string[]
+     */
+    public function getDistinctVilles(): array
+    {
+        $sql = 'SELECT DISTINCT ville FROM leads WHERE website_id = :website_id AND ville IS NOT NULL AND ville != \'\' ORDER BY ville';
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([':website_id' => $this->websiteId()]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    }
+
+    /**
+     * Bulk delete multiple leads.
+     */
+    public function deleteBulk(array $ids): int
+    {
+        if (empty($ids)) {
+            return 0;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "DELETE FROM leads WHERE id IN ({$placeholders}) AND website_id = ?";
+        $stmt = Database::connection()->prepare($sql);
+        $params = array_map('intval', $ids);
+        $params[] = $this->websiteId();
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
+
+    /**
+     * Bulk update score for multiple leads.
+     */
+    public function bulkUpdateScore(array $ids, string $score): int
+    {
+        if (empty($ids) || !in_array($score, ['chaud', 'tiede', 'froid'], true)) {
+            return 0;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "UPDATE leads SET score = ? WHERE id IN ({$placeholders}) AND website_id = ?";
+        $stmt = Database::connection()->prepare($sql);
+        $params = [$score];
+        foreach ($ids as $id) {
+            $params[] = (int) $id;
+        }
+        $params[] = $this->websiteId();
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
+
+    /**
+     * Bulk update statut for multiple leads.
+     */
+    public function bulkUpdateStatut(array $ids, string $statut): int
+    {
+        $allowed = [
+            'nouveau', 'contacte', 'rdv_pris', 'visite_realisee',
+            'mandat_simple', 'mandat_exclusif', 'compromis_vente',
+            'signe', 'co_signature_partenaire', 'assigne_autre',
+        ];
+        if (empty($ids) || !in_array($statut, $allowed, true)) {
+            return 0;
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "UPDATE leads SET statut = ? WHERE id IN ({$placeholders}) AND website_id = ?";
+        $stmt = Database::connection()->prepare($sql);
+        $params = [$statut];
+        foreach ($ids as $id) {
+            $params[] = (int) $id;
+        }
+        $params[] = $this->websiteId();
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
+
+    /**
+     * Get all leads matching filters (no pagination) for CSV export.
+     * @return array<int, array<string, mixed>>
+     */
+    public function exportLeads(
+        ?string $search = null,
+        ?string $score = null,
+        ?string $statut = null,
+        ?string $type = null,
+        ?string $ville = null,
+        ?string $dateFrom = null,
+        ?string $dateTo = null
+    ): array {
+        $conditions = ['website_id = :website_id'];
+        $params = [':website_id' => $this->websiteId()];
+
+        if ($search !== null && $search !== '') {
+            $conditions[] = '(nom LIKE :search OR email LIKE :search OR telephone LIKE :search OR ville LIKE :search)';
+            $params[':search'] = '%' . $search . '%';
+        }
+        if ($score !== null && in_array($score, ['chaud', 'tiede', 'froid'], true)) {
+            $conditions[] = 'score = :score';
+            $params[':score'] = $score;
+        }
+        if ($statut !== null && $statut !== '') {
+            $conditions[] = 'statut = :statut';
+            $params[':statut'] = $statut;
+        }
+        if ($type !== null && in_array($type, ['tendance', 'qualifie'], true)) {
+            $conditions[] = 'lead_type = :lead_type';
+            $params[':lead_type'] = $type;
+        }
+        if ($ville !== null && $ville !== '') {
+            $conditions[] = 'ville = :ville';
+            $params[':ville'] = $ville;
+        }
+        if ($dateFrom !== null && $dateFrom !== '') {
+            $conditions[] = 'DATE(created_at) >= :date_from';
+            $params[':date_from'] = $dateFrom;
+        }
+        if ($dateTo !== null && $dateTo !== '') {
+            $conditions[] = 'DATE(created_at) <= :date_to';
+            $params[':date_to'] = $dateTo;
+        }
+
+        $where = implode(' AND ', $conditions);
+        $sql = "SELECT * FROM leads WHERE {$where} ORDER BY created_at DESC";
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
     private function websiteId(): int
     {
         return (int) Config::get('website.id', 1);

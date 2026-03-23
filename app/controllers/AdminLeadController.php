@@ -59,6 +59,8 @@ final class AdminLeadController
     {
         AuthController::requireAuth();
 
+        $this->ensureLeadTables();
+
         $leads = [];
         $dbError = null;
         $tableExists = false;
@@ -110,6 +112,7 @@ final class AdminLeadController
     public function show(): void
     {
         AuthController::requireAuth();
+        $this->ensureLeadTables();
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if ($id <= 0) {
@@ -417,6 +420,76 @@ final class AdminLeadController
 
         header('Location: /admin/leads/profile?id=' . $id);
         exit;
+    public function quickUpdate(): void
+    {
+        AuthController::requireAuth();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        // Validate CSRF manually to return JSON (not plain text) on failure
+        $token = (string) ($_POST['csrf_token'] ?? '');
+        $sessionToken = $_SESSION['csrf_token'] ?? '';
+        $csrfValid = ($sessionToken !== '' && $token !== '' && hash_equals($sessionToken, $token));
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+        if (!$csrfValid) {
+            echo json_encode(['success' => false, 'error' => 'Session expirée. Veuillez réessayer.', 'csrf_token' => $_SESSION['csrf_token']]);
+            return;
+        }
+
+        $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+        $field = trim((string) ($_POST['field'] ?? ''));
+        $value = trim((string) ($_POST['value'] ?? ''));
+
+        if ($id <= 0 || $field === '' || $value === '') {
+            echo json_encode(['success' => false, 'error' => 'Paramètres manquants.']);
+            return;
+        }
+
+        if (!in_array($field, ['statut', 'score'], true)) {
+            echo json_encode(['success' => false, 'error' => 'Champ non autorisé.']);
+            return;
+        }
+
+        try {
+            $leadModel = new Lead();
+            $oldLead = $leadModel->findById($id);
+
+            if ($oldLead === null) {
+                echo json_encode(['success' => false, 'error' => 'Lead introuvable.']);
+                return;
+            }
+
+            $updated = false;
+
+            if ($field === 'statut') {
+                $updated = $leadModel->updateStatut($id, $value);
+                if ($updated && $oldLead['statut'] !== $value) {
+                    try {
+                        $activityModel = new LeadActivity();
+                        $activityModel->log($id, 'statut_change', 'Statut modifié de "' . ($oldLead['statut'] ?? '') . '" à "' . $value . '"');
+                    } catch (\Throwable) {
+                    }
+                }
+            } elseif ($field === 'score') {
+                $updated = $leadModel->updateScore($id, $value);
+                if ($updated && $oldLead['score'] !== $value) {
+                    try {
+                        $activityModel = new LeadActivity();
+                        $activityModel->log($id, 'score_change', 'Score modifié de "' . ($oldLead['score'] ?? '') . '" à "' . $value . '"');
+                    } catch (\Throwable) {
+                    }
+                }
+            }
+
+            if ($updated) {
+                echo json_encode(['success' => true, 'lead_id' => $id, 'field' => $field, 'value' => $value, 'csrf_token' => $_SESSION['csrf_token'] ?? '']);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Valeur invalide ou aucune modification.']);
+            }
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur serveur : ' . $e->getMessage()]);
+        }
     }
 
     public function delete(): void
@@ -600,6 +673,43 @@ final class AdminLeadController
             }
             $def = $columnDefs[$table][$col] ?? 'TEXT NULL';
             $pdo->exec("ALTER TABLE `{$table}` ADD COLUMN `{$col}` {$def}");
+        }
+    }
+
+    private function ensureLeadTables(): void
+    {
+        try {
+            $pdo = Database::connection();
+
+            if (!Database::tableExists('leads')) {
+                return;
+            }
+
+            if (!Database::tableExists('lead_notes')) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS lead_notes (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    lead_id INT UNSIGNED NOT NULL,
+                    content TEXT NOT NULL,
+                    author VARCHAR(120) NOT NULL DEFAULT 'Admin',
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_lead_id (lead_id),
+                    INDEX idx_created_at (created_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+
+            if (!Database::tableExists('lead_activities')) {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS lead_activities (
+                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    lead_id INT UNSIGNED NOT NULL,
+                    activity_type VARCHAR(50) NOT NULL,
+                    description TEXT NOT NULL,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_lead_id (lead_id),
+                    INDEX idx_activity_type (activity_type),
+                    INDEX idx_created_at (created_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+            }
+        } catch (\Throwable) {
         }
     }
 }

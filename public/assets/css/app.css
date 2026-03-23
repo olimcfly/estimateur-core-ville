@@ -3164,24 +3164,6 @@ main {
     display: flex;
   }
 
-  .top-nav {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--surface, #ffffff);
-    flex-direction: column;
-    border-bottom: 1px solid var(--border, #e8dfd7);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    z-index: 999;
-    padding: 0.5rem 0;
-  }
-
-  .top-nav.active {
-    display: flex;
-  }
-
   .top-nav .nav-item,
   .top-nav .nav-link {
     width: 100%;
@@ -3201,9 +3183,9 @@ main {
     box-shadow: none;
     border: none;
     border-radius: 0;
-    background: rgba(139, 21, 56, 0.04);
+    background: rgba(139, 21, 56, 0.03);
     transform: none;
-    transition: max-height 0.3s ease, opacity 0.2s ease;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
     min-width: auto;
     padding: 0;
   }
@@ -3212,11 +3194,11 @@ main {
     opacity: 1;
     visibility: visible;
     max-height: 500px;
-    padding: 0.5rem 0;
+    padding: 0.4rem 0;
   }
 
   .top-nav .dropdown-menu a {
-    padding-left: 3rem;
+    padding-left: 1.5rem;
   }
 
   .hero-grid {

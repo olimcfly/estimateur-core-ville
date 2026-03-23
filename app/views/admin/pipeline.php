@@ -72,9 +72,31 @@
     font-size: 1rem;
   }
 
+  .pipeline-summary-item[data-filter] {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .pipeline-summary-item[data-filter]:hover {
+    border-color: var(--admin-primary);
+    box-shadow: 0 2px 8px rgba(139, 21, 56, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .pipeline-summary-item[data-filter].active {
+    border-color: var(--admin-primary);
+    background: rgba(139, 21, 56, 0.06);
+    box-shadow: 0 0 0 2px rgba(139, 21, 56, 0.15);
+  }
+
   .pipeline-summary-item.hot .count { color: #ef4444; }
   .pipeline-summary-item.warm .count { color: #f59e0b; }
   .pipeline-summary-item.cold .count { color: #64748b; }
+
+  .kanban-card.filtered-out {
+    display: none;
+  }
 
   /* Kanban board */
   .kanban-board {
@@ -143,13 +165,31 @@
     border: 1px solid var(--admin-border);
     border-radius: 6px;
     padding: 0.75rem;
-    cursor: default;
-    transition: box-shadow 0.15s, transform 0.15s;
+    cursor: grab;
+    transition: box-shadow 0.15s, transform 0.15s, opacity 0.2s;
   }
 
   .kanban-card:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     transform: translateY(-1px);
+  }
+
+  .kanban-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+    cursor: grabbing;
+  }
+
+  .kanban-column-body.drag-over {
+    background: rgba(139, 21, 56, 0.06);
+    border: 2px dashed var(--admin-primary);
+    border-radius: 6px;
+  }
+
+  .kanban-card.drag-preview {
+    border: 2px dashed var(--admin-primary);
+    background: rgba(139, 21, 56, 0.03);
+    min-height: 60px;
   }
 
   .kanban-card-header {
@@ -366,19 +406,19 @@
 
 <!-- Score summary -->
 <div class="pipeline-summary">
-  <div class="pipeline-summary-item">
+  <div class="pipeline-summary-item" data-filter="all">
     <i class="fas fa-users" style="color: var(--admin-primary);"></i>
     <span class="count"><?= $totalLeads ?></span> leads qualifi&eacute;s
   </div>
-  <div class="pipeline-summary-item hot">
+  <div class="pipeline-summary-item hot" data-filter="score" data-score="chaud">
     <i class="fas fa-fire" style="color: #ef4444;"></i>
     <span class="count"><?= (int)($scoreData['chaud'] ?? 0) ?></span> Chauds
   </div>
-  <div class="pipeline-summary-item warm">
+  <div class="pipeline-summary-item warm" data-filter="score" data-score="tiede">
     <i class="fas fa-temperature-half" style="color: #f59e0b;"></i>
     <span class="count"><?= (int)($scoreData['tiede'] ?? 0) ?></span> Ti&egrave;des
   </div>
-  <div class="pipeline-summary-item cold">
+  <div class="pipeline-summary-item cold" data-filter="score" data-score="froid">
     <i class="fas fa-snowflake" style="color: #64748b;"></i>
     <span class="count"><?= (int)($scoreData['froid'] ?? 0) ?></span> Froids
   </div>
@@ -410,7 +450,7 @@
         </div>
         <div class="kanban-column-count"><?= $colCount ?></div>
       </div>
-      <div class="kanban-column-body">
+      <div class="kanban-column-body" data-statut="<?= $statutKey ?>">
         <?php if (empty($colLeads)): ?>
           <div class="kanban-empty">Aucun lead</div>
         <?php else: ?>
@@ -418,7 +458,7 @@
             $isTendance = ($lead['lead_type'] ?? 'qualifie') === 'tendance';
             $scoreKey = $lead['score'] ?? 'froid';
           ?>
-            <div class="kanban-card" data-lead-id="<?= (int)$lead['id'] ?>">
+            <div class="kanban-card" draggable="true" data-lead-id="<?= (int)$lead['id'] ?>" data-statut="<?= $statutKey ?>" data-score="<?= htmlspecialchars($scoreKey, ENT_QUOTES, 'UTF-8') ?>">
               <div class="kanban-card-header">
                 <?php if ($isTendance): ?>
                   <div class="kanban-card-name anonymous">Anonyme</div>
@@ -472,6 +512,7 @@
 <script>
 (function() {
   var csrfToken = <?= json_encode($_SESSION['csrf_token'] ?? '', JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  var draggedCard = null;
 
   function showToast(message, type) {
     var toast = document.getElementById('pipelineToast');
@@ -481,42 +522,256 @@
     setTimeout(function() { toast.style.display = 'none'; }, 2500);
   }
 
-  function updateLead(leadId, field, value) {
+  function updateColumnCount(columnBody) {
+    var column = columnBody.closest('.kanban-column');
+    var countEl = column.querySelector('.kanban-column-count');
+    var cards = columnBody.querySelectorAll('.kanban-card');
+    countEl.textContent = cards.length;
+
+    var emptyMsg = columnBody.querySelector('.kanban-empty');
+    if (cards.length === 0 && !emptyMsg) {
+      var div = document.createElement('div');
+      div.className = 'kanban-empty';
+      div.textContent = 'Aucun lead';
+      columnBody.appendChild(div);
+    } else if (cards.length > 0 && emptyMsg) {
+      emptyMsg.remove();
+    }
+  }
+
+  function updateCardStatutSelect(card, newStatut) {
+    var sel = card.querySelector('.kanban-move-select');
+    if (sel) { sel.value = newStatut; }
+    card.dataset.statut = newStatut;
+  }
+
+  function updateLead(leadId, field, value, onSuccess, onError, isRetry) {
     var body = 'csrf_token=' + encodeURIComponent(csrfToken) + '&id=' + leadId + '&field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value);
     var xhr = new XMLHttpRequest();
     xhr.open('POST', '/admin/leads/update-inline', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.onload = function() {
-      if (xhr.status === 200) {
-        try {
-          var resp = JSON.parse(xhr.responseText);
-          if (resp.success) {
-            showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
-            setTimeout(function() { window.location.reload(); }, 800);
-          } else {
-            showToast(resp.error || 'Erreur de mise \u00e0 jour', 'error');
-          }
-        } catch(e) {
-          showToast('Erreur de mise \u00e0 jour', 'error');
+      try {
+        var resp = JSON.parse(xhr.responseText);
+        if (resp.csrf_token) { csrfToken = resp.csrf_token; }
+        if (resp.success) {
+          showToast('Lead #' + leadId + ' mis \u00e0 jour', 'success');
+          if (onSuccess) onSuccess();
+        } else if (!isRetry && resp.csrf_token) {
+          // CSRF expired — retry once with fresh token
+          updateLead(leadId, field, value, onSuccess, onError, true);
+        } else {
+          showToast(resp.error || 'Erreur de mise \u00e0 jour', 'error');
+          if (onError) onError();
         }
-      } else {
+      } catch(e) {
         showToast('Erreur serveur', 'error');
+        if (onError) onError();
       }
     };
-    xhr.onerror = function() { showToast('Erreur r\u00e9seau', 'error'); };
+    xhr.onerror = function() {
+      showToast('Erreur r\u00e9seau', 'error');
+      if (onError) onError();
+    };
     xhr.send(body);
   }
 
+  // --- Drag & Drop ---
+
+  document.querySelectorAll('.kanban-card').forEach(function(card) {
+    card.addEventListener('dragstart', function(e) {
+      draggedCard = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', this.dataset.leadId);
+    });
+
+    card.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+      draggedCard = null;
+      document.querySelectorAll('.kanban-column-body').forEach(function(col) {
+        col.classList.remove('drag-over');
+      });
+    });
+  });
+
+  document.querySelectorAll('.kanban-column-body').forEach(function(colBody) {
+    colBody.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      this.classList.add('drag-over');
+    });
+
+    colBody.addEventListener('dragleave', function(e) {
+      if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drag-over');
+      }
+    });
+
+    colBody.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+
+      if (!draggedCard) return;
+
+      var newStatut = this.dataset.statut;
+      var oldStatut = draggedCard.dataset.statut;
+      if (newStatut === oldStatut) return;
+
+      var leadId = draggedCard.dataset.leadId;
+      var card = draggedCard;
+      var oldColumnBody = card.parentElement;
+
+      // Move card in the DOM immediately
+      this.appendChild(card);
+      updateCardStatutSelect(card, newStatut);
+      updateColumnCount(oldColumnBody);
+      updateColumnCount(this);
+
+      // Persist to server
+      var targetCol = this;
+      updateLead(leadId, 'statut', newStatut, null, function() {
+        // Revert on error
+        oldColumnBody.appendChild(card);
+        updateCardStatutSelect(card, oldStatut);
+        updateColumnCount(oldColumnBody);
+        updateColumnCount(targetCol);
+      });
+    });
+  });
+
+  // --- Dropdown selects (existing) ---
+
   document.querySelectorAll('.kanban-move-select').forEach(function(sel) {
     sel.addEventListener('change', function() {
-      updateLead(this.dataset.leadId, 'statut', this.value);
+      var leadId = this.dataset.leadId;
+      var newStatut = this.value;
+      var card = this.closest('.kanban-card');
+      var oldStatut = card.dataset.statut;
+      if (newStatut === oldStatut) return;
+
+      var oldColumnBody = card.parentElement;
+      var newColumnBody = document.querySelector('.kanban-column-body[data-statut="' + newStatut + '"]');
+
+      // Move card in the DOM immediately
+      newColumnBody.appendChild(card);
+      card.dataset.statut = newStatut;
+      updateColumnCount(oldColumnBody);
+      updateColumnCount(newColumnBody);
+
+      updateLead(leadId, 'statut', newStatut, null, function() {
+        // Revert on error
+        oldColumnBody.appendChild(card);
+        card.dataset.statut = oldStatut;
+        sel.value = oldStatut;
+        updateColumnCount(oldColumnBody);
+        updateColumnCount(newColumnBody);
+      });
     });
   });
 
   document.querySelectorAll('.kanban-score-select').forEach(function(sel) {
     sel.addEventListener('change', function() {
-      updateLead(this.dataset.leadId, 'score', this.value);
+      var leadId = this.dataset.leadId;
+      var newScore = this.value;
+      var card = this.closest('.kanban-card');
+      card.dataset.score = newScore;
+
+      // Update card score badge
+      var badge = card.querySelector('.kanban-card-score');
+      if (badge) {
+        badge.className = 'kanban-card-score ' + newScore;
+        var scoreLabels = {chaud: 'Chaud', tiede: 'Ti\u00e8de', froid: 'Froid'};
+        var scoreIcons = {chaud: 'fa-fire', tiede: 'fa-temperature-half', froid: 'fa-snowflake'};
+        badge.innerHTML = '<i class="fas ' + (scoreIcons[newScore] || 'fa-snowflake') + '"></i> ' + (scoreLabels[newScore] || 'Froid');
+      }
+
+      updateLead(leadId, 'score', newScore);
+
+      // Re-apply active filter
+      applyScoreFilter();
+    });
+  });
+
+  // --- Clickable stats cards filter ---
+  var activeFilter = null;
+
+  function applyScoreFilter() {
+    var cards = document.querySelectorAll('.kanban-card');
+    cards.forEach(function(card) {
+      if (!activeFilter) {
+        card.classList.remove('filtered-out');
+      } else {
+        if (card.dataset.score === activeFilter) {
+          card.classList.remove('filtered-out');
+        } else {
+          card.classList.add('filtered-out');
+        }
+      }
+    });
+
+    // Update column counts to reflect visible cards
+    document.querySelectorAll('.kanban-column-body').forEach(function(colBody) {
+      var column = colBody.closest('.kanban-column');
+      var countEl = column.querySelector('.kanban-column-count');
+      var visibleCards = colBody.querySelectorAll('.kanban-card:not(.filtered-out)');
+      var totalCards = colBody.querySelectorAll('.kanban-card');
+      if (activeFilter) {
+        countEl.textContent = visibleCards.length + '/' + totalCards.length;
+      } else {
+        countEl.textContent = totalCards.length;
+      }
+
+      // Show/hide empty message
+      var emptyMsg = colBody.querySelector('.kanban-empty');
+      if (visibleCards.length === 0 && totalCards.length > 0 && activeFilter) {
+        if (!emptyMsg) {
+          var div = document.createElement('div');
+          div.className = 'kanban-empty';
+          div.textContent = 'Aucun lead ' + activeFilter;
+          colBody.appendChild(div);
+        } else {
+          emptyMsg.textContent = 'Aucun lead ' + activeFilter;
+          emptyMsg.style.display = '';
+        }
+      } else if (visibleCards.length === 0 && totalCards.length === 0) {
+        if (!emptyMsg) {
+          var div = document.createElement('div');
+          div.className = 'kanban-empty';
+          div.textContent = 'Aucun lead';
+          colBody.appendChild(div);
+        }
+      } else if (visibleCards.length > 0 && emptyMsg) {
+        emptyMsg.remove();
+      }
+    });
+  }
+
+  document.querySelectorAll('.pipeline-summary-item[data-filter]').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var filterType = this.dataset.filter;
+      var allItems = document.querySelectorAll('.pipeline-summary-item[data-filter]');
+
+      if (filterType === 'all') {
+        // Reset filter
+        activeFilter = null;
+        allItems.forEach(function(el) { el.classList.remove('active'); });
+      } else {
+        var scoreValue = this.dataset.score;
+        if (activeFilter === scoreValue) {
+          // Toggle off
+          activeFilter = null;
+          allItems.forEach(function(el) { el.classList.remove('active'); });
+        } else {
+          // Activate this filter
+          activeFilter = scoreValue;
+          allItems.forEach(function(el) { el.classList.remove('active'); });
+          this.classList.add('active');
+        }
+      }
+
+      applyScoreFilter();
     });
   });
 })();

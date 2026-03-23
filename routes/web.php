@@ -16,7 +16,10 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminModuleController;
+use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
 use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
@@ -57,12 +60,14 @@ $router->post('/admin/leads/update/{id}', [AdminLeadController::class, 'update']
 $router->post('/admin/leads/statut/{id}', [AdminLeadController::class, 'updateStatut']);
 $router->post('/admin/leads/note/{id}', [AdminLeadController::class, 'addNote']);
 $router->post('/admin/leads/note/delete/{id}', [AdminLeadController::class, 'deleteNote']);
+$router->post('/admin/leads/update-inline', [AdminLeadController::class, 'quickUpdate']);
 $router->post('/admin/leads/delete/{id}', [AdminLeadController::class, 'delete']);
 $router->post('/admin/leads/create-tables', [AdminLeadController::class, 'createTables']);
 
-// Admin funnel & portfolio
+// Admin funnel, pipeline & portfolio
 $router->get('/admin/funnel', [AdminDashboardController::class, 'funnel']);
 $router->post('/admin/funnel/create-table', [AdminDashboardController::class, 'createLeadsTable']);
+$router->get('/admin/pipeline', [EstimationController::class, 'pipeline']);
 $router->get('/admin/portfolio', [AdminDashboardController::class, 'portfolio']);
 $router->post('/admin/portfolio/commission', [AdminDashboardController::class, 'updateCommissionRate']);
 
@@ -114,12 +119,20 @@ $router->get('/tools/calculatrice', [ToolController::class, 'calculatrice']);
 // Admin blog routes
 $router->get('/admin/blog', [AdminBlogController::class, 'index']);
 $router->get('/admin/blog/create', [AdminBlogController::class, 'create']);
+$router->get('/admin/blog/wizard', [AdminBlogController::class, 'wizard']);
+$router->post('/admin/blog/wizard/generate', [AdminBlogController::class, 'wizardGenerate']);
 $router->post('/admin/blog/store', [AdminBlogController::class, 'store']);
 $router->get('/admin/blog/edit/{id}', [AdminBlogController::class, 'edit']);
 $router->post('/admin/blog/update/{id}', [AdminBlogController::class, 'update']);
 $router->post('/admin/blog/delete/{id}', [AdminBlogController::class, 'delete']);
 $router->post('/admin/blog/generate', [AdminBlogController::class, 'generate']);
 $router->post('/admin/blog/restore/{id}/{revisionId}', [AdminBlogController::class, 'restoreRevision']);
+$router->post('/admin/blog/api/analyze', [AdminBlogController::class, 'analyzeApi']);
+$router->get('/admin/blog/silos', [AdminBlogController::class, 'silos']);
+$router->post('/admin/blog/silos/create', [AdminBlogController::class, 'createSilo']);
+$router->post('/admin/blog/silos/delete/{id}', [AdminBlogController::class, 'deleteSilo']);
+$router->get('/admin/blog/seo-guide', [AdminBlogController::class, 'seoGuide']);
+$router->post('/admin/blog/api/ai-suggest', [AdminBlogController::class, 'aiSuggest']);
 
 // Admin actualités routes
 $router->get('/admin/actualites', [AdminActualiteController::class, 'index']);
@@ -164,10 +177,31 @@ $router->get('/lp/vendre-maison-bordeaux', [LandingPageController::class, 'vendr
 $router->get('/lp/avis-valeur-gratuit', [LandingPageController::class, 'avisValeurGratuit']);
 $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 
-// Admin: Google Ads guide & best practices
+// Admin: Google Ads guide & campaign generator
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
+$router->get('/admin/google-ads/campaigns', [LandingPageController::class, 'campaigns']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
 $router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);
+
+// Admin module management routes (superuser only)
+$router->get('/admin/modules', [AdminModuleController::class, 'index']);
+$router->post('/admin/modules/toggle', [AdminModuleController::class, 'toggle']);
+$router->post('/admin/modules/update', [AdminModuleController::class, 'update']);
+$router->post('/admin/modules/seed', [AdminModuleController::class, 'seedModules']);
+
+// Admin user management routes (superuser only)
+$router->get('/admin/users', [AdminUserController::class, 'index']);
+$router->post('/admin/users/create', [AdminUserController::class, 'create']);
+$router->post('/admin/users/update', [AdminUserController::class, 'update']);
+$router->post('/admin/users/delete', [AdminUserController::class, 'delete']);
+
+// Admin internal notifications routes
+$router->get('/admin/notifications', [AdminNotificationController::class, 'index']);
+$router->get('/admin/notifications/fetch', [AdminNotificationController::class, 'fetch']);
+$router->post('/admin/notifications/read', [AdminNotificationController::class, 'markRead']);
+$router->post('/admin/notifications/read-all', [AdminNotificationController::class, 'markAllRead']);
+$router->post('/admin/notifications/delete', [AdminNotificationController::class, 'delete']);
+$router->post('/admin/notifications/cleanup', [AdminNotificationController::class, 'cleanup']);

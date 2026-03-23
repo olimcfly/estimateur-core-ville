@@ -224,6 +224,16 @@ final class Lead
         return $stmt->rowCount() > 0;
     }
 
+    public function deleteById(int $id): bool
+    {
+        $sql = 'DELETE FROM leads WHERE id = :id AND website_id = :website_id';
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->bindValue(':website_id', $this->websiteId(), PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
     private function websiteId(): int
     {
         return (int) Config::get('website.id', 1);

@@ -14,10 +14,10 @@ $formError = $form_error ?? '';
         <i class="fas fa-file-alt"></i> Avis de valeur professionnel
       </p>
 
-      <h1>Avis de Valeur <span class="lp-highlight">Gratuit</span> pour votre bien à Bordeaux</h1>
+      <h1>Avis de Valeur <span class="lp-highlight">Gratuit</span> pour votre bien à Bordeaux et sa métropole</h1>
 
       <p class="lp-lead">
-        Recevez un <strong>avis de valeur gratuit et sans engagement</strong> pour votre appartement ou maison à Bordeaux.
+        Recevez un <strong>avis de valeur gratuit et sans engagement</strong> pour votre appartement ou maison à Bordeaux et sa métropole.
         Analyse basée sur les <strong>données réelles du marché</strong>, affinée par un expert immobilier local.
       </p>
 

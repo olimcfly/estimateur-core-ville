@@ -23,16 +23,29 @@ final class AdminActualiteController
         $aiConfig = [];
         $dbError = null;
 
+        // Load actualites data
         try {
             $model = new Actualite();
             $actualites = $model->findAll();
             $cronLogs = $model->getCronLogs(10);
+        } catch (\Throwable $e) {
+            error_log('Actualites table error: ' . $e->getMessage());
+            $dbError = 'Erreur base de données : la table "actualites" est peut-être absente. Exécutez "php database/migrate.php".';
+        }
 
+        // Load AI config (independent of actualites)
+        try {
             $configModel = new ActualiteAiConfig();
             $aiConfig = $configModel->getAll();
+        } catch (\Throwable $e) {
+            error_log('ActualiteAiConfig error: ' . $e->getMessage());
+            if ($dbError === null) {
+                $dbError = 'Erreur base de données : la table "actualite_ai_config" est peut-être absente. Exécutez "php database/migrate.php".';
+            }
+        }
 
-            // Get RSS article stats for the dashboard
-            $articleModel = new RssArticle();
+        // Load RSS stats (independent of above)
+        try {
             $service = new ActualiteService();
             $collected = $service->collectRssArticles();
             $rssStats = [
@@ -41,8 +54,10 @@ final class AdminActualiteController
                 'top_articles' => array_slice($collected['articles'], 0, 5),
             ];
         } catch (\Throwable $e) {
-            error_log('Actualites index error: ' . $e->getMessage());
-            $dbError = 'Erreur base de données : la table "actualites" est peut-être absente. Exécutez "php database/migrate.php".';
+            error_log('RSS stats error: ' . $e->getMessage());
+            if ($dbError === null) {
+                $dbError = 'Erreur base de données : une table RSS est peut-être absente. Exécutez "php database/migrate.php".';
+            }
         }
 
         View::renderAdmin('admin/actualites/index', [

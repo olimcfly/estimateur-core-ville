@@ -48,9 +48,18 @@ if (!function_exists('getSiteConfig')) {
         $defaultColors = (array) Config::get('site.colors', []);
         $colors = $defaultColors;
         $googleSiteVerification = '';
+        $tracking = [];
+
+        $trackingKeys = [
+            'gtm_id', 'ga4_measurement_id', 'google_ads_id', 'google_ads_conversion_label',
+            'facebook_pixel_id', 'facebook_conversions_api_token',
+            'microsoft_clarity_id', 'hotjar_id',
+            'tiktok_pixel_id', 'linkedin_partner_id', 'pinterest_tag_id', 'snapchat_pixel_id',
+            'custom_head_scripts', 'custom_body_scripts',
+        ];
 
         try {
-            $statement = Database::connection()->query("SELECT `key`, `value` FROM settings WHERE `key` LIKE 'site.colors.%' OR `key` = 'google_site_verification'");
+            $statement = Database::connection()->query("SELECT `key`, `value` FROM settings");
             $rows = $statement !== false ? $statement->fetchAll() : [];
 
             foreach ($rows as $row) {
@@ -62,9 +71,16 @@ if (!function_exists('getSiteConfig')) {
                     continue;
                 }
 
-                $colorKey = str_replace('site.colors.', '', $key);
-                if ($colorKey !== '' && $val !== '') {
-                    $colors[$colorKey] = $val;
+                if (in_array($key, $trackingKeys, true)) {
+                    $tracking[$key] = $val;
+                    continue;
+                }
+
+                if (str_starts_with($key, 'site.colors.')) {
+                    $colorKey = str_replace('site.colors.', '', $key);
+                    if ($colorKey !== '' && $val !== '') {
+                        $colors[$colorKey] = $val;
+                    }
                 }
             }
         } catch (Throwable) {
@@ -83,6 +99,7 @@ if (!function_exists('getSiteConfig')) {
             'colors' => $colors,
             'rgb_colors' => $rgbColors,
             'google_site_verification' => $googleSiteVerification,
+            'tracking' => $tracking,
         ];
     }
 }

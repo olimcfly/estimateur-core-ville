@@ -396,6 +396,23 @@ $migrations = [
             INDEX idx_rss_blog_log_website (website_id, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     "],
+
+    ['email_library', "
+        CREATE TABLE IF NOT EXISTS email_library (
+            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            category ENUM('prospection', 'relance', 'estimation', 'bienvenue', 'suivi', 'partenaire', 'marketing', 'autre') NOT NULL DEFAULT 'autre',
+            subject VARCHAR(255) NOT NULL,
+            body_html LONGTEXT NOT NULL,
+            tags VARCHAR(500) NULL,
+            is_default TINYINT(1) NOT NULL DEFAULT 0,
+            usage_count INT UNSIGNED NOT NULL DEFAULT 0,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_email_library_category (category),
+            INDEX idx_email_library_usage (usage_count DESC)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    "],
 ];
 
 // Run migrations
@@ -430,6 +447,42 @@ if (!in_array('admin_users', $existingTables, true)) {
     );
     $stmt->execute(['email' => $adminEmail, 'name' => 'Administrateur']);
     echo "OK\n";
+}
+
+// Seed default email library templates
+if (!in_array('email_library', $existingTables, true)) {
+    echo "\n  Ajout des modèles email par défaut... ";
+    $libraryTemplates = [
+        ['Première prise de contact', 'prospection', 'Votre estimation immobilière gratuite à Bordeaux',
+         '<p>Bonjour {{nom}},</p><p>Je me permets de vous contacter suite à votre intérêt pour le marché immobilier bordelais.</p><p>En tant que spécialiste de l\'estimation immobilière à Bordeaux, je serais ravi de vous accompagner dans votre projet. Nous proposons une <strong>estimation gratuite et sans engagement</strong> de votre bien.</p><p>Seriez-vous disponible pour en discuter cette semaine ?</p><p>Bien cordialement</p>',
+         'premier contact,prospection,estimation gratuite'],
+        ['Relance après estimation', 'relance', 'Suite à votre estimation - Prochaines étapes',
+         '<p>Bonjour {{nom}},</p><p>Je reviens vers vous suite à l\'estimation de votre bien situé à {{ville}}.</p><p>Pour rappel, nous avions estimé votre {{type_bien}} à <strong>{{estimation}}</strong>. Le marché bordelais étant actuellement dynamique, c\'est le moment idéal pour concrétiser votre projet.</p><p>Souhaitez-vous que nous planifions un rendez-vous pour discuter de la suite ?</p><p>Cordialement</p>',
+         'relance,estimation,suivi'],
+        ['Bienvenue nouveau client', 'bienvenue', 'Bienvenue chez Estimation Immobilier Bordeaux !',
+         '<p>Bonjour {{nom}},</p><p>Merci de votre confiance ! Nous sommes ravis de vous compter parmi nos clients.</p><p>Voici ce que vous pouvez attendre de nous :</p><ul><li>Un accompagnement personnalisé tout au long de votre projet</li><li>Une connaissance approfondie du marché bordelais</li><li>Des estimations précises basées sur les données du marché</li></ul><p>N\'hésitez pas à me contacter pour toute question.</p><p>À très bientôt !</p>',
+         'bienvenue,onboarding,nouveau client'],
+        ['Résultat d\'estimation', 'estimation', 'Résultat de l\'estimation de votre bien à {{ville}}',
+         '<p>Bonjour {{nom}},</p><p>Suite à notre analyse du marché et des caractéristiques de votre {{type_bien}}, voici le résultat de notre estimation :</p><p style="font-size:1.2em;text-align:center;padding:15px;background:#f8f7f5;border-radius:8px;"><strong>Valeur estimée : {{estimation}}</strong></p><p>Cette estimation prend en compte :</p><ul><li>Les transactions récentes dans votre quartier</li><li>Les caractéristiques spécifiques de votre bien</li><li>Les tendances actuelles du marché bordelais</li></ul><p>Je reste à votre disposition pour en discuter de vive voix.</p><p>Cordialement</p>',
+         'estimation,résultat,valeur'],
+        ['Suivi après visite', 'suivi', 'Suite à notre rencontre - Votre projet immobilier',
+         '<p>Bonjour {{nom}},</p><p>C\'était un plaisir de vous rencontrer aujourd\'hui et de visiter votre {{type_bien}} à {{ville}}.</p><p>Comme convenu, je vous transmettrai une estimation détaillée dans les prochaines 48 heures.</p><p>En attendant, n\'hésitez pas à me contacter si vous avez des questions.</p><p>Bien cordialement</p>',
+         'suivi,visite,rendez-vous'],
+        ['Proposition partenaire', 'partenaire', 'Proposition de partenariat immobilier à Bordeaux',
+         '<p>Bonjour,</p><p>Je me permets de vous contacter car nous développons un réseau de partenaires professionnels dans le secteur immobilier bordelais.</p><p>Notre plateforme <strong>estimation-immobilier-bordeaux.fr</strong> génère un trafic qualifié de propriétaires et acquéreurs potentiels. Un partenariat pourrait être mutuellement bénéfique.</p><p>Seriez-vous ouvert à un échange pour en discuter ?</p><p>Cordialement</p>',
+         'partenaire,collaboration,réseau'],
+        ['Newsletter marché immobilier', 'marketing', 'Marché immobilier Bordeaux : les tendances du mois',
+         '<p>Bonjour {{nom}},</p><p>Voici les dernières tendances du marché immobilier bordelais :</p><h3>📊 Chiffres clés du mois</h3><ul><li>Prix moyen au m² : en légère hausse</li><li>Délai de vente moyen : stable</li><li>Nombre de transactions : en progression</li></ul><h3>🏡 Quartiers à surveiller</h3><p>Les quartiers Chartrons, Bastide et Saint-Michel continuent d\'attirer les acquéreurs.</p><p>Pour une estimation gratuite de votre bien, <a href="https://estimation-immobilier-bordeaux.fr">cliquez ici</a>.</p><p>À bientôt !</p>',
+         'newsletter,marché,tendances,marketing'],
+        ['Relance douce (pas de réponse)', 'relance', 'Avez-vous encore un projet immobilier à Bordeaux ?',
+         '<p>Bonjour {{nom}},</p><p>Je me permets de revenir vers vous car nous avions échangé au sujet de votre projet immobilier.</p><p>Votre situation a peut-être évolué depuis. Si c\'est le cas, je reste à votre entière disposition pour :</p><ul><li>Mettre à jour l\'estimation de votre bien</li><li>Vous informer sur l\'évolution du marché dans votre secteur</li><li>Répondre à vos questions</li></ul><p>N\'hésitez pas à me recontacter quand vous le souhaitez.</p><p>Bien cordialement</p>',
+         'relance,douce,rappel,suivi'],
+    ];
+    $stmt = $pdo->prepare('INSERT INTO email_library (name, category, subject, body_html, tags, is_default) VALUES (:name, :category, :subject, :body_html, :tags, 1)');
+    foreach ($libraryTemplates as [$name, $cat, $subj, $body, $tags]) {
+        $stmt->execute(['name' => $name, 'category' => $cat, 'subject' => $subj, 'body_html' => $body, 'tags' => $tags]);
+    }
+    echo "OK (" . count($libraryTemplates) . " modèles ajoutés)\n";
 }
 
 // Summary

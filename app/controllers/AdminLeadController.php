@@ -420,6 +420,8 @@ final class AdminLeadController
 
         header('Location: /admin/leads/profile?id=' . $id);
         exit;
+    }
+
     public function quickUpdate(): void
     {
         AuthController::requireAuth();

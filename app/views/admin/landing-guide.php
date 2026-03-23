@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/assets/css/landing.css">
+<link rel="stylesheet" href="/assets/css/guide.css">
 
 <div class="guide-container">
 

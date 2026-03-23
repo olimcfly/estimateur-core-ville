@@ -81,6 +81,25 @@ final class Database
         return (int) $stmt->fetchColumn() > 0;
     }
 
+    /**
+     * Execute a query with optional parameters (INSERT, UPDATE, DELETE, CREATE, etc.).
+     */
+    public function query(string $sql, array $params = []): \PDOStatement
+    {
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    /**
+     * Execute a SELECT query and return all rows.
+     */
+    public function fetchAll(string $sql, array $params = []): array
+    {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetchAll();
+    }
+
     public static function reset(): void
     {
         self::$instance = null;

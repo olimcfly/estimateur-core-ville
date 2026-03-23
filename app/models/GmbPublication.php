@@ -47,6 +47,20 @@ final class GmbPublication
             $where .= ' AND gp.post_type = :post_type';
             $params[':post_type'] = $filters['post_type'];
         }
+        if (!empty($filters['article_id'])) {
+            $where .= ' AND gp.article_id = :article_id';
+            $params[':article_id'] = (int) $filters['article_id'];
+        }
+        if (!empty($filters['date_range'])) {
+            if (!empty($filters['date_range']['start'])) {
+                $where .= ' AND gp.scheduled_at >= :date_start';
+                $params[':date_start'] = $filters['date_range']['start'];
+            }
+            if (!empty($filters['date_range']['end'])) {
+                $where .= ' AND gp.scheduled_at <= :date_end';
+                $params[':date_end'] = $filters['date_range']['end'];
+            }
+        }
         if (!empty($filters['month']) && !empty($filters['year'])) {
             $where .= ' AND MONTH(gp.scheduled_at) = :month AND YEAR(gp.scheduled_at) = :year';
             $params[':month'] = $filters['month'];
@@ -86,6 +100,20 @@ final class GmbPublication
         if (!empty($filters['post_type'])) {
             $where .= ' AND post_type = :post_type';
             $params[':post_type'] = $filters['post_type'];
+        }
+        if (!empty($filters['article_id'])) {
+            $where .= ' AND article_id = :article_id';
+            $params[':article_id'] = (int) $filters['article_id'];
+        }
+        if (!empty($filters['date_range'])) {
+            if (!empty($filters['date_range']['start'])) {
+                $where .= ' AND scheduled_at >= :date_start';
+                $params[':date_start'] = $filters['date_range']['start'];
+            }
+            if (!empty($filters['date_range']['end'])) {
+                $where .= ' AND scheduled_at <= :date_end';
+                $params[':date_end'] = $filters['date_range']['end'];
+            }
         }
 
         $sql = "SELECT COUNT(*) FROM gmb_publications WHERE {$where}";

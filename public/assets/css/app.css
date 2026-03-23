@@ -495,6 +495,42 @@ h4 {
   animation: shimmer 2s linear infinite;
 }
 
+/* Blog Grid – 3 columns */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.blog-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-card h2 {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  margin-bottom: 0.75rem;
+}
+
+.blog-card .muted {
+  flex: 1;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 992px) {
+  .blog-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .hero-panel {
   position: relative;
   top: 0;

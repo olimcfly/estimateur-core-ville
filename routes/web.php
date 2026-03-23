@@ -133,6 +133,7 @@ $router->get('/admin/blog/silos', [AdminBlogController::class, 'silos']);
 $router->post('/admin/blog/silos/create', [AdminBlogController::class, 'createSilo']);
 $router->post('/admin/blog/silos/delete/{id}', [AdminBlogController::class, 'deleteSilo']);
 $router->get('/admin/blog/seo-guide', [AdminBlogController::class, 'seoGuide']);
+$router->post('/admin/blog/api/ai-suggest', [AdminBlogController::class, 'aiSuggest']);
 
 // Admin actualités routes
 $router->get('/admin/actualites', [AdminActualiteController::class, 'index']);
@@ -177,8 +178,9 @@ $router->get('/lp/vendre-maison-bordeaux', [LandingPageController::class, 'vendr
 $router->get('/lp/avis-valeur-gratuit', [LandingPageController::class, 'avisValeurGratuit']);
 $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 
-// Admin: Google Ads guide & best practices
+// Admin: Google Ads guide & campaign generator
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);
+$router->get('/admin/google-ads/campaigns', [LandingPageController::class, 'campaigns']);
 
 // Admin: Google Ads Campaign Manager
 $router->get('/admin/gads-campaigns', [AdminGoogleAdsCampaignController::class, 'index']);

@@ -443,8 +443,9 @@ try {
     }
 
     .admin-content .container {
-      width: min(1120px, 100%);
-      margin-inline: auto;
+      width: 100%;
+      max-width: 100%;
+      margin-inline: 0;
     }
 
     /* Mobile overlay */
@@ -568,6 +569,14 @@ try {
       <i class="fas fa-share-alt"></i> Images Sociaux
     </a>
     <?php endif; ?>
+    <?php if ($_moduleAccess('google_ads')): ?>
+    <a href="/admin/google-ads" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads-guide' ? 'active' : '' ?>">
+      <i class="fas fa-book"></i> Guide Google Ads
+    </a>
+    <a href="/admin/google-ads/campaigns" class="admin-sidebar-link <?= ($admin_page ?? '') === 'google-ads-campaigns' ? 'active' : '' ?>">
+      <i class="fas fa-magic"></i> Generateur Campagnes
+    </a>
+    <?php endif; ?>
 
     <?php if ($_moduleAccess('emails') || $_moduleAccess('sequences')): ?>
     <div class="admin-sidebar-section">Communication</div>
@@ -624,6 +633,7 @@ try {
       <i class="fas fa-bullhorn"></i> Campagnes Ads
     </a>
     <?php endif; ?>
+    <?php /* Google Ads moved to Contenu section */ ?>
 
     <?php if ($_adminIsSuperUser): ?>
     <div class="admin-sidebar-section">Systeme</div>
@@ -691,6 +701,12 @@ try {
           </div>
         </div>
       </div>
+      <?php endif; ?>
+
+      <?php if ($_moduleAccess('api_management')): ?>
+      <a href="/admin/api-management" class="admin-topbar-link" title="Parametres API (OpenAI, Perplexity...)">
+        <i class="fas fa-key"></i> <span>API</span>
+      </a>
       <?php endif; ?>
 
       <a href="/" class="admin-topbar-link" target="_blank">

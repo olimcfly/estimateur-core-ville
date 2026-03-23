@@ -1,4 +1,4 @@
-<div style="max-width: 960px;">
+<div class="guide-container">
 
   <!-- ═══════════════ HERO HEADER ═══════════════ -->
   <div class="guide-hero">
@@ -9,6 +9,11 @@
       <span class="guide-hero-badge"><i class="fas fa-chart-line"></i> Tracking UTM</span>
       <span class="guide-hero-badge"><i class="fas fa-bullseye"></i> Conversion optimisée</span>
       <span class="guide-hero-badge"><i class="fas fa-mobile-alt"></i> Mobile-first</span>
+    </div>
+    <div class="guide-hero-cta">
+      <a href="/admin/google-ads/campaigns" class="guide-hero-btn">
+        <i class="fas fa-magic"></i> Acceder au Generateur de Campagnes
+      </a>
     </div>
   </div>
 

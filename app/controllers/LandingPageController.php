@@ -196,8 +196,22 @@ final class LandingPageController
         View::renderAdmin('admin/landing-guide', [
             'page_title'  => 'Guide Google Ads & Landing Pages',
             'admin_page_title' => 'Google Ads',
-            'admin_page'  => 'google-ads',
+            'admin_page'  => 'google-ads-guide',
             'breadcrumb'  => 'Guide Google Ads',
+        ]);
+    }
+
+    // ─── Admin: Google Ads Campaign Dashboard ─────────────────
+
+    public function campaigns(): void
+    {
+        AuthController::requireAuth();
+
+        View::renderAdmin('admin/google-ads-campaigns', [
+            'page_title'       => 'Generateur de Campagnes Google Ads',
+            'admin_page_title' => 'Campagnes Google Ads',
+            'admin_page'       => 'google-ads-campaigns',
+            'breadcrumb'       => 'Generateur Campagnes',
         ]);
     }
 

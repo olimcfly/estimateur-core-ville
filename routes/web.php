@@ -137,6 +137,7 @@ $router->get('/admin/blog/silos', [AdminBlogController::class, 'silos']);
 $router->post('/admin/blog/silos/create', [AdminBlogController::class, 'createSilo']);
 $router->post('/admin/blog/silos/delete/{id}', [AdminBlogController::class, 'deleteSilo']);
 $router->get('/admin/blog/seo-guide', [AdminBlogController::class, 'seoGuide']);
+$router->get('/admin/blog/ideas', [AdminBlogController::class, 'ideas']);
 $router->post('/admin/blog/api/ai-suggest', [AdminBlogController::class, 'aiSuggest']);
 
 // Admin actualités routes

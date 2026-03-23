@@ -3,14 +3,40 @@
   $flash = $_SESSION['leads_flash'] ?? null;
   unset($_SESSION['leads_flash']);
   $allLeads = $leads ?? [];
-  $totalLeads = count($allLeads);
-  $hotLeads = 0;
-  $newLeads = 0;
-  $today = date('Y-m-d');
-  foreach ($allLeads as $l) {
-    if (($l['score'] ?? '') === 'chaud') $hotLeads++;
-    if (isset($l['created_at']) && str_starts_with($l['created_at'], $today)) $newLeads++;
-  }
+  $totalLeads = $total ?? count($allLeads);
+  $stats = $allStats ?? ['total' => $totalLeads, 'chaud' => 0, 'today' => 0];
+  $f = $filters ?? [];
+  $currentPage = $currentPage ?? 1;
+  $totalPages = $totalPages ?? 1;
+  $perPage = $perPage ?? 25;
+  $villesList = $villes ?? [];
+
+  $statutLabels = [
+    'nouveau' => 'Nouveau',
+    'contacte' => 'Contacté',
+    'rdv_pris' => 'RDV pris',
+    'visite_realisee' => 'Visite réalisée',
+    'mandat_simple' => 'Mandat simple',
+    'mandat_exclusif' => 'Mandat exclusif',
+    'compromis_vente' => 'Compromis',
+    'signe' => 'Signé',
+    'co_signature_partenaire' => 'Co-signé',
+    'assigne_autre' => 'Assigné autre',
+  ];
+
+  // Build query string for pagination/export (preserving current filters)
+  $qs = http_build_query(array_filter([
+    'q' => $f['q'] ?? '',
+    'score' => $f['score'] ?? '',
+    'type' => $f['type'] ?? '',
+    'statut' => $f['statut'] ?? '',
+    'ville' => $f['ville'] ?? '',
+    'date_from' => $f['date_from'] ?? '',
+    'date_to' => $f['date_to'] ?? '',
+    'sort' => $f['sort'] ?? '',
+    'dir' => $f['dir'] ?? '',
+  ], fn($v) => $v !== '' && $v !== null));
+  $hasFilters = !empty($f['q']) || !empty($f['score']) || !empty($f['type']) || !empty($f['statut']) || !empty($f['ville']) || !empty($f['date_from']) || !empty($f['date_to']);
 ?>
 
 <style>
@@ -791,12 +817,259 @@
     to { transform: translateY(0); opacity: 1; }
   }
 
+  /* ── Search & Filters Bar ── */
+  .leads-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: flex-end;
+  }
+
+  .leads-search-box {
+    position: relative;
+    flex: 1 1 280px;
+    min-width: 200px;
+  }
+
+  .leads-search-box input {
+    width: 100%;
+    padding: 0.55rem 0.75rem 0.55rem 2.2rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    background: var(--admin-surface, #fff);
+    color: var(--admin-text, #1a1410);
+    transition: border-color 0.15s;
+  }
+
+  .leads-search-box input:focus {
+    outline: none;
+    border-color: var(--admin-primary, #8B1538);
+    box-shadow: 0 0 0 2px rgba(139,21,56,0.1);
+  }
+
+  .leads-search-box i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-muted, #6b6459);
+    font-size: 0.8rem;
+  }
+
+  .leads-filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .leads-filter-select {
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: var(--admin-surface, #fff);
+    color: var(--admin-text, #1a1410);
+    cursor: pointer;
+    min-width: 110px;
+  }
+
+  .leads-filter-select:focus {
+    outline: none;
+    border-color: var(--admin-primary, #8B1538);
+  }
+
+  .leads-filter-date {
+    padding: 0.48rem 0.6rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: var(--admin-surface, #fff);
+    color: var(--admin-text, #1a1410);
+  }
+
+  .leads-filter-date:focus {
+    outline: none;
+    border-color: var(--admin-primary, #8B1538);
+  }
+
+  .leads-toolbar-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .leads-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    background: var(--admin-surface, #fff);
+    color: var(--admin-text, #1a1410);
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .leads-btn:hover { background: #f1f5f9; }
+  .leads-btn.primary { background: var(--admin-primary, #8B1538); color: #fff; border-color: var(--admin-primary); }
+  .leads-btn.primary:hover { opacity: 0.9; }
+  .leads-btn.success { background: #16a34a; color: #fff; border-color: #16a34a; }
+  .leads-btn.success:hover { background: #15803d; }
+  .leads-btn.danger { color: #dc2626; border-color: #fca5a5; }
+  .leads-btn.danger:hover { background: #fef2f2; }
+  .leads-btn.sm { padding: 0.35rem 0.65rem; font-size: 0.75rem; }
+
+  .leads-clear-filters {
+    font-size: 0.78rem;
+    color: var(--admin-primary, #8B1538);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+  }
+
+  .leads-clear-filters:hover { text-decoration: underline; }
+
+  /* ── Bulk Actions Bar ── */
+  .leads-bulk-bar {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: rgba(139,21,56,0.05);
+    border-bottom: 1px solid rgba(139,21,56,0.15);
+    font-size: 0.82rem;
+  }
+
+  .leads-bulk-bar.visible { display: flex; }
+
+  .leads-bulk-count {
+    font-weight: 600;
+    color: var(--admin-primary, #8B1538);
+  }
+
+  .leads-bulk-select {
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    background: #fff;
+  }
+
+  /* ── Checkbox ── */
+  .leads-check {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--admin-primary, #8B1538);
+  }
+
+  /* ── Pagination ── */
+  .leads-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--admin-border, #e8dfd7);
+    font-size: 0.82rem;
+    color: var(--admin-muted, #6b6459);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .leads-pagination-info {
+    font-size: 0.8rem;
+  }
+
+  .leads-pagination-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .leads-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.5rem;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--admin-text, #1a1410);
+    font-size: 0.8rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .leads-page-btn:hover { background: #f1f5f9; }
+  .leads-page-btn.active { background: var(--admin-primary, #8B1538); color: #fff; border-color: var(--admin-primary); }
+  .leads-page-btn.disabled { opacity: 0.4; pointer-events: none; }
+
+  /* ── Sortable Headers ── */
+  .leads-admin-table th a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .leads-admin-table th a:hover { color: var(--admin-primary, #8B1538); }
+  .leads-admin-table th .sort-icon { font-size: 0.6rem; opacity: 0.5; }
+  .leads-admin-table th .sort-icon.active { opacity: 1; color: var(--admin-primary, #8B1538); }
+
+  /* ── Active filter badges ── */
+  .leads-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .leads-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.55rem;
+    background: rgba(139,21,56,0.08);
+    border: 1px solid rgba(139,21,56,0.15);
+    border-radius: 20px;
+    font-size: 0.72rem;
+    color: var(--admin-primary, #8B1538);
+  }
+
+  .leads-filter-badge a {
+    color: var(--admin-primary, #8B1538);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  .leads-filter-badge a:hover { color: #dc2626; }
+
   @media (max-width: 640px) {
     .leads-stats-grid { grid-template-columns: 1fr 1fr; }
     .leads-empty-steps { gap: 1rem; }
     .leads-grille-grid { grid-template-columns: 1fr; }
     .leads-kanban-col { width: 260px; min-width: 260px; }
     .leads-view-btn span.view-label { display: none; }
+    .leads-toolbar { flex-direction: column; }
+    .leads-filter-group { width: 100%; }
+    .leads-toolbar-actions { width: 100%; justify-content: flex-end; }
+    .leads-pagination { flex-direction: column; align-items: center; }
   }
 </style>
 
@@ -851,19 +1124,24 @@
           <h1><i class="fas fa-users"></i> Leads</h1>
           <p>Liste des leads enregistrés depuis le formulaire d'estimation.</p>
         </div>
-        <?php if (!empty($allLeads)): ?>
-        <div class="leads-view-switcher">
-          <button class="leads-view-btn active" data-view="liste" title="Vue liste">
-            <i class="fas fa-list"></i> <span class="view-label">Liste</span>
-          </button>
-          <button class="leads-view-btn" data-view="grille" title="Vue grille">
-            <i class="fas fa-th-large"></i> <span class="view-label">Grille</span>
-          </button>
-          <button class="leads-view-btn" data-view="kanban" title="Vue kanban">
-            <i class="fas fa-columns"></i> <span class="view-label">Kanban</span>
-          </button>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+          <?php if (!empty($allLeads) || $hasFilters): ?>
+          <div class="leads-view-switcher">
+            <button class="leads-view-btn active" data-view="liste" title="Vue liste">
+              <i class="fas fa-list"></i> <span class="view-label">Liste</span>
+            </button>
+            <button class="leads-view-btn" data-view="grille" title="Vue grille">
+              <i class="fas fa-th-large"></i> <span class="view-label">Grille</span>
+            </button>
+            <button class="leads-view-btn" data-view="kanban" title="Vue kanban">
+              <i class="fas fa-columns"></i> <span class="view-label">Kanban</span>
+            </button>
+          </div>
+          <?php endif; ?>
+          <a href="/admin/leads/export-csv<?= $qs ? '?' . $qs : '' ?>" class="leads-btn success" title="Exporter en CSV">
+            <i class="fas fa-file-csv"></i> <span class="view-label">Export CSV</span>
+          </a>
         </div>
-        <?php endif; ?>
       </div>
 
       <!-- STATS -->
@@ -871,31 +1149,100 @@
         <div class="leads-stat-card">
           <div class="leads-stat-icon total"><i class="fas fa-users"></i></div>
           <div>
-            <div class="leads-stat-value"><?= $totalLeads ?></div>
+            <div class="leads-stat-value"><?= $stats['total'] ?></div>
             <div class="leads-stat-label">Total Leads</div>
           </div>
         </div>
         <div class="leads-stat-card">
           <div class="leads-stat-icon hot"><i class="fas fa-fire"></i></div>
           <div>
-            <div class="leads-stat-value"><?= $hotLeads ?></div>
+            <div class="leads-stat-value"><?= $stats['chaud'] ?></div>
             <div class="leads-stat-label">Leads chauds</div>
           </div>
         </div>
         <div class="leads-stat-card">
           <div class="leads-stat-icon new"><i class="fas fa-clock"></i></div>
           <div>
-            <div class="leads-stat-value"><?= $newLeads ?></div>
+            <div class="leads-stat-value"><?= $stats['today'] ?></div>
             <div class="leads-stat-label">Aujourd'hui</div>
           </div>
         </div>
       </div>
 
-      <!-- TABLE -->
+      <!-- SEARCH & FILTERS -->
+      <form method="GET" action="/admin/leads" class="leads-toolbar" id="leadsFilterForm">
+        <div class="leads-search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" name="q" placeholder="Rechercher par nom, email, téléphone, ville..." value="<?= htmlspecialchars($f['q'] ?? '', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
+        </div>
+        <div class="leads-filter-group">
+          <select name="type" class="leads-filter-select" onchange="this.form.submit()">
+            <option value="">Tous types</option>
+            <option value="qualifie" <?= ($f['type'] ?? '') === 'qualifie' ? 'selected' : '' ?>>Qualifié</option>
+            <option value="tendance" <?= ($f['type'] ?? '') === 'tendance' ? 'selected' : '' ?>>Tendance</option>
+          </select>
+          <select name="score" class="leads-filter-select" onchange="this.form.submit()">
+            <option value="">Tous scores</option>
+            <option value="chaud" <?= ($f['score'] ?? '') === 'chaud' ? 'selected' : '' ?>>Chaud</option>
+            <option value="tiede" <?= ($f['score'] ?? '') === 'tiede' ? 'selected' : '' ?>>Tiède</option>
+            <option value="froid" <?= ($f['score'] ?? '') === 'froid' ? 'selected' : '' ?>>Froid</option>
+          </select>
+          <select name="statut" class="leads-filter-select" onchange="this.form.submit()">
+            <option value="">Tous statuts</option>
+            <?php foreach ($statutLabels as $sKey => $sLabel): ?>
+              <option value="<?= $sKey ?>" <?= ($f['statut'] ?? '') === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
+            <?php endforeach; ?>
+          </select>
+          <?php if (!empty($villesList)): ?>
+          <select name="ville" class="leads-filter-select" onchange="this.form.submit()">
+            <option value="">Toutes villes</option>
+            <?php foreach ($villesList as $v): ?>
+              <option value="<?= htmlspecialchars($v, ENT_QUOTES, 'UTF-8') ?>" <?= ($f['ville'] ?? '') === $v ? 'selected' : '' ?>><?= htmlspecialchars($v, ENT_QUOTES, 'UTF-8') ?></option>
+            <?php endforeach; ?>
+          </select>
+          <?php endif; ?>
+          <input type="date" name="date_from" class="leads-filter-date" value="<?= htmlspecialchars($f['date_from'] ?? '', ENT_QUOTES, 'UTF-8') ?>" title="Date début" onchange="this.form.submit()">
+          <input type="date" name="date_to" class="leads-filter-date" value="<?= htmlspecialchars($f['date_to'] ?? '', ENT_QUOTES, 'UTF-8') ?>" title="Date fin" onchange="this.form.submit()">
+        </div>
+        <div class="leads-toolbar-actions">
+          <button type="submit" class="leads-btn primary"><i class="fas fa-search"></i> Filtrer</button>
+          <?php if ($hasFilters): ?>
+            <a href="/admin/leads" class="leads-clear-filters"><i class="fas fa-times-circle"></i> Effacer filtres</a>
+          <?php endif; ?>
+        </div>
+      </form>
+
+      <?php if ($hasFilters): ?>
+      <div class="leads-active-filters">
+        <?php if (!empty($f['q'])): ?>
+          <span class="leads-filter-badge"><i class="fas fa-search"></i> "<?= htmlspecialchars($f['q'], ENT_QUOTES, 'UTF-8') ?>"</span>
+        <?php endif; ?>
+        <?php if (!empty($f['type'])): ?>
+          <span class="leads-filter-badge">Type: <?= $f['type'] === 'qualifie' ? 'Qualifié' : 'Tendance' ?></span>
+        <?php endif; ?>
+        <?php if (!empty($f['score'])): ?>
+          <span class="leads-filter-badge">Score: <?= htmlspecialchars($f['score'], ENT_QUOTES, 'UTF-8') ?></span>
+        <?php endif; ?>
+        <?php if (!empty($f['statut'])): ?>
+          <span class="leads-filter-badge">Statut: <?= $statutLabels[$f['statut']] ?? $f['statut'] ?></span>
+        <?php endif; ?>
+        <?php if (!empty($f['ville'])): ?>
+          <span class="leads-filter-badge">Ville: <?= htmlspecialchars($f['ville'], ENT_QUOTES, 'UTF-8') ?></span>
+        <?php endif; ?>
+        <?php if (!empty($f['date_from'])): ?>
+          <span class="leads-filter-badge">Depuis: <?= htmlspecialchars($f['date_from'], ENT_QUOTES, 'UTF-8') ?></span>
+        <?php endif; ?>
+        <?php if (!empty($f['date_to'])): ?>
+          <span class="leads-filter-badge">Jusqu'au: <?= htmlspecialchars($f['date_to'], ENT_QUOTES, 'UTF-8') ?></span>
+        <?php endif; ?>
+      </div>
+      <?php endif; ?>
+
+      <!-- TABLE CARD -->
       <div class="leads-table-card">
         <div class="leads-table-header">
           <span class="leads-table-title"><i class="fas fa-list"></i> Liste des leads</span>
-          <span style="font-size: 0.8rem; color: var(--admin-muted, #6b6459);"><?= $totalLeads ?> résultat<?= $totalLeads > 1 ? 's' : '' ?></span>
+          <span style="font-size: 0.8rem; color: var(--admin-muted, #6b6459);"><?= $totalLeads ?> résultat<?= $totalLeads > 1 ? 's' : '' ?><?= $hasFilters ? ' (filtré)' : '' ?></span>
         </div>
 
         <?php if (empty($allLeads)): ?>
@@ -936,40 +1283,79 @@
 
         <?php else: ?>
           <?php
-          $statutLabels = [
-            'nouveau' => 'Nouveau',
-            'contacte' => 'Contacté',
-            'rdv_pris' => 'RDV pris',
-            'visite_realisee' => 'Visite réalisée',
-            'mandat_simple' => 'Mandat simple',
-            'mandat_exclusif' => 'Mandat exclusif',
-            'compromis_vente' => 'Compromis',
-            'signe' => 'Signé',
-            'co_signature_partenaire' => 'Co-signé',
-            'assigne_autre' => 'Assigné autre',
-          ];
           $csrfToken = htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8');
+          $sortIcon = function(string $col) use ($f) {
+            $currentSort = $f['sort'] ?? 'created_at';
+            $currentDir = $f['dir'] ?? 'DESC';
+            $isActive = $currentSort === $col;
+            $nextDir = ($isActive && $currentDir === 'ASC') ? 'DESC' : 'ASC';
+            $icon = $isActive ? ($currentDir === 'ASC' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort';
+            $activeClass = $isActive ? ' active' : '';
+            return '<i class="fas ' . $icon . ' sort-icon' . $activeClass . '"></i>';
+          };
+          $sortUrl = function(string $col) use ($f, $currentPage) {
+            $currentSort = $f['sort'] ?? 'created_at';
+            $currentDir = $f['dir'] ?? 'DESC';
+            $nextDir = ($currentSort === $col && $currentDir === 'ASC') ? 'DESC' : 'ASC';
+            $params = array_filter([
+              'q' => $f['q'] ?? '',
+              'score' => $f['score'] ?? '',
+              'type' => $f['type'] ?? '',
+              'statut' => $f['statut'] ?? '',
+              'ville' => $f['ville'] ?? '',
+              'date_from' => $f['date_from'] ?? '',
+              'date_to' => $f['date_to'] ?? '',
+              'sort' => $col,
+              'dir' => $nextDir,
+              'page' => $currentPage > 1 ? $currentPage : '',
+            ], fn($v) => $v !== '' && $v !== null);
+            return '/admin/leads?' . http_build_query($params);
+          };
         ?>
-        <div class="table-wrapper" style="overflow-x: auto;">
+
+        <!-- Bulk Actions Bar -->
+        <div class="leads-bulk-bar" id="leadsBulkBar">
+          <input type="checkbox" class="leads-check" id="leadsCheckAll" title="Tout sélectionner">
+          <span class="leads-bulk-count"><span id="bulkCount">0</span> sélectionné(s)</span>
+          <form method="POST" action="/admin/leads/bulk-action" id="bulkForm" style="display:inline-flex;gap:0.5rem;align-items:center;">
+            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+            <div id="bulkIdsContainer"></div>
+            <select name="bulk_action" class="leads-bulk-select" id="bulkActionSelect">
+              <option value="">-- Action groupée --</option>
+              <optgroup label="Changer le score">
+                <option value="score_chaud">Score: Chaud</option>
+                <option value="score_tiede">Score: Tiède</option>
+                <option value="score_froid">Score: Froid</option>
+              </optgroup>
+              <optgroup label="Changer le statut">
+                <?php foreach ($statutLabels as $sKey => $sLabel): ?>
+                  <option value="statut_<?= $sKey ?>">Statut: <?= $sLabel ?></option>
+                <?php endforeach; ?>
+              </optgroup>
+              <optgroup label="Danger">
+                <option value="delete">Supprimer</option>
+              </optgroup>
+            </select>
+            <button type="submit" class="leads-btn sm danger" id="bulkSubmitBtn" disabled onclick="return confirmBulk()"><i class="fas fa-check"></i> Appliquer</button>
+          </form>
+        </div>
+
+        <div class="table-wrapper leads-liste-view" style="overflow-x: auto;">
             <table class="leads-admin-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th style="width:36px;"><input type="checkbox" class="leads-check" id="leadsCheckAllHead" title="Tout sélectionner"></th>
+                  <th><a href="<?= $sortUrl('id') ?>">ID <?= $sortIcon('id') ?></a></th>
                   <th>Type</th>
-                  <th>Nom</th>
-                  <th>Email</th>
+                  <th><a href="<?= $sortUrl('nom') ?>">Nom <?= $sortIcon('nom') ?></a></th>
+                  <th><a href="<?= $sortUrl('email') ?>">Email <?= $sortIcon('email') ?></a></th>
                   <th>Téléphone</th>
-                  <th>Adresse</th>
-                  <th>Ville</th>
+                  <th><a href="<?= $sortUrl('ville') ?>">Ville <?= $sortIcon('ville') ?></a></th>
                   <th>Bien</th>
-                  <th>Surface</th>
-                  <th>Pièces</th>
-                  <th>Estimation</th>
-                  <th>Urgence</th>
-                  <th>Motivation</th>
+                  <th><a href="<?= $sortUrl('estimation') ?>">Estimation <?= $sortIcon('estimation') ?></a></th>
                   <th>Score</th>
                   <th>Statut</th>
-                  <th>Créé le</th>
+                  <th><a href="<?= $sortUrl('created_at') ?>">Créé le <?= $sortIcon('created_at') ?></a></th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -983,64 +1369,77 @@
                     elseif ($score === 'tiede' || $score === 'tiède') $scoreClass = 'leads-badge-tiede';
 
                     $statutKey = strtolower($lead['statut'] ?? 'nouveau');
-                    $statutClass = 'leads-badge-nouveau';
-                    if (in_array($statutKey, ['contacte', 'rdv_pris', 'visite_realisee'], true)) $statutClass = 'leads-badge-contacte';
-                    elseif (in_array($statutKey, ['mandat_simple', 'mandat_exclusif', 'compromis_vente', 'signe', 'co_signature_partenaire'], true)) $statutClass = 'leads-badge-converti';
 
                     $typeClass = ($lead['lead_type'] ?? '') === 'qualifie' ? 'leads-badge-qualifie' : 'leads-badge-tendance';
                     $typeLabel = ($lead['lead_type'] ?? '') === 'qualifie' ? 'Qualifié' : 'Tendance';
                   ?>
                   <tr>
+                    <td><input type="checkbox" class="leads-check leads-row-check" value="<?= $leadId ?>" data-lead-id="<?= $leadId ?>"></td>
                     <td style="font-weight: 600; color: var(--admin-muted, #6b6459);">#<?= e((string) $lead['id']) ?></td>
                     <td><span class="leads-badge <?= $typeClass ?>"><?= $typeLabel ?></span></td>
                     <td style="font-weight: 500;"><?= e((string) $lead['nom']) ?></td>
                     <td><?= e((string) $lead['email']) ?></td>
                     <td><?= e((string) $lead['telephone']) ?></td>
-                    <td><?= e((string) ($lead['adresse'] ?? '')) ?></td>
                     <td><?= e((string) $lead['ville']) ?></td>
                     <td><?= e((string) ($lead['type_bien'] ?? '')) ?></td>
-                    <td><?= $lead['surface_m2'] ? e((string) $lead['surface_m2']) . ' m²' : '' ?></td>
-                    <td><?= $lead['pieces'] ? e((string) $lead['pieces']) : '' ?></td>
                     <td style="font-weight: 600;"><?= number_format((float) $lead['estimation'], 0, ',', ' ') ?> €</td>
-                    <td><?= e((string) $lead['urgence']) ?></td>
-                    <td><?= e((string) $lead['motivation']) ?></td>
                     <td>
-                      <select class="leads-inline-select" data-lead-id="<?= (int) $lead['id'] ?>" data-field="score">
-                        <option value="chaud" <?= $score === 'chaud' ? 'selected' : '' ?>>chaud</option>
-                        <option value="tiede" <?= $score === 'tiede' || $score === 'tiède' ? 'selected' : '' ?>>tiede</option>
-                        <option value="froid" <?= $score === 'froid' ? 'selected' : '' ?>>froid</option>
+                      <select class="leads-inline-select" data-lead-id="<?= $leadId ?>" data-field="score" style="font-size:0.72rem;padding:0.2rem 0.35rem;border:1px solid var(--admin-border,#e8dfd7);border-radius:5px;background:#fff;cursor:pointer;max-width:90px;">
+                        <option value="chaud" <?= $score === 'chaud' ? 'selected' : '' ?>>Chaud</option>
+                        <option value="tiede" <?= $score === 'tiede' || $score === 'tiède' ? 'selected' : '' ?>>Tiède</option>
+                        <option value="froid" <?= $score === 'froid' ? 'selected' : '' ?>>Froid</option>
                       </select>
                     </td>
                     <td>
-                      <select class="leads-inline-select" data-lead-id="<?= (int) $lead['id'] ?>" data-field="statut">
-                        <?php
-                          $allStatuts = [
-                            'nouveau' => 'Nouveau',
-                            'contacte' => 'Contacté',
-                            'rdv_pris' => 'RDV Pris',
-                            'visite_realisee' => 'Visite Réalisée',
-                            'mandat_simple' => 'Mandat Simple',
-                            'mandat_exclusif' => 'Mandat Exclusif',
-                            'compromis_vente' => 'Compromis',
-                            'signe' => 'Signé',
-                            'co_signature_partenaire' => 'Co-signature',
-                            'assigne_autre' => 'Assigné',
-                          ];
-                          foreach ($allStatuts as $sKey => $sLabel): ?>
-                            <option value="<?= $sKey ?>" <?= $statutKey === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
-                          <?php endforeach; ?>
+                      <select class="leads-inline-select" data-lead-id="<?= $leadId ?>" data-field="statut" style="font-size:0.72rem;padding:0.2rem 0.35rem;border:1px solid var(--admin-border,#e8dfd7);border-radius:5px;background:#fff;cursor:pointer;max-width:120px;">
+                        <?php foreach ($statutLabels as $sKey => $sLabel): ?>
+                          <option value="<?= $sKey ?>" <?= $statutKey === $sKey ? 'selected' : '' ?>><?= $sLabel ?></option>
+                        <?php endforeach; ?>
                       </select>
                     </td>
-                    <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
+                    <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.78rem;"><?= date('d/m/Y H:i', strtotime($lead['created_at'])) ?></td>
                     <td class="leads-actions-cell">
                       <button type="button" class="leads-action-btn view" title="Voir la fiche" onclick="openLeadModal(<?= $leadId ?>)"><i class="fas fa-eye"></i></button>
+                      <a href="/admin/leads/edit/<?= $leadId ?>" class="leads-action-btn edit" title="Modifier"><i class="fas fa-edit"></i></a>
+                      <button type="button" class="leads-action-btn delete" title="Supprimer" onclick="openDeleteConfirm(<?= $leadId ?>, '<?= htmlspecialchars($lead['nom'] ?? '', ENT_QUOTES, 'UTF-8') ?>')"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>
                 <?php endforeach; ?>
                 </tbody>
               </table>
             </div>
+
+          <!-- PAGINATION -->
+          <?php if ($totalPages > 1): ?>
+          <div class="leads-pagination">
+            <div class="leads-pagination-info">
+              <?php
+                $from = ($currentPage - 1) * $perPage + 1;
+                $to = min($currentPage * $perPage, $totalLeads);
+              ?>
+              Affichage <?= $from ?>-<?= $to ?> sur <?= $totalLeads ?> leads
+            </div>
+            <div class="leads-pagination-nav">
+              <?php
+                $pageQs = function(int $p) use ($qs) {
+                  $sep = $qs ? '&' : '';
+                  return '/admin/leads?' . $qs . $sep . 'page=' . $p;
+                };
+              ?>
+              <a href="<?= $pageQs(1) ?>" class="leads-page-btn <?= $currentPage <= 1 ? 'disabled' : '' ?>" title="Première"><i class="fas fa-angle-double-left"></i></a>
+              <a href="<?= $pageQs(max(1, $currentPage - 1)) ?>" class="leads-page-btn <?= $currentPage <= 1 ? 'disabled' : '' ?>"><i class="fas fa-angle-left"></i></a>
+              <?php
+                $start = max(1, $currentPage - 2);
+                $end = min($totalPages, $currentPage + 2);
+                for ($p = $start; $p <= $end; $p++):
+              ?>
+                <a href="<?= $pageQs($p) ?>" class="leads-page-btn <?= $p === $currentPage ? 'active' : '' ?>"><?= $p ?></a>
+              <?php endfor; ?>
+              <a href="<?= $pageQs(min($totalPages, $currentPage + 1)) ?>" class="leads-page-btn <?= $currentPage >= $totalPages ? 'disabled' : '' ?>"><i class="fas fa-angle-right"></i></a>
+              <a href="<?= $pageQs($totalPages) ?>" class="leads-page-btn <?= $currentPage >= $totalPages ? 'disabled' : '' ?>" title="Dernière"><i class="fas fa-angle-double-right"></i></a>
+            </div>
           </div>
+          <?php endif; ?>
 
           <!-- GRILLE VIEW (cards) -->
           <div class="leads-grille-view">
@@ -1192,6 +1591,70 @@
           switchView(saved);
         }
       })();
+      </script>
+
+      <!-- Bulk Actions JS -->
+      <script>
+      (function() {
+        var bulkBar = document.getElementById('leadsBulkBar');
+        var checkAll1 = document.getElementById('leadsCheckAll');
+        var checkAll2 = document.getElementById('leadsCheckAllHead');
+        var rowChecks = document.querySelectorAll('.leads-row-check');
+        var bulkCount = document.getElementById('bulkCount');
+        var bulkSubmit = document.getElementById('bulkSubmitBtn');
+        var bulkAction = document.getElementById('bulkActionSelect');
+        var bulkIdsContainer = document.getElementById('bulkIdsContainer');
+
+        if (!bulkBar || !rowChecks.length) return;
+
+        function updateBulkState() {
+          var checked = document.querySelectorAll('.leads-row-check:checked');
+          var count = checked.length;
+          bulkCount.textContent = count;
+          bulkBar.classList.toggle('visible', count > 0);
+          bulkSubmit.disabled = count === 0 || !bulkAction.value;
+
+          // Sync checkAll states
+          var allChecked = rowChecks.length > 0 && checked.length === rowChecks.length;
+          if (checkAll1) checkAll1.checked = allChecked;
+          if (checkAll2) checkAll2.checked = allChecked;
+
+          // Update hidden inputs
+          bulkIdsContainer.innerHTML = '';
+          checked.forEach(function(cb) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'lead_ids[]';
+            input.value = cb.value;
+            bulkIdsContainer.appendChild(input);
+          });
+        }
+
+        function toggleAll(checked) {
+          rowChecks.forEach(function(cb) { cb.checked = checked; });
+          updateBulkState();
+        }
+
+        if (checkAll1) checkAll1.addEventListener('change', function() { toggleAll(this.checked); });
+        if (checkAll2) checkAll2.addEventListener('change', function() { toggleAll(this.checked); if (checkAll1) checkAll1.checked = this.checked; });
+
+        rowChecks.forEach(function(cb) {
+          cb.addEventListener('change', updateBulkState);
+        });
+
+        if (bulkAction) bulkAction.addEventListener('change', updateBulkState);
+      })();
+
+      function confirmBulk() {
+        var action = document.getElementById('bulkActionSelect').value;
+        var count = document.querySelectorAll('.leads-row-check:checked').length;
+        if (!action || count === 0) return false;
+        var msg = 'Appliquer cette action sur ' + count + ' lead(s) ?';
+        if (action === 'delete') {
+          msg = 'SUPPRIMER ' + count + ' lead(s) ? Cette action est irréversible.';
+        }
+        return confirm(msg);
+      }
       </script>
 
     <?php endif; ?>

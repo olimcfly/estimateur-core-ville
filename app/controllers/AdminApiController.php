@@ -56,6 +56,112 @@ final class AdminApiController
     }
 
     /**
+     * Register a Claude (Anthropic) API key with validation (POST).
+     *
+     * Expects POST fields: api_key (required), model (optional).
+     * Validates the key by calling the Anthropic API before saving to .env.
+     */
+    public function registerClaude(): void
+    {
+        AuthController::requireAuth();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $apiKey = trim((string) ($_POST['api_key'] ?? ''));
+        $model = trim((string) ($_POST['model'] ?? ''));
+
+        if ($apiKey === '') {
+            echo json_encode(['success' => false, 'error' => 'La cle API est requise']);
+            return;
+        }
+
+        // Validate key format (Anthropic keys start with "sk-ant-")
+        if (!str_starts_with($apiKey, 'sk-ant-')) {
+            echo json_encode(['success' => false, 'error' => 'Format de cle invalide. Les cles Anthropic commencent par "sk-ant-"']);
+            return;
+        }
+
+        // Test the key by making a real API call
+        $testModel = $model !== '' ? $model : ($_ENV['ANTHROPIC_MODEL'] ?? 'claude-sonnet-4-20250514');
+
+        $payload = json_encode([
+            'model' => $testModel,
+            'max_tokens' => 10,
+            'messages' => [['role' => 'user', 'content' => 'Reponds uniquement "OK" sans rien d\'autre.']],
+        ]);
+
+        $start = microtime(true);
+        $result = $this->curlPost('https://api.anthropic.com/v1/messages', $payload, [
+            'x-api-key: ' . $apiKey,
+            'anthropic-version: 2023-06-01',
+            'Content-Type: application/json',
+        ]);
+        $latency = round((microtime(true) - $start) * 1000);
+
+        if ($result['error'] !== null) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Cle API invalide ou erreur de connexion: ' . $result['error'],
+                'latency_ms' => $latency,
+            ]);
+            return;
+        }
+
+        $data = json_decode($result['body'], true);
+        if (isset($data['error'])) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Cle API rejetee par Anthropic: ' . ($data['error']['message'] ?? 'Erreur inconnue'),
+                'latency_ms' => $latency,
+            ]);
+            return;
+        }
+
+        // Key is valid — save to .env
+        $envFile = dirname(__DIR__, 2) . '/.env';
+        if (!is_file($envFile)) {
+            echo json_encode(['success' => false, 'error' => 'Fichier .env introuvable']);
+            return;
+        }
+
+        $envContent = (string) file_get_contents($envFile);
+
+        $fieldsToSave = ['ANTHROPIC_API_KEY' => $apiKey];
+        if ($model !== '') {
+            $fieldsToSave['ANTHROPIC_MODEL'] = $model;
+        }
+
+        foreach ($fieldsToSave as $key => $value) {
+            $safeValue = str_replace('"', '\\"', $value);
+            if (preg_match('/^' . preg_quote($key, '/') . '=/m', $envContent)) {
+                $envContent = preg_replace(
+                    '/^' . preg_quote($key, '/') . '=.*$/m',
+                    $key . '="' . $safeValue . '"',
+                    $envContent
+                );
+            } else {
+                $envContent = rtrim($envContent) . "\n" . $key . '="' . $safeValue . '"' . "\n";
+            }
+            $_ENV[$key] = $value;
+        }
+
+        $written = file_put_contents($envFile, $envContent);
+        if ($written === false) {
+            echo json_encode(['success' => false, 'error' => 'Impossible d\'ecrire dans .env']);
+            return;
+        }
+
+        $responseModel = $data['model'] ?? $testModel;
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Cle API Claude enregistree et validee avec succes',
+            'model' => $responseModel,
+            'latency_ms' => $latency,
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
      * Save API keys via AJAX (POST).
      */
     public function saveKeys(): void

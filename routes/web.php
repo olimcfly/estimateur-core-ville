@@ -236,6 +236,7 @@ $router->get('/admin/smtp-api/usage-stats', [AdminSmtpApiController::class, 'api
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
 $router->post('/admin/api/save-keys', [AdminApiController::class, 'saveKeys']);
+$router->post('/admin/api/register-claude', [AdminApiController::class, 'registerClaude']);
 
 // Admin module management routes (superuser only)
 $router->get('/admin/modules', [AdminModuleController::class, 'index']);

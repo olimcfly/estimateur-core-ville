@@ -559,6 +559,9 @@ try {
       <i class="fas fa-pen-fancy"></i> Articles Blog
     </a>
     <?php endif; ?>
+    <a href="/admin/seo-hub" class="admin-sidebar-link <?= ($admin_page ?? '') === 'seo-hub' ? 'active' : '' ?>">
+      <i class="fas fa-chart-line"></i> SEO Hub (GSC)
+    </a>
     <?php if ($_moduleAccess('actualites')): ?>
     <a href="/admin/actualites" class="admin-sidebar-link <?= ($admin_page ?? '') === 'actualites' ? 'active' : '' ?>">
       <i class="fas fa-newspaper"></i> Actualites

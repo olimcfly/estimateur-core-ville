@@ -779,8 +779,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- HEADER PREMIUM -->
 <!-- ============================= -->
 <header class="site-header">
-  <div class="container nav-wrapper">
-    <a href="/" class="brand">Estimation Immobilier <span>Bordeaux et Métropole</span></a>
+  <div class="header-container">
+    <div class="header-wrapper">
+    <a href="/" class="brand">
+      <div class="brand-icon"><i class="fas fa-chart-area"></i></div>
+      Estimation Immobilier <span>Bordeaux et Métropole</span>
+    </a>
 
     <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -845,6 +849,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </nav>
 
     <a href="/estimation#form-estimation" class="btn btn-header-cta">Estimer mon bien</a>
+    </div>
   </div>
 </header>
 

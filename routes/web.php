@@ -16,11 +16,13 @@ use App\Controllers\AdminPartenaireController;
 use App\Controllers\AdminSequenceController;
 use App\Controllers\AdminDiagnosticController;
 use App\Controllers\AdminApiController;
+use App\Controllers\AdminApiCostsController;
 use App\Controllers\AdminSmtpApiController;
 use App\Controllers\AdminModuleController;
 use App\Controllers\AdminMailboxController;
 use App\Controllers\AdminNotificationController;
 use App\Controllers\AdminSocialImageController;
+use App\Controllers\AdminAnalyticsSettingsController;
 use App\Controllers\AdminSettingsController;
 use App\Controllers\AdminUserController;
 use App\Controllers\AuthController;
@@ -28,6 +30,7 @@ use App\Controllers\BlogController;
 use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
+use App\Controllers\AdminFinancementController;
 use App\Controllers\AdminGoogleAdsCampaignController;
 use App\Controllers\AdminRssController;
 use App\Controllers\AdminSeoHubController;
@@ -85,6 +88,15 @@ $router->post('/admin/achats/save', [AdminAchatController::class, 'save']);
 $router->post('/admin/achats/delete', [AdminAchatController::class, 'delete']);
 $router->post('/admin/achats/create-table', [AdminAchatController::class, 'createTable']);
 
+// Admin financement routes (demandes de financement visiteurs — 2L Courtage)
+$router->get('/admin/financement', [AdminFinancementController::class, 'index']);
+$router->get('/admin/financement/edit', [AdminFinancementController::class, 'edit']);
+$router->post('/admin/financement/save', [AdminFinancementController::class, 'save']);
+$router->post('/admin/financement/delete', [AdminFinancementController::class, 'delete']);
+$router->post('/admin/financement/transmettre', [AdminFinancementController::class, 'transmettre']);
+$router->get('/admin/financement/export-courtier', [AdminFinancementController::class, 'exportCourtier']);
+$router->post('/admin/financement/create-table', [AdminFinancementController::class, 'createTable']);
+
 // Admin partenaires routes
 $router->get('/admin/partenaires', [AdminPartenaireController::class, 'index']);
 $router->get('/admin/partenaires/edit', [AdminPartenaireController::class, 'edit']);
@@ -114,6 +126,7 @@ $router->get('/blog/marche-immobilier', [BlogController::class, 'category']);
 $router->get('/blog/vendre-son-bien', [BlogController::class, 'category']);
 $router->get('/blog/conseils-astuces', [BlogController::class, 'category']);
 $router->get('/blog/aspect-juridique', [BlogController::class, 'category']);
+$router->get('/blog/aspects-juridiques', [BlogController::class, 'category']);
 $router->get('/blog/{slug}', [BlogController::class, 'show']);
 
 // Actualités (news) routes
@@ -237,6 +250,10 @@ $router->post('/admin/smtp-api/create-table', [AdminSmtpApiController::class, 'c
 $router->post('/admin/smtp-api/seed-data', [AdminSmtpApiController::class, 'seedSampleData']);
 $router->get('/admin/smtp-api/usage-stats', [AdminSmtpApiController::class, 'apiUsageStats']);
 
+// Admin API costs dashboard
+$router->get('/admin/api-costs', [AdminApiCostsController::class, 'index']);
+$router->get('/admin/api-costs/stats', [AdminApiCostsController::class, 'apiStats']);
+
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);
 $router->post('/admin/api/test/{apiKey}', [AdminApiController::class, 'testApi']);
@@ -246,6 +263,11 @@ $router->post('/admin/api/register-claude', [AdminApiController::class, 'registe
 // Admin settings routes
 $router->get('/admin/settings', [AdminSettingsController::class, 'index']);
 $router->post('/admin/settings/save', [AdminSettingsController::class, 'save']);
+
+// Admin analytics & tracking settings routes
+$router->get('/admin/analytics-settings', [AdminAnalyticsSettingsController::class, 'index']);
+$router->post('/admin/analytics-settings/save', [AdminAnalyticsSettingsController::class, 'save']);
+$router->get('/admin/analytics-settings/status', [AdminAnalyticsSettingsController::class, 'status']);
 
 // Admin module management routes (superuser only)
 $router->get('/admin/modules', [AdminModuleController::class, 'index']);

@@ -32,7 +32,6 @@
           <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux et Métropole</strong></span>
         </a>
         <p class="footer-desc">
-          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et sa métropole depuis 2020.
           Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et Métropole depuis 2020.
         </p>
         <div class="footer-social">
@@ -87,9 +86,9 @@
             <span>Bordeaux, 33000<br>Nouvelle-Aquitaine</span>
           </li>
           <li>
-            <a href="tel:+33556000000">
-              <i class="fas fa-phone"></i>
-              <span>05 56 00 00 00</span>
+            <a href="/contact">
+              <i class="fas fa-comment-dots"></i>
+              <span>Nous contacter</span>
             </a>
           </li>
           <li>
@@ -232,6 +231,8 @@
 <style>
 @keyframes slideUpPresence { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
+<!-- Admin presence notification: DISABLED on frontend -->
+<!-- To re-enable, uncomment the banner HTML and JS below -->
 <!-- ================================================ -->
 <!-- MOBILE BOTTOM NAV (APP-LIKE)                     -->
 <!-- ================================================ -->
@@ -319,6 +320,7 @@
   setInterval(checkPresence, 45000);
 })();
 </script>
+<!-- Admin presence JS: DISABLED -->
 
 </body>
 </html>

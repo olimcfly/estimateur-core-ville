@@ -349,12 +349,12 @@ final class AdminApiController
 
     private function testClaude(): array
     {
-        $apiKey = $_ENV['ANTHROPIC_API_KEY'] ?? '';
+        $apiKey = trim((string) ($_ENV['ANTHROPIC_API_KEY'] ?? ''));
         if ($apiKey === '') {
             return ['success' => false, 'error' => 'Cle API non configuree (ANTHROPIC_API_KEY)'];
         }
 
-        $model = $_ENV['ANTHROPIC_MODEL'] ?? 'claude-sonnet-4-20250514';
+        $model = trim((string) ($_ENV['ANTHROPIC_MODEL'] ?? 'claude-sonnet-4-20250514'));
 
         $payload = json_encode([
             'model' => $model,

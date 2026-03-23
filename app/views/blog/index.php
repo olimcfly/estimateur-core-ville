@@ -1,5 +1,10 @@
 <section class="section">
   <div class="container">
+    <nav class="breadcrumb" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> &rsaquo;
+      <span aria-current="page">Blog</span>
+    </nav>
+
     <p class="eyebrow">Blog immobilier Bordeaux</p>
     <h1>Conseils pour vendre votre bien au meilleur prix</h1>
     <p class="lead">Découvrez nos analyses locales, guides pratiques et stratégies de vente adaptées à votre profil vendeur.</p>
@@ -26,9 +31,14 @@
               <time class="article-date" datetime="<?= e(date('Y-m-d', strtotime((string) $article['published_at']))) ?>">
                 <i class="far fa-calendar-alt"></i>
                 <?= e(date('d/m/Y', strtotime((string) $article['published_at']))) ?>
+              <time class="blog-date" datetime="<?= e((new DateTimeImmutable((string) $article['published_at']))->format('Y-m-d')) ?>">
+                <?= e((new DateTimeImmutable((string) $article['published_at']))->format('d/m/Y')) ?>
               </time>
             <?php endif; ?>
             <p class="muted"><?= e((string) $article['meta_description']) ?></p>
+            <?php if (!empty($article['reading_time_minutes']) && (int) $article['reading_time_minutes'] > 0): ?>
+              <span class="reading-time"><?= (int) $article['reading_time_minutes'] ?> min de lecture</span>
+            <?php endif; ?>
             <a class="btn btn-small" href="/blog/<?= e((string) $article['slug']) ?>">Lire l'article</a>
           </article>
         <?php endforeach; ?>

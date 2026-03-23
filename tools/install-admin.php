@@ -62,6 +62,8 @@ $filesToCopy = [
         $sourceDir . '/app/models/Partenaire.php',
         $sourceDir . '/app/models/DesignTemplate.php',
         $sourceDir . '/app/models/NewsletterSubscriber.php',
+        $sourceDir . '/app/models/RssSource.php',
+        $sourceDir . '/app/models/RssArticle.php',
     ], 'is_file'),
     'Services' => array_filter([
         $sourceDir . '/app/services/AIService.php',
@@ -74,6 +76,7 @@ $filesToCopy = [
         $sourceDir . '/app/services/SeoAnalyzerService.php',
         $sourceDir . '/app/services/SmtpAuthClient.php',
         $sourceDir . '/app/services/SmtpLogger.php',
+        $sourceDir . '/app/services/RssFeedService.php',
         $sourceDir . '/app/services/UtmTrackingService.php',
     ], 'is_file'),
     'Core & Routes' => array_filter([

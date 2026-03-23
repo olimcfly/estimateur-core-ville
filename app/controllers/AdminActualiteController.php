@@ -13,6 +13,8 @@ final class AdminActualiteController
 {
     public function index(): void
     {
+        AuthController::requireAuth();
+
         $actualites = [];
         $cronLogs = [];
         $dbError = null;
@@ -25,9 +27,6 @@ final class AdminActualiteController
             error_log('Actualites index error: ' . $e->getMessage());
             $dbError = 'Erreur base de données : la table "actualites" est peut-être absente. Exécutez "php database/migrate.php".';
         }
-        AuthController::requireAuth();
-
-        $model = new Actualite();
 
         View::renderAdmin('admin/actualites/index', [
             'actualites' => $actualites,

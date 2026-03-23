@@ -244,6 +244,13 @@ final class AdminEmailController
             $data = json_decode($response, true);
             $content = $data['choices'][0]['message']['content'] ?? '';
 
+            $inputTokens = (int) ($data['usage']['prompt_tokens'] ?? 0);
+            $outputTokens = (int) ($data['usage']['completion_tokens'] ?? 0);
+            $inRate = str_contains($model, '4o-mini') ? 0.00015 : 0.0025;
+            $outRate = str_contains($model, '4o-mini') ? 0.0006 : 0.0100;
+            $cost = round(($inputTokens / 1000) * $inRate + ($outputTokens / 1000) * $outRate, 6);
+            AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'email_generation');
+
             echo json_encode(['success' => true, 'content' => $content]);
         } catch (\Throwable $e) {
             echo json_encode(['success' => false, 'message' => 'Erreur: ' . $e->getMessage()]);

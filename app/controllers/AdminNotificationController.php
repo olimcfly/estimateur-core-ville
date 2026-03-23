@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\View;
+use App\Models\AdminModule;
 use App\Models\AdminNotification;
 use App\Models\AdminUser;
 
@@ -56,7 +57,9 @@ final class AdminNotificationController
             ];
         }, $recent);
 
-        echo json_encode(['success' => true, 'unread' => $unread, 'notifications' => $items]);
+        $bannerEnabled = AdminModule::hasAccess('notifications_banner', $role);
+
+        echo json_encode(['success' => true, 'unread' => $unread, 'notifications' => $items, 'banner_enabled' => $bannerEnabled]);
     }
 
     public function markRead(): void

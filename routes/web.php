@@ -28,6 +28,7 @@ use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
 use App\Controllers\AdminGoogleAdsCampaignController;
 use App\Controllers\AdminRssController;
+use App\Controllers\AdminSeoHubController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
@@ -208,6 +209,17 @@ $router->post('/admin/rss/fetch-all', [AdminRssController::class, 'fetchAll']);
 $router->post('/admin/rss/toggle-star/{id}', [AdminRssController::class, 'toggleStar']);
 $router->post('/admin/rss/generate', [AdminRssController::class, 'generate']);
 $router->post('/admin/rss/seed', [AdminRssController::class, 'seed']);
+
+// Admin SEO Hub (Google Search Console)
+$router->get('/admin/seo-hub', [AdminSeoHubController::class, 'index']);
+$router->get('/admin/seo-hub/connect', [AdminSeoHubController::class, 'connect']);
+$router->get('/admin/seo-hub/callback', [AdminSeoHubController::class, 'callback']);
+$router->get('/admin/seo-hub/select-site', [AdminSeoHubController::class, 'selectSite']);
+$router->post('/admin/seo-hub/confirm-site', [AdminSeoHubController::class, 'confirmSite']);
+$router->post('/admin/seo-hub/refresh', [AdminSeoHubController::class, 'refresh']);
+$router->post('/admin/seo-hub/disconnect', [AdminSeoHubController::class, 'disconnect']);
+$router->get('/admin/seo-hub/api/keywords', [AdminSeoHubController::class, 'apiKeywords']);
+$router->get('/admin/seo-hub/api/keywords-by-page', [AdminSeoHubController::class, 'apiKeywordsByPage']);
 
 // Admin: Installateur (copie fichiers admin vers un autre site)
 $router->get('/admin/installer', [AdminDashboardController::class, 'installer']);

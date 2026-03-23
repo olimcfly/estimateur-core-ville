@@ -70,6 +70,10 @@ return [
         'api_key' => $_ENV['ANTHROPIC_API_KEY'] ?? '',
         'model' => $_ENV['ANTHROPIC_MODEL'] ?? 'claude-sonnet-4-20250514',
     ],
+    'google_search_console' => [
+        'client_id' => $_ENV['GSC_CLIENT_ID'] ?? '',
+        'client_secret' => $_ENV['GSC_CLIENT_SECRET'] ?? '',
+    ],
     'google_maps' => [
         'api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
     ],

@@ -717,6 +717,10 @@
     color: #fff;
   }
 
+  /* ── Liste View hidden state ── */
+  .leads-liste-view.hidden { display: none !important; }
+  .leads-pagination.hidden { display: none !important; }
+
   /* ── Grille (Cards) View ── */
   .leads-grille-view {
     display: none;
@@ -734,12 +738,53 @@
   .leads-card {
     background: var(--admin-surface, #ffffff);
     border: 1px solid var(--admin-border, #e8dfd7);
-    border-radius: 4px;
-    font-size: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
     font-family: inherit;
     color: var(--admin-text, #1a1410);
     margin: 0;
-    text-align: right;
+    padding: 1rem;
+    text-align: left;
+  }
+
+  .leads-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .leads-card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .leads-card-id {
+    font-size: 0.75rem;
+    color: var(--admin-muted, #6b6459);
+  }
+
+  .leads-card-badges {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .leads-card-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 0.75rem;
+    margin: 0 0 0.75rem 0;
+    font-size: 0.78rem;
+  }
+
+  .leads-card-info dt {
+    font-weight: 500;
+    color: var(--admin-muted, #6b6459);
+  }
+
+  .leads-card-info dd {
+    margin: 0;
   }
 
   .leads-card-footer {
@@ -776,6 +821,70 @@
     display: flex;
     flex-direction: column;
     max-height: 70vh;
+  }
+
+  .leads-kanban-col-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--admin-border, #e8dfd7);
+  }
+
+  .leads-kanban-count {
+    background: var(--admin-border, #e8dfd7);
+    color: var(--admin-muted, #6b6459);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+  }
+
+  .leads-kanban-cards {
+    padding: 0.5rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .leads-kanban-card {
+    background: var(--admin-surface, #ffffff);
+    border: 1px solid var(--admin-border, #e8dfd7);
+    border-radius: 6px;
+    padding: 0.7rem;
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+
+  .leads-kanban-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .leads-kanban-card-name {
+    font-weight: 600;
+    font-size: 0.82rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .leads-kanban-card-detail {
+    font-size: 0.75rem;
+    color: var(--admin-muted, #6b6459);
+    margin-bottom: 0.4rem;
+  }
+
+  .leads-kanban-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .leads-kanban-card-est {
+    font-weight: 600;
+    font-size: 0.78rem;
   }
 
   .leads-inline-select:focus {
@@ -1555,19 +1664,25 @@
           var liste = document.querySelector('.leads-liste-view');
           var grille = document.querySelector('.leads-grille-view');
           var kanban = document.querySelector('.leads-kanban-view');
+          var pagination = document.querySelector('.leads-pagination');
           var title = document.querySelector('.leads-table-title');
           if (!liste) return;
 
+          // Hide all views
           liste.classList.add('hidden');
+          if (pagination) pagination.classList.add('hidden');
           if (grille) grille.classList.remove('visible');
           if (kanban) kanban.classList.remove('visible');
 
+          // Update active button
           btns.forEach(function(b) { b.classList.remove('active'); });
           var activeBtn = document.querySelector('.leads-view-btn[data-view="' + view + '"]');
           if (activeBtn) activeBtn.classList.add('active');
 
+          // Show selected view
           if (view === 'liste') {
             liste.classList.remove('hidden');
+            if (pagination) pagination.classList.remove('hidden');
             if (title) title.innerHTML = '<i class="fas fa-list"></i> Liste des leads';
           } else if (view === 'grille') {
             if (grille) grille.classList.add('visible');

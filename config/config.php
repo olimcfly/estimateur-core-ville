@@ -55,6 +55,11 @@ return [
         'smtp_user' => $_ENV['MAIL_SMTP_USER'] ?? $_ENV['MAIL_USERNAME'] ?? '',
         'smtp_pass' => $_ENV['MAIL_SMTP_PASS'] ?? $_ENV['MAIL_PASSWORD'] ?? '',
         'smtp_encryption' => $_ENV['MAIL_SMTP_ENCRYPTION'] ?? $_ENV['MAIL_ENCRYPTION'] ?? 'tls',
+        'imap_host' => $_ENV['MAIL_IMAP_HOST'] ?? $_ENV['MAIL_HOST'] ?? '',
+        'imap_port' => (int) ($_ENV['MAIL_IMAP_PORT'] ?? 993),
+        'imap_user' => $_ENV['MAIL_IMAP_USER'] ?? $_ENV['MAIL_USERNAME'] ?? '',
+        'imap_pass' => $_ENV['MAIL_IMAP_PASS'] ?? $_ENV['MAIL_PASSWORD'] ?? '',
+        'imap_encryption' => $_ENV['MAIL_IMAP_ENCRYPTION'] ?? 'ssl',
     ],
     'openai' => [
         'api_key' => $_ENV['OPENAI_API_KEY'] ?? '',

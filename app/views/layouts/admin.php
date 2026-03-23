@@ -578,8 +578,13 @@ try {
     </a>
     <?php endif; ?>
 
-    <?php if ($_moduleAccess('emails') || $_moduleAccess('sequences')): ?>
+    <?php if ($_moduleAccess('emails') || $_moduleAccess('sequences') || $_moduleAccess('mailbox')): ?>
     <div class="admin-sidebar-section">Communication</div>
+    <?php if ($_moduleAccess('mailbox')): ?>
+    <a href="/admin/mailbox" class="admin-sidebar-link <?= ($admin_page ?? '') === 'mailbox' ? 'active' : '' ?>">
+      <i class="fas fa-envelope"></i> Boîte Email
+    </a>
+    <?php endif; ?>
     <?php if ($_moduleAccess('emails')): ?>
     <a href="/admin/emails" class="admin-sidebar-link <?= ($admin_page ?? '') === 'emails' ? 'active' : '' ?>">
       <i class="fas fa-envelope-open-text"></i> Emails

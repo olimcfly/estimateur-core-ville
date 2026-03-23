@@ -171,6 +171,25 @@ $currentTab = $tab ?? 'google';
   .overview-card .oc-status { font-size: 0.75rem; color: #6b6459; }
   .oc-active { color: #16a34a !important; font-weight: 600; }
   .oc-inactive { color: #9ca3af !important; }
+
+  .saved-value-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    margin-top: 0.4rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .saved-value-badge i {
+    color: #22c55e;
+    font-size: 0.7rem;
+  }
 </style>
 
 <div style="max-width:900px;">
@@ -182,8 +201,21 @@ $currentTab = $tab ?? 'google';
 
   <?php if (!empty($success)): ?>
   <div style="background:#dcfce7;border:1px solid #86efac;color:#166534;padding:1rem 1.25rem;border-radius:10px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;">
-    <i class="fas fa-check-circle"></i>
-    Paramètres de tracking sauvegardés avec succès.
+    <i class="fas fa-check-circle" style="font-size:1.2rem;"></i>
+    <div>
+      <strong>Paramètres sauvegardés avec succès !</strong>
+      <div style="font-size:0.85rem;margin-top:0.25rem;">Vos modifications sont actives et appliquées sur toutes les pages du site.</div>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <?php if (!empty($error)): ?>
+  <div style="background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;padding:1rem 1.25rem;border-radius:10px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;">
+    <i class="fas fa-exclamation-circle" style="font-size:1.2rem;"></i>
+    <div>
+      <strong>Erreur lors de la sauvegarde</strong>
+      <div style="font-size:0.85rem;margin-top:0.25rem;">Une erreur est survenue. Veuillez réessayer ou contacter le support si le problème persiste.</div>
+    </div>
   </div>
   <?php endif; ?>
 
@@ -284,6 +316,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="gtm_id" name="gtm_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['gtm_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="GTM-XXXXXXX">
+          <?php if (!empty($s['gtm_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['gtm_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Format : GTM-XXXXXXX. Depuis tagmanager.google.com &rarr; Admin &rarr; Container Settings.</p>
         </div>
       </div>
@@ -305,6 +340,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="ga4_measurement_id" name="ga4_measurement_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['ga4_measurement_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="G-XXXXXXXXXX">
+          <?php if (!empty($s['ga4_measurement_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['ga4_measurement_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Format : G-XXXXXXXXXX. Depuis analytics.google.com &rarr; Admin &rarr; Data Streams.</p>
         </div>
       </div>
@@ -325,6 +363,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="google_ads_id" name="google_ads_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['google_ads_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="AW-XXXXXXXXX">
+          <?php if (!empty($s['google_ads_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['google_ads_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Format : AW-XXXXXXXXX. Depuis ads.google.com &rarr; Outils &rarr; Conversions.</p>
         </div>
         <div class="field-group">
@@ -332,6 +373,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="google_ads_conversion_label" name="google_ads_conversion_label" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['google_ads_conversion_label'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="AbCdEfGhIjKlMn">
+          <?php if (!empty($s['google_ads_conversion_label'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['google_ads_conversion_label'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Label de la conversion principale (formulaire d'estimation soumis).</p>
         </div>
       </div>
@@ -356,6 +400,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="facebook_pixel_id" name="facebook_pixel_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['facebook_pixel_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="123456789012345">
+          <?php if (!empty($s['facebook_pixel_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['facebook_pixel_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis business.facebook.com &rarr; Events Manager &rarr; Data Sources.</p>
         </div>
         <div class="field-group">
@@ -363,6 +410,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="facebook_conversions_api_token" name="facebook_conversions_api_token" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['facebook_conversions_api_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="EAAxxxxxxx...">
+          <?php if (!empty($s['facebook_conversions_api_token'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré</div>
+          <?php endif; ?>
           <p class="field-hint">Token d'accès pour l'API Conversions serveur-side (améliore la précision du tracking).</p>
         </div>
       </div>
@@ -383,6 +433,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="tiktok_pixel_id" name="tiktok_pixel_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['tiktok_pixel_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="CXXXXXXXXXXXXXXXXX">
+          <?php if (!empty($s['tiktok_pixel_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['tiktok_pixel_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis TikTok Ads Manager &rarr; Assets &rarr; Events.</p>
         </div>
       </div>
@@ -403,6 +456,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="linkedin_partner_id" name="linkedin_partner_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['linkedin_partner_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="123456">
+          <?php if (!empty($s['linkedin_partner_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['linkedin_partner_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis LinkedIn Campaign Manager &rarr; Analyze &rarr; Insight Tag.</p>
         </div>
       </div>
@@ -423,6 +479,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="pinterest_tag_id" name="pinterest_tag_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['pinterest_tag_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="1234567890123">
+          <?php if (!empty($s['pinterest_tag_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['pinterest_tag_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis Pinterest Ads Manager &rarr; Conversions &rarr; Tag Manager.</p>
         </div>
       </div>
@@ -443,6 +502,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="snapchat_pixel_id" name="snapchat_pixel_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['snapchat_pixel_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+          <?php if (!empty($s['snapchat_pixel_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['snapchat_pixel_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis Snapchat Ads Manager &rarr; Events Manager.</p>
         </div>
       </div>
@@ -468,6 +530,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="microsoft_clarity_id" name="microsoft_clarity_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['microsoft_clarity_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="abcdefghij">
+          <?php if (!empty($s['microsoft_clarity_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['microsoft_clarity_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis clarity.microsoft.com &rarr; Settings &rarr; Setup.</p>
         </div>
       </div>
@@ -488,6 +553,9 @@ $currentTab = $tab ?? 'google';
           <input type="text" id="hotjar_id" name="hotjar_id" class="field-input field-input-mono"
                  value="<?= htmlspecialchars($s['hotjar_id'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                  placeholder="1234567">
+          <?php if (!empty($s['hotjar_id'])): ?>
+            <div class="saved-value-badge"><i class="fas fa-check-circle"></i> Enregistré : <?= htmlspecialchars($s['hotjar_id'], ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
           <p class="field-hint">Depuis hotjar.com &rarr; Sites & Organizations &rarr; Site ID.</p>
         </div>
       </div>

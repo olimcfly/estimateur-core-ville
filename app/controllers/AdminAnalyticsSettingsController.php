@@ -60,6 +60,7 @@ final class AdminAnalyticsSettingsController
             'admin_page' => 'analytics-settings',
             'settings' => $settings,
             'success' => $_GET['success'] ?? null,
+            'error' => $_GET['error'] ?? null,
             'tab' => $_GET['tab'] ?? 'google',
         ]);
     }
@@ -69,6 +70,8 @@ final class AdminAnalyticsSettingsController
         AuthController::requireAuth();
 
         $this->ensureSettingsTable();
+
+        $tab = $_POST['_tab'] ?? 'google';
 
         try {
             $pdo = Database::connection();
@@ -82,10 +85,10 @@ final class AdminAnalyticsSettingsController
                 $stmt->execute([$key, $value]);
             }
         } catch (\Throwable $e) {
-            // ignore
+            header('Location: /admin/analytics-settings?error=1&tab=' . urlencode($tab));
+            exit;
         }
 
-        $tab = $_POST['_tab'] ?? 'google';
         header('Location: /admin/analytics-settings?success=1&tab=' . urlencode($tab));
         exit;
     }

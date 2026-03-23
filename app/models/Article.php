@@ -13,11 +13,16 @@ final class Article
         focus_keyword, secondary_keywords, seo_score, semantic_score, keyword_density, keyword_count,
         word_count, h1_tag, og_title, og_description, og_image, canonical_url, faq_schema,
         internal_links_count, external_links_count, images_count, images_with_alt, reading_time_minutes,
-        silo_id, article_type, target_audience, article_goal, seo_analysis_json, status, published_at, created_at';
+        silo_id, article_type, target_audience, article_goal, seo_analysis_json,
+        page_views, is_indexed, google_position, indexing_checked_at,
+        status, published_at, created_at';
 
     private const LIST_COLUMNS = 'a.id, a.title, a.slug, a.persona, a.awareness_level, a.focus_keyword, a.seo_score,
         a.semantic_score, a.word_count, a.article_type, a.silo_id, a.status, a.published_at, a.created_at,
         s.name AS silo_name, s.color AS silo_color, s.city AS silo_city';
+    private const LIST_COLUMNS = 'id, title, slug, persona, awareness_level, focus_keyword, seo_score,
+        semantic_score, word_count, article_type, silo_id, page_views, is_indexed, google_position,
+        status, published_at, created_at';
 
     public function findPublished(): array
     {
@@ -299,6 +304,32 @@ final class Article
 
         $stmt = Database::connection()->prepare('DELETE FROM article_silos WHERE id = :id AND website_id = :website_id');
         $stmt->execute([':id' => $id, ':website_id' => $this->websiteId()]);
+    }
+
+    // --- Page Views & Indexing ---
+
+    public function incrementPageViews(int $id): void
+    {
+        $sql = 'UPDATE articles SET page_views = page_views + 1 WHERE id = :id AND website_id = :website_id';
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([':id' => $id, ':website_id' => $this->websiteId()]);
+    }
+
+    public function updateIndexingData(int $id, array $data): void
+    {
+        $sql = 'UPDATE articles SET
+                    is_indexed = :is_indexed,
+                    google_position = :google_position,
+                    indexing_checked_at = NOW()
+                WHERE id = :id AND website_id = :website_id';
+
+        $stmt = Database::connection()->prepare($sql);
+        $stmt->execute([
+            ':id' => $id,
+            ':website_id' => $this->websiteId(),
+            ':is_indexed' => $data['is_indexed'] ? 1 : 0,
+            ':google_position' => $data['position'],
+        ]);
     }
 
     // --- Statistics ---

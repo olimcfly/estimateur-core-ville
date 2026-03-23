@@ -38,6 +38,13 @@ final class BlogController
             return;
         }
 
+        // Track page view
+        try {
+            $articleModel->incrementPageViews((int) $article['id']);
+        } catch (\Throwable $e) {
+            error_log('Page view tracking error: ' . $e->getMessage());
+        }
+
         View::render('blog/show', ['article' => $article]);
     }
 }

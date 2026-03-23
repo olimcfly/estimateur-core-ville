@@ -295,6 +295,143 @@ final class AdminBlogController
         exit;
     }
 
+    /**
+     * AJAX: Check Google indexation & position for an article.
+     */
+    public function checkIndexing(): void
+    {
+        AuthController::requireAuth();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $articleId = (int) ($input['article_id'] ?? 0);
+
+            if ($articleId <= 0) {
+                throw new \InvalidArgumentException('ID article invalide');
+            }
+
+            $articleModel = new Article();
+            $article = $articleModel->findById($articleId);
+
+            if ($article === null) {
+                throw new \InvalidArgumentException('Article introuvable');
+            }
+
+            $baseUrl = rtrim((string) ($_ENV['APP_BASE_URL'] ?? ''), '/');
+            $pageUrl = $baseUrl . '/blog/' . $article['slug'];
+            $focusKeyword = trim((string) ($article['focus_keyword'] ?? ''));
+
+            // Check indexation via Google site: search
+            $isIndexed = $this->checkGoogleIndexation($pageUrl);
+
+            // Check position for focus keyword
+            $position = null;
+            if ($focusKeyword !== '' && $isIndexed) {
+                $position = $this->checkGooglePosition($focusKeyword, $pageUrl);
+            }
+
+            // Save results to DB
+            $articleModel->updateIndexingData($articleId, [
+                'is_indexed' => $isIndexed,
+                'position' => $position,
+            ]);
+
+            echo json_encode([
+                'success' => true,
+                'data' => [
+                    'is_indexed' => $isIndexed,
+                    'position' => $position,
+                    'page_url' => $pageUrl,
+                    'focus_keyword' => $focusKeyword,
+                    'last_checked' => date('c'),
+                ],
+            ], JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+        }
+        exit;
+    }
+
+    private function checkGoogleIndexation(string $url): bool
+    {
+        $query = 'site:' . $url;
+        $googleUrl = 'https://www.google.com/search?q=' . urlencode($query) . '&num=1&hl=fr';
+
+        $ch = curl_init($googleUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            CURLOPT_HTTPHEADER => ['Accept-Language: fr-FR,fr;q=0.9'],
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $httpCode >= 400) {
+            return false;
+        }
+
+        // If Google returns results containing our URL, the page is indexed
+        $domain = parse_url($url, PHP_URL_HOST) ?? '';
+        $path = parse_url($url, PHP_URL_PATH) ?? '';
+
+        return (str_contains((string) $response, $domain) && str_contains((string) $response, $path))
+            || !str_contains((string) $response, 'did not match any documents');
+    }
+
+    private function checkGooglePosition(string $keyword, string $targetUrl): ?int
+    {
+        $googleUrl = 'https://www.google.com/search?q=' . urlencode($keyword) . '&num=30&hl=fr&gl=fr';
+
+        $ch = curl_init($googleUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            CURLOPT_HTTPHEADER => ['Accept-Language: fr-FR,fr;q=0.9'],
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $httpCode >= 400) {
+            return null;
+        }
+
+        $domain = parse_url($targetUrl, PHP_URL_HOST) ?? '';
+        $path = parse_url($targetUrl, PHP_URL_PATH) ?? '';
+
+        // Parse position from search results
+        // Look for result links containing our domain + path
+        $position = 0;
+        if (preg_match_all('/<a[^>]+href="\/url\?q=([^"&]+)|<a[^>]+href="(https?:\/\/[^"]+)"/i', (string) $response, $matches)) {
+            $urls = array_filter(array_merge($matches[1], $matches[2]));
+            foreach ($urls as $resultUrl) {
+                $resultUrl = urldecode($resultUrl);
+                // Skip Google's own URLs
+                if (str_contains($resultUrl, 'google.com') || str_contains($resultUrl, 'google.fr')) {
+                    continue;
+                }
+                $position++;
+                if (str_contains($resultUrl, $domain) && str_contains($resultUrl, $path)) {
+                    return $position;
+                }
+                if ($position >= 30) {
+                    break;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function restoreRevision(string $id, string $revisionId): void
     {
         AuthController::requireAuth();
@@ -520,6 +657,10 @@ final class AdminBlogController
                 target_audience TEXT DEFAULT NULL,
                 article_goal TEXT DEFAULT NULL,
                 seo_analysis_json LONGTEXT DEFAULT NULL,
+                page_views INT UNSIGNED NOT NULL DEFAULT 0,
+                is_indexed TINYINT(1) NOT NULL DEFAULT 0,
+                google_position INT UNSIGNED DEFAULT NULL,
+                indexing_checked_at DATETIME DEFAULT NULL,
                 status ENUM(\'draft\', \'published\') NOT NULL DEFAULT \'draft\',
                 published_at DATETIME DEFAULT NULL,
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -565,6 +706,10 @@ final class AdminBlogController
                 'article_goal' => 'TEXT DEFAULT NULL',
                 'seo_analysis_json' => 'LONGTEXT DEFAULT NULL',
                 'published_at' => 'DATETIME DEFAULT NULL',
+                'page_views' => 'INT UNSIGNED NOT NULL DEFAULT 0',
+                'is_indexed' => 'TINYINT(1) NOT NULL DEFAULT 0',
+                'google_position' => 'INT UNSIGNED DEFAULT NULL',
+                'indexing_checked_at' => 'DATETIME DEFAULT NULL',
             ]);
         }
 

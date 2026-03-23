@@ -199,6 +199,34 @@
     font-weight: 400;
   }
 
+  .email-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.12rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-sent {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  .badge-draft {
+    background: #fff3e0;
+    color: #e65100;
+  }
+  .badge-scheduled {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+  .badge-failed {
+    background: #ffebee;
+    color: #c62828;
+  }
+
   /* Pagination */
   .mailbox-pagination {
     display: flex;
@@ -277,6 +305,16 @@
   $unreadCount = $unreadCount ?? 0;
   $error = $error ?? null;
   $mailAddress = $mailAddress ?? 'contact@estimation-immobilier-bordeaux.fr';
+  $drafts = $drafts ?? [];
+  $scheduledEmails = $scheduledEmails ?? [];
+  $draftCount = $draftCount ?? 0;
+  $scheduledCount = $scheduledCount ?? 0;
+
+  // Determine folder type for status badges
+  $folderUpper = strtoupper($folder);
+  $isSentFolder = in_array($folderUpper, ['SENT', 'INBOX.SENT']);
+  $isDraftFolder = ($folder === '_drafts');
+  $isScheduledFolder = ($folder === '_scheduled');
 
   $folderIcons = [
     'INBOX' => 'fa-inbox',
@@ -377,16 +415,77 @@
         </a>
       <?php endforeach; ?>
     <?php endif; ?>
+
+    <!-- Virtual folders: Brouillons & Planifiés (from DB) -->
+    <div class="mailbox-folder-title" style="margin-top:0.5rem;">Local</div>
+    <a href="/admin/mailbox?folder=_drafts" class="mailbox-folder-link <?= $isDraftFolder ? 'active' : '' ?>">
+      <i class="fas fa-file-alt folder-icon-map"></i> Brouillons
+      <?php if ($draftCount > 0): ?>
+        <span class="badge" style="background:#e65100;"><?= $draftCount ?></span>
+      <?php endif; ?>
+    </a>
+    <a href="/admin/mailbox?folder=_scheduled" class="mailbox-folder-link <?= $isScheduledFolder ? 'active' : '' ?>">
+      <i class="fas fa-clock folder-icon-map"></i> Planifiés
+      <?php if ($scheduledCount > 0): ?>
+        <span class="badge" style="background:#1565c0;"><?= $scheduledCount ?></span>
+      <?php endif; ?>
+    </a>
   </div>
 
   <!-- EMAIL LIST -->
   <div class="mailbox-list">
     <div class="mailbox-list-header">
-      <span><?= $total ?> message(s)<?= $unreadCount > 0 ? ' — <strong>' . $unreadCount . ' non lu(s)</strong>' : '' ?></span>
+      <span>
+        <?php if ($isDraftFolder): ?>
+          <?= $draftCount ?> brouillon(s)
+        <?php elseif ($isScheduledFolder): ?>
+          <?= $scheduledCount ?> email(s) planifié(s)
+        <?php else: ?>
+          <?= $total ?> message(s)<?= $unreadCount > 0 ? ' — <strong>' . $unreadCount . ' non lu(s)</strong>' : '' ?>
+        <?php endif; ?>
+      </span>
       <span><?= htmlspecialchars($mailAddress) ?></span>
     </div>
 
-    <?php if (empty($emails) && $error === null): ?>
+    <?php if ($isDraftFolder || $isScheduledFolder): ?>
+      <?php
+        $localEmails = $isDraftFolder ? $drafts : $scheduledEmails;
+        if (empty($localEmails)):
+      ?>
+        <div class="empty-state">
+          <i class="fas <?= $isDraftFolder ? 'fa-file-alt' : 'fa-clock' ?>"></i>
+          <p><?= $isDraftFolder ? 'Aucun brouillon.' : 'Aucun email planifié.' ?></p>
+        </div>
+      <?php else: ?>
+        <?php foreach ($localEmails as $draft): ?>
+          <a href="/admin/mailbox/compose?draft_id=<?= (int) $draft['id'] ?>" class="email-row">
+            <div class="email-from" title="<?= htmlspecialchars($draft['recipient'] ?? 'Sans destinataire') ?>">
+              <?= htmlspecialchars($draft['recipient'] ?: 'Sans destinataire') ?>
+            </div>
+            <div class="email-subject-preview">
+              <?php if ($draft['status'] === 'draft'): ?>
+                <span class="email-status-badge badge-draft"><i class="fas fa-file-alt"></i> Brouillon</span>
+              <?php elseif ($draft['status'] === 'scheduled'): ?>
+                <span class="email-status-badge badge-scheduled"><i class="fas fa-clock"></i> Planifié</span>
+              <?php elseif ($draft['status'] === 'sent'): ?>
+                <span class="email-status-badge badge-sent"><i class="fas fa-check"></i> Envoyé</span>
+              <?php elseif ($draft['status'] === 'failed'): ?>
+                <span class="email-status-badge badge-failed"><i class="fas fa-times"></i> Échoué</span>
+              <?php endif; ?>
+              <span class="email-subject"><?= htmlspecialchars($draft['subject'] ?: '(sans sujet)') ?></span>
+            </div>
+            <div class="email-date">
+              <?php if ($draft['status'] === 'scheduled' && $draft['scheduled_at']): ?>
+                <i class="fas fa-clock" style="font-size:0.7rem;margin-right:0.2rem;"></i><?= formatMailboxDate($draft['scheduled_at']) ?>
+              <?php else: ?>
+                <?= formatMailboxDate($draft['updated_at'] ?? $draft['created_at'] ?? '') ?>
+              <?php endif; ?>
+            </div>
+          </a>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+    <?php elseif (empty($emails) && $error === null): ?>
       <div class="empty-state">
         <i class="fas fa-inbox"></i>
         <p><?= $search !== '' ? 'Aucun résultat pour cette recherche.' : 'Aucun email dans ce dossier.' ?></p>
@@ -405,6 +504,9 @@
             <?= htmlspecialchars($from) ?>
           </div>
           <div class="email-subject-preview">
+            <?php if ($isSentFolder): ?>
+              <span class="email-status-badge badge-sent"><i class="fas fa-check"></i> Envoyé</span>
+            <?php endif; ?>
             <?php if ($hasAttach): ?>
               <i class="fas fa-paperclip email-attachment-icon"></i>
             <?php endif; ?>

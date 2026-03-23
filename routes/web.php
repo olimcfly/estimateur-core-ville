@@ -299,6 +299,10 @@ $router->get('/admin/mailbox/email-library', [AdminMailboxController::class, 'em
 $router->post('/admin/mailbox/email-library/save', [AdminMailboxController::class, 'emailLibrarySave']);
 $router->post('/admin/mailbox/email-library/delete', [AdminMailboxController::class, 'emailLibraryDelete']);
 $router->post('/admin/mailbox/email-library/use', [AdminMailboxController::class, 'emailLibraryUse']);
+$router->post('/admin/mailbox/save-draft', [AdminMailboxController::class, 'saveDraft']);
+$router->post('/admin/mailbox/schedule', [AdminMailboxController::class, 'schedule']);
+$router->post('/admin/mailbox/delete-draft', [AdminMailboxController::class, 'deleteDraft']);
+$router->get('/admin/mailbox/process-scheduled', [AdminMailboxController::class, 'processScheduled']);
 
 // Admin internal notifications routes
 $router->get('/admin/notifications', [AdminNotificationController::class, 'index']);

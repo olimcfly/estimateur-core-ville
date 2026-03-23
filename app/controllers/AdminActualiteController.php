@@ -7,6 +7,8 @@ namespace App\Controllers;
 use App\Core\Validator;
 use App\Core\View;
 use App\Models\Actualite;
+use App\Models\ActualiteAiConfig;
+use App\Models\RssArticle;
 use App\Services\ActualiteService;
 
 final class AdminActualiteController
@@ -17,12 +19,27 @@ final class AdminActualiteController
 
         $actualites = [];
         $cronLogs = [];
+        $rssStats = [];
+        $aiConfig = [];
         $dbError = null;
 
         try {
             $model = new Actualite();
             $actualites = $model->findAll();
             $cronLogs = $model->getCronLogs(10);
+
+            $configModel = new ActualiteAiConfig();
+            $aiConfig = $configModel->getAll();
+
+            // Get RSS article stats for the dashboard
+            $articleModel = new RssArticle();
+            $service = new ActualiteService();
+            $collected = $service->collectRssArticles();
+            $rssStats = [
+                'total_candidates' => $collected['total_count'],
+                'filtered_ready' => $collected['filtered_count'],
+                'top_articles' => array_slice($collected['articles'], 0, 5),
+            ];
         } catch (\Throwable $e) {
             error_log('Actualites index error: ' . $e->getMessage());
             $dbError = 'Erreur base de données : la table "actualites" est peut-être absente. Exécutez "php database/migrate.php".';
@@ -31,6 +48,8 @@ final class AdminActualiteController
         View::renderAdmin('admin/actualites/index', [
             'actualites' => $actualites,
             'cronLogs' => $cronLogs,
+            'rssStats' => $rssStats,
+            'aiConfig' => $aiConfig,
             'message' => (string) ($_GET['message'] ?? ''),
             'error' => $dbError ?? (string) ($_GET['error'] ?? ''),
             'page_title' => 'Actualités - Admin',
@@ -64,7 +83,18 @@ final class AdminActualiteController
 
         try {
             $data = $this->validatedPayload($_POST);
-            $model->create($data);
+            $id = $model->create($data);
+
+            // Mark RSS articles as used if provided
+            $rssArticleIds = $_POST['rss_article_ids'] ?? '';
+            if ($rssArticleIds !== '') {
+                $ids = array_filter(array_map('intval', explode(',', (string) $rssArticleIds)));
+                $articleModel = new RssArticle();
+                foreach ($ids as $rssId) {
+                    $articleModel->markAsUsedForActualite($rssId, $id);
+                }
+            }
+
             $this->redirect('/admin/actualites?message=' . urlencode('Actualité créée avec succès.'));
         } catch (\Throwable $e) {
             View::renderAdmin('admin/actualites/form', [
@@ -143,7 +173,7 @@ final class AdminActualiteController
     }
 
     /**
-     * Search Perplexity for news ideas.
+     * Search Perplexity for news ideas (legacy).
      */
     public function search(): void
     {
@@ -170,7 +200,7 @@ final class AdminActualiteController
     }
 
     /**
-     * Generate a full article from an idea (AI pipeline).
+     * Generate from Perplexity pipeline (legacy).
      */
     public function generate(): void
     {
@@ -237,6 +267,103 @@ final class AdminActualiteController
                 $e->getMessage()
             );
             $this->redirect('/admin/actualites?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    /**
+     * Generate actualité from RSS pipeline (NEW).
+     */
+    public function generateFromRss(): void
+    {
+        AuthController::requireAuth();
+
+        $model = new Actualite();
+        $service = new ActualiteService();
+
+        try {
+            $result = $service->runRssPipeline();
+
+            if (!($result['success'] ?? false)) {
+                $model->logCron(
+                    'rss-pipeline',
+                    0,
+                    null,
+                    'error',
+                    $result['error'] ?? 'Erreur inconnue'
+                );
+                $this->redirect('/admin/actualites?error=' . urlencode($result['error'] ?? 'Erreur génération RSS.'));
+                return;
+            }
+
+            $article = $result['article'];
+            $rssArticleIds = $result['rss_article_ids'] ?? [];
+
+            $model->logCron(
+                'rss-pipeline',
+                $result['ideas_count'] ?? 0,
+                null,
+                'success'
+            );
+
+            View::renderAdmin('admin/actualites/form', [
+                'actualite' => [
+                    'title' => $article['title'],
+                    'slug' => $this->slugify($article['title']),
+                    'content' => $article['content'],
+                    'excerpt' => $article['excerpt'],
+                    'meta_title' => $article['meta_title'],
+                    'meta_description' => $article['meta_description'],
+                    'image_url' => $article['image_url'] ?? '',
+                    'image_prompt' => $article['image_prompt'] ?? '',
+                    'source_query' => 'rss-pipeline',
+                    'source_results' => $result['source_results'] ?? '',
+                    'rss_article_ids' => implode(',', $rssArticleIds),
+                    'generated_by' => 'ai',
+                    'status' => 'draft',
+                ],
+                'errors' => [],
+                'action' => '/admin/actualites/store',
+                'submitLabel' => 'Publier l\'actualité',
+                'page_title' => 'Actualité générée depuis RSS - Admin',
+                'admin_page_title' => 'Actualité générée depuis RSS',
+                'admin_page' => 'actualites',
+                'breadcrumb' => 'Actualité générée depuis RSS',
+            ]);
+        } catch (\Throwable $e) {
+            $model->logCron('rss-pipeline', 0, null, 'error', $e->getMessage());
+            $this->redirect('/admin/actualites?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    /**
+     * Save AI configuration for actualité generation.
+     */
+    public function saveAiConfig(): void
+    {
+        AuthController::requireAuth();
+
+        try {
+            $configModel = new ActualiteAiConfig();
+            $configModel->saveAll([
+                'zone_priority' => trim((string) ($_POST['zone_priority'] ?? 'local_first')),
+                'exclude_agencies' => isset($_POST['exclude_agencies']) ? '1' : '0',
+                'exclude_keywords' => trim((string) ($_POST['exclude_keywords'] ?? '')),
+                'require_keywords' => trim((string) ($_POST['require_keywords'] ?? '')),
+                'max_article_age_days' => trim((string) ($_POST['max_article_age_days'] ?? '7')),
+                'min_relevance_score' => trim((string) ($_POST['min_relevance_score'] ?? '6')),
+                'article_tone' => trim((string) ($_POST['article_tone'] ?? 'journalistique')),
+                'article_length' => trim((string) ($_POST['article_length'] ?? '800-1200')),
+                'seo_focus' => trim((string) ($_POST['seo_focus'] ?? '')),
+                'local_angle' => trim((string) ($_POST['local_angle'] ?? '')),
+                'cta_style' => trim((string) ($_POST['cta_style'] ?? 'soft')),
+                'source_citation' => isset($_POST['source_citation']) ? '1' : '0',
+                'auto_publish' => isset($_POST['auto_publish']) ? '1' : '0',
+                'generation_model' => trim((string) ($_POST['generation_model'] ?? 'anthropic')),
+            ]);
+
+            $this->redirect('/admin/actualites?message=' . urlencode('Configuration IA sauvegardée.'));
+        } catch (\Throwable $e) {
+            $this->redirect('/admin/actualites?error=' . urlencode('Erreur : ' . $e->getMessage()));
         }
     }
 

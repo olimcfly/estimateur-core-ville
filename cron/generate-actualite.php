@@ -2,17 +2,18 @@
 <?php
 
 /**
- * Automated weekly actualité generator.
+ * Automated weekly actualité generator (RSS-based).
  *
  * This script:
- * 1. Searches Perplexity for recent real estate news in Bordeaux
- * 2. Selects the best article idea
- * 3. Generates a full article via OpenAI
- * 4. Generates an AI image
- * 5. Publishes the article automatically
+ * 1. Collects recent RSS articles
+ * 2. Filters them by AI config (local priority, no agencies)
+ * 3. Selects the best candidates via AI
+ * 4. Generates a full actualité article
+ * 5. Generates an AI image
+ * 6. Publishes the article automatically (or as draft per config)
  *
  * Usage:
- *   php cron/generate-actualite.php [--query="custom search query"] [--dry-run]
+ *   php cron/generate-actualite.php [--source=rss|perplexity] [--query="custom search query"] [--dry-run]
  *
  * Crontab (weekly, every Monday at 8am):
  *   0 8 * * 1 /usr/bin/php /path/to/cron/generate-actualite.php >> /var/log/actualites-cron.log 2>&1
@@ -23,6 +24,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../app/core/bootstrap.php';
 
 use App\Models\Actualite;
+use App\Models\ActualiteAiConfig;
+use App\Models\RssArticle;
 use App\Services\ActualiteService;
 
 echo "[" . date('Y-m-d H:i:s') . "] === Génération automatique d'actualité ===\n";
@@ -30,9 +33,14 @@ echo "[" . date('Y-m-d H:i:s') . "] === Génération automatique d'actualité ==
 // Parse CLI arguments
 $dryRun = in_array('--dry-run', $argv ?? [], true);
 $customQuery = null;
+$source = 'rss'; // Default to RSS pipeline
+
 foreach ($argv ?? [] as $arg) {
     if (str_starts_with($arg, '--query=')) {
         $customQuery = substr($arg, 8);
+    }
+    if (str_starts_with($arg, '--source=')) {
+        $source = substr($arg, 9);
     }
 }
 
@@ -40,23 +48,27 @@ $service = new ActualiteService();
 $model = new Actualite();
 
 try {
-    // Step 1: Run the automated pipeline
-    echo "  Recherche et génération en cours...\n";
-    $result = $service->runAutomatedPipeline($customQuery);
+    if ($source === 'rss') {
+        echo "  Mode: Pipeline RSS + IA\n";
+        $result = $service->runRssPipeline();
+    } else {
+        echo "  Mode: Pipeline Perplexity\n";
+        $result = $service->runAutomatedPipeline($customQuery);
+    }
 
     if (!($result['success'] ?? false)) {
         $error = $result['error'] ?? 'Erreur inconnue';
         echo "  ERREUR: {$error}\n";
-        $model->logCron($result['query'] ?? '', 0, null, 'error', $error);
+        $model->logCron($result['query'] ?? $source, 0, null, 'error', $error);
         exit(1);
     }
 
     $article = $result['article'];
     $ideasCount = $result['ideas_count'] ?? 0;
-    $query = $result['query'] ?? '';
+    $query = $result['query'] ?? $source;
 
-    echo "  Requête: {$query}\n";
-    echo "  Idées trouvées: {$ideasCount}\n";
+    echo "  Source: {$query}\n";
+    echo "  Articles analysés: {$ideasCount}\n";
     echo "  Article: {$article['title']}\n";
     echo "  Image: " . ($article['image_url'] ?? 'aucune') . "\n";
 
@@ -67,7 +79,12 @@ try {
         exit(0);
     }
 
-    // Step 2: Save to database
+    // Check auto_publish config
+    $configModel = new ActualiteAiConfig();
+    $autoPublish = $configModel->get('auto_publish', '0') === '1';
+    $status = $autoPublish ? 'published' : 'draft';
+
+    // Save to database
     $articleId = $model->create([
         'title' => $article['title'],
         'slug' => slugify($article['title']),
@@ -79,13 +96,22 @@ try {
         'image_prompt' => $article['image_prompt'],
         'source_query' => $article['source_query'],
         'source_results' => $result['source_results'] ?? null,
-        'status' => 'published',
+        'status' => $status,
         'generated_by' => 'cron',
     ]);
 
-    echo "  Article publié avec ID: {$articleId}\n";
+    echo "  Article " . ($autoPublish ? 'publié' : 'sauvegardé en brouillon') . " avec ID: {$articleId}\n";
 
-    // Step 3: Log success
+    // Mark RSS articles as used
+    if ($source === 'rss' && !empty($result['rss_article_ids'])) {
+        $articleModel = new RssArticle();
+        foreach ($result['rss_article_ids'] as $rssId) {
+            $articleModel->markAsUsedForActualite((int) $rssId, $articleId);
+        }
+        echo "  " . count($result['rss_article_ids']) . " articles RSS marqués comme utilisés.\n";
+    }
+
+    // Log success
     $model->logCron($query, $ideasCount, $articleId, 'success');
 
     echo "[" . date('Y-m-d H:i:s') . "] === Terminé avec succès ===\n\n";
@@ -95,7 +121,7 @@ try {
     echo "  File: " . $e->getFile() . ":" . $e->getLine() . "\n";
 
     try {
-        $model->logCron($customQuery ?? 'unknown', 0, null, 'error', $e->getMessage());
+        $model->logCron($customQuery ?? $source, 0, null, 'error', $e->getMessage());
     } catch (\Throwable) {
         // Ignore logging errors
     }

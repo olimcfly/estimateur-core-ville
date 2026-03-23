@@ -78,6 +78,7 @@
           <input type="hidden" name="generated_by" value="<?= e((string) ($actualite['generated_by'] ?? 'manual')) ?>">
           <input type="hidden" name="source_query" value="<?= e((string) ($actualite['source_query'] ?? '')) ?>">
           <input type="hidden" name="source_results" value="<?= e((string) ($actualite['source_results'] ?? '')) ?>">
+          <input type="hidden" name="rss_article_ids" value="<?= e((string) ($actualite['rss_article_ids'] ?? '')) ?>">
 
           <button type="submit" class="admin-btn admin-btn-primary" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
             <i class="fas fa-save"></i> <?= e($submitLabel) ?>

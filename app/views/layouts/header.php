@@ -15,9 +15,12 @@
     $canonicalUrl = $scheme . '://' . $host . $canonicalPath;
   ?>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux et sa métropole - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
   <meta name="theme-color" content="#8B1538">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
   <title><?= isset($page_title) ? $page_title : 'Estimation Immobilier Bordeaux et Métropole' ?></title>

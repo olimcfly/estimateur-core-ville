@@ -619,6 +619,11 @@ try {
       <i class="fas fa-ad"></i> Google Ads
     </a>
     <?php endif; ?>
+    <?php if ($_moduleAccess('gads_campaigns')): ?>
+    <a href="/admin/gads-campaigns" class="admin-sidebar-link <?= ($admin_page ?? '') === 'gads-campaigns' ? 'active' : '' ?>">
+      <i class="fas fa-bullhorn"></i> Campagnes Ads
+    </a>
+    <?php endif; ?>
 
     <?php if ($_adminIsSuperUser): ?>
     <div class="admin-sidebar-section">Systeme</div>

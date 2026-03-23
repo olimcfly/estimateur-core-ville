@@ -1,0 +1,911 @@
+/* ==========================================================================
+   GMB (Google My Business) Module Styles
+   Prefix: .gmb-
+   Uses theme variables from :root (app.css)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CALENDAR
+   -------------------------------------------------------------------------- */
+
+.gmb-calendar {
+    background: var(--surface, #ffffff);
+    border-radius: var(--radius, 16px);
+    box-shadow: var(--shadow, 0 20px 45px rgba(139, 21, 56, 0.08));
+    overflow: hidden;
+}
+
+.gmb-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: var(--primary, #8B1538);
+    color: #fff;
+}
+
+.gmb-calendar-header h3 {
+    margin: 0;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem;
+}
+
+.gmb-calendar-nav {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.gmb-calendar-nav button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.gmb-calendar-nav button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.gmb-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--bg, #faf9f7);
+    border-bottom: 1px solid var(--border, #e8dfd7);
+}
+
+.gmb-calendar-weekday {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted, #6b6459);
+}
+
+.gmb-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border, #e8dfd7);
+}
+
+.gmb-calendar-day {
+    min-height: 90px;
+    padding: 0.5rem;
+    background: var(--surface, #ffffff);
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s;
+    position: relative;
+}
+
+.gmb-calendar-day:hover {
+    box-shadow: inset 0 0 0 2px var(--accent, #D4AF37),
+                0 4px 12px rgba(139, 21, 56, 0.1);
+    z-index: 1;
+}
+
+.gmb-calendar-day--today {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.gmb-calendar-day--today .gmb-calendar-day-num {
+    background: var(--accent, #D4AF37);
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gmb-calendar-day--recommended {
+    border: 2px dashed var(--accent, #D4AF37);
+}
+
+.gmb-calendar-day--other-month {
+    opacity: 0.35;
+}
+
+.gmb-calendar-day-num {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text, #1a1410);
+    margin-bottom: 0.35rem;
+}
+
+.gmb-calendar-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.gmb-calendar-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gmb-calendar-badge--update {
+    background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+}
+
+.gmb-calendar-badge--offer {
+    background: rgba(212, 175, 55, 0.15);
+    color: #b8960e;
+}
+
+.gmb-calendar-badge--event {
+    background: rgba(139, 21, 56, 0.12);
+    color: var(--primary, #8B1538);
+}
+
+.gmb-calendar-badge--product {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+}
+
+/* Calendar list view (mobile) */
+.gmb-calendar-list {
+    display: none;
+}
+
+.gmb-calendar-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border, #e8dfd7);
+}
+
+.gmb-calendar-list-date {
+    min-width: 48px;
+    text-align: center;
+}
+
+.gmb-calendar-list-date-day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text, #1a1410);
+    line-height: 1;
+}
+
+.gmb-calendar-list-date-weekday {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--muted, #6b6459);
+}
+
+.gmb-calendar-list-content {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   2. STATS CARDS
+   -------------------------------------------------------------------------- */
+
+.gmb-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.gmb-stat-card {
+    background: var(--surface, #ffffff);
+    border-radius: var(--radius, 16px);
+    padding: 1.25rem;
+    box-shadow: var(--shadow, 0 20px 45px rgba(139, 21, 56, 0.08));
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gmb-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg, 0 30px 60px rgba(139, 21, 56, 0.12));
+}
+
+.gmb-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background: linear-gradient(135deg, var(--primary, #8B1538), var(--primary-dark, #6b0f2d));
+    color: #fff;
+}
+
+.gmb-stat-icon--accent {
+    background: linear-gradient(135deg, var(--accent, #D4AF37), var(--accent-light, #E8C547));
+    color: var(--text, #1a1410);
+}
+
+.gmb-stat-icon--success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+}
+
+.gmb-stat-icon--info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+}
+
+.gmb-stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text, #1a1410);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.gmb-stat-label {
+    font-size: 0.8rem;
+    color: var(--muted, #6b6459);
+}
+
+/* Progress bar for completion rate */
+.gmb-stat-progress {
+    width: 100%;
+    height: 6px;
+    background: var(--border, #e8dfd7);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: auto;
+}
+
+.gmb-stat-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--primary, #8B1538), var(--accent, #D4AF37));
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   3. GMB PREVIEW (Google Maps-style card)
+   -------------------------------------------------------------------------- */
+
+.gmb-preview {
+    max-width: 400px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(32, 33, 36, 0.18);
+    overflow: hidden;
+    font-family: 'Roboto', 'DM Sans', Arial, sans-serif;
+    position: relative;
+}
+
+.gmb-preview-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    backdrop-filter: blur(4px);
+}
+
+.gmb-preview-badge--update {
+    background: rgba(59, 130, 246, 0.9);
+}
+
+.gmb-preview-badge--offer {
+    background: rgba(212, 175, 55, 0.9);
+    color: #1a1410;
+}
+
+.gmb-preview-badge--event {
+    background: rgba(139, 21, 56, 0.9);
+}
+
+.gmb-preview-badge--product {
+    background: rgba(34, 197, 94, 0.9);
+}
+
+.gmb-preview-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+    background: var(--border, #e8dfd7);
+}
+
+.gmb-preview-body {
+    padding: 12px 16px 16px;
+}
+
+.gmb-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.gmb-preview-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--border, #e8dfd7);
+}
+
+.gmb-preview-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #202124;
+    line-height: 1.2;
+}
+
+.gmb-preview-date {
+    font-size: 0.75rem;
+    color: #70757a;
+}
+
+.gmb-preview-text {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #3c4043;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.gmb-preview-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+}
+
+.gmb-preview-cta:hover {
+    background: #1557b0;
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   4. FORM
+   -------------------------------------------------------------------------- */
+
+.gmb-form {
+    background: var(--surface, #ffffff);
+    border-radius: var(--radius, 16px);
+    padding: 1.5rem;
+    box-shadow: var(--shadow, 0 20px 45px rgba(139, 21, 56, 0.08));
+}
+
+.gmb-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.gmb-form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text, #1a1410);
+    margin-bottom: 0.5rem;
+}
+
+.gmb-form-input,
+.gmb-form-select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border, #e8dfd7);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text, #1a1410);
+    background: var(--surface, #ffffff);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gmb-form-input:focus,
+.gmb-form-select:focus {
+    outline: none;
+    border-color: var(--primary, #8B1538);
+    box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+}
+
+/* Textarea with truncation line */
+.gmb-form-textarea-wrap {
+    position: relative;
+}
+
+.gmb-form-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border, #e8dfd7);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text, #1a1410);
+    background: var(--surface, #ffffff);
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.6;
+}
+
+.gmb-form-textarea:focus {
+    outline: none;
+    border-color: var(--primary, #8B1538);
+    box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+}
+
+/* Truncation line at ~150 chars (approx line 6 with avg 25 chars/line) */
+.gmb-form-textarea-wrap::after {
+    content: '— troncature 150 car. —';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: calc(0.65rem + 1.6em * 6);
+    border-top: 2px dashed var(--accent, #D4AF37);
+    font-size: 0.6rem;
+    color: var(--accent, #D4AF37);
+    text-align: center;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* Character counter */
+.gmb-char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.75rem;
+    margin-top: 0.35rem;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s;
+    color: var(--muted, #6b6459);
+}
+
+.gmb-char-counter--warning {
+    color: #d97706;
+}
+
+.gmb-char-counter--danger {
+    color: #ef4444;
+}
+
+.gmb-char-counter--over {
+    color: #ef4444;
+    font-weight: 700;
+    animation: gmb-pulse 0.6s ease-in-out;
+}
+
+@keyframes gmb-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Radio buttons visuels (type selector) */
+.gmb-type-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+}
+
+.gmb-type-option {
+    position: relative;
+}
+
+.gmb-type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gmb-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem;
+    border: 2px solid var(--border, #e8dfd7);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    background: var(--surface, #ffffff);
+}
+
+.gmb-type-card:hover {
+    border-color: var(--primary, #8B1538);
+    transform: translateY(-2px);
+}
+
+.gmb-type-option input[type="radio"]:checked + .gmb-type-card {
+    border-color: var(--primary, #8B1538);
+    background: rgba(139, 21, 56, 0.05);
+    box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+}
+
+.gmb-type-card-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.gmb-type-card-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text, #1a1410);
+}
+
+/* Conditional fields with slide transition */
+.gmb-conditional {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.25s ease,
+                margin 0.35s ease;
+    margin-top: 0;
+}
+
+.gmb-conditional--visible {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. GUIDE (reuses .guide- patterns from guide.css)
+   -------------------------------------------------------------------------- */
+
+.gmb-guide {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    align-items: start;
+}
+
+/* Sticky table of contents */
+.gmb-guide-toc {
+    position: sticky;
+    top: 100px;
+    background: var(--surface, #ffffff);
+    border-radius: var(--radius, 16px);
+    padding: 1.25rem;
+    box-shadow: var(--shadow, 0 20px 45px rgba(139, 21, 56, 0.08));
+}
+
+.gmb-guide-toc h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted, #6b6459);
+    margin: 0 0 0.75rem;
+}
+
+.gmb-guide-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.gmb-guide-toc-list li {
+    margin-bottom: 0.25rem;
+}
+
+.gmb-guide-toc-list a {
+    display: block;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
+    color: var(--muted, #6b6459);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.gmb-guide-toc-list a:hover,
+.gmb-guide-toc-list a.active {
+    background: rgba(139, 21, 56, 0.06);
+    color: var(--primary, #8B1538);
+}
+
+.gmb-guide-toc-list a.active {
+    font-weight: 600;
+}
+
+/* Guide content area */
+.gmb-guide-content {
+    min-width: 0;
+}
+
+.gmb-guide-section {
+    background: var(--surface, #ffffff);
+    border-radius: var(--radius, 16px);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow, 0 20px 45px rgba(139, 21, 56, 0.08));
+}
+
+.gmb-guide-section h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.3rem;
+    color: var(--text, #1a1410);
+    margin: 0 0 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border, #e8dfd7);
+}
+
+/* Colored callout boxes */
+.gmb-callout {
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    border-left: 4px solid;
+}
+
+.gmb-callout-title {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gmb-callout--tip {
+    background: rgba(34, 197, 94, 0.08);
+    border-left-color: #22c55e;
+}
+
+.gmb-callout--tip .gmb-callout-title {
+    color: #16a34a;
+}
+
+.gmb-callout--warning {
+    background: rgba(239, 68, 68, 0.06);
+    border-left-color: #ef4444;
+}
+
+.gmb-callout--warning .gmb-callout-title {
+    color: #ef4444;
+}
+
+.gmb-callout--example {
+    background: rgba(59, 130, 246, 0.06);
+    border-left-color: #3b82f6;
+}
+
+.gmb-callout--example .gmb-callout-title {
+    color: #2563eb;
+}
+
+/* Comparison table */
+.gmb-comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.gmb-comparison-table thead {
+    background: var(--primary, #8B1538);
+    color: #fff;
+}
+
+.gmb-comparison-table th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.gmb-comparison-table th:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.gmb-comparison-table th:last-child {
+    border-radius: 0 10px 0 0;
+}
+
+.gmb-comparison-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border, #e8dfd7);
+    color: var(--text, #1a1410);
+}
+
+.gmb-comparison-table tbody tr:hover {
+    background: rgba(139, 21, 56, 0.03);
+}
+
+.gmb-comparison-table tbody tr:last-child td:first-child {
+    border-radius: 0 0 0 10px;
+}
+
+.gmb-comparison-table tbody tr:last-child td:last-child {
+    border-radius: 0 0 10px 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. RESPONSIVE
+   -------------------------------------------------------------------------- */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .gmb-guide {
+        grid-template-columns: 200px 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Small tablet / large phone */
+@media (max-width: 768px) {
+    /* Stats: 2x2 grid */
+    .gmb-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Guide: stack layout, hide sticky TOC */
+    .gmb-guide {
+        grid-template-columns: 1fr;
+    }
+
+    .gmb-guide-toc {
+        position: static;
+    }
+
+    /* Calendar: show list view, hide grid */
+    .gmb-calendar-grid,
+    .gmb-calendar-weekdays {
+        display: none;
+    }
+
+    .gmb-calendar-list {
+        display: block;
+    }
+
+    /* Preview below form */
+    .gmb-form-preview-layout {
+        flex-direction: column;
+    }
+
+    .gmb-preview {
+        max-width: 100%;
+    }
+
+    /* Comparison table scroll */
+    .gmb-comparison-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .gmb-comparison-table {
+        min-width: 500px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    /* Stats: single column */
+    .gmb-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .gmb-stat-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .gmb-stat-card .gmb-stat-icon {
+        flex-shrink: 0;
+    }
+
+    .gmb-stat-card .gmb-stat-progress {
+        display: none;
+    }
+
+    /* Calendar */
+    .gmb-calendar-header {
+        padding: 0.75rem 1rem;
+    }
+
+    /* Form */
+    .gmb-form {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .gmb-type-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Guide */
+    .gmb-guide {
+        padding: 1rem 0.75rem;
+    }
+
+    .gmb-guide-section {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .gmb-guide-section h2 {
+        font-size: 1.1rem;
+    }
+
+    .gmb-callout {
+        padding: 0.75rem 1rem;
+        font-size: 0.82rem;
+    }
+}
+
+/* Form + Preview side-by-side layout */
+.gmb-form-preview-layout {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.gmb-form-preview-layout .gmb-form {
+    flex: 1;
+    min-width: 0;
+}
+
+.gmb-form-preview-layout .gmb-preview {
+    flex-shrink: 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .gmb-calendar-day,
+    .gmb-stat-card,
+    .gmb-type-card,
+    .gmb-conditional,
+    .gmb-stat-progress-bar,
+    .gmb-char-counter,
+    .gmb-preview-cta {
+        transition: none;
+    }
+
+    .gmb-conditional--visible {
+        transition: none;
+    }
+
+    @keyframes gmb-pulse {
+        0%, 100% { transform: none; }
+    }
+}

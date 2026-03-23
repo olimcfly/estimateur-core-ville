@@ -555,6 +555,11 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
       <i class="fas fa-shopping-cart"></i> Achats
     </a>
     <?php endif; ?>
+    <?php if ($_moduleAccess('financement')): ?>
+    <a href="/admin/financement" class="admin-sidebar-link <?= ($admin_page ?? '') === 'financement' ? 'active' : '' ?>">
+      <i class="fas fa-credit-card"></i> Financement
+    </a>
+    <?php endif; ?>
 
     <div class="admin-sidebar-section">Contenu</div>
     <?php if ($_moduleAccess('blog')): ?>

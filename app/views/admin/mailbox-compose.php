@@ -171,6 +171,82 @@
   .btn-send:hover { background: #6b0f2d; }
   .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
 
+  .btn-draft {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    background: #fff;
+    color: #e65100;
+    border: 1px solid #e65100;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .btn-draft:hover { background: #fff3e0; }
+  .btn-draft:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-schedule {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1rem;
+    background: #fff;
+    color: #1565c0;
+    border: 1px solid #1565c0;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .btn-schedule:hover { background: #e3f2fd; }
+  .btn-schedule:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .schedule-picker {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #f0f7ff;
+    border-top: 1px solid #bbdefb;
+    font-size: 0.82rem;
+  }
+  .schedule-picker.show { display: flex; }
+  .schedule-picker input[type="datetime-local"] {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #bbdefb;
+    border-radius: 5px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    outline: none;
+  }
+  .schedule-picker input:focus { border-color: #1565c0; }
+  .schedule-confirm-btn {
+    padding: 0.4rem 0.8rem;
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .schedule-confirm-btn:hover { background: #0d47a1; }
+  .schedule-cancel-btn {
+    padding: 0.4rem 0.6rem;
+    background: none;
+    border: none;
+    color: var(--admin-muted);
+    cursor: pointer;
+    font-size: 0.82rem;
+  }
+
   .btn-discard {
     padding: 0.5rem 1rem;
     background: none;
@@ -445,6 +521,10 @@
   $replyBody = $replyBody ?? '';
   $fromAddress = $fromAddress ?? 'contact@estimation-immobilier-bordeaux.fr';
   $fromName = $fromName ?? 'Estimation Immobilier Bordeaux';
+  $draftId = $draftId ?? 0;
+  $draftCc = $draftCc ?? '';
+  $draftScheduledAt = $draftScheduledAt ?? '';
+  $draftStatus = $draftStatus ?? '';
 ?>
 
 <!-- HEADER -->
@@ -475,9 +555,9 @@
       </div>
 
       <!-- CC -->
-      <div class="compose-field cc-field">
+      <div class="compose-field cc-field <?= $draftCc !== '' ? 'show' : '' ?>">
         <label>Cc</label>
-        <input type="text" id="compose-cc" placeholder="cc@example.com">
+        <input type="text" id="compose-cc" placeholder="cc@example.com" value="<?= htmlspecialchars($draftCc) ?>">
       </div>
 
       <!-- Subject -->
@@ -543,15 +623,30 @@
 
       <!-- Footer -->
       <div class="compose-footer">
-        <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+          <input type="hidden" id="draft-id" value="<?= (int) $draftId ?>">
           <button class="btn-send" id="btn-send" onclick="sendEmail()">
             <i class="fas fa-paper-plane"></i> Envoyer
           </button>
+          <button class="btn-draft" id="btn-draft" onclick="saveDraft()">
+            <i class="fas fa-file-alt"></i> Brouillon
+          </button>
+          <button class="btn-schedule" id="btn-schedule" onclick="toggleSchedulePicker()">
+            <i class="fas fa-clock"></i> Planifier
+          </button>
           <span class="compose-status" id="compose-status"></span>
         </div>
-        <button class="btn-discard" onclick="if(confirm('Supprimer ce brouillon ?')) window.location.href='/admin/mailbox'">
+        <button class="btn-discard" onclick="discardDraft()">
           <i class="fas fa-trash"></i> Supprimer
         </button>
+      </div>
+      <!-- Schedule datetime picker -->
+      <div class="schedule-picker" id="schedule-picker">
+        <i class="fas fa-clock" style="color:#1565c0;"></i>
+        <span>Envoyer le :</span>
+        <input type="datetime-local" id="schedule-datetime" value="<?= $draftScheduledAt ? date('Y-m-d\TH:i', strtotime($draftScheduledAt)) : '' ?>" min="<?= date('Y-m-d\TH:i') ?>">
+        <button class="schedule-confirm-btn" onclick="scheduleEmail()">Confirmer</button>
+        <button class="schedule-cancel-btn" onclick="toggleSchedulePicker()"><i class="fas fa-times"></i></button>
       </div>
     </div>
   </div>
@@ -699,6 +794,7 @@ function sendEmail() {
   var body = document.getElementById('compose-editor').innerHTML.trim();
   var btn = document.getElementById('btn-send');
   var status = document.getElementById('compose-status');
+  var draftId = document.getElementById('draft-id').value;
 
   if (!to) { alert('Veuillez saisir un destinataire.'); return; }
   if (!subject) { alert('Veuillez saisir un objet.'); return; }
@@ -722,6 +818,12 @@ function sendEmail() {
         status.className = 'compose-status visible success';
         status.innerHTML = '<i class="fas fa-check-circle"></i> ' + (data.message || 'Envoye !');
         btn.innerHTML = '<i class="fas fa-check"></i> Envoye';
+        // Delete draft if it existed
+        if (draftId && parseInt(draftId) > 0) {
+          var dfd = new FormData();
+          dfd.append('id', draftId);
+          fetch('/admin/mailbox/delete-draft', { method: 'POST', body: dfd, credentials: 'same-origin' });
+        }
         setTimeout(function() { window.location.href = '/admin/mailbox'; }, 1500);
       } else {
         status.className = 'compose-status visible error';
@@ -736,6 +838,125 @@ function sendEmail() {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer';
     });
+}
+
+/* === SAVE DRAFT === */
+function saveDraft() {
+  var to = document.getElementById('compose-to').value.trim();
+  var cc = document.getElementById('compose-cc').value.trim();
+  var subject = document.getElementById('compose-subject').value.trim();
+  var body = document.getElementById('compose-editor').innerHTML.trim();
+  var btn = document.getElementById('btn-draft');
+  var status = document.getElementById('compose-status');
+  var draftId = document.getElementById('draft-id').value;
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sauvegarde...';
+
+  var fd = new FormData();
+  fd.append('to', to);
+  fd.append('cc', cc);
+  fd.append('subject', subject);
+  fd.append('body', body);
+  if (draftId && parseInt(draftId) > 0) fd.append('draft_id', draftId);
+
+  fetch('/admin/mailbox/save-draft', { method: 'POST', body: fd, credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-file-alt"></i> Brouillon';
+      if (data.success) {
+        if (data.draft_id) document.getElementById('draft-id').value = data.draft_id;
+        status.className = 'compose-status visible success';
+        status.innerHTML = '<i class="fas fa-check-circle"></i> Brouillon sauvegarde';
+        setTimeout(function() { status.className = 'compose-status'; }, 3000);
+      } else {
+        status.className = 'compose-status visible error';
+        status.innerHTML = '<i class="fas fa-times-circle"></i> ' + (data.message || 'Erreur.');
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-file-alt"></i> Brouillon';
+      status.className = 'compose-status visible error';
+      status.innerHTML = '<i class="fas fa-times-circle"></i> Erreur reseau.';
+    });
+}
+
+/* === SCHEDULE EMAIL === */
+function toggleSchedulePicker() {
+  var picker = document.getElementById('schedule-picker');
+  picker.classList.toggle('show');
+  if (picker.classList.contains('show') && !document.getElementById('schedule-datetime').value) {
+    // Default to tomorrow at 9:00
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(9, 0, 0, 0);
+    document.getElementById('schedule-datetime').value = tomorrow.toISOString().slice(0, 16);
+  }
+}
+
+function scheduleEmail() {
+  var to = document.getElementById('compose-to').value.trim();
+  var cc = document.getElementById('compose-cc').value.trim();
+  var subject = document.getElementById('compose-subject').value.trim();
+  var body = document.getElementById('compose-editor').innerHTML.trim();
+  var scheduledAt = document.getElementById('schedule-datetime').value;
+  var status = document.getElementById('compose-status');
+  var draftId = document.getElementById('draft-id').value;
+  var btn = document.getElementById('btn-schedule');
+
+  if (!to) { alert('Veuillez saisir un destinataire.'); return; }
+  if (!subject) { alert('Veuillez saisir un objet.'); return; }
+  if (!body || body === '<br>') { alert('Veuillez saisir un message.'); return; }
+  if (!scheduledAt) { alert('Veuillez choisir une date.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Planification...';
+
+  var fd = new FormData();
+  fd.append('to', to);
+  fd.append('cc', cc);
+  fd.append('subject', subject);
+  fd.append('body', body);
+  fd.append('scheduled_at', scheduledAt.replace('T', ' ') + ':00');
+  if (draftId && parseInt(draftId) > 0) fd.append('draft_id', draftId);
+
+  fetch('/admin/mailbox/schedule', { method: 'POST', body: fd, credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-clock"></i> Planifier';
+      if (data.success) {
+        if (data.draft_id) document.getElementById('draft-id').value = data.draft_id;
+        status.className = 'compose-status visible success';
+        status.innerHTML = '<i class="fas fa-check-circle"></i> ' + (data.message || 'Email planifie !');
+        setTimeout(function() { window.location.href = '/admin/mailbox?folder=_scheduled'; }, 2000);
+      } else {
+        status.className = 'compose-status visible error';
+        status.innerHTML = '<i class="fas fa-times-circle"></i> ' + (data.message || 'Erreur.');
+      }
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-clock"></i> Planifier';
+      status.className = 'compose-status visible error';
+      status.innerHTML = '<i class="fas fa-times-circle"></i> Erreur reseau.';
+    });
+}
+
+/* === DISCARD DRAFT === */
+function discardDraft() {
+  if (!confirm('Supprimer ce brouillon ?')) return;
+  var draftId = document.getElementById('draft-id').value;
+  if (draftId && parseInt(draftId) > 0) {
+    var fd = new FormData();
+    fd.append('id', draftId);
+    fetch('/admin/mailbox/delete-draft', { method: 'POST', body: fd, credentials: 'same-origin' })
+      .then(function() { window.location.href = '/admin/mailbox?folder=_drafts'; });
+  } else {
+    window.location.href = '/admin/mailbox';
+  }
 }
 
 /* === AI ASSISTANT === */
@@ -927,6 +1148,47 @@ function saveCurrentAsTemplate() {
     .catch(function() { alert('Erreur reseau.'); });
 }
 
+/* === AUTO-SAVE DRAFT === */
+var autoSaveTimer = null;
+function scheduleAutoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(function() {
+    var body = document.getElementById('compose-editor').innerHTML.trim();
+    var subject = document.getElementById('compose-subject').value.trim();
+    if (body && body !== '<br>' || subject) {
+      saveDraftSilent();
+    }
+  }, 30000); // Auto-save every 30s of inactivity
+}
+
+function saveDraftSilent() {
+  var to = document.getElementById('compose-to').value.trim();
+  var cc = document.getElementById('compose-cc').value.trim();
+  var subject = document.getElementById('compose-subject').value.trim();
+  var body = document.getElementById('compose-editor').innerHTML.trim();
+  var draftId = document.getElementById('draft-id').value;
+  var status = document.getElementById('compose-status');
+
+  var fd = new FormData();
+  fd.append('to', to);
+  fd.append('cc', cc);
+  fd.append('subject', subject);
+  fd.append('body', body);
+  if (draftId && parseInt(draftId) > 0) fd.append('draft_id', draftId);
+
+  fetch('/admin/mailbox/save-draft', { method: 'POST', body: fd, credentials: 'same-origin' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.draft_id) {
+        document.getElementById('draft-id').value = data.draft_id;
+        status.className = 'compose-status visible';
+        status.innerHTML = '<i class="fas fa-save" style="color:var(--admin-muted)"></i> Sauvegarde auto';
+        setTimeout(function() { status.className = 'compose-status'; }, 2000);
+      }
+    })
+    .catch(function() {});
+}
+
 /* === INIT === */
 document.addEventListener('DOMContentLoaded', function() {
   var to = document.getElementById('compose-to');
@@ -938,5 +1200,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load email library
   fetchLibrary();
+
+  // Setup auto-save listeners
+  document.getElementById('compose-editor').addEventListener('input', scheduleAutoSave);
+  document.getElementById('compose-subject').addEventListener('input', scheduleAutoSave);
+  document.getElementById('compose-to').addEventListener('input', scheduleAutoSave);
 });
 </script>

@@ -29,8 +29,52 @@ final class AdminMailboxController
         $perPage = 20;
         $folders = [];
         $unreadCount = 0;
+        $drafts = [];
+        $scheduledEmails = [];
+        $draftCount = 0;
+        $scheduledCount = 0;
 
-        if (!ImapService::isConfigured()) {
+        // Fetch draft and scheduled counts from DB
+        $pdo = Database::connection();
+        try {
+            if (Database::tableExists('email_drafts')) {
+                $draftCount = (int) $pdo->query("SELECT COUNT(*) FROM email_drafts WHERE status = 'draft'")->fetchColumn();
+                $scheduledCount = (int) $pdo->query("SELECT COUNT(*) FROM email_drafts WHERE status = 'scheduled'")->fetchColumn();
+            }
+        } catch (\Throwable $e) {
+            // Table may not exist yet
+        }
+
+        // Virtual folders: _drafts and _scheduled
+        $isVirtualFolder = in_array($folder, ['_drafts', '_scheduled'], true);
+
+        if ($isVirtualFolder) {
+            try {
+                if (Database::tableExists('email_drafts')) {
+                    $status = $folder === '_drafts' ? 'draft' : 'scheduled';
+                    $stmt = $pdo->prepare('SELECT * FROM email_drafts WHERE status = :status ORDER BY updated_at DESC');
+                    $stmt->execute(['status' => $status]);
+                    if ($folder === '_drafts') {
+                        $drafts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                        $total = count($drafts);
+                    } else {
+                        $scheduledEmails = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                        $total = count($scheduledEmails);
+                    }
+                }
+            } catch (\Throwable $e) {
+                $error = 'Erreur : ' . $e->getMessage();
+            }
+
+            // Still try to get IMAP folders for sidebar
+            if (ImapService::isConfigured()) {
+                try {
+                    $folders = ImapService::getFolders();
+                } catch (\Throwable $e) {
+                    $folders = [['name' => 'INBOX', 'path' => 'INBOX', 'full_name' => 'INBOX']];
+                }
+            }
+        } elseif (!ImapService::isConfigured()) {
             $error = 'IMAP non configuré. Ajoutez les paramètres IMAP dans votre fichier .env (MAIL_IMAP_HOST, MAIL_IMAP_PORT, etc.) ou utilisez le même serveur que SMTP.';
         } else {
             try {
@@ -78,6 +122,10 @@ final class AdminMailboxController
             'unreadCount' => $unreadCount,
             'error' => $error,
             'mailAddress' => (string) Config::get('mail.from', 'contact@estimation-immobilier-bordeaux.fr'),
+            'drafts' => $drafts,
+            'scheduledEmails' => $scheduledEmails,
+            'draftCount' => $draftCount,
+            'scheduledCount' => $scheduledCount,
         ]);
     }
 
@@ -131,11 +179,37 @@ final class AdminMailboxController
         $replyTo = trim((string) ($_GET['reply_to'] ?? ''));
         $replySubject = trim((string) ($_GET['subject'] ?? ''));
         $replyBody = '';
+        $draftId = (int) ($_GET['draft_id'] ?? 0);
+        $draftCc = '';
+        $draftScheduledAt = '';
+        $draftStatus = '';
+
+        // If loading a draft/scheduled email from DB
+        if ($draftId > 0) {
+            try {
+                $pdo = Database::connection();
+                if (Database::tableExists('email_drafts')) {
+                    $stmt = $pdo->prepare('SELECT * FROM email_drafts WHERE id = :id AND status IN ("draft", "scheduled")');
+                    $stmt->execute(['id' => $draftId]);
+                    $draft = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    if ($draft) {
+                        $replyTo = $draft['recipient'] ?? '';
+                        $replySubject = $draft['subject'] ?? '';
+                        $replyBody = $draft['body_html'] ?? '';
+                        $draftCc = $draft['cc'] ?? '';
+                        $draftScheduledAt = $draft['scheduled_at'] ?? '';
+                        $draftStatus = $draft['status'] ?? '';
+                    }
+                }
+            } catch (\Throwable $e) {
+                error_log('Mailbox draft load error: ' . $e->getMessage());
+            }
+        }
 
         // If replying to an email, fetch original
         $replyUid = (int) ($_GET['reply_uid'] ?? 0);
         $replyFolder = trim((string) ($_GET['folder'] ?? 'INBOX'));
-        if ($replyUid > 0) {
+        if ($replyUid > 0 && $draftId === 0) {
             try {
                 $original = ImapService::fetchEmail($replyUid, $replyFolder);
                 if ($original) {
@@ -168,6 +242,10 @@ final class AdminMailboxController
             'replyBody' => $replyBody,
             'fromAddress' => $fromAddress,
             'fromName' => $fromName,
+            'draftId' => $draftId,
+            'draftCc' => $draftCc,
+            'draftScheduledAt' => $draftScheduledAt,
+            'draftStatus' => $draftStatus,
         ]);
     }
 
@@ -410,6 +488,180 @@ final class AdminMailboxController
         AdminSmtpApiController::logAiUsage('openai', $model, $inputTokens, $outputTokens, $cost, 'email_compose_assist');
 
         return ['success' => true, 'content' => $content, 'provider' => 'openai'];
+    }
+
+    /**
+     * Save email as draft (POST, AJAX).
+     */
+    public function saveDraft(): void
+    {
+        AuthController::requireAuth();
+        header('Content-Type: application/json');
+
+        $id = (int) ($_POST['draft_id'] ?? 0);
+        $to = trim((string) ($_POST['to'] ?? ''));
+        $cc = trim((string) ($_POST['cc'] ?? ''));
+        $subject = trim((string) ($_POST['subject'] ?? ''));
+        $body = trim((string) ($_POST['body'] ?? ''));
+
+        $pdo = Database::connection();
+
+        try {
+            if (!Database::tableExists('email_drafts')) {
+                echo json_encode(['success' => false, 'message' => 'Table email_drafts introuvable. Lancez la migration.']);
+                return;
+            }
+
+            if ($id > 0) {
+                $stmt = $pdo->prepare('UPDATE email_drafts SET recipient = :to, cc = :cc, subject = :subject, body_html = :body, status = "draft", updated_at = NOW() WHERE id = :id');
+                $stmt->execute(['to' => $to, 'cc' => $cc, 'subject' => $subject, 'body' => $body, 'id' => $id]);
+            } else {
+                $stmt = $pdo->prepare('INSERT INTO email_drafts (recipient, cc, subject, body_html, status) VALUES (:to, :cc, :subject, :body, "draft")');
+                $stmt->execute(['to' => $to, 'cc' => $cc, 'subject' => $subject, 'body' => $body]);
+                $id = (int) $pdo->lastInsertId();
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Brouillon sauvegardé.', 'draft_id' => $id]);
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'message' => 'Erreur : ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Schedule an email for later (POST, AJAX).
+     */
+    public function schedule(): void
+    {
+        AuthController::requireAuth();
+        header('Content-Type: application/json');
+
+        $id = (int) ($_POST['draft_id'] ?? 0);
+        $to = trim((string) ($_POST['to'] ?? ''));
+        $cc = trim((string) ($_POST['cc'] ?? ''));
+        $subject = trim((string) ($_POST['subject'] ?? ''));
+        $body = trim((string) ($_POST['body'] ?? ''));
+        $scheduledAt = trim((string) ($_POST['scheduled_at'] ?? ''));
+
+        if ($to === '' || $subject === '' || $body === '') {
+            echo json_encode(['success' => false, 'message' => 'Destinataire, sujet et message sont requis.']);
+            return;
+        }
+
+        if ($scheduledAt === '' || strtotime($scheduledAt) === false) {
+            echo json_encode(['success' => false, 'message' => 'Date de planification invalide.']);
+            return;
+        }
+
+        if (strtotime($scheduledAt) <= time()) {
+            echo json_encode(['success' => false, 'message' => 'La date de planification doit être dans le futur.']);
+            return;
+        }
+
+        $pdo = Database::connection();
+
+        try {
+            if (!Database::tableExists('email_drafts')) {
+                echo json_encode(['success' => false, 'message' => 'Table email_drafts introuvable. Lancez la migration.']);
+                return;
+            }
+
+            if ($id > 0) {
+                $stmt = $pdo->prepare('UPDATE email_drafts SET recipient = :to, cc = :cc, subject = :subject, body_html = :body, status = "scheduled", scheduled_at = :scheduled_at, updated_at = NOW() WHERE id = :id');
+                $stmt->execute(['to' => $to, 'cc' => $cc, 'subject' => $subject, 'body' => $body, 'scheduled_at' => $scheduledAt, 'id' => $id]);
+            } else {
+                $stmt = $pdo->prepare('INSERT INTO email_drafts (recipient, cc, subject, body_html, status, scheduled_at) VALUES (:to, :cc, :subject, :body, "scheduled", :scheduled_at)');
+                $stmt->execute(['to' => $to, 'cc' => $cc, 'subject' => $subject, 'body' => $body, 'scheduled_at' => $scheduledAt]);
+                $id = (int) $pdo->lastInsertId();
+            }
+
+            echo json_encode(['success' => true, 'message' => 'Email planifié pour le ' . date('d/m/Y à H:i', strtotime($scheduledAt)) . '.', 'draft_id' => $id]);
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'message' => 'Erreur : ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Delete a draft/scheduled email (POST, AJAX).
+     */
+    public function deleteDraft(): void
+    {
+        AuthController::requireAuth();
+        header('Content-Type: application/json');
+
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'ID invalide.']);
+            return;
+        }
+
+        $pdo = Database::connection();
+        $stmt = $pdo->prepare('DELETE FROM email_drafts WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+
+        echo json_encode(['success' => true, 'message' => 'Supprimé.']);
+    }
+
+    /**
+     * Process scheduled emails (cron endpoint).
+     * Call via: GET /admin/mailbox/process-scheduled
+     */
+    public function processScheduled(): void
+    {
+        header('Content-Type: application/json');
+
+        $pdo = Database::connection();
+        $sent = 0;
+        $failed = 0;
+
+        try {
+            if (!Database::tableExists('email_drafts')) {
+                echo json_encode(['success' => true, 'sent' => 0, 'failed' => 0, 'message' => 'Table not found.']);
+                return;
+            }
+
+            $stmt = $pdo->query("SELECT * FROM email_drafts WHERE status = 'scheduled' AND scheduled_at <= NOW()");
+            $emails = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            foreach ($emails as $email) {
+                $recipients = array_map('trim', explode(',', $email['recipient']));
+                $allSent = true;
+
+                foreach ($recipients as $recipient) {
+                    if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+                        continue;
+                    }
+                    $result = Mailer::send($recipient, $email['subject'], $email['body_html']);
+                    if (!$result) {
+                        $allSent = false;
+                    }
+                }
+
+                // Send CC
+                if (!empty($email['cc'])) {
+                    $ccRecipients = array_map('trim', explode(',', $email['cc']));
+                    foreach ($ccRecipients as $ccEmail) {
+                        if (filter_var($ccEmail, FILTER_VALIDATE_EMAIL)) {
+                            Mailer::send($ccEmail, $email['subject'], $email['body_html']);
+                        }
+                    }
+                }
+
+                $newStatus = $allSent ? 'sent' : 'failed';
+                $update = $pdo->prepare('UPDATE email_drafts SET status = :status, sent_at = NOW() WHERE id = :id');
+                $update->execute(['status' => $newStatus, 'id' => $email['id']]);
+
+                if ($allSent) {
+                    $sent++;
+                } else {
+                    $failed++;
+                }
+            }
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            return;
+        }
+
+        echo json_encode(['success' => true, 'sent' => $sent, 'failed' => $failed]);
     }
 
     /**

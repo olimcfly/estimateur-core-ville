@@ -27,6 +27,7 @@ use App\Controllers\EstimationController;
 use App\Controllers\PageController;
 use App\Controllers\LandingPageController;
 use App\Controllers\AdminGoogleAdsCampaignController;
+use App\Controllers\AdminRssController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
@@ -193,6 +194,18 @@ $router->post('/admin/gads-campaigns/api/generate', [AdminGoogleAdsCampaignContr
 $router->post('/admin/gads-campaigns/api/save', [AdminGoogleAdsCampaignController::class, 'apiSave']);
 $router->post('/admin/gads-campaigns/api/delete', [AdminGoogleAdsCampaignController::class, 'apiDelete']);
 $router->post('/admin/gads-campaigns/api/status', [AdminGoogleAdsCampaignController::class, 'apiStatus']);
+
+// Admin RSS feed management routes
+$router->get('/admin/rss', [AdminRssController::class, 'index']);
+$router->get('/admin/rss/sources', [AdminRssController::class, 'sources']);
+$router->post('/admin/rss/sources/add', [AdminRssController::class, 'addSource']);
+$router->post('/admin/rss/sources/delete/{id}', [AdminRssController::class, 'deleteSource']);
+$router->post('/admin/rss/sources/toggle/{id}', [AdminRssController::class, 'toggleSource']);
+$router->post('/admin/rss/sources/fetch/{id}', [AdminRssController::class, 'fetchOne']);
+$router->post('/admin/rss/fetch-all', [AdminRssController::class, 'fetchAll']);
+$router->post('/admin/rss/toggle-star/{id}', [AdminRssController::class, 'toggleStar']);
+$router->post('/admin/rss/generate', [AdminRssController::class, 'generate']);
+$router->post('/admin/rss/seed', [AdminRssController::class, 'seed']);
 
 // Admin API management routes
 $router->get('/admin/api-management', [AdminApiController::class, 'index']);

@@ -15,8 +15,9 @@ final class Article
         internal_links_count, external_links_count, images_count, images_with_alt, reading_time_minutes,
         silo_id, article_type, target_audience, article_goal, seo_analysis_json, status, published_at, created_at';
 
-    private const LIST_COLUMNS = 'id, title, slug, persona, awareness_level, focus_keyword, seo_score,
-        semantic_score, word_count, article_type, silo_id, status, published_at, created_at';
+    private const LIST_COLUMNS = 'a.id, a.title, a.slug, a.persona, a.awareness_level, a.focus_keyword, a.seo_score,
+        a.semantic_score, a.word_count, a.article_type, a.silo_id, a.status, a.published_at, a.created_at,
+        s.name AS silo_name, s.color AS silo_color, s.city AS silo_city';
 
     public function findPublished(): array
     {
@@ -58,9 +59,10 @@ final class Article
     public function findAll(): array
     {
         $sql = 'SELECT ' . self::LIST_COLUMNS . '
-                FROM articles
-                WHERE website_id = :website_id
-                ORDER BY created_at DESC';
+                FROM articles a
+                LEFT JOIN article_silos s ON a.silo_id = s.id
+                WHERE a.website_id = :website_id
+                ORDER BY a.silo_id ASC, a.article_type ASC, a.created_at DESC';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([':website_id' => $this->websiteId()]);
@@ -274,8 +276,8 @@ final class Article
 
     public function createSilo(array $data): int
     {
-        $sql = 'INSERT INTO article_silos (website_id, name, description, color)
-                VALUES (:website_id, :name, :description, :color)';
+        $sql = 'INSERT INTO article_silos (website_id, name, description, color, city)
+                VALUES (:website_id, :name, :description, :color, :city)';
 
         $stmt = Database::connection()->prepare($sql);
         $stmt->execute([
@@ -283,6 +285,7 @@ final class Article
             ':name' => $data['name'],
             ':description' => $data['description'] ?? '',
             ':color' => $data['color'] ?? '#8B1538',
+            ':city' => $data['city'] ?? 'Bordeaux',
         ]);
 
         return (int) Database::connection()->lastInsertId();

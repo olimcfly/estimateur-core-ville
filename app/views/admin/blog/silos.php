@@ -26,12 +26,15 @@
     <section class="card" style="margin-bottom: 1.5rem;">
         <h2 style="margin: 0 0 1rem;">Créer un Silo</h2>
         <form method="post" action="/admin/blog/silos/create" class="form-grid" style="gap: 1rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 1rem; align-items: end;">
                 <label>Nom du silo
                     <input type="text" name="name" required placeholder="Ex: Vendre son Bien, Investissement Locatif...">
                 </label>
                 <label>Description
                     <input type="text" name="description" placeholder="Brève description du thème">
+                </label>
+                <label>Ville
+                    <input type="text" name="city" value="Bordeaux" placeholder="Ex: Bordeaux, Lyon..." style="width: 140px;">
                 </label>
                 <label>Couleur
                     <input type="color" name="color" value="#8B1538" style="height: 38px; width: 60px;">

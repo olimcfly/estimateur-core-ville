@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Controllers\AdminSmtpApiController;
 use App\Core\Config;
 
 final class ImageGeneratorService
@@ -51,6 +52,16 @@ final class ImageGeneratorService
             $errorMsg = $response['error']['message'] ?? 'Erreur API inconnue.';
             return ['success' => false, 'error' => 'API OpenAI : ' . $errorMsg];
         }
+
+        $inputTokens = (int) ($response['usage']['input_tokens'] ?? 0);
+        $outputTokens = (int) ($response['usage']['output_tokens'] ?? 0);
+        $qualityCost = match ($quality) {
+            'low' => 0.011, 'medium' => 0.042, 'high' => 0.167, default => 0.042,
+        };
+        $cost = ($inputTokens > 0 || $outputTokens > 0)
+            ? round(($inputTokens / 1000) * 0.002 + ($outputTokens / 1000) * 0.008, 6)
+            : $qualityCost;
+        AdminSmtpApiController::logAiUsage('openai', 'gpt-image-1', $inputTokens, $outputTokens, $cost, 'image_generation');
 
         $b64Data = $response['data'][0]['b64_json'] ?? null;
         if ($b64Data === null) {

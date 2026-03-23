@@ -259,3 +259,17 @@ CREATE TABLE IF NOT EXISTS admin_presence (
     INDEX idx_presence_page (page_path),
     INDEX idx_presence_seen (last_seen_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ai_usage_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    provider VARCHAR(50) NOT NULL DEFAULT '',
+    model VARCHAR(100) NOT NULL DEFAULT '',
+    input_tokens INT NOT NULL DEFAULT 0,
+    output_tokens INT NOT NULL DEFAULT 0,
+    estimated_cost DECIMAL(10,6) NOT NULL DEFAULT 0,
+    feature VARCHAR(100) NOT NULL DEFAULT '',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_provider (provider),
+    INDEX idx_created_at (created_at),
+    INDEX idx_feature (feature)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

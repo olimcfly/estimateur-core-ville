@@ -272,6 +272,12 @@ PROMPT;
             }
 
             $body = json_decode((string) $response, true);
+
+            $inputTokens = (int) ($body['usage']['input_tokens'] ?? 0);
+            $outputTokens = (int) ($body['usage']['output_tokens'] ?? 0);
+            $cost = round(($inputTokens / 1000) * 0.003 + ($outputTokens / 1000) * 0.015, 6);
+            AdminSmtpApiController::logAiUsage('claude', $model, $inputTokens, $outputTokens, $cost, 'article_generation');
+
             $text = $body['content'][0]['text'] ?? '';
 
             // Extract JSON from response (may be wrapped in markdown)

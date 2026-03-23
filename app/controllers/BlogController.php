@@ -103,12 +103,6 @@ final class BlogController
 
         View::render('blog/category', [
             'articles' => $articles,
-            'category_slug' => $slug,
-            'page_title' => $cat['page_title'],
-            'meta_description' => $cat['meta_description'],
-            'h1' => $cat['h1'],
-            'eyebrow' => $cat['eyebrow'],
-            'intro' => $cat['intro'],
             'categories' => self::CATEGORIES,
         ]);
     }

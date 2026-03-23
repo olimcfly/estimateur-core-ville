@@ -566,6 +566,20 @@ final class AdminBlogController
         ]);
     }
 
+    /**
+     * Blog article ideas / planning page.
+     */
+    public function ideas(): void
+    {
+        AuthController::requireAuth();
+
+        View::renderAdmin('admin/blog/ideas', [
+            'page_title' => 'Planning articles blog - Admin',
+            'admin_page_title' => 'Planning des articles blog',
+            'admin_page' => 'blog',
+        ]);
+    }
+
     private function validatedPayload(array $input): array
     {
         $title = Validator::string($input, 'title', 5, 255);

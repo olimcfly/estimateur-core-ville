@@ -494,6 +494,62 @@ final class AdminLeadController
         }
     }
 
+    public function ajaxDetail(): void
+    {
+        AuthController::requireAuth();
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if ($id <= 0) {
+            echo json_encode(['success' => false, 'error' => 'ID invalide.']);
+            return;
+        }
+
+        try {
+            $leadModel = new Lead();
+            $lead = $leadModel->findById($id);
+            if ($lead === null) {
+                echo json_encode(['success' => false, 'error' => 'Lead introuvable.']);
+                return;
+            }
+
+            $notes = [];
+            $activities = [];
+            try {
+                $noteModel = new LeadNote();
+                $notes = $noteModel->findByLeadId($id);
+            } catch (\Throwable) {
+            }
+
+            try {
+                $activityModel = new LeadActivity();
+                $activities = $activityModel->findByLeadId($id, 20);
+            } catch (\Throwable) {
+            }
+
+            $partenaire = null;
+            if (!empty($lead['partenaire_id'])) {
+                try {
+                    $partenaireModel = new Partenaire();
+                    $partenaire = $partenaireModel->findById((int) $lead['partenaire_id']);
+                } catch (\Throwable) {
+                }
+            }
+
+            echo json_encode([
+                'success' => true,
+                'lead' => $lead,
+                'notes' => $notes,
+                'activities' => $activities,
+                'partenaire' => $partenaire,
+                'csrf_token' => $_SESSION['csrf_token'] ?? '',
+            ]);
+        } catch (\Throwable $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur serveur : ' . $e->getMessage()]);
+        }
+    }
+
     public function delete(): void
     {
         AuthController::requireAuth();

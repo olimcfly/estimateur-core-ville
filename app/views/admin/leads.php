@@ -174,6 +174,347 @@
   .leads-action-btn.edit:hover { color: #d97706; border-color: #fcd34d; background: rgba(245,158,11,0.06); }
   .leads-action-btn.delete:hover { color: #dc2626; border-color: #fca5a5; background: rgba(239,68,68,0.06); }
 
+  /* ── Lead Detail Modal ── */
+  .lead-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: leadModalFadeIn 0.2s ease;
+  }
+  .lead-modal-overlay.visible { display: flex; }
+
+  @keyframes leadModalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes leadModalSlideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .lead-modal {
+    background: var(--admin-surface, #ffffff);
+    border-radius: var(--admin-radius, 12px);
+    width: 100%;
+    max-width: 780px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: leadModalSlideIn 0.25s ease;
+    border: 1px solid var(--admin-border, #e8dfd7);
+  }
+
+  .lead-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--admin-border, #e8dfd7);
+    position: sticky;
+    top: 0;
+    background: var(--admin-surface, #ffffff);
+    z-index: 2;
+    border-radius: var(--admin-radius, 12px) var(--admin-radius, 12px) 0 0;
+  }
+
+  .lead-modal-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--admin-text, #1a1410);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .lead-modal-header h2 i { color: var(--admin-primary, #8B1538); }
+
+  .lead-modal-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    background: #fff;
+    color: var(--admin-muted, #6b6459);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+  }
+  .lead-modal-close:hover { background: #f1f5f9; color: var(--admin-text, #1a1410); }
+
+  .lead-modal-body { padding: 1.5rem; }
+
+  .lead-modal-section {
+    margin-bottom: 1.5rem;
+  }
+  .lead-modal-section:last-child { margin-bottom: 0; }
+
+  .lead-modal-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--admin-primary, #8B1538);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .lead-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .lead-modal-field {
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem 0;
+  }
+
+  .lead-modal-field-label {
+    font-size: 0.7rem;
+    color: var(--admin-muted, #6b6459);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .lead-modal-field-value {
+    font-size: 0.88rem;
+    color: var(--admin-text, #1a1410);
+    font-weight: 500;
+  }
+
+  .lead-modal-field-value.empty {
+    color: var(--admin-muted, #6b6459);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .lead-modal-divider {
+    border: none;
+    border-top: 1px solid var(--admin-border, #e8dfd7);
+    margin: 0;
+  }
+
+  .lead-modal-neuropersona {
+    background: linear-gradient(135deg, rgba(139,21,56,0.04), rgba(212,175,55,0.04));
+    border: 1px solid rgba(139,21,56,0.12);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+  }
+
+  .lead-modal-neuropersona-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--admin-primary, #8B1538);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .lead-modal-neuropersona-desc {
+    font-size: 0.84rem;
+    line-height: 1.6;
+    color: var(--admin-text, #1a1410);
+  }
+
+  .lead-modal-actions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .lead-modal-actions-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.84rem;
+    color: var(--admin-text, #1a1410);
+    line-height: 1.5;
+  }
+
+  .lead-modal-actions-list li:last-child { border-bottom: none; }
+
+  .lead-modal-actions-list li i {
+    color: var(--admin-primary, #8B1538);
+    margin-top: 3px;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+  }
+
+  .lead-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--admin-border, #e8dfd7);
+    background: #fafaf8;
+    border-radius: 0 0 var(--admin-radius, 12px) var(--admin-radius, 12px);
+  }
+
+  .lead-modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    background: #fff;
+    color: var(--admin-text, #1a1410);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .lead-modal-btn:hover { background: #f1f5f9; }
+  .lead-modal-btn.primary { background: var(--admin-primary, #8B1538); color: #fff; border-color: var(--admin-primary, #8B1538); }
+  .lead-modal-btn.primary:hover { opacity: 0.9; }
+  .lead-modal-btn.danger { color: #dc2626; border-color: #fca5a5; }
+  .lead-modal-btn.danger:hover { background: #fef2f2; }
+
+  /* ── Delete Confirm Modal ── */
+  .lead-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .lead-confirm-overlay.visible { display: flex; }
+
+  .lead-confirm-box {
+    background: var(--admin-surface, #ffffff);
+    border-radius: var(--admin-radius, 12px);
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: leadModalSlideIn 0.2s ease;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .lead-confirm-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(239,68,68,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.3rem;
+    color: #ef4444;
+  }
+
+  .lead-confirm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--admin-text, #1a1410);
+    margin-bottom: 0.5rem;
+  }
+
+  .lead-confirm-desc {
+    font-size: 0.85rem;
+    color: var(--admin-muted, #6b6459);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .lead-confirm-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .lead-confirm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--admin-border, #e8dfd7);
+    background: #fff;
+    color: var(--admin-text, #1a1410);
+    transition: all 0.15s;
+  }
+  .lead-confirm-btn:hover { background: #f1f5f9; }
+  .lead-confirm-btn.confirm-delete {
+    background: #ef4444;
+    color: #fff;
+    border-color: #ef4444;
+  }
+  .lead-confirm-btn.confirm-delete:hover { background: #dc2626; }
+
+  .lead-modal-notes { margin-top: 0.5rem; }
+  .lead-modal-note-item {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .lead-modal-note-meta {
+    font-size: 0.7rem;
+    color: var(--admin-muted, #6b6459);
+    margin-top: 0.25rem;
+  }
+
+  .lead-modal-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 0.78rem;
+    color: var(--admin-muted, #6b6459);
+  }
+  .lead-modal-activity-item i {
+    color: var(--admin-primary, #8B1538);
+    margin-top: 2px;
+    font-size: 0.65rem;
+  }
+
+  .lead-modal-loading {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--admin-muted, #6b6459);
+  }
+  .lead-modal-loading i { font-size: 1.5rem; margin-bottom: 0.75rem; display: block; }
+
+  @media (max-width: 640px) {
+    .lead-modal { max-width: 100%; }
+    .lead-modal-grid { grid-template-columns: 1fr; }
+    .lead-modal-footer { flex-direction: column; gap: 0.5rem; }
+  }
+
   .leads-action-btn[title] { position: relative; }
 
   .leads-statut-select {
@@ -692,7 +1033,7 @@
                     </td>
                     <td style="white-space: nowrap; color: var(--admin-muted, #6b6459); font-size: 0.8rem;"><?= e((string) $lead['created_at']) ?></td>
                     <td class="leads-actions-cell">
-                      <a href="/admin/leads/<?= $leadId ?>" class="leads-action-btn view" title="Voir"><i class="fas fa-eye"></i></a>
+                      <button type="button" class="leads-action-btn view" title="Voir la fiche" onclick="openLeadModal(<?= $leadId ?>)"><i class="fas fa-eye"></i></button>
                     </td>
                   </tr>
                 <?php endforeach; ?>
@@ -856,6 +1197,39 @@
     <?php endif; ?>
 </div>
 
+<!-- Lead Detail Modal -->
+<div class="lead-modal-overlay" id="leadModalOverlay">
+  <div class="lead-modal" id="leadModal">
+    <div class="lead-modal-header">
+      <h2><i class="fas fa-user-circle"></i> <span id="leadModalTitle">Fiche Lead</span></h2>
+      <button type="button" class="lead-modal-close" onclick="closeLeadModal()" title="Fermer"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="lead-modal-body" id="leadModalBody">
+      <div class="lead-modal-loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        Chargement...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="lead-confirm-overlay" id="leadConfirmOverlay">
+  <div class="lead-confirm-box">
+    <div class="lead-confirm-icon"><i class="fas fa-trash-alt"></i></div>
+    <div class="lead-confirm-title">Supprimer ce lead ?</div>
+    <div class="lead-confirm-desc" id="leadConfirmDesc">Cette action est irréversible. Toutes les données, notes et activités associées seront définitivement supprimées.</div>
+    <div class="lead-confirm-buttons">
+      <button type="button" class="lead-confirm-btn" onclick="closeConfirmModal()"><i class="fas fa-times"></i> Annuler</button>
+      <form id="leadDeleteForm" method="POST" action="" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(\App\Controllers\AuthController::generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>" id="deleteFormCsrf">
+        <input type="hidden" name="id" value="" id="deleteFormId">
+        <button type="submit" class="lead-confirm-btn confirm-delete"><i class="fas fa-trash-alt"></i> Supprimer</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Toast notification -->
 <div class="leads-toast" id="leadsToast"></div>
 
@@ -911,4 +1285,358 @@
     });
   });
 })();
+
+// ── Lead Detail Modal Logic ──
+var _leadModalCsrf = <?= json_encode(\App\Controllers\AuthController::generateCsrfToken(), JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+
+function openLeadModal(id) {
+  var overlay = document.getElementById('leadModalOverlay');
+  var body = document.getElementById('leadModalBody');
+  var title = document.getElementById('leadModalTitle');
+  overlay.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+  body.innerHTML = '<div class="lead-modal-loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+  title.textContent = 'Lead #' + id;
+
+  fetch('/admin/leads/ajax-detail?id=' + id)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success) {
+        body.innerHTML = '<div class="lead-modal-loading"><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> ' + esc(data.error || 'Erreur') + '</div>';
+        return;
+      }
+      if (data.csrf_token) _leadModalCsrf = data.csrf_token;
+      renderLeadModal(data);
+    })
+    .catch(function() {
+      body.innerHTML = '<div class="lead-modal-loading"><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> Erreur réseau</div>';
+    });
+}
+
+function closeLeadModal() {
+  document.getElementById('leadModalOverlay').classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+function closeConfirmModal() {
+  document.getElementById('leadConfirmOverlay').classList.remove('visible');
+}
+
+function openDeleteConfirm(id, nom) {
+  var overlay = document.getElementById('leadConfirmOverlay');
+  document.getElementById('leadDeleteForm').action = '/admin/leads/delete/' + id;
+  document.getElementById('deleteFormId').value = id;
+  document.getElementById('deleteFormCsrf').value = _leadModalCsrf;
+  document.getElementById('leadConfirmDesc').textContent = 'Supprimer le lead ' + (nom ? '"' + nom + '"' : '#' + id) + ' ? Cette action est irréversible.';
+  overlay.classList.add('visible');
+}
+
+// Close modal on overlay click
+document.getElementById('leadModalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeLeadModal();
+});
+document.getElementById('leadConfirmOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirmModal();
+});
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('leadConfirmOverlay').classList.contains('visible')) {
+      closeConfirmModal();
+    } else if (document.getElementById('leadModalOverlay').classList.contains('visible')) {
+      closeLeadModal();
+    }
+  }
+});
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(s || ''));
+  return d.innerHTML;
+}
+
+function renderLeadModal(data) {
+  var lead = data.lead;
+  var notes = data.notes || [];
+  var activities = data.activities || [];
+  var partenaire = data.partenaire;
+
+  var title = document.getElementById('leadModalTitle');
+  title.textContent = (lead.nom ? lead.nom : 'Lead') + ' #' + lead.id;
+
+  var scoreBadge = getScoreBadgeClass(lead.score);
+  var statutLabel = getStatutLabel(lead.statut);
+  var estimation = lead.estimation ? numberFormat(lead.estimation) + ' \u20ac' : '-';
+  var surface = lead.surface_m2 ? lead.surface_m2 + ' m\u00b2' : '-';
+
+  var html = '';
+
+  // ── Contact & Bien ──
+  html += '<div class="lead-modal-section">';
+  html += '<div class="lead-modal-section-title"><i class="fas fa-user"></i> Contact & Bien</div>';
+  html += '<div class="lead-modal-grid">';
+  html += field('Nom', lead.nom);
+  html += field('Email', lead.email);
+  html += field('T\u00e9l\u00e9phone', lead.telephone);
+  html += field('Ville', lead.ville);
+  html += field('Adresse', lead.adresse);
+  html += field('Type de bien', lead.type_bien);
+  html += field('Surface', surface);
+  html += field('Pi\u00e8ces', lead.pieces);
+  html += field('Estimation', estimation);
+  html += field('Urgence', lead.urgence);
+  html += field('Motivation', lead.motivation);
+  html += field('Score', lead.score ? '<span class="leads-badge ' + scoreBadge + '">' + esc(lead.score) + '</span>' : '-', true);
+  html += field('Statut', '<span class="leads-badge leads-badge-nouveau">' + esc(statutLabel) + '</span>', true);
+  html += field('Type', lead.lead_type === 'qualifie' ? '<span class="leads-badge leads-badge-qualifie">Qualifi\u00e9</span>' : '<span class="leads-badge leads-badge-tendance">Tendance</span>', true);
+  html += '</div></div>';
+
+  // ── NeuropPersona ──
+  html += '<hr class="lead-modal-divider">';
+  html += '<div class="lead-modal-section">';
+  html += '<div class="lead-modal-section-title"><i class="fas fa-brain"></i> Profil NeuropPersona</div>';
+  html += '<div class="lead-modal-neuropersona">';
+  html += '<div class="lead-modal-neuropersona-title"><i class="fas fa-lightbulb"></i> ' + getPersonaTitle(lead) + '</div>';
+  html += '<div class="lead-modal-neuropersona-desc">' + getPersonaDescription(lead) + '</div>';
+  html += '</div></div>';
+
+  // ── Actions conseill\u00e9es ──
+  html += '<hr class="lead-modal-divider">';
+  html += '<div class="lead-modal-section">';
+  html += '<div class="lead-modal-section-title"><i class="fas fa-tasks"></i> Actions conseill\u00e9es</div>';
+  html += '<ul class="lead-modal-actions-list">';
+  var actions = getRecommendedActions(lead);
+  for (var i = 0; i < actions.length; i++) {
+    html += '<li><i class="fas fa-chevron-right"></i> ' + actions[i] + '</li>';
+  }
+  html += '</ul></div>';
+
+  // ── Pipeline ──
+  if (lead.partenaire_id || lead.commission_taux || lead.date_mandat || lead.prix_vente) {
+    html += '<hr class="lead-modal-divider">';
+    html += '<div class="lead-modal-section">';
+    html += '<div class="lead-modal-section-title"><i class="fas fa-chart-line"></i> Pipeline</div>';
+    html += '<div class="lead-modal-grid">';
+    if (partenaire) html += field('Partenaire', partenaire.nom || partenaire.entreprise);
+    html += field('Commission taux', lead.commission_taux ? lead.commission_taux + ' %' : null);
+    html += field('Commission montant', lead.commission_montant ? numberFormat(lead.commission_montant) + ' \u20ac' : null);
+    html += field('Assign\u00e9 \u00e0', lead.assigne_a);
+    html += field('Date mandat', lead.date_mandat);
+    html += field('Date compromis', lead.date_compromis);
+    html += field('Date signature', lead.date_signature);
+    html += field('Prix de vente', lead.prix_vente ? numberFormat(lead.prix_vente) + ' \u20ac' : null);
+    html += '</div></div>';
+  }
+
+  // ── Notes CRM ──
+  if (notes.length > 0) {
+    html += '<hr class="lead-modal-divider">';
+    html += '<div class="lead-modal-section">';
+    html += '<div class="lead-modal-section-title"><i class="fas fa-sticky-note"></i> Notes CRM (' + notes.length + ')</div>';
+    html += '<div class="lead-modal-notes">';
+    for (var n = 0; n < notes.length; n++) {
+      html += '<div class="lead-modal-note-item">';
+      html += esc(notes[n].content);
+      html += '<div class="lead-modal-note-meta">' + esc(notes[n].author) + ' \u00b7 ' + esc(notes[n].created_at) + '</div>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+
+  // ── Activit\u00e9 r\u00e9cente ──
+  if (activities.length > 0) {
+    html += '<hr class="lead-modal-divider">';
+    html += '<div class="lead-modal-section">';
+    html += '<div class="lead-modal-section-title"><i class="fas fa-history"></i> Activit\u00e9 r\u00e9cente</div>';
+    for (var a = 0; a < Math.min(activities.length, 8); a++) {
+      html += '<div class="lead-modal-activity-item"><i class="fas fa-circle"></i> <span>' + esc(activities[a].description) + ' <em style="font-size:0.7rem;">(' + esc(activities[a].created_at) + ')</em></span></div>';
+    }
+    html += '</div>';
+  }
+
+  // ── Dates ──
+  html += '<hr class="lead-modal-divider">';
+  html += '<div class="lead-modal-section">';
+  html += '<div class="lead-modal-section-title"><i class="fas fa-calendar"></i> Informations</div>';
+  html += '<div class="lead-modal-grid">';
+  html += field('Cr\u00e9\u00e9 le', lead.created_at);
+  html += field('ID', '#' + lead.id);
+  html += '</div></div>';
+
+  // ── Footer ──
+  html += '<div class="lead-modal-footer">';
+  html += '<div>';
+  html += '<button type="button" class="lead-modal-btn danger" onclick="openDeleteConfirm(' + lead.id + ', \'' + esc(lead.nom || '').replace(/'/g, "\\'") + '\')"><i class="fas fa-trash-alt"></i> Supprimer</button>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:0.5rem;">';
+  html += '<a href="/admin/leads/edit/' + lead.id + '" class="lead-modal-btn"><i class="fas fa-edit"></i> Modifier</a>';
+  html += '<a href="/admin/leads/' + lead.id + '" class="lead-modal-btn primary"><i class="fas fa-external-link-alt"></i> Fiche compl\u00e8te</a>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('leadModalBody').innerHTML = html;
+}
+
+function field(label, value, isHtml) {
+  var v = isHtml ? (value || '<span class="lead-modal-field-value empty">-</span>') : (value ? esc(String(value)) : '<span class="lead-modal-field-value empty">-</span>');
+  return '<div class="lead-modal-field"><span class="lead-modal-field-label">' + label + '</span><span class="lead-modal-field-value">' + v + '</span></div>';
+}
+
+function getScoreBadgeClass(score) {
+  if (score === 'chaud') return 'leads-badge-chaud';
+  if (score === 'tiede' || score === 'ti\u00e8de') return 'leads-badge-tiede';
+  return 'leads-badge-froid';
+}
+
+function getStatutLabel(statut) {
+  var labels = {
+    'nouveau': 'Nouveau', 'contacte': 'Contact\u00e9', 'rdv_pris': 'RDV pris',
+    'visite_realisee': 'Visite r\u00e9alis\u00e9e', 'mandat_simple': 'Mandat simple',
+    'mandat_exclusif': 'Mandat exclusif', 'compromis_vente': 'Compromis',
+    'signe': 'Sign\u00e9', 'co_signature_partenaire': 'Co-sign\u00e9', 'assigne_autre': 'Assign\u00e9'
+  };
+  return labels[statut] || statut || '-';
+}
+
+function getPersonaTitle(lead) {
+  var persona = lead.neuropersona;
+  var niveau = lead.niveau_conscience;
+  var titles = {
+    'analytique': 'Profil Analytique',
+    'expressif': 'Profil Expressif',
+    'directif': 'Profil Directif',
+    'aimable': 'Profil Aimable'
+  };
+  var niveaux = {
+    'inconscient': 'Inconscient du besoin',
+    'probleme': 'Conscient du probl\u00e8me',
+    'solution': 'Conscient de la solution',
+    'produit': 'Conscient du produit',
+    'tres_conscient': 'Tr\u00e8s conscient'
+  };
+  var parts = [];
+  if (persona && titles[persona]) parts.push(titles[persona]);
+  if (niveau && niveaux[niveau]) parts.push(niveaux[niveau]);
+  if (parts.length === 0) return 'Profil \u00e0 d\u00e9terminer';
+  return parts.join(' \u2014 ');
+}
+
+function getPersonaDescription(lead) {
+  var score = lead.score || 'froid';
+  var statut = lead.statut || 'nouveau';
+  var persona = lead.neuropersona;
+  var urgence = (lead.urgence || '').toLowerCase();
+  var motivation = (lead.motivation || '').toLowerCase();
+  var estimation = parseFloat(lead.estimation) || 0;
+  var hasEmail = !!(lead.email);
+  var hasPhone = !!(lead.telephone);
+
+  var desc = '';
+
+  // Persona-based description
+  if (persona === 'analytique') {
+    desc = 'Ce prospect a un profil analytique : il recherche des donn\u00e9es pr\u00e9cises, des comparatifs et des preuves tangibles. Privil\u00e9giez les rapports d\u00e9taill\u00e9s, les statistiques du march\u00e9 local et les \u00e9tudes de cas concr\u00e8tes pour le convaincre.';
+  } else if (persona === 'expressif') {
+    desc = 'Ce prospect a un profil expressif : il est guid\u00e9 par les \u00e9motions et la vision. Misez sur le storytelling, les t\u00e9moignages clients et la projection dans son projet immobilier pour cr\u00e9er un lien fort.';
+  } else if (persona === 'directif') {
+    desc = 'Ce prospect a un profil directif : il veut des r\u00e9sultats rapides et concrets. Soyez direct, pr\u00e9sentez les solutions efficacement et montrez votre expertise avec des r\u00e9sultats mesurables.';
+  } else if (persona === 'aimable') {
+    desc = 'Ce prospect a un profil aimable : il privil\u00e9gie la relation de confiance et la s\u00e9curit\u00e9. Prenez le temps d\'\u00e9couter ses besoins, rassurez-le et montrez votre accompagnement personnalis\u00e9.';
+  } else {
+    // Auto-generate based on available data
+    if (score === 'chaud') {
+      desc = 'Ce prospect montre un fort int\u00e9r\u00eat avec un score chaud. ';
+    } else if (score === 'tiede') {
+      desc = 'Ce prospect a un niveau d\'int\u00e9r\u00eat mod\u00e9r\u00e9. ';
+    } else {
+      desc = 'Ce prospect est encore en phase d\'\u00e9valuation. ';
+    }
+
+    if (estimation > 500000) {
+      desc += 'Avec une estimation de ' + numberFormat(estimation) + ' \u20ac, c\'est un bien haut de gamme qui n\u00e9cessite une approche premium.';
+    } else if (estimation > 300000) {
+      desc += 'Le bien estim\u00e9 \u00e0 ' + numberFormat(estimation) + ' \u20ac se situe dans le segment milieu-haut du march\u00e9 bordelais.';
+    } else if (estimation > 0) {
+      desc += 'Le bien estim\u00e9 \u00e0 ' + numberFormat(estimation) + ' \u20ac repr\u00e9sente une opportunit\u00e9 accessible sur le march\u00e9.';
+    }
+
+    if (urgence === 'rapide' || urgence === 'urgent') {
+      desc += ' Le prospect exprime une urgence \u00e9lev\u00e9e \u2014 la r\u00e9activit\u00e9 est cl\u00e9.';
+    }
+
+    if (motivation === 'vente') {
+      desc += ' Sa motivation est la vente de son bien.';
+    } else if (motivation === 'achat') {
+      desc += ' Sa motivation est l\'achat d\'un nouveau bien.';
+    }
+  }
+
+  return desc;
+}
+
+function getRecommendedActions(lead) {
+  var actions = [];
+  var score = lead.score || 'froid';
+  var statut = lead.statut || 'nouveau';
+  var hasEmail = !!(lead.email);
+  var hasPhone = !!(lead.telephone);
+  var urgence = (lead.urgence || '').toLowerCase();
+
+  if (statut === 'nouveau') {
+    if (hasPhone) actions.push('<strong>Appeler le prospect</strong> dans les 24h pour \u00e9tablir le premier contact et qualifier son besoin.');
+    if (hasEmail) actions.push('<strong>Envoyer un email de bienvenue</strong> avec le r\u00e9sultat de l\'estimation et une pr\u00e9sentation de vos services.');
+    actions.push('<strong>Qualifier le lead</strong> : v\u00e9rifier ses coordonn\u00e9es, son projet et son timing.');
+  }
+
+  if (statut === 'contacte') {
+    actions.push('<strong>Planifier un rendez-vous</strong> pour une visite ou un \u00e9change approfondi sur son projet.');
+    actions.push('<strong>Envoyer un dossier comparatif</strong> du march\u00e9 de son secteur pour d\u00e9montrer votre expertise.');
+  }
+
+  if (statut === 'rdv_pris') {
+    actions.push('<strong>Pr\u00e9parer le rendez-vous</strong> : \u00e9tude de march\u00e9 locale, comparables r\u00e9cents, argumentaire personnalis\u00e9.');
+    actions.push('<strong>Envoyer une confirmation</strong> par SMS/email avec l\'adresse et l\'heure du rendez-vous.');
+  }
+
+  if (statut === 'visite_realisee') {
+    actions.push('<strong>Envoyer un compte-rendu</strong> de la visite avec votre avis de valeur d\u00e9taill\u00e9.');
+    actions.push('<strong>Proposer un mandat</strong> en mettant en avant vos atouts diff\u00e9renciateurs.');
+  }
+
+  if (statut === 'mandat_simple' || statut === 'mandat_exclusif') {
+    actions.push('<strong>Lancer la commercialisation</strong> : photos pro, annonces, r\u00e9seaux, base acheteurs.');
+    actions.push('<strong>Reporter r\u00e9guli\u00e8rement</strong> au vendeur : visites planifi\u00e9es, retours acheteurs.');
+  }
+
+  if (statut === 'compromis_vente') {
+    actions.push('<strong>Suivre les conditions suspensives</strong> et la lev\u00e9e de financement.');
+    actions.push('<strong>Coordonner avec le notaire</strong> pour la pr\u00e9paration de l\'acte authentique.');
+  }
+
+  if (score === 'chaud' && statut === 'nouveau') {
+    actions.unshift('<strong>\u26a0\ufe0f Priorit\u00e9 haute</strong> : ce lead chaud doit \u00eatre contact\u00e9 dans l\'heure si possible.');
+  }
+
+  if (score === 'froid' && (statut === 'nouveau' || statut === 'contacte')) {
+    actions.push('<strong>Mettre en nurturing</strong> : ajouter \u00e0 une s\u00e9quence email automatique pour maintenir le contact.');
+  }
+
+  if (urgence === 'rapide' || urgence === 'urgent') {
+    actions.push('<strong>Acc\u00e9l\u00e9rer le processus</strong> : le prospect a signal\u00e9 une urgence. Privil\u00e9gier les actions imm\u00e9diates.');
+  }
+
+  if (!lead.neuropersona) {
+    actions.push('<strong>D\u00e9finir le profil NeuropPersona</strong> via la <a href="/admin/leads/' + lead.id + '" style="color:var(--admin-primary);">fiche compl\u00e8te</a> pour personnaliser l\'approche commerciale.');
+  }
+
+  if (actions.length === 0) {
+    actions.push('Aucune action prioritaire identifi\u00e9e. Continuez le suivi r\u00e9gulier.');
+  }
+
+  return actions;
+}
+
+function numberFormat(n) {
+  return Math.round(parseFloat(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 </script>

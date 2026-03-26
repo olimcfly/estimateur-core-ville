@@ -6,7 +6,7 @@
  * Usage: php database/setup-admin.php [email]
  *
  * Environment variables (or edit values below):
- *   ADMIN_EMAIL - Admin email (default: contact@estimation-immobilier-bordeaux.fr)
+ *   ADMIN_EMAIL - Admin email (default: admin@example.com)
  */
 
 declare(strict_types=1);
@@ -17,7 +17,8 @@ use App\Core\Database;
 use App\Models\AdminUser;
 
 // Allow email from CLI argument, env var, or default
-$email = $argv[1] ?? $_ENV['ADMIN_EMAIL'] ?? 'contact@estimation-immobilier-bordeaux.fr';
+$defaultAdminEmail = (string) ($_ENV['MAIL_ADMIN_EMAIL'] ?? $_ENV['MAIL_FROM_ADDRESS'] ?? $_ENV['MAIL_FROM'] ?? 'admin@example.com');
+$email = $argv[1] ?? $_ENV['ADMIN_EMAIL'] ?? $defaultAdminEmail;
 
 echo "=== Setup Admin ===\n\n";
 
@@ -42,5 +43,7 @@ AdminUser::seedDefaultAdmin($email);
 echo "OK\n";
 
 echo "\nSetup terminé !\n";
-echo "Connectez-vous sur : https://estimation-immobilier-bordeaux.fr/admin/login\n";
+$baseUrl = rtrim((string) ($_ENV['APP_BASE_URL'] ?? ''), '/');
+$loginUrl = $baseUrl !== '' ? $baseUrl . '/admin/login' : '/admin/login';
+echo "Connectez-vous sur : {$loginUrl}\n";
 echo "Un code de connexion sera envoyé à {$email}\n";

@@ -1,6 +1,6 @@
 {
-    "name": "olimcfly/estimation-immobilier-bordeaux",
-    "description": "Plateforme d'estimation immobilière à Bordeaux",
+    "name": "olimcfly/estimation-immobilier-ville-core",
+    "description": "Plateforme d'estimation immobilière à ville configurable",
     "type": "project",
     "license": "proprietary",
     "require": {

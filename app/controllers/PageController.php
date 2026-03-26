@@ -13,7 +13,7 @@ final class PageController
 {
     private function cityName(): string
     {
-        return (string) (Config::get('city.name', '') ?: 'Bordeaux');
+        return (string) (Config::get('city.name', '') ?: 'Votre ville');
     }
 
     private function cityAreaLabel(): string
@@ -28,6 +28,57 @@ final class PageController
         View::render('pages/home', [
             'page_title' => "Estimation Immobilier {$area} | Avis de Valeur Gratuit",
         ]);
+    }
+
+    public function sitemap(): void
+    {
+        $branding = getBrandingConfig();
+        $baseUrl = rtrim((string) ($branding['base_url'] ?? ''), '/');
+
+        if ($baseUrl === '') {
+            $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+            $scheme = $isHttps ? 'https' : 'http';
+            $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
+            $baseUrl = $scheme . '://' . $host;
+        }
+
+        $entries = [
+            ['path' => '/', 'changefreq' => 'weekly', 'priority' => '1.0'],
+            ['path' => '/estimation', 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['path' => '/services', 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['path' => '/quartiers', 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['path' => '/blog', 'changefreq' => 'weekly', 'priority' => '0.7'],
+            ['path' => '/processus-estimation', 'changefreq' => 'monthly', 'priority' => '0.7'],
+            ['path' => '/exemples-estimation', 'changefreq' => 'monthly', 'priority' => '0.7'],
+            ['path' => '/guides', 'changefreq' => 'monthly', 'priority' => '0.7'],
+            ['path' => '/a-propos', 'changefreq' => 'monthly', 'priority' => '0.6'],
+            ['path' => '/contact', 'changefreq' => 'monthly', 'priority' => '0.6'],
+            ['path' => '/newsletter', 'changefreq' => 'monthly', 'priority' => '0.5'],
+            ['path' => '/mentions-legales', 'changefreq' => 'yearly', 'priority' => '0.3'],
+            ['path' => '/politique-confidentialite', 'changefreq' => 'yearly', 'priority' => '0.3'],
+            ['path' => '/conditions-utilisation', 'changefreq' => 'yearly', 'priority' => '0.3'],
+            ['path' => '/rgpd', 'changefreq' => 'yearly', 'priority' => '0.3'],
+        ];
+
+        header('Content-Type: application/xml; charset=UTF-8');
+
+        echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+        foreach ($entries as $entry) {
+            $path = (string) ($entry['path'] ?? '/');
+            $loc = $baseUrl . ($path === '/' ? '/' : $path);
+            $changefreq = (string) ($entry['changefreq'] ?? 'monthly');
+            $priority = (string) ($entry['priority'] ?? '0.5');
+
+            echo "  <url>\n";
+            echo '    <loc>' . htmlspecialchars($loc, ENT_QUOTES, 'UTF-8') . "</loc>\n";
+            echo '    <changefreq>' . htmlspecialchars($changefreq, ENT_QUOTES, 'UTF-8') . "</changefreq>\n";
+            echo '    <priority>' . htmlspecialchars($priority, ENT_QUOTES, 'UTF-8') . "</priority>\n";
+            echo "  </url>\n";
+        }
+
+        echo '</urlset>';
     }
 
     public function services(): void

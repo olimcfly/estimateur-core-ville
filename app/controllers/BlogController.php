@@ -15,48 +15,48 @@ final class BlogController
     private const CATEGORIES = [
         'marche-immobilier' => [
             'silo_pattern' => '%march%',
-            'keyword_patterns' => ['marche immobilier', 'prix immobilier', 'tendance', 'evolution prix', 'marche bordelais'],
-            'page_title' => 'Marche immobilier Bordeaux 2026 — Tendances, prix et analyses',
-            'meta_description' => 'Suivez l\'evolution du marche immobilier a Bordeaux et sa metropole : prix au m2, tendances par quartier, analyses detaillees du marche bordelais actualisees.',
-            'h1' => 'Marche immobilier Bordeaux',
+            'keyword_patterns' => ['marche immobilier', 'prix immobilier', 'tendance', 'evolution prix', 'marche local'],
+            'page_title' => 'Marche immobilier local 2026 — Tendances, prix et analyses',
+            'meta_description' => 'Suivez l\'evolution du marche immobilier local : prix au m2, tendances par quartier et analyses detaillees.',
+            'h1' => 'Marche immobilier local',
             'eyebrow' => 'Analyses &amp; tendances du marche',
-            'intro' => 'Le marche immobilier bordelais reste l\'un des plus dynamiques du Sud-Ouest. Retrouvez ici nos analyses approfondies : evolution des prix au m2 par quartier, volumes de transactions, impact du DPE sur les valorisations, et perspectives pour les mois a venir. Nos donnees sont issues des bases notariales et actualisees regulierement pour vous offrir une vision fiable du marche.',
+            'intro' => 'Le marche immobilier local evolue constamment. Retrouvez ici nos analyses approfondies : evolution des prix au m2 par quartier, volumes de transactions, impact du DPE sur les valorisations, et perspectives pour les mois a venir.',
         ],
         'vendre-son-bien' => [
             'silo_pattern' => '%vendr%',
             'keyword_patterns' => ['vendre', 'vente', 'estimation', 'prix de vente', 'mandat'],
-            'page_title' => 'Vendre son bien a Bordeaux — Guides et conseils de vente',
-            'meta_description' => 'Tous nos conseils pour vendre votre maison ou appartement a Bordeaux au meilleur prix : estimation, mise en valeur, strategie de vente, negociation.',
-            'h1' => 'Vendre son bien a Bordeaux',
+            'page_title' => 'Vendre son bien localement — Guides et conseils de vente',
+            'meta_description' => 'Tous nos conseils pour vendre votre maison ou appartement au meilleur prix : estimation, mise en valeur, strategie de vente, negociation.',
+            'h1' => 'Vendre son bien localement',
             'eyebrow' => 'Guides de vente immobiliere',
-            'intro' => 'Vendre un bien immobilier a Bordeaux demande une preparation rigoureuse. Decouvrez nos guides complets pour estimer correctement votre bien, preparer votre dossier de vente, fixer le bon prix et negocier efficacement avec les acheteurs. Des conseils adaptes au marche bordelais pour maximiser votre plus-value.',
+            'intro' => 'Vendre un bien immobilier demande une preparation rigoureuse. Decouvrez nos guides complets pour estimer correctement votre bien, preparer votre dossier de vente, fixer le bon prix et negocier efficacement avec les acheteurs.',
         ],
         'conseils-astuces' => [
             'silo_pattern' => '%conseil%',
             'keyword_patterns' => ['conseil', 'astuce', 'guide', 'erreur', 'comment'],
-            'page_title' => 'Conseils immobiliers Bordeaux — Astuces et bonnes pratiques',
-            'meta_description' => 'Conseils pratiques et astuces immobilieres pour reussir votre projet a Bordeaux : erreurs a eviter, bonnes pratiques, check-lists et guides pas a pas.',
+            'page_title' => 'Conseils immobiliers locaux — Astuces et bonnes pratiques',
+            'meta_description' => 'Conseils pratiques et astuces immobilieres pour reussir votre projet local : erreurs a eviter, bonnes pratiques, check-lists et guides pas a pas.',
             'h1' => 'Conseils et astuces immobilieres',
             'eyebrow' => 'Conseils pratiques',
-            'intro' => 'Que vous soyez vendeur ou acheteur, nos experts partagent leurs meilleurs conseils pour reussir votre projet immobilier a Bordeaux. Des astuces concretes, les erreurs a eviter et des guides pas a pas pour prendre les bonnes decisions a chaque etape.',
+            'intro' => 'Que vous soyez vendeur ou acheteur, nos experts partagent leurs meilleurs conseils pour reussir votre projet immobilier local. Des astuces concretes, les erreurs a eviter et des guides pas a pas pour prendre les bonnes decisions a chaque etape.',
         ],
         'aspect-juridique' => [
             'silo_pattern' => '%juri%',
             'keyword_patterns' => ['juridique', 'loi', 'reglementation', 'dpe', 'diagnostic', 'notaire', 'fiscalite'],
-            'page_title' => 'Aspects juridiques immobilier Bordeaux — Reglementation et obligations',
-            'meta_description' => 'Decryptage des aspects juridiques de l\'immobilier a Bordeaux : DPE, diagnostics obligatoires, fiscalite, reglementation et obligations legales des vendeurs.',
+            'page_title' => 'Aspects juridiques immobilier local — Reglementation et obligations',
+            'meta_description' => 'Decryptage des aspects juridiques de l\'immobilier local : DPE, diagnostics obligatoires, fiscalite, reglementation et obligations legales des vendeurs.',
             'h1' => 'Aspects juridiques de l\'immobilier',
             'eyebrow' => 'Reglementation &amp; droit immobilier',
-            'intro' => 'La reglementation immobiliere evolue constamment. Retrouvez nos decryptages sur les diagnostics obligatoires (DPE, amiante, plomb), la fiscalite des plus-values, les obligations du vendeur et les dernieres evolutions legislatives qui impactent le marche immobilier bordelais.',
+            'intro' => 'La reglementation immobiliere evolue constamment. Retrouvez nos decryptages sur les diagnostics obligatoires (DPE, amiante, plomb), la fiscalite des plus-values, les obligations du vendeur et les dernieres evolutions legislatives qui impactent le marche immobilier local.',
         ],
         'aspects-juridiques' => [
             'silo_pattern' => '%juri%',
             'keyword_patterns' => ['juridique', 'loi', 'reglementation', 'dpe', 'diagnostic', 'notaire', 'fiscalite'],
-            'page_title' => 'Aspects juridiques immobilier Bordeaux — Reglementation et obligations',
-            'meta_description' => 'Decryptage des aspects juridiques de l\'immobilier a Bordeaux : DPE, diagnostics obligatoires, fiscalite, reglementation et obligations legales des vendeurs.',
+            'page_title' => 'Aspects juridiques immobilier local — Reglementation et obligations',
+            'meta_description' => 'Decryptage des aspects juridiques de l\'immobilier local : DPE, diagnostics obligatoires, fiscalite, reglementation et obligations legales des vendeurs.',
             'h1' => 'Aspects juridiques de l\'immobilier',
             'eyebrow' => 'Reglementation &amp; droit immobilier',
-            'intro' => 'La reglementation immobiliere evolue constamment. Retrouvez nos decryptages sur les diagnostics obligatoires (DPE, amiante, plomb), la fiscalite des plus-values, les obligations du vendeur et les dernieres evolutions legislatives qui impactent le marche immobilier bordelais.',
+            'intro' => 'La reglementation immobiliere evolue constamment. Retrouvez nos decryptages sur les diagnostics obligatoires (DPE, amiante, plomb), la fiscalite des plus-values, les obligations du vendeur et les dernieres evolutions legislatives qui impactent le marche immobilier local.',
         ],
     ];
 
@@ -72,8 +72,8 @@ final class BlogController
 
         View::render('blog/index', [
             'articles' => $articles,
-            'page_title' => 'Blog Immobilier Bordeaux — Conseils, Analyses & Guides',
-            'meta_description' => 'Decouvrez nos articles sur l\'immobilier a Bordeaux : analyses du marche, conseils de vente, guides pratiques et actualites par quartier.',
+            'page_title' => 'Blog Immobilier Local — Conseils, Analyses & Guides',
+            'meta_description' => 'Decouvrez nos articles sur l\'immobilier local : analyses du marche, conseils de vente, guides pratiques et actualites par quartier.',
         ]);
     }
 

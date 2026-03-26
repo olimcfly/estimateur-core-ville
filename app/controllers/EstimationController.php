@@ -282,6 +282,72 @@ final class EstimationController
         }
     }
 
+    public function apiStorePopupLead(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            $rawBody = (string) file_get_contents('php://input');
+            $input = json_decode($rawBody, true, 512, JSON_THROW_ON_ERROR);
+            if (!is_array($input)) {
+                throw new \InvalidArgumentException('Payload invalide.');
+            }
+
+            $prenom = trim((string) ($input['prenom'] ?? ''));
+            $email = trim((string) ($input['email'] ?? ''));
+            $telephone = preg_replace('/\s+/', '', trim((string) ($input['telephone'] ?? ''))) ?? '';
+            $ville = trim((string) ($input['ville'] ?? ''));
+            $typeBien = trim((string) ($input['type_bien'] ?? ''));
+            $surface = (float) ($input['surface'] ?? 0);
+            $pieces = (int) ($input['pieces'] ?? 0);
+            $estimationMoyenne = (float) ($input['estimation_moyenne'] ?? 0);
+            $source = trim((string) ($input['source'] ?? 'estimation_popup'));
+
+            if ($prenom === '' || mb_strlen($prenom) < 2) {
+                throw new \InvalidArgumentException('Le prénom est requis.');
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new \InvalidArgumentException('Email invalide.');
+            }
+            if (!preg_match('/^(0|\+33)[1-9][0-9]{8}$/', $telephone)) {
+                throw new \InvalidArgumentException('Téléphone invalide.');
+            }
+            if ($ville === '' || mb_strlen($ville) < 2) {
+                throw new \InvalidArgumentException('Ville invalide.');
+            }
+            if ($estimationMoyenne <= 0) {
+                throw new \InvalidArgumentException('Estimation invalide.');
+            }
+
+            $leadId = (new Lead())->create([
+                'lead_type' => 'qualifie',
+                'nom' => $prenom,
+                'email' => $email,
+                'telephone' => $telephone,
+                'ville' => $ville,
+                'type_bien' => $typeBien !== '' ? mb_substr($typeBien, 0, 80) : null,
+                'surface_m2' => $surface > 0 ? $surface : null,
+                'pieces' => $pieces > 0 ? $pieces : null,
+                'estimation' => $estimationMoyenne,
+                'notes' => 'Source: ' . mb_substr($source, 0, 80),
+                'score' => 'tiede',
+                'statut' => 'nouveau',
+            ]);
+
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'lead_id' => $leadId,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        } catch (\Throwable $throwable) {
+            http_response_code(422);
+            echo json_encode([
+                'success' => false,
+                'error' => $throwable->getMessage(),
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+    }
+
     public function confirmation(): void
     {
         $confirmation = $_SESSION['lead_confirmation'] ?? null;

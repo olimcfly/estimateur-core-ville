@@ -20,10 +20,12 @@ final class View
         $data['meta_description'] = self::resolveMetaDescription($data, $pageContent);
 
         $siteConfig = getSiteConfig();
+        $branding = getBrandingConfig();
         $data['colors'] = $siteConfig['colors'] ?? [];
         $data['rgbColors'] = $siteConfig['rgb_colors'] ?? [];
         $data['google_site_verification'] = $siteConfig['google_site_verification'] ?? '';
         $data['tracking'] = $siteConfig['tracking'] ?? [];
+        $data['branding'] = $branding;
 
         extract($data, EXTR_SKIP);
         include __DIR__ . '/../views/layouts/header.php';
@@ -87,7 +89,9 @@ final class View
             return $explicitDescription;
         }
 
-        $pageTitle = trim((string) ($data['page_title'] ?? 'Estimation Immobilière Bordeaux'));
+        $branding = getBrandingConfig();
+        $defaultTitle = trim((string) ($branding['site_name'] ?? 'Estimation Immobilière'));
+        $pageTitle = trim((string) ($data['page_title'] ?? $defaultTitle));
         $plainContent = html_entity_decode(strip_tags($pageContent), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $plainContent = preg_replace('/\s+/u', ' ', $plainContent) ?? '';
         $plainContent = trim($plainContent);

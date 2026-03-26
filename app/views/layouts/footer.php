@@ -75,11 +75,23 @@
   </div>
 </section>
 
-<footer class="site-footer">
-  <div class="container">
-
-    <!-- FOOTER MAIN -->
-    <div class="footer-grid">
+<?php
+  $config = $config ?? getSiteConfig();
+  $siteName = (string) ($config['site_name'] ?? 'Estimation Immobilier');
+  $siteLogo = (string) ($config['site_logo'] ?? '/favicon.svg');
+  $city = (string) ($config['ville'] ?? 'votre ville');
+  $advisorName = (string) ($config['advisor_name'] ?? 'Conseiller immobilier');
+  $advisorPhone = (string) ($config['advisor_phone'] ?? '');
+  $advisorEmail = (string) ($config['advisor_email'] ?? '');
+  $advisorPhoto = (string) ($config['advisor_photo'] ?? '/favicon.svg');
+  $services = is_array($config['footer_services'] ?? null) ? $config['footer_services'] : [];
+  $resources = is_array($config['footer_resources'] ?? null) ? $config['footer_resources'] : [];
+  $legalLinks = is_array($config['footer_legal'] ?? null) ? $config['footer_legal'] : [];
+  $socialLinks = is_array($config['social_links'] ?? null) ? $config['social_links'] : [];
+  $accentColor = (string) ($config['color_accent'] ?? '#D4AF37');
+  $newsletterAction = (string) ($config['newsletter_action_url'] ?? '/api/newsletter');
+  $currentYear = (int) date('Y');
+?>
 
       <!-- COL 1: BRAND -->
       <div class="footer-column footer-col-brand">
@@ -129,17 +141,17 @@
         </ul>
       </div>
 
-      <!-- COL 4: ENTREPRISE -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Entreprise</h4>
-        <ul class="footer-links">
-          <li><a href="/a-propos">À propos</a></li>
-          <li><a href="/contact">Contact</a></li>
-          <li><a href="/mentions-legales">Mentions légales</a></li>
-          <li><a href="/politique-confidentialite">Confidentialité</a></li>
-          <li><a href="/conditions-utilisation">CGU</a></li>
+      <section class="site-footer__column site-footer__column--services" data-accordion>
+        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Nos services</button>
+        <ul class="site-footer__links" data-accordion-panel>
+          <?php foreach ($services as $item):
+            $label = (string) ($item['label'] ?? 'Service');
+            $url = (string) ($item['url'] ?? '#');
+          ?>
+            <li><a href="<?= e($url) ?>"><?= e($label) ?></a></li>
+          <?php endforeach; ?>
         </ul>
-      </div>
+      </section>
 
       <!-- COL 5: CONTACT -->
       <div class="footer-column">
@@ -162,9 +174,7 @@
             </a>
           </li>
         </ul>
-      </div>
-
-    </div>
+      </section>
 
     <!-- NEWSLETTER -->
     <div class="footer-newsletter-band">
@@ -174,12 +184,9 @@
           <strong>Restez informé</strong>
           <span><?= e($footerNewsletterText) ?></span>
         </div>
-      </div>
-      <form class="footer-newsletter-form" method="POST" action="/api/newsletter">
-        <input type="email" name="email" placeholder="Votre adresse email" required aria-label="Email pour newsletter">
-        <button type="submit">S'inscrire</button>
-      </form>
+      </section>
     </div>
+  </div>
 
     <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
@@ -197,7 +204,6 @@
         </a>
       </div>
     </div>
-
   </div>
 </footer>
 
@@ -267,6 +273,76 @@
       });
     });
   })();
+
+  // Footer accordion (mobile) + newsletter AJAX submit
+  (function() {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const accordionItems = document.querySelectorAll('[data-accordion]');
+    const newsletterForms = document.querySelectorAll('[data-newsletter-form]');
+
+    function setAccordionState() {
+      accordionItems.forEach((item) => {
+        const toggle = item.querySelector('.site-footer__accordion-toggle');
+        const panel = item.querySelector('[data-accordion-panel]');
+        if (!toggle || !panel) return;
+
+        if (mq.matches) {
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          panel.hidden = !expanded;
+          toggle.disabled = false;
+        } else {
+          panel.hidden = false;
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.disabled = true;
+        }
+      });
+    }
+
+    accordionItems.forEach((item) => {
+      const toggle = item.querySelector('.site-footer__accordion-toggle');
+      const panel = item.querySelector('[data-accordion-panel]');
+      if (!toggle || !panel) return;
+
+      toggle.addEventListener('click', () => {
+        if (!mq.matches) return;
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isExpanded));
+        panel.hidden = isExpanded;
+      });
+    });
+
+    newsletterForms.forEach((form) => {
+      const feedback = form.parentElement ? form.parentElement.querySelector('[data-newsletter-feedback]') : null;
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (feedback) feedback.textContent = 'Inscription en cours...';
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: new FormData(form)
+          });
+
+          if (!response.ok) {
+            throw new Error('Newsletter error');
+          }
+
+          form.reset();
+          if (feedback) feedback.textContent = 'Merci, votre inscription est confirmée.';
+        } catch (error) {
+          if (feedback) feedback.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+        }
+      });
+    });
+
+    setAccordionState();
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', setAccordionState);
+    } else {
+      window.addEventListener('resize', setAccordionState);
+    }
+  })();
 </script>
 
 <!-- Admin presence: banner created dynamically via JS only when admin is active (not in DOM at crawl time) -->
@@ -297,6 +373,25 @@
 </style>
 <!-- Admin presence notification: DISABLED on frontend -->
 <!-- To re-enable, uncomment the banner HTML and JS below -->
+
+<?php
+  $stickyConfig = $config ?? [];
+  $stickyCtaLabel = trim((string) ($stickyConfig['cta_label'] ?? 'Voir le prix de mon bien →'));
+  $stickyCtaUrl = trim((string) ($stickyConfig['cta_url'] ?? '/estimation#form-estimation'));
+  $stickyAccentColor = trim((string) ($stickyConfig['color_accent'] ?? '#0F766E'));
+  $stickyAdvisorName = trim((string) ($stickyConfig['advisor_name'] ?? ''));
+?>
+<div class="sticky-cta sticky-cta--visible" style="--sticky-cta-accent: <?= e($stickyAccentColor) ?>;" aria-hidden="true">
+  <div class="sticky-cta__inner">
+    <div class="sticky-cta__copy" aria-hidden="true">
+      <p class="sticky-cta__label">Estimation gratuite</p>
+      <p class="sticky-cta__text">Gratuit · Sans engagement</p>
+    </div>
+    <a href="<?= e($stickyCtaUrl) ?>" class="sticky-cta__button" aria-label="<?= e($stickyAdvisorName !== '' ? 'Voir le prix de mon bien avec ' . $stickyAdvisorName : 'Voir le prix de mon bien') ?>">
+      <?= e($stickyCtaLabel) ?>
+    </a>
+  </div>
+</div>
 <!-- ================================================ -->
 <!-- MOBILE BOTTOM NAV (APP-LIKE)                     -->
 <!-- ================================================ -->
@@ -385,6 +480,59 @@
 })();
 </script>
 <!-- Admin presence JS: DISABLED -->
+
+<script>
+(function() {
+  var stickyCta = document.querySelector('.sticky-cta');
+  if (!stickyCta) return;
+
+  var mobileQuery = window.matchMedia('(max-width: 767px)');
+  var estimationForm = document.getElementById('form-estimation');
+
+  function toggleSticky(forceVisible) {
+    stickyCta.classList.toggle('sticky-cta--visible', !!forceVisible);
+    stickyCta.setAttribute('aria-hidden', forceVisible ? 'false' : 'true');
+  }
+
+  function refreshForViewport() {
+    if (!mobileQuery.matches) {
+      toggleSticky(false);
+      return;
+    }
+
+    if (!estimationForm) {
+      toggleSticky(true);
+    }
+  }
+
+  refreshForViewport();
+
+  if (typeof mobileQuery.addEventListener === 'function') {
+    mobileQuery.addEventListener('change', refreshForViewport);
+  } else if (typeof mobileQuery.addListener === 'function') {
+    mobileQuery.addListener(refreshForViewport);
+  }
+
+  if (!estimationForm || typeof IntersectionObserver !== 'function') {
+    return;
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!mobileQuery.matches) {
+        toggleSticky(false);
+        return;
+      }
+
+      toggleSticky(!entry.isIntersecting);
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  observer.observe(estimationForm);
+})();
+</script>
 
 </body>
 </html>

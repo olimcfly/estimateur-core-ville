@@ -115,6 +115,7 @@
           <!-- CHAMPS CACHÉS -->
           <input type="hidden" name="ville" value="<?= e((string) $estimate['city']) ?>">
           <input type="hidden" name="estimation" value="<?= e((string) $estimate['estimated_mid']) ?>">
+          <input type="hidden" name="estimation_id" value="<?= (int) ($estimationId ?? 0) ?>">
 
           <label for="nom">
             <span><i class="fas fa-user"></i> Nom complet *</span>
@@ -180,7 +181,7 @@
 <section class="section">
   <div class="container result-restart">
     <p class="muted">Les résultats ne correspondent pas ? Modifiez vos critères.</p>
-    <a href="/#form-estimation" class="btn btn-ghost">
+    <a href="/estimation#form-estimation" class="btn btn-ghost">
       <i class="fas fa-redo"></i> Refaire une estimation
     </a>
   </div>

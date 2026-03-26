@@ -1,5 +1,8 @@
-<?php $page_title = 'Estimation Immobilière Bordeaux - Avis de Valeur Indicatif Gratuit'; ?>
-<?php $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à Bordeaux en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.'; ?>
+<?php
+$cityName = (string) (\App\Core\Config::get('city.name', '') ?: 'votre ville');
+$page_title = 'Estimation Immobilière ' . $cityName . ' - Avis de Valeur Indicatif Gratuit';
+$meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à ' . $cityName . ' en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.';
+?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -9,7 +12,7 @@
     <!-- COLONNE 1: HEADLINE -->
     <div>
       <p class="eyebrow"><i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne</p>
-      <h1>Estimez la valeur de votre bien immobilier à Bordeaux</h1>
+      <h1>Estimez la valeur de votre bien immobilier à <?= e($cityName) ?></h1>
 
       <p class="lead">
         Obtenez une fourchette de prix indicative en quelques secondes.

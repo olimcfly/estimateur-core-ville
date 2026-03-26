@@ -108,7 +108,10 @@ final class LeadNotificationService
         $estimation = number_format((float) $lead['estimation'], 0, ',', ' ');
         $urgenceLabel = self::urgenceLabel((string) $lead['urgence']);
         $motivationLabel = self::motivationLabel((string) $lead['motivation']);
-        $fromName = (string) Config::get('mail.from_name', 'Estimation Immobilier Bordeaux');
+        $fromName = (string) (Config::get('mail.from_name')
+            ?: Config::get('app_name')
+            ?: ('Estimation Immobilier ' . (Config::get('city.name') ?: 'Local')));
+        $brandName = htmlspecialchars($fromName, ENT_QUOTES, 'UTF-8');
 
         $subject = "Votre demande d'avis de valeur a bien été enregistrée";
 
@@ -124,7 +127,7 @@ final class LeadNotificationService
   <!-- Header -->
   <tr>
     <td style="background:#8B1538;padding:30px 40px;text-align:center;">
-      <h1 style="margin:0;color:#ffffff;font-size:22px;">Estimation Immobilier Bordeaux</h1>
+      <h1 style="margin:0;color:#ffffff;font-size:22px;">{$brandName}</h1>
     </td>
   </tr>
 
@@ -208,7 +211,9 @@ HTML;
 
     private static function sendAdminEmail(int $leadId, string $temperature, array $lead): void
     {
-        $adminEmail = (string) Config::get('mail.admin_email', 'contact@estimation-immobilier-bordeaux.fr');
+        $adminEmail = (string) (Config::get('mail.admin_email')
+            ?: Config::get('mail.from')
+            ?: 'contact@localhost');
 
         $nom = htmlspecialchars((string) $lead['nom'], ENT_QUOTES, 'UTF-8');
         $email = htmlspecialchars((string) $lead['email'], ENT_QUOTES, 'UTF-8');

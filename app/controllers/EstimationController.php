@@ -192,8 +192,8 @@ final class EstimationController
             $adresse = $adresseInput !== '' ? Validator::string($_POST, 'adresse', 5, 255) : 'Non renseignée';
             $estimationId = isset($_POST['estimation_id']) ? (int) $_POST['estimation_id'] : 0;
             $leadContext = $this->resolveLeadContext($estimationId);
-            $ville = $leadContext['ville'] ?? Validator::string($_POST, 'ville', 2, 120);
-            $estimation = $leadContext['estimation'] ?? Validator::float($_POST, 'estimation', 10000, 100000000);
+            $ville = $leadContext['ville'];
+            $estimation = $leadContext['estimation'];
             $urgence = Validator::string($_POST, 'urgence', 3, 40);
             $motivation = Validator::string($_POST, 'motivation', 3, 80);
             $notesRaw = trim((string) ($_POST['notes'] ?? ($_POST['message'] ?? '')));
@@ -435,12 +435,12 @@ final class EstimationController
     }
 
     /**
-     * @return array{ville: string, estimation: float}|array{}
+     * @return array{ville: string, estimation: float}
      */
     private function resolveLeadContext(int $estimationId): array
     {
         if ($estimationId <= 0) {
-            return [];
+            throw new \RuntimeException('Contexte estimation manquant. Merci de relancer une estimation.');
         }
 
         $estimation = (new Estimation())->findById($estimationId);

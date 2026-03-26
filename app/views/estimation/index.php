@@ -159,7 +159,7 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
   </div>
 </section>
 
-<?php require __DIR__ . '/partials/trust_block.php'; ?>
+<?php require __DIR__ . '/../partials/trust-block.php'; ?>
 
 <!-- ============================================ -->
 <!-- COMPRENDRE L'AVIS DE VALEUR -->

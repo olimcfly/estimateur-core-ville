@@ -26,40 +26,53 @@ final class LandingPageController
 
     // ─── Landing Pages ───────────────────────────────────────
 
-    public function estimationBordeaux(): void
+    public function estimation(): void
     {
         UtmTrackingService::capture();
+        $location = $this->locationContext();
 
         View::renderBare('landing/layout', [
-            'page_title'       => 'Estimation Immobilière Bordeaux | Gratuite en 60 secondes',
-            'meta_description' => 'Obtenez une estimation immobilière gratuite à Bordeaux en 60 secondes. Résultat instantané basé sur les données réelles du marché bordelais.',
+            'page_title'       => "Estimation Immobilière {$location['area']} | Gratuite en 60 secondes",
+            'meta_description' => "Obtenez une estimation immobilière gratuite à {$location['area']} en 60 secondes. Résultat instantané basé sur les données réelles du marché local.",
             'landing_view'     => 'landing/pages/estimation-bordeaux',
-            'landing_slug'     => 'estimation-bordeaux',
+            'landing_slug'     => 'estimation',
         ]);
     }
 
-    public function vendreMaisonBordeaux(): void
+    public function vendreMaison(): void
     {
         UtmTrackingService::capture();
+        $location = $this->locationContext();
 
         View::renderBare('landing/layout', [
-            'page_title'       => 'Vendre sa Maison à Bordeaux | Estimation Gratuite',
-            'meta_description' => 'Vous vendez votre maison à Bordeaux ? Obtenez une estimation gratuite et découvrez le prix de vente optimal. Sans engagement.',
+            'page_title'       => "Vendre sa Maison à {$location['area']} | Estimation Gratuite",
+            'meta_description' => "Vous vendez votre maison à {$location['area']} ? Obtenez une estimation gratuite et découvrez le prix de vente optimal. Sans engagement.",
             'landing_view'     => 'landing/pages/vendre-maison-bordeaux',
-            'landing_slug'     => 'vendre-maison-bordeaux',
+            'landing_slug'     => 'vendre-maison',
         ]);
     }
 
     public function avisValeurGratuit(): void
     {
         UtmTrackingService::capture();
+        $location = $this->locationContext();
 
         View::renderBare('landing/layout', [
-            'page_title'       => 'Avis de Valeur Gratuit Bordeaux | Sans Engagement',
-            'meta_description' => 'Recevez un avis de valeur gratuit pour votre bien immobilier à Bordeaux. Analyse basée sur le marché actuel. Résultat immédiat.',
+            'page_title'       => "Avis de Valeur Gratuit {$location['city']} | Sans Engagement",
+            'meta_description' => "Recevez un avis de valeur gratuit pour votre bien immobilier à {$location['area']}. Analyse basée sur le marché actuel. Résultat immédiat.",
             'landing_view'     => 'landing/pages/avis-valeur-gratuit',
             'landing_slug'     => 'avis-valeur-gratuit',
         ]);
+    }
+
+    public function legacyEstimationBordeaux(): void
+    {
+        $this->redirectLegacy('/lp/estimation');
+    }
+
+    public function legacyVendreMaisonBordeaux(): void
+    {
+        $this->redirectLegacy('/lp/vendre-maison');
     }
 
     // ─── Form Submission (lead capture) ──────────────────────
@@ -74,13 +87,14 @@ final class LandingPageController
             $nom       = Validator::string($_POST, 'nom', 2, 120);
             $email     = Validator::email($_POST, 'email');
             $telephone = Validator::string($_POST, 'telephone', 6, 30);
-            $ville     = trim((string) ($_POST['ville'] ?? 'Bordeaux'));
+            $location = $this->locationContext();
+            $ville     = trim((string) ($_POST['ville'] ?? $location['city']));
             if ($ville === '') {
-                $ville = 'Bordeaux';
+                $ville = $location['city'];
             }
             $typeBien  = trim((string) ($_POST['type_bien'] ?? ''));
             $surface   = trim((string) ($_POST['surface'] ?? ''));
-            $landingSlug = trim((string) ($_POST['landing_slug'] ?? 'google-ads'));
+            $landingSlug = trim((string) ($_POST['landing_slug'] ?? 'estimation'));
 
             // Build notes with UTM tracking data
             $notes = "Source: Landing page Google Ads ({$landingSlug})";
@@ -168,18 +182,19 @@ final class LandingPageController
                 'estimation'       => $estimation,
             ]);
         } catch (\Throwable $e) {
-            $landingSlug = trim((string) ($_POST['landing_slug'] ?? 'estimation-bordeaux'));
+            $location = $this->locationContext();
+            $landingSlug = trim((string) ($_POST['landing_slug'] ?? 'estimation'));
             $landingView = 'landing/pages/' . preg_replace('/[^a-z0-9\-]/', '', $landingSlug);
 
-            // Check view exists, fallback to estimation-bordeaux
+            // Check view exists, fallback to estimation
             $viewPath = __DIR__ . '/../views/' . $landingView . '.php';
             if (!is_file($viewPath)) {
                 $landingView = 'landing/pages/estimation-bordeaux';
             }
 
             View::renderBare('landing/layout', [
-                'page_title'       => 'Estimation Immobilière Bordeaux',
-                'meta_description' => 'Estimation immobilière gratuite à Bordeaux.',
+                'page_title'       => "Estimation Immobilière {$location['area']}",
+                'meta_description' => "Estimation immobilière gratuite à {$location['area']}.",
                 'landing_view'     => $landingView,
                 'landing_slug'     => $landingSlug,
                 'form_error'       => $e->getMessage(),
@@ -243,5 +258,32 @@ final class LandingPageController
         }
 
         return trim((string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+    }
+
+    /**
+     * @return array{city:string,area:string}
+     */
+    private function locationContext(): array
+    {
+        $branding = function_exists('getBrandingConfig') ? \getBrandingConfig() : [];
+        $city = trim((string) ($branding['city_name'] ?? ''));
+        if ($city === '') {
+            $city = 'Votre ville';
+        }
+
+        $area = trim((string) ($branding['area_label'] ?? ''));
+        if ($area === '') {
+            $area = $city !== '' ? $city : 'votre secteur';
+        }
+
+        return ['city' => $city, 'area' => $area];
+    }
+
+    private function redirectLegacy(string $targetPath): void
+    {
+        $query = $_SERVER['QUERY_STRING'] ?? '';
+        $location = $targetPath . ($query !== '' ? '?' . $query : '');
+        header('Location: ' . $location, true, 301);
+        exit;
     }
 }

@@ -1,5 +1,61 @@
 </main>
 
+<?php
+  $branding = is_array($branding ?? null) ? $branding : getBrandingConfig();
+  $settingsMap = getSettingsMap();
+
+  $siteName = trim((string) ($branding['site_name'] ?? ''));
+  if ($siteName === '') {
+      $siteName = 'Estimation Immobilière';
+  }
+
+  $cityName = trim((string) ($branding['city_name'] ?? ''));
+  if ($cityName === '') {
+      $cityName = 'Votre ville';
+  }
+
+  $areaLabel = trim((string) ($branding['area_label'] ?? ''));
+  if ($areaLabel === '') {
+      $areaLabel = $cityName !== 'Votre ville' ? $cityName : 'Votre secteur';
+  }
+
+  $supportEmail = trim((string) ($branding['support_email'] ?? ''));
+  if ($supportEmail === '') {
+      $supportEmail = 'contact@localhost';
+  }
+
+  $footerSocialLinks = [
+      'facebook' => trim((string) ($settingsMap['social_facebook_url'] ?? '')),
+      'instagram' => trim((string) ($settingsMap['social_instagram_url'] ?? '')),
+      'linkedin' => trim((string) ($settingsMap['social_linkedin_url'] ?? '')),
+      'x' => trim((string) ($settingsMap['social_x_url'] ?? '')),
+  ];
+
+  $footerTagline = trim((string) ($settingsMap['footer_tagline'] ?? ''));
+  if ($footerTagline === '') {
+      $footerTagline = sprintf(
+          'Votre partenaire de confiance pour l\'estimation immobilière sur %s.',
+          $areaLabel
+      );
+  }
+
+  $footerNewsletterText = trim((string) ($settingsMap['footer_newsletter_text'] ?? ''));
+  if ($footerNewsletterText === '') {
+      $footerNewsletterText = sprintf(
+          'Recevez nos analyses du marché local à %s et nos conseils immobiliers.',
+          $areaLabel
+      );
+  }
+
+  $footerAddressLine1 = trim((string) ($settingsMap['footer_address_line_1'] ?? $cityName));
+  $footerAddressLine2 = trim((string) ($settingsMap['footer_address_line_2'] ?? $areaLabel));
+
+  $footerLegalEntity = trim((string) ($settingsMap['footer_legal_entity'] ?? ''));
+  if ($footerLegalEntity === '') {
+      $footerLegalEntity = 'Éditeur local';
+  }
+?>
+
 <!-- ================================================ -->
 <!-- FOOTER PRO -->
 <!-- ================================================ -->
@@ -9,7 +65,7 @@
   <div class="container">
     <div class="footer-cta-inner">
       <div class="footer-cta-text">
-        <h3>Estimez votre bien immobilier à Bordeaux et sa métropole</h3>
+        <h3>Estimez votre bien immobilier à <?= e($areaLabel) ?></h3>
         <p>Algorithme IA + expertise locale pour une estimation fiable en quelques minutes.</p>
       </div>
       <a href="/#form-estimation" class="btn-footer-cta">
@@ -37,37 +93,53 @@
   $currentYear = (int) date('Y');
 ?>
 
-<footer class="site-footer" style="--color-accent: <?= e($accentColor) ?>;">
-  <div class="container">
-    <div class="site-footer__grid">
-      <section class="site-footer__identity">
-        <a href="/" class="site-footer__brand" aria-label="<?= e($siteName) ?>">
-          <img src="<?= e($siteLogo) ?>" alt="Logo <?= e($siteName) ?>" class="site-footer__logo">
-          <span class="site-footer__site-name"><?= e($siteName) ?></span>
+      <!-- COL 1: BRAND -->
+      <div class="footer-column footer-col-brand">
+        <a href="/" class="footer-logo-link">
+          <span class="footer-logo-icon"><i class="fas fa-home"></i></span>
+          <span class="footer-logo-text"><?= e($siteName) ?> <strong><?= e($areaLabel) ?></strong></span>
         </a>
-        <p class="site-footer__tagline">Votre spécialiste de l'estimation immobilière à <?= e($city) ?></p>
-        <div class="site-footer__social" aria-label="Réseaux sociaux">
-          <?php foreach ($socialLinks as $social):
-            $platform = (string) ($social['platform'] ?? 'Réseau social');
-            $url = (string) ($social['url'] ?? '#');
-            $icon = (string) ($social['icon'] ?? 'fas fa-share-alt');
-            $hasInlineIcon = str_contains($icon, '<svg');
-          ?>
-            <a href="<?= e($url) ?>" target="_blank" rel="noopener noreferrer" class="site-footer__social-link" aria-label="<?= e($platform) ?>">
-              <?php if ($hasInlineIcon): ?>
-                <?= $icon ?>
-              <?php else: ?>
-                <i class="<?= e($icon) ?>" aria-hidden="true"></i>
-              <?php endif; ?>
-            </a>
-          <?php endforeach; ?>
+        <p class="footer-desc">
+          <?= e($footerTagline) ?>
+        </p>
+        <div class="footer-social">
+          <?php if ($footerSocialLinks['facebook'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['facebook']) ?>" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <?php endif; ?>
+          <?php if ($footerSocialLinks['instagram'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['instagram']) ?>" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <?php endif; ?>
+          <?php if ($footerSocialLinks['linkedin'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['linkedin']) ?>" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          <?php endif; ?>
+          <?php if ($footerSocialLinks['x'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['x']) ?>" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="social-icon"><i class="fab fa-x-twitter"></i></a>
+          <?php endif; ?>
         </div>
-        <div class="site-footer__trust" aria-label="Badges de confiance">
-          <span class="site-footer__badge"><?= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 17a7 7 0 1 1 7-7 7 7 0 0 1-7 7Zm-1-5.5 5-5-1.4-1.4L11 10.7 9.4 9.1 8 10.5Z"/></svg>' ?>SSL</span>
-          <span class="site-footer__badge"><?= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5Zm0 17c-3-1.2-5-4.6-5-8V7.2l5-1.9 5 1.9V11c0 3.4-2 6.8-5 8Zm-1.2-4.6 4.7-4.7-1.4-1.4-3.3 3.3-1.4-1.4-1.4 1.4Z"/></svg>' ?>RGPD</span>
-          <span class="site-footer__badge"><?= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7l10 15L22 7Zm-1 13-4-6 1.7-1.1 2.4 3.6 4.5-5.4L17.4 7Z"/></svg>' ?>Vérifié</span>
-        </div>
-      </section>
+      </div>
+
+      <!-- COL 2: SERVICES -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Services</h4>
+        <ul class="footer-links">
+          <li><a href="/#form-estimation">Estimation en ligne</a></li>
+          <li><a href="/processus-estimation">Notre processus</a></li>
+          <li><a href="/quartiers">Quartiers</a></li>
+          <li><a href="/#how-it-works">Comment ça marche</a></li>
+          <li><a href="/#example-result">Voir un exemple</a></li>
+        </ul>
+      </div>
+
+      <!-- COL 3: RESSOURCES -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Ressources</h4>
+        <ul class="footer-links">
+          <li><a href="/blog">Blog & actualités</a></li>
+          <li><a href="/guides">Guides immobiliers</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/newsletter">Newsletter</a></li>
+        </ul>
+      </div>
 
       <section class="site-footer__column site-footer__column--services" data-accordion>
         <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Nos services</button>
@@ -81,54 +153,56 @@
         </ul>
       </section>
 
-      <section class="site-footer__column site-footer__column--resources" data-accordion>
-        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Ressources</button>
-        <ul class="site-footer__links" data-accordion-panel>
-          <?php foreach ($resources as $item):
-            $label = (string) ($item['label'] ?? 'Ressource');
-            $url = (string) ($item['url'] ?? '#');
-          ?>
-            <li><a href="<?= e($url) ?>"><?= e($label) ?></a></li>
-          <?php endforeach; ?>
+      <!-- COL 5: CONTACT -->
+      <div class="footer-column">
+        <h4 class="footer-heading">Nous contacter</h4>
+        <ul class="footer-contact">
+          <li>
+            <i class="fas fa-map-marker-alt"></i>
+            <span><?= e($footerAddressLine1) ?><br><?= e($footerAddressLine2) ?></span>
+          </li>
+          <li>
+            <a href="/contact">
+              <i class="fas fa-comment-dots"></i>
+              <span>Nous contacter</span>
+            </a>
+          </li>
+          <li>
+            <a href="mailto:<?= e($supportEmail) ?>">
+              <i class="fas fa-envelope"></i>
+              <span><?= e($supportEmail) ?></span>
+            </a>
+          </li>
         </ul>
       </section>
 
-      <section class="site-footer__column site-footer__column--contact" data-accordion>
-        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Nous contacter</button>
-        <div class="site-footer__contact" data-accordion-panel>
-          <div class="site-footer__advisor">
-            <img src="<?= e($advisorPhoto) ?>" alt="<?= e($advisorName) ?>" class="site-footer__advisor-photo">
-            <strong><?= e($advisorName) ?></strong>
-          </div>
-          <?php if ($advisorPhone !== ''): ?>
-            <a class="site-footer__contact-link" href="tel:<?= e(preg_replace('/\s+/', '', $advisorPhone) ?? $advisorPhone) ?>"><?= e($advisorPhone) ?></a>
-          <?php endif; ?>
-          <?php if ($advisorEmail !== ''): ?>
-            <a class="site-footer__contact-link" href="mailto:<?= e($advisorEmail) ?>"><?= e($advisorEmail) ?></a>
-          <?php endif; ?>
-          <p class="site-footer__address"><?= e($city) ?>, France</p>
-          <form class="site-footer__newsletter" method="POST" action="<?= e($newsletterAction) ?>" data-newsletter-form>
-            <label class="sr-only" for="footer-newsletter-email">Adresse email</label>
-            <input id="footer-newsletter-email" type="email" name="email" required placeholder="Votre email">
-            <button type="submit">S'inscrire</button>
-          </form>
-          <p class="site-footer__newsletter-feedback" data-newsletter-feedback aria-live="polite"></p>
+    <!-- NEWSLETTER -->
+    <div class="footer-newsletter-band">
+      <div class="footer-newsletter-text">
+        <i class="fas fa-envelope-open-text"></i>
+        <div>
+          <strong>Restez informé</strong>
+          <span><?= e($footerNewsletterText) ?></span>
         </div>
       </section>
     </div>
   </div>
 
-  <div class="site-footer__bottom">
-    <div class="container site-footer__bottom-inner">
-      <p>© <?= e((string) $currentYear) ?> <?= e($siteName) ?> — SAS OCDM Agency</p>
-      <nav class="site-footer__legal" aria-label="Liens légaux">
-        <?php foreach ($legalLinks as $item):
-          $label = (string) ($item['label'] ?? 'Lien légal');
-          $url = (string) ($item['url'] ?? '#');
-        ?>
-          <a href="<?= e($url) ?>"><?= e($label) ?></a>
-        <?php endforeach; ?>
-      </nav>
+    <!-- FOOTER BOTTOM -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        <p>&copy; <?= date('Y') ?> <?= e($siteName) ?> &mdash; <?= e($footerLegalEntity) ?>. Tous droits réservés.</p>
+      </div>
+      <div class="footer-bottom-right">
+        <div class="footer-trust">
+          <span class="trust-badge"><i class="fas fa-lock"></i> SSL</span>
+          <span class="trust-badge"><i class="fas fa-shield-alt"></i> RGPD</span>
+          <span class="trust-badge"><i class="fas fa-check-circle"></i> Vérifié</span>
+        </div>
+        <a href="#top" class="back-to-top" aria-label="Retour en haut">
+          <i class="fas fa-chevron-up"></i>
+        </a>
+      </div>
     </div>
   </div>
 </footer>

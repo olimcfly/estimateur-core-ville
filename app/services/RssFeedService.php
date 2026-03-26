@@ -69,6 +69,7 @@ final class RssFeedService
      */
     public function buildSingleArticlePrompt(array $rssArticle): string
     {
+        $location = $this->locationContext();
         $titre = $rssArticle['title'] ?? '';
         $nomSource = $rssArticle['source_name'] ?? '';
         $urlSource = $rssArticle['link'] ?? '';
@@ -77,11 +78,11 @@ final class RssFeedService
         $contenu = $rssArticle['content'] ?? '';
 
         return <<<PROMPT
-Role : Tu es un expert en marche immobilier a Bordeaux et en redaction web SEO. Tu aides un conseiller immobilier a publier des articles de blog originaux a partir d'articles d'actualite externes.
+Role : Tu es un expert en marche immobilier local ({$location['area']}) et en redaction web SEO. Tu aides un conseiller immobilier a publier des articles de blog originaux a partir d'articles d'actualite externes.
 
 Contexte :
-- Public cible : particuliers qui souhaitent acheter, vendre ou investir a Bordeaux et sa metropole.
-- Objectif : publier un article de blog pedagogique, oriente Bordeaux, qui resume et commente l'actualite, en citant clairement la source.
+- Public cible : particuliers qui souhaitent acheter, vendre ou investir a {$location['area']}.
+- Objectif : publier un article de blog pedagogique, oriente local, qui resume et commente l'actualite, en citant clairement la source.
 - Le ton doit etre professionnel, clair, accessible, sans langage marketing agressif.
 
 Donnees disponibles :
@@ -94,16 +95,16 @@ Donnees disponibles :
 
 Tache :
 1. Analyser le contenu fourni (resume + contenu detaille si present).
-2. Rediger un article de blog ORIGINAL en francais pour le site d'un professionnel de l'immobilier a Bordeaux.
-3. Adapter systematiquement l'angle a Bordeaux / Bordeaux Metropole :
-   - expliquer en quoi cette actualite impacte ou peut concerner les vendeurs, acheteurs et investisseurs bordelais,
-   - integrer, quand c'est pertinent, des remarques types : evolution des prix a Bordeaux, attractivite des quartiers, dynamique du marche local, etc.
+2. Rediger un article de blog ORIGINAL en francais pour le site d'un professionnel de l'immobilier a {$location['area']}.
+3. Adapter systematiquement l'angle a {$location['area']} :
+   - expliquer en quoi cette actualite impacte ou peut concerner les vendeurs, acheteurs et investisseurs locaux,
+   - integrer, quand c'est pertinent, des remarques types : evolution des prix locale, attractivite des quartiers, dynamique du marche local, etc.
 4. Ne pas copier le texte source : reformuler, synthetiser, commenter, ajouter de la valeur (conseils concrets).
 5. Structure attendue :
    - Titre SEO accrocheur (H1)
    - Introduction courte (2-3 phrases)
    - 2 a 4 sous-titres (H2) avec du texte sous chaque H2
-   - Un paragraphe de "conseils pratiques" pour le lecteur bordelais
+   - Un paragraphe de "conseils pratiques" pour le lecteur local
    - Un court paragraphe de conclusion oriente appel a l'action soft (prise de contact pour estimation, conseil, etc., sans pousser).
 6. Citer clairement la source a la fin, dans un encadre texte, de cette forme :
    "Source : {$nomSource}, « {$titre} », publie le {$dateSource} - disponible sur : {$urlSource}."
@@ -130,6 +131,7 @@ PROMPT;
      */
     public function buildMultiArticlePrompt(array $rssArticles): string
     {
+        $location = $this->locationContext();
         $sourcesList = '';
         foreach ($rssArticles as $i => $a) {
             $num = $i + 1;
@@ -137,11 +139,11 @@ PROMPT;
         }
 
         return <<<PROMPT
-Role : Tu es un expert en marche immobilier a Bordeaux et en redaction web SEO. Tu aides un conseiller immobilier a publier des articles de blog originaux a partir d'articles d'actualite externes.
+Role : Tu es un expert en marche immobilier local ({$location['area']}) et en redaction web SEO. Tu aides un conseiller immobilier a publier des articles de blog originaux a partir d'articles d'actualite externes.
 
 Contexte :
-- Public cible : particuliers qui souhaitent acheter, vendre ou investir a Bordeaux et sa metropole.
-- Objectif : publier un article de blog pedagogique, oriente Bordeaux, qui fait une synthese de plusieurs sources d'actualite.
+- Public cible : particuliers qui souhaitent acheter, vendre ou investir a {$location['area']}.
+- Objectif : publier un article de blog pedagogique, oriente local, qui fait une synthese de plusieurs sources d'actualite.
 - Le ton doit etre professionnel, clair, accessible, sans langage marketing agressif.
 
 Liste des articles sources :
@@ -149,16 +151,16 @@ Liste des articles sources :
 
 Tache :
 1. Faire une synthese unique des points communs et des differences entre ces sources.
-2. Rediger un article unique qui resume la tendance globale et la met en perspective pour Bordeaux.
-3. Adapter systematiquement l'angle a Bordeaux / Bordeaux Metropole :
-   - expliquer en quoi cette actualite impacte ou peut concerner les vendeurs, acheteurs et investisseurs bordelais,
-   - integrer, quand c'est pertinent, des remarques types : evolution des prix a Bordeaux, attractivite des quartiers, dynamique du marche local, etc.
+2. Rediger un article unique qui resume la tendance globale et la met en perspective pour {$location['area']}.
+3. Adapter systematiquement l'angle a {$location['area']} :
+   - expliquer en quoi cette actualite impacte ou peut concerner les vendeurs, acheteurs et investisseurs locaux,
+   - integrer, quand c'est pertinent, des remarques types : evolution des prix locale, attractivite des quartiers, dynamique du marche local, etc.
 4. Ne pas copier les textes sources : reformuler, synthetiser, commenter, ajouter de la valeur (conseils concrets).
 5. Structure attendue :
    - Titre SEO accrocheur (H1)
    - Introduction courte (2-3 phrases)
    - 2 a 4 sous-titres (H2) avec du texte sous chaque H2
-   - Un paragraphe de "conseils pratiques" pour le lecteur bordelais
+   - Un paragraphe de "conseils pratiques" pour le lecteur local
    - Un court paragraphe de conclusion oriente appel a l'action soft (prise de contact pour estimation, conseil, etc., sans pousser).
 6. En fin d'article, ajouter un bloc "Sources" listant tous les liens.
 
@@ -290,7 +292,7 @@ PROMPT;
             'temperature' => 0.7,
             'response_format' => ['type' => 'json_object'],
             'messages' => [
-                ['role' => 'system', 'content' => 'Tu es un expert immobilier et redacteur web SEO specialise sur Bordeaux.'],
+                ['role' => 'system', 'content' => 'Tu es un expert immobilier et redacteur web SEO specialise en marche local.'],
                 ['role' => 'user', 'content' => $prompt],
             ],
         ], [
@@ -344,7 +346,7 @@ PROMPT;
             CURLOPT_TIMEOUT => 15,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 3,
-            CURLOPT_USERAGENT => 'EstimationBordeaux-RSS/1.0',
+            CURLOPT_USERAGENT => $this->rssUserAgent(),
             CURLOPT_SSL_VERIFYPEER => true,
         ]);
 
@@ -451,6 +453,33 @@ PROMPT;
             'pub_date' => $dateFormatted,
             'image_url' => $imageUrl,
         ];
+    }
+
+    /**
+     * @return array{city:string,area:string}
+     */
+    private function locationContext(): array
+    {
+        $branding = function_exists('getBrandingConfig') ? \getBrandingConfig() : [];
+        $city = trim((string) ($branding['city_name'] ?? (string) Config::get('city.name', '')));
+        if ($city === '') {
+            $city = 'votre ville';
+        }
+
+        $area = trim((string) ($branding['area_label'] ?? (string) Config::get('city.region', '')));
+        if ($area === '') {
+            $area = $city !== 'votre ville' ? $city : 'votre secteur';
+        }
+
+        return ['city' => $city, 'area' => $area];
+    }
+
+    private function rssUserAgent(): string
+    {
+        $branding = function_exists('getBrandingConfig') ? \getBrandingConfig() : [];
+        $siteName = trim((string) ($branding['site_name'] ?? (string) Config::get('app_name', 'Estimation-Immobilier')));
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', strtolower($siteName)) ?: 'estimation-immobilier';
+        return rtrim($slug, '-') . '-RSS/1.0';
     }
 
     private function parseAtomEntry(\SimpleXMLElement $entry, array $namespaces): array

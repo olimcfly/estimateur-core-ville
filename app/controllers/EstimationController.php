@@ -20,6 +20,8 @@ final class EstimationController
 {
     private const LEAD_FORM_TTL_SECONDS = 1800;
     private const LEAD_SUBMIT_COOLDOWN_SECONDS = 60;
+    private const ALLOWED_URGENCIES = ['rapide', 'moyen', 'long'];
+    private const ALLOWED_MOTIVATIONS = ['vente', 'succession', 'divorce', 'investissement', 'autre'];
 
     private EstimationService $estimationService;
 
@@ -95,6 +97,7 @@ final class EstimationController
             $estimate = $this->estimationService->estimate($city, $propertyType, $surface, $rooms);
             $now = time();
             $estimationId = 0;
+            $_SESSION['last_estimation_result'] = $estimate;
             $_SESSION['lead_form_context'] = [
                 'ip' => $this->getClientIp(),
                 'issued_at' => $now,
@@ -195,6 +198,8 @@ final class EstimationController
             $estimationId = isset($_POST['estimation_id']) ? (int) $_POST['estimation_id'] : 0;
             $urgence = Validator::string($_POST, 'urgence', 3, 40);
             $motivation = Validator::string($_POST, 'motivation', 3, 80);
+            $this->assertAllowedValue($urgence, self::ALLOWED_URGENCIES, 'urgence');
+            $this->assertAllowedValue($motivation, self::ALLOWED_MOTIVATIONS, 'motivation');
             $notesRaw = trim((string) ($_POST['notes'] ?? ($_POST['message'] ?? '')));
             $contactPrefere = trim((string) ($_POST['contact_prefere'] ?? ''));
             $layout = trim((string) ($_POST['layout'] ?? ''));
@@ -273,9 +278,7 @@ final class EstimationController
             header('Location: /estimation/confirmation');
             exit;
         } catch (\Throwable $throwable) {
-            View::render('estimation/index', [
-                'errors' => [$throwable->getMessage()],
-            ]);
+            $this->renderLeadStepWithErrors([$throwable->getMessage()]);
         }
     }
 
@@ -446,4 +449,37 @@ final class EstimationController
         return trim((string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
     }
 
+    private function assertAllowedValue(string $value, array $allowed, string $field): void
+    {
+        if (!in_array(mb_strtolower(trim($value)), $allowed, true)) {
+            throw new \InvalidArgumentException("Champ invalide: {$field}");
+        }
+    }
+
+    private function renderLeadStepWithErrors(array $errors): void
+    {
+        $estimate = $_SESSION['last_estimation_result'] ?? null;
+        if (!is_array($estimate)) {
+            View::render('estimation/index', ['errors' => $errors]);
+            return;
+        }
+
+        $estimationId = isset($_POST['estimation_id']) ? (int) $_POST['estimation_id'] : 0;
+        $leadOld = [
+            'nom' => trim((string) ($_POST['nom'] ?? '')),
+            'email' => trim((string) ($_POST['email'] ?? '')),
+            'telephone' => trim((string) ($_POST['telephone'] ?? '')),
+            'urgence' => trim((string) ($_POST['urgence'] ?? '')),
+            'motivation' => trim((string) ($_POST['motivation'] ?? '')),
+            'notes' => trim((string) ($_POST['notes'] ?? ($_POST['message'] ?? ''))),
+        ];
+
+        View::render('estimation/result', [
+            'estimate' => $estimate,
+            'estimationId' => $estimationId,
+            'leadErrors' => $errors,
+            'leadOld' => $leadOld,
+            'errors' => [],
+        ]);
+    }
 }

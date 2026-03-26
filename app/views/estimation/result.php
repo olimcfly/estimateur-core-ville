@@ -112,6 +112,14 @@
         </div>
 
         <form action="/lead" method="post" class="form-grid form-lead">
+          <?php if (!empty($leadErrors ?? [])): ?>
+            <div class="form-error-banner">
+              <?php foreach (($leadErrors ?? []) as $error): ?>
+                <p><i class="fas fa-exclamation-circle"></i> <?= e((string) $error) ?></p>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+
           <!-- CHAMPS CACHÉS -->
           <input type="hidden" name="ville" value="<?= e((string) $estimate['city']) ?>">
           <input type="hidden" name="estimation" value="<?= e((string) $estimate['estimated_mid']) ?>">
@@ -119,17 +127,17 @@
 
           <label for="nom">
             <span><i class="fas fa-user"></i> Nom complet *</span>
-            <input type="text" id="nom" name="nom" placeholder="Jean Dupont" required>
+            <input type="text" id="nom" name="nom" placeholder="Jean Dupont" value="<?= e((string) ($leadOld['nom'] ?? '')) ?>" required>
           </label>
 
           <label for="email">
             <span><i class="fas fa-envelope"></i> Email *</span>
-            <input type="email" id="email" name="email" placeholder="jean@example.com" required>
+            <input type="email" id="email" name="email" placeholder="jean@example.com" value="<?= e((string) ($leadOld['email'] ?? '')) ?>" required>
           </label>
 
           <label for="telephone">
             <span><i class="fas fa-phone"></i> Téléphone *</span>
-            <input type="tel" id="telephone" name="telephone" placeholder="06 12 34 56 78" required>
+            <input type="tel" id="telephone" name="telephone" placeholder="06 12 34 56 78" value="<?= e((string) ($leadOld['telephone'] ?? '')) ?>" required>
           </label>
 
           <div class="form-row">
@@ -137,9 +145,9 @@
               <span>Délai souhaité *</span>
               <select id="urgence" name="urgence" required>
                 <option value="">-- Sélectionner --</option>
-                <option value="rapide">Rapide (&lt; 3 mois)</option>
-                <option value="moyen">Moyen (3-6 mois)</option>
-                <option value="long">Pas pressé (6+ mois)</option>
+                <option value="rapide" <?= (($leadOld['urgence'] ?? '') === 'rapide') ? 'selected' : '' ?>>Rapide (&lt; 3 mois)</option>
+                <option value="moyen" <?= (($leadOld['urgence'] ?? '') === 'moyen') ? 'selected' : '' ?>>Moyen (3-6 mois)</option>
+                <option value="long" <?= (($leadOld['urgence'] ?? '') === 'long') ? 'selected' : '' ?>>Pas pressé (6+ mois)</option>
               </select>
             </label>
 
@@ -147,18 +155,18 @@
               <span>Raison *</span>
               <select id="motivation" name="motivation" required>
                 <option value="">-- Sélectionner --</option>
-                <option value="vente">Vente</option>
-                <option value="succession">Succession</option>
-                <option value="divorce">Séparation</option>
-                <option value="investissement">Investissement</option>
-                <option value="autre">Autre</option>
+                <option value="vente" <?= (($leadOld['motivation'] ?? '') === 'vente') ? 'selected' : '' ?>>Vente</option>
+                <option value="succession" <?= (($leadOld['motivation'] ?? '') === 'succession') ? 'selected' : '' ?>>Succession</option>
+                <option value="divorce" <?= (($leadOld['motivation'] ?? '') === 'divorce') ? 'selected' : '' ?>>Séparation</option>
+                <option value="investissement" <?= (($leadOld['motivation'] ?? '') === 'investissement') ? 'selected' : '' ?>>Investissement</option>
+                <option value="autre" <?= (($leadOld['motivation'] ?? '') === 'autre') ? 'selected' : '' ?>>Autre</option>
               </select>
             </label>
           </div>
 
           <label for="notes">
             <span><i class="fas fa-comment-dots"></i> Informations complémentaires</span>
-            <textarea id="notes" name="notes" rows="3" placeholder="Travaux réalisés, particularités du bien, disponibilités pour la visite…"></textarea>
+            <textarea id="notes" name="notes" rows="3" placeholder="Travaux réalisés, particularités du bien, disponibilités pour la visite…"><?= e((string) ($leadOld['notes'] ?? '')) ?></textarea>
           </label>
 
           <button type="submit" class="btn btn-primary result-submit-btn">

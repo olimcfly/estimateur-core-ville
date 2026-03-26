@@ -3,6 +3,9 @@
  * Landing Page Google Ads — Mot-clé : "vendre maison bordeaux"
  */
 $formError = $form_error ?? '';
+$siteCity = (string) site('city', '');
+$siteArea = trim((string) site('region', ''));
+$siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $siteArea : $siteArea) : ($siteCity !== '' ? $siteCity : 'votre secteur');
 ?>
 
 <!-- HERO -->
@@ -11,13 +14,13 @@ $formError = $form_error ?? '';
 
     <div class="lp-hero-content">
       <p class="lp-eyebrow">
-        <i class="fas fa-home"></i> Vente immobilière à Bordeaux
+        <i class="fas fa-home"></i> Vente immobilière à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?>
       </p>
 
-      <h1>Vendez votre maison à <span class="lp-highlight">Bordeaux et sa métropole</span> au meilleur prix</h1>
+      <h1>Vendez votre maison à <span class="lp-highlight"><?= e($siteAreaLabel) ?></span> au meilleur prix</h1>
 
       <p class="lp-lead">
-        Vous envisagez de <strong>vendre votre maison à Bordeaux ou dans sa métropole</strong> ?
+        Vous envisagez de <strong>vendre votre maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> ou dans sa métropole</strong> ?
         Commencez par connaître sa valeur réelle grâce à notre estimation gratuite.
         Un expert vous accompagne ensuite pour <strong>optimiser votre prix de vente</strong>.
       </p>
@@ -26,7 +29,7 @@ $formError = $form_error ?? '';
         <li><i class="fas fa-chart-line"></i> <strong>Prix de vente optimal</strong> — basé sur le marché actuel</li>
         <li><i class="fas fa-user-tie"></i> <strong>Accompagnement expert</strong> — rappel sous 24h</li>
         <li><i class="fas fa-hand-holding-usd"></i> <strong>Estimation gratuite</strong> — sans engagement</li>
-        <li><i class="fas fa-map-marked-alt"></i> <strong>Connaissance locale</strong> — Bordeaux et sa métropole</li>
+        <li><i class="fas fa-map-marked-alt"></i> <strong>Connaissance locale</strong> — <?= e($siteAreaLabel) ?></li>
       </ul>
 
       <div class="lp-social-proof-mini">
@@ -41,7 +44,7 @@ $formError = $form_error ?? '';
     <div class="lp-form-card">
       <div class="lp-form-header">
         <h2><i class="fas fa-home"></i> Estimez votre maison</h2>
-        <p>Recevez gratuitement la valeur de votre maison à Bordeaux.</p>
+        <p>Recevez gratuitement la valeur de votre maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?>.</p>
       </div>
 
       <?php if ($formError !== ''): ?>
@@ -83,7 +86,7 @@ $formError = $form_error ?? '';
 
         <div class="lp-field">
           <label for="ville"><i class="fas fa-map-marker-alt"></i> Quartier / Ville</label>
-          <input type="text" id="ville" name="ville" value="Bordeaux" placeholder="Caudéran, Talence, Pessac...">
+          <input type="text" id="ville" name="ville" value="<?= e($siteCity !== "" ? $siteCity : "") ?>" placeholder="Caudéran, Talence, Pessac...">
         </div>
 
         <button type="submit" class="lp-btn lp-btn-primary lp-btn-full">
@@ -124,8 +127,8 @@ $formError = $form_error ?? '';
       </div>
       <div class="lp-benefit-card">
         <div class="lp-benefit-icon"><i class="fas fa-map-pin"></i></div>
-        <h3>Expertise locale Bordeaux et sa métropole</h3>
-        <p>Nous connaissons chaque quartier de Bordeaux et sa métropole : Chartrons, Caudéran, Saint-Pierre, Bastide, Mériadeck, Talence, Pessac, Mérignac...</p>
+        <h3>Expertise locale <?= e($siteAreaLabel) ?></h3>
+        <p>Nous connaissons chaque quartier de <?= e($siteAreaLabel) ?> : Chartrons, Caudéran, Saint-Pierre, Bastide, Mériadeck, Talence, Pessac, Mérignac...</p>
       </div>
     </div>
   </div>
@@ -166,7 +169,7 @@ $formError = $form_error ?? '';
   <div class="lp-container">
     <div class="lp-section-heading">
       <p class="lp-eyebrow"><i class="fas fa-users"></i> Témoignages</p>
-      <h2>Ils ont vendu leur maison à Bordeaux et sa métropole avec nous</h2>
+      <h2>Ils ont vendu leur maison à <?= e($siteAreaLabel) ?> avec nous</h2>
     </div>
 
     <div class="lp-testimonials">
@@ -198,12 +201,12 @@ $formError = $form_error ?? '';
 
     <div class="lp-faq">
       <details class="lp-faq-item" open>
-        <summary>Quel est le prix moyen d'une maison à Bordeaux ?</summary>
-        <p>Le prix moyen d'une maison à Bordeaux varie entre 3 500 et 6 000 €/m² selon le quartier. Caudéran et les Chartrons sont parmi les quartiers les plus prisés, tandis que la Bastide offre encore des opportunités intéressantes.</p>
+        <summary>Quel est le prix moyen d'une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> ?</summary>
+        <p>Le prix moyen d'une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> varie entre 3 500 et 6 000 €/m² selon le quartier. Caudéran et les Chartrons sont parmi les quartiers les plus prisés, tandis que la Bastide offre encore des opportunités intéressantes.</p>
       </details>
       <details class="lp-faq-item">
-        <summary>Combien de temps faut-il pour vendre une maison à Bordeaux ?</summary>
-        <p>En moyenne, une maison correctement estimée se vend entre 1 et 3 mois à Bordeaux. Un prix juste dès le départ est la clé pour une vente rapide.</p>
+        <summary>Combien de temps faut-il pour vendre une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> ?</summary>
+        <p>En moyenne, une maison correctement estimée se vend entre 1 et 3 mois à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?>. Un prix juste dès le départ est la clé pour une vente rapide.</p>
       </details>
       <details class="lp-faq-item">
         <summary>L'estimation engage-t-elle à vendre ?</summary>

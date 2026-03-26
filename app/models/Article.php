@@ -329,7 +329,7 @@ final class Article
             ':name' => $data['name'],
             ':description' => $data['description'] ?? '',
             ':color' => $data['color'] ?? '#8B1538',
-            ':city' => $data['city'] ?? 'Bordeaux',
+            ':city' => $data['city'] ?? (string) site('city', ''),
         ]);
 
         return (int) Database::connection()->lastInsertId();

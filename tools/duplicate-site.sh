@@ -153,6 +153,10 @@ replace_in_files "Gironde" "$CITY_DEPARTEMENT"
 # Code postal
 replace_in_files "33000" "$CITY_CP"
 
+replace_in_files "Bordeaux Métropole" "$CITY_NAME Métropole"
+replace_in_files "Quai des Chartrons" "Quai central"
+replace_in_files "Chartrons" "$CITY_NAME Centre"
+
 # Domaine
 replace_in_files "estimation-immobilier-bordeaux\.fr" "$DOMAIN"
 replace_in_files "estimation-immobilier-bordeaux" "estimation-immobilier-$CITY_SLUG"
@@ -161,6 +165,7 @@ replace_in_files "estimation-immobilier-bordeaux" "estimation-immobilier-$CITY_S
 CITY_LOWER=$(echo "$CITY_NAME" | tr '[:upper:]' '[:lower:]')
 replace_in_files "bordelais" "de $CITY_LOWER"
 replace_in_files "bordelaise" "de $CITY_LOWER"
+replace_in_files "bordelaises" "de $CITY_LOWER"
 
 log_ok "Références textuelles remplacées"
 

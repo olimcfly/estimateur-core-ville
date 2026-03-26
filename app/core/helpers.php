@@ -20,6 +20,21 @@ if (!function_exists('base_path')) {
     }
 }
 
+
+if (!function_exists('env')) {
+    function env(string $key, mixed $default = null): mixed
+    {
+        return $_ENV[$key] ?? $_SERVER[$key] ?? $default;
+    }
+}
+
+if (!function_exists('site')) {
+    function site(string $key, mixed $default = null): mixed
+    {
+        return Config::get("site.$key", $default);
+    }
+}
+
 if (!function_exists('hex_to_rgb')) {
     function hex_to_rgb(string $hex): string
     {

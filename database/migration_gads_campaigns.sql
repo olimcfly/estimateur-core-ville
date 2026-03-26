@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS gads_campaigns (
     campaign_type   ENUM('search','display','performance_max') NOT NULL DEFAULT 'search',
     status          ENUM('draft','ready','exported','active','paused','archived') NOT NULL DEFAULT 'draft',
     daily_budget    DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    target_location VARCHAR(255) NOT NULL DEFAULT 'Bordeaux',
+    target_location VARCHAR(255) NULL DEFAULT NULL,
     target_radius_km INT UNSIGNED NOT NULL DEFAULT 30,
     language        VARCHAR(10) NOT NULL DEFAULT 'fr',
     bid_strategy    ENUM('manual_cpc','maximize_clicks','maximize_conversions','target_cpa') NOT NULL DEFAULT 'maximize_clicks',

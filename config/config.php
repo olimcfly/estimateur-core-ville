@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+$siteConfig = require __DIR__ . '/site.php';
+
 return [
     'app_name' => $_ENV['APP_NAME'] ?? 'Estimateur Immobilier',
     'base_url' => $_ENV['APP_BASE_URL'] ?? '',
@@ -72,7 +74,7 @@ return [
             'accent'    => $_ENV['SITE_COLOR_ACCENT'] ?? '#D4AF37',
         ],
     ],
-    'site' => [
+    'site' => array_merge($siteConfig, [
         'colors' => [
             'bg'           => $_ENV['SITE_COLOR_BG'] ?? '#faf9f7',
             'surface'      => $_ENV['SITE_COLOR_SURFACE'] ?? '#ffffff',
@@ -89,7 +91,7 @@ return [
             'info'         => $_ENV['SITE_COLOR_INFO'] ?? '#3b82f6',
             'neutral'      => $_ENV['SITE_COLOR_NEUTRAL'] ?? '#000000',
         ],
-    ],
+    ]),
     'maintenance' => [
         'enabled'       => filter_var($_ENV['MAINTENANCE_MODE'] ?? false, FILTER_VALIDATE_BOOLEAN),
         'retry_after'   => (int) ($_ENV['MAINTENANCE_RETRY_AFTER'] ?? 3600),

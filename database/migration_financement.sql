@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS demandes_financement (
 
     -- Bien concerne
     type_bien VARCHAR(80) NULL,
-    ville VARCHAR(120) NULL DEFAULT 'Bordeaux',
+    ville VARCHAR(120) NULL DEFAULT NULL,
     quartier VARCHAR(120) NULL,
 
     -- Gestion de la demande

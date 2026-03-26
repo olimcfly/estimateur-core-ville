@@ -12,6 +12,7 @@
     $siteConfig = getSiteConfig();
     $colors = $siteConfig['colors'] ?? [];
     $rgbColors = $siteConfig['rgb_colors'] ?? [];
+    $siteCity = (string) site('city', '');
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +20,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="<?= e((string) ($colors['primary'] ?? '#8B1538')) ?>">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <title><?= e((string) ($page_title ?? 'Estimation Immobilier Bordeaux')) ?></title>
+  <title><?= e((string) ($page_title ?? ('Estimation Immobilier ' . ($siteCity !== '' ? $siteCity : '')))) ?></title>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -90,14 +91,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="lp-footer-inner">
         <div class="lp-footer-brand">
           <span class="lp-logo-icon"><i class="fas fa-home"></i></span>
-          <span class="lp-logo-text">Estimation Immobilier <strong>Bordeaux</strong></span>
+          <span class="lp-logo-text">Estimation Immobilier <strong><?= e($siteCity !== "" ? $siteCity : "") ?></strong></span>
         </div>
         <div class="lp-footer-links">
           <a href="/mentions-legales" target="_blank" rel="noopener">Mentions légales</a>
           <a href="/politique-confidentialite" target="_blank" rel="noopener">Confidentialité</a>
           <a href="/rgpd" target="_blank" rel="noopener">RGPD</a>
         </div>
-        <p class="lp-footer-copy">&copy; <?= date('Y') ?> Estimation Immobilier Bordeaux. Tous droits réservés.</p>
+        <p class="lp-footer-copy">&copy; <?= date('Y') ?> Estimation Immobilier <?= e($siteCity !== "" ? $siteCity : "") ?>. Tous droits réservés.</p>
       </div>
     </div>
   </footer>

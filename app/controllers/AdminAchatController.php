@@ -112,7 +112,7 @@ final class AdminAchatController
                 'telephone_acheteur' => trim((string) ($_POST['telephone_acheteur'] ?? '')),
                 'lead_id' => !empty($_POST['lead_id']) ? (int) $_POST['lead_id'] : null,
                 'adresse_bien' => trim((string) ($_POST['adresse_bien'] ?? '')),
-                'ville' => trim((string) ($_POST['ville'] ?? '')) ?: 'Bordeaux',
+                'ville' => trim((string) ($_POST['ville'] ?? '')) ?: (string) site('city', ''),
                 'quartier' => trim((string) ($_POST['quartier'] ?? '')),
                 'type_bien' => trim((string) ($_POST['type_bien'] ?? '')),
                 'surface_m2' => !empty($_POST['surface_m2']) ? (float) $_POST['surface_m2'] : null,

@@ -129,7 +129,7 @@ final class AdminFinancementController
                 'montant_pret_souhaite' => !empty($_POST['montant_pret_souhaite']) ? (float) $_POST['montant_pret_souhaite'] : null,
                 'duree_souhaitee_mois' => !empty($_POST['duree_souhaitee_mois']) ? (int) $_POST['duree_souhaitee_mois'] : null,
                 'type_bien' => trim((string) ($_POST['type_bien'] ?? '')),
-                'ville' => trim((string) ($_POST['ville'] ?? '')) ?: 'Bordeaux',
+                'ville' => trim((string) ($_POST['ville'] ?? '')) ?: (string) site('city', ''),
                 'quartier' => trim((string) ($_POST['quartier'] ?? '')),
                 'statut' => in_array($_POST['statut'] ?? '', self::STATUTS, true)
                     ? $_POST['statut'] : 'nouvelle',

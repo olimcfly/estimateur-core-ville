@@ -1583,6 +1583,30 @@ textarea:focus {
   color: var(--warning);
 }
 
+.form-error-banner {
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(var(--danger-rgb), 0.35);
+  background: rgba(var(--danger-rgb), 0.08);
+}
+
+.form-error-banner p {
+  margin: 0;
+  color: var(--danger);
+  font-size: 0.92rem;
+}
+
+.form-error-banner p + p {
+  margin-top: 0.35rem;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
 .result-cta-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3584,6 +3608,10 @@ main {
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr;
   }
 
   .hero-panel { 

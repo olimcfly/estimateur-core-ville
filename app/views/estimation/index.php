@@ -171,7 +171,7 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
       <h2>Estimation en ligne vs. Avis de valeur réalisé par un conseiller immobilier</h2>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+    <div class="comparison-grid">
 
       <!-- COLONNE GAUCHE: CE QUE NOUS PROPOSONS -->
       <article class="card" style="border-top: 4px solid var(--accent);">

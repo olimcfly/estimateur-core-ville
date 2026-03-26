@@ -216,61 +216,65 @@
     propertyImage.alt = `${address} - ${bedrooms} pièces`;
   });
 
-  // Mobile menu toggle
+  // Header sticky + menu mobile
   (function() {
-    const toggle = document.querySelector('.menu-toggle');
-    const nav = document.querySelector('.top-nav');
-    if (!toggle || !nav) return;
+    const header = document.querySelector('[data-header]');
+    const toggle = document.querySelector('[data-menu-toggle]');
+    const overlay = document.querySelector('[data-menu-overlay]');
+    const mobileMenu = document.querySelector('[data-mobile-menu]');
+    const mobileLinks = document.querySelectorAll('[data-menu-link]');
+
+    if (!header) return;
+
+    function setBodyOffset() {
+      document.body.style.paddingTop = header.offsetHeight + 'px';
+    }
+
+    function onScroll() {
+      header.classList.toggle('site-header--scrolled', window.scrollY > 10);
+    }
+
+    setBodyOffset();
+    onScroll();
+
+    window.addEventListener('resize', setBodyOffset);
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    if (!toggle || !overlay || !mobileMenu) return;
 
     function closeMenu() {
-      nav.classList.remove('active');
-      toggle.classList.remove('active');
+      toggle.classList.remove('is-active');
+      overlay.classList.remove('is-open');
+      mobileMenu.classList.remove('is-open');
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-label', 'Ouvrir le menu');
       document.body.style.overflow = '';
-      document.querySelectorAll('.has-dropdown').forEach(function(d) {
-        d.classList.remove('active');
-      });
+    }
+
+    function openMenu() {
+      toggle.classList.add('is-active');
+      overlay.classList.add('is-open');
+      mobileMenu.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Fermer le menu');
+      document.body.style.overflow = 'hidden';
     }
 
     toggle.addEventListener('click', function() {
-      const isOpen = nav.classList.toggle('active');
-      toggle.classList.toggle('active');
-      toggle.setAttribute('aria-expanded', String(isOpen));
-      toggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
-      document.body.style.overflow = isOpen ? 'hidden' : '';
-    });
-
-    // Mobile dropdown toggles (touch-friendly)
-    document.querySelectorAll('.has-dropdown > .nav-link').forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        if (window.innerWidth < 768) {
-          e.preventDefault();
-          e.stopPropagation();
-          var parent = this.parentElement;
-          // Close other dropdowns
-          document.querySelectorAll('.has-dropdown').forEach(function(d) {
-            if (d !== parent) d.classList.remove('active');
-          });
-          parent.classList.toggle('active');
-        }
-      });
-    });
-
-    // Close menu on resize to desktop
-    window.addEventListener('resize', function() {
-      if (window.innerWidth >= 768) {
+      if (mobileMenu.classList.contains('is-open')) {
         closeMenu();
+      } else {
+        openMenu();
       }
     });
 
-    // Close menu when clicking a dropdown sub-link or regular nav link (mobile)
-    nav.querySelectorAll('.dropdown-menu a, .nav-item:not(.has-dropdown) .nav-link, .nav-cta-mobile a').forEach(function(link) {
-      link.addEventListener('click', function() {
-        if (window.innerWidth < 768) {
-          closeMenu();
-        }
-      });
+    overlay.addEventListener('click', closeMenu);
+    mobileLinks.forEach((link) => link.addEventListener('click', closeMenu));
+
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 1024) {
+        closeMenu();
+      }
     });
   })();
 

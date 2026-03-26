@@ -519,8 +519,8 @@
   $replyTo = $replyTo ?? '';
   $replySubject = $replySubject ?? '';
   $replyBody = $replyBody ?? '';
-  $fromAddress = $fromAddress ?? 'contact@estimation-immobilier-bordeaux.fr';
-  $fromName = $fromName ?? 'Estimation Immobilier Bordeaux';
+  $fromAddress = $fromAddress ?? ('contact@' . (site('domain', '') ?: 'example.test'));
+  $fromName = $fromName ?? ('Estimation Immobilier ' . site('city', ''));
   $draftId = $draftId ?? 0;
   $draftCc = $draftCc ?? '';
   $draftScheduledAt = $draftScheduledAt ?? '';
@@ -594,7 +594,7 @@
           <div class="toolbar-dropdown">
             <button type="button" onclick="toggleDropdown(this)" title="Couleur"><i class="fas fa-palette"></i></button>
             <div class="toolbar-dropdown-content">
-              <button type="button" onclick="execCmdVal('foreColor','#8B1538');closeDropdowns()" style="color:#8B1538"><i class="fas fa-circle"></i> Bordeaux</button>
+              <button type="button" onclick="execCmdVal('foreColor','#8B1538');closeDropdowns()" style="color:#8B1538"><i class="fas fa-circle"></i> Local</button>
               <button type="button" onclick="execCmdVal('foreColor','#1a1410');closeDropdowns()"><i class="fas fa-circle"></i> Noir</button>
               <button type="button" onclick="execCmdVal('foreColor','#2563eb');closeDropdowns()" style="color:#2563eb"><i class="fas fa-circle"></i> Bleu</button>
               <button type="button" onclick="execCmdVal('foreColor','#16a34a');closeDropdowns()" style="color:#16a34a"><i class="fas fa-circle"></i> Vert</button>

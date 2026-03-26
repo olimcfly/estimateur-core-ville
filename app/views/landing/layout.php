@@ -79,7 +79,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <?php
     // Include the specific landing page content
-    $landingViewPath = __DIR__ . '/../' . ($landing_view ?? 'landing/pages/estimation-bordeaux') . '.php';
+    $landingViewPath = __DIR__ . '/../' . ($landing_view ?? 'landing/pages/estimation') . '.php';
     if (is_file($landingViewPath)) {
         include $landingViewPath;
     }

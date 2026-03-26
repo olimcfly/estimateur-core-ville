@@ -1,8 +1,18 @@
 <?php
-$page_title = 'Prix Immobilier par Quartier à Bordeaux et Métropole | Estimation Immobilière 2026';
-$meta_description = 'Découvrez les prix au m² par quartier à Bordeaux et Métropole : Chartrons, Caudéran, Bastide, Mérignac, Pessac, Talence... Guide complet avec tendances et estimation gratuite.';
+$city     = (string) site('city', 'votre ville');
+$citySlug = (string) site('city_slug', 'default');
+$page_title = 'Prix Immobilier par Quartier à ' . $city . ' et Métropole | Estimation Immobilière 2026';
+$meta_description = 'Découvrez les prix au m² par quartier à ' . $city . ' et Métropole. Guide complet avec tendances et estimation gratuite.';
 
-$quartiers = [
+// Charger les quartiers depuis le fixture de la ville
+$_quartiersFixture = base_path('database/fixtures/' . $citySlug . '/quartiers.php');
+if (!is_file($_quartiersFixture)) {
+    $_quartiersFixture = base_path('database/fixtures/default/quartiers.php');
+}
+$quartiers = is_file($_quartiersFixture) ? (array) require $_quartiersFixture : [];
+
+// Données de secours (uniquement si aucun fixture disponible)
+if (empty($quartiers)) { $quartiers = [
     // === QUARTIERS DE BORDEAUX ===
     [
         'nom' => 'Chartrons',
@@ -15,7 +25,7 @@ $quartiers = [
         'attractivite' => 'Très haute',
         'coords' => '44.8530,-0.5700',
         'tendance' => '+4.8%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Saint-Pierre',
@@ -28,7 +38,7 @@ $quartiers = [
         'attractivite' => 'Très haute',
         'coords' => '44.8378,-0.5717',
         'tendance' => '+3.5%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Saint-Michel',
@@ -41,7 +51,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8330,-0.5650',
         'tendance' => '+6.2%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Caudéran',
@@ -54,7 +64,7 @@ $quartiers = [
         'attractivite' => 'Très haute',
         'coords' => '44.8500,-0.6100',
         'tendance' => '+3.1%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Bastide',
@@ -67,7 +77,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8400,-0.5550',
         'tendance' => '+7.3%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Mériadeck',
@@ -80,7 +90,7 @@ $quartiers = [
         'attractivite' => 'Moyenne à haute',
         'coords' => '44.8370,-0.5830',
         'tendance' => '+2.8%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Nansouty – Saint-Genès',
@@ -93,7 +103,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8280,-0.5780',
         'tendance' => '+3.9%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Saint-Augustin',
@@ -106,7 +116,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8450,-0.6200',
         'tendance' => '+2.5%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Bacalan',
@@ -119,7 +129,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8620,-0.5580',
         'tendance' => '+5.6%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Bordeaux Sud – Bègles Gare',
@@ -132,7 +142,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8200,-0.5680',
         'tendance' => '+8.1%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Jardin Public – Fondaudège',
@@ -145,7 +155,7 @@ $quartiers = [
         'attractivite' => 'Très haute',
         'coords' => '44.8480,-0.5770',
         'tendance' => '+2.3%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Victoire – Capucins',
@@ -158,7 +168,7 @@ $quartiers = [
         'attractivite' => 'Haute',
         'coords' => '44.8310,-0.5730',
         'tendance' => '+4.2%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     [
         'nom' => 'Grands Hommes – Triangle d\'Or',
@@ -171,7 +181,7 @@ $quartiers = [
         'attractivite' => 'Très haute',
         'coords' => '44.8420,-0.5770',
         'tendance' => '+1.8%',
-        'zone' => 'Bordeaux',
+        'zone' => $city,
     ],
     // === COMMUNES DE LA MÉTROPOLE ===
     [
@@ -330,25 +340,27 @@ $quartiers = [
         'tendance' => '+2.7%',
         'zone' => 'Métropole',
     ],
-];
+]; } // end if(empty($quartiers)) fallback
 
-// Séparer quartiers Bordeaux et Métropole pour l'affichage
-$quartiersBordeaux = array_filter($quartiers, fn($q) => $q['zone'] === 'Bordeaux');
+// Séparer quartiers ville principale et Métropole pour l'affichage
+$quartiersVille    = array_filter($quartiers, fn($q) => $q['zone'] !== 'Métropole');
 $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métropole');
+// BC alias
+$quartiersBordeaux = $quartiersVille;
 ?>
 
 <section class="section page-hero">
   <div class="container">
     <div class="page-hero-inner">
       <p class="eyebrow">
-        <i class="fas fa-map-marked-alt"></i> Quartiers de Bordeaux
+        <i class="fas fa-map-marked-alt"></i> Quartiers de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>
       </p>
-      <h1>Prix immobilier par quartier à Bordeaux et Métropole</h1>
+      <h1>Prix immobilier par quartier à <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> et Métropole</h1>
       <p class="lead">
-        Comparez les prix au m², les tendances du marché et les atouts de chaque quartier de Bordeaux et des communes de la métropole bordelaise pour affiner votre estimation immobilière.
+        Comparez les prix au m², les tendances du marché et les atouts de chaque quartier de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> et des communes de la métropole pour affiner votre estimation immobilière.
       </p>
       <p style="font-size: var(--size-sm); color: var(--text-muted); margin-top: var(--space-2);">
-        <i class="fas fa-database"></i> Données basées sur les transactions immobilières récentes en Gironde &mdash; Sources : DVF, bases notariales, observatoires locaux.
+        <i class="fas fa-database"></i> Données basées sur les transactions immobilières récentes dans notre région &mdash; Sources : DVF, bases notariales, observatoires locaux.
       </p>
     </div>
   </div>
@@ -388,7 +400,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
 
       <iframe
         id="google-map-quartiers"
-        title="Carte des quartiers de Bordeaux"
+        title="Carte des quartiers de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>"
         src="https://maps.google.com/maps?q=44.8378,-0.5792&z=13&output=embed"
         width="100%"
         height="480"
@@ -412,9 +424,9 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
       <h2>Prix et caractéristiques clés</h2>
     </div>
 
-    <!-- Quartiers de Bordeaux -->
+    <!-- Quartiers de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> -->
     <h3 class="quartier-zone-title">
-      <i class="fas fa-city"></i> Quartiers de Bordeaux
+      <i class="fas fa-city"></i> Quartiers de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>
     </h3>
     <div class="quartier-grid">
       <?php foreach ($quartiersBordeaux as $index => $quartier): ?>
@@ -626,7 +638,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
       <p class="eyebrow">
         <i class="fas fa-image"></i> Galerie Visuelle
       </p>
-      <h2>Ambiances et paysages de Bordeaux</h2>
+      <h2>Ambiances et paysages de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?></h2>
     </div>
 
     <div class="quartier-gallery">
@@ -634,12 +646,12 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
         <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=500&q=80"
-            alt="Quartier des Chartrons à Bordeaux"
+            alt="Quartier historique de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>"
             loading="lazy"
           >
         </div>
         <figcaption>
-          <i class="fas fa-wine-glass-alt"></i> Chartrons
+          <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> Centre
         </figcaption>
       </figure>
 
@@ -647,7 +659,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
         <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?auto=format&fit=crop&w=500&q=80"
-            alt="Quartier Saint-Pierre Bordeaux"
+            alt="Centre-ville de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>"
             loading="lazy"
           >
         </div>
@@ -660,7 +672,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
         <div class="quartier-gallery-img">
           <img
             src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80"
-            alt="Quartier Saint-Michel Bordeaux"
+            alt="Quartier populaire de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>"
             loading="lazy"
           >
         </div>
@@ -738,7 +750,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
           <i class="fas fa-question-circle"></i> Quel quartier pour une famille ?
         </h3>
         <p>
-          Caudéran est le quartier familial par excellence avec ses maisons avec jardin, ses écoles réputées et son ambiance résidentielle calme. Les Chartrons offrent aussi un excellent cadre de vie.
+          Notre quartier familial par excellence avec ses maisons avec jardin, ses écoles réputées et son ambiance résidentielle calme.
         </p>
       </article>
 
@@ -765,7 +777,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
           <i class="fas fa-question-circle"></i> Les prix varient-ils beaucoup d'un quartier à l'autre ?
         </h3>
         <p>
-          Oui, de 2 800 €/m² (Lormont) à 6 200 €/m² (Triangle d'Or) en incluant la métropole. L'écart reflète la centralité, le patrimoine architectural et la demande. Bordeaux reste attractif comparé aux métropoles similaires.
+          Les prix varient significativement selon les quartiers et les communes. L'écart reflète la centralité, le patrimoine architectural et la demande locale.
         </p>
       </article>
 
@@ -789,7 +801,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Quel est le quartier le plus dynamique de Bordeaux ?",
+      "name": "Quel est le quartier le plus dynamique de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> ?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "La Bastide affiche la tendance la plus forte (+7.3%) grâce aux projets urbains majeurs (Darwin, Euratlantique). Saint-Michel suit avec +6.2% porté par la rénovation du quartier."
@@ -797,15 +809,15 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
     },
     {
       "@type": "Question",
-      "name": "Quel quartier de Bordeaux choisir pour une famille ?",
+      "name": "Quel quartier choisir pour une famille ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Caudéran est le quartier familial par excellence avec ses maisons avec jardin, ses écoles réputées et son ambiance résidentielle calme. Les Chartrons offrent aussi un excellent cadre de vie."
+        "text": "Notre quartier familial par excellence avec ses maisons avec jardin, ses écoles réputées et son ambiance résidentielle calme."
       }
     },
     {
       "@type": "Question",
-      "name": "Où trouver le meilleur investissement immobilier à Bordeaux ?",
+      "name": "Où trouver le meilleur investissement immobilier à <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> ?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "La Bastide et Saint-Michel combinent des prix encore accessibles avec de fortes perspectives de plus-value grâce aux projets de rénovation urbaine en cours."
@@ -813,7 +825,7 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
     },
     {
       "@type": "Question",
-      "name": "Quel quartier de Bordeaux offre le meilleur rapport qualité/prix ?",
+      "name": "Quel quartier offre le meilleur rapport qualité/prix ?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Mériadeck et Saint-Michel proposent des prix au m² plus abordables tout en restant très centraux. Idéal pour les primo-accédants souhaitant rester intra-rocade."
@@ -821,15 +833,15 @@ $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métrop
     },
     {
       "@type": "Question",
-      "name": "Les prix immobiliers varient-ils beaucoup d'un quartier à l'autre à Bordeaux ?",
+      "name": "Les prix immobiliers varient-ils beaucoup d'un quartier à l'autre à <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Oui, de 2 800 €/m² (Lormont) à 6 200 €/m² (Triangle d'Or). L'écart reflète la centralité, le patrimoine architectural et la demande. Bordeaux reste attractif comparé aux métropoles similaires."
+        "text": "Oui, de 2 800 €/m² (Lormont) à 6 200 €/m² (Triangle d'Or). L'écart reflète la centralité, le patrimoine architectural et la demande. <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> reste attractif comparé aux métropoles similaires."
       }
     },
     {
       "@type": "Question",
-      "name": "Comment choisir son quartier pour vendre à Bordeaux ?",
+      "name": "Comment choisir son quartier pour vendre à <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?> ?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Votre bien s'adapte à un profil de client. Utilisez notre estimation pour connaître le prix du marché, puis explorez les tendances de votre quartier pour fixer le bon prix de vente."

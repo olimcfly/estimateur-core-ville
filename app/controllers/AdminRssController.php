@@ -308,14 +308,8 @@ final class AdminRssController
             // National - Agregateurs actualites immo
             ['name' => 'Google Actu Immobilier', 'feed_url' => 'https://news.google.com/rss/search?q=immobilier+france&hl=fr&gl=FR&ceid=FR:fr', 'site_url' => 'https://news.google.com', 'category' => 'actualites-immo', 'zone' => 'national'],
 
-            // Bordeaux / Nouvelle-Aquitaine - Presse locale
-            ['name' => 'Sud Ouest Bordeaux', 'feed_url' => 'https://www.sudouest.fr/economie/immobilier/rss.xml', 'site_url' => 'https://www.sudouest.fr', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
-            ['name' => 'France Bleu Gironde', 'feed_url' => 'https://www.francebleu.fr/rss/gironde/infos.xml', 'site_url' => 'https://www.francebleu.fr', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
-            ['name' => 'Rue89 Bordeaux', 'feed_url' => 'https://rue89bordeaux.com/feed/', 'site_url' => 'https://rue89bordeaux.com', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
-            ['name' => 'Bordeaux Gazette', 'feed_url' => 'https://www.bordeaux-gazette.com/feed/', 'site_url' => 'https://www.bordeaux-gazette.com', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
-            ['name' => 'Aqui.fr', 'feed_url' => 'https://aqui.fr/feed/', 'site_url' => 'https://aqui.fr', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
-            ['name' => 'La Tribune Bordeaux', 'feed_url' => 'https://objectifaquitaine.latribune.fr/feed', 'site_url' => 'https://objectifaquitaine.latribune.fr', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
-            ['name' => 'Google Actu Immobilier Bordeaux', 'feed_url' => 'https://news.google.com/rss/search?q=immobilier+bordeaux&hl=fr&gl=FR&ceid=FR:fr', 'site_url' => 'https://news.google.com', 'category' => 'presse-locale', 'zone' => 'Bordeaux/Nouvelle-Aquitaine'],
+            // Presse locale — chargée depuis database/fixtures/{city_slug}/rss_sources.php
+            ...($this->loadLocalRssSources()),
         ];
     }
 
@@ -325,6 +319,22 @@ final class AdminRssController
         $text = preg_replace('/[^\p{L}\p{N}]+/u', '-', $text) ?? $text;
         $text = trim($text, '-');
         return $text !== '' ? $text : 'article';
+    }
+
+    /**
+     * Load city-specific local RSS sources from database/fixtures/{city_slug}/rss_sources.php.
+     * Falls back to database/fixtures/default/rss_sources.php if no city fixture exists.
+     *
+     * @return array<int, array<string, string>>
+     */
+    private function loadLocalRssSources(): array
+    {
+        $citySlug = (string) site('city_slug', 'default');
+        $fixture  = base_path('database/fixtures/' . $citySlug . '/rss_sources.php');
+        if (!is_file($fixture)) {
+            $fixture = base_path('database/fixtures/default/rss_sources.php');
+        }
+        return is_file($fixture) ? (array) require $fixture : [];
     }
 
     private function redirect(string $path): void

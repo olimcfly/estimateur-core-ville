@@ -5,7 +5,7 @@
       <span aria-current="page">Blog</span>
     </nav>
 
-    <p class="eyebrow">Blog immobilier Bordeaux</p>
+    <p class="eyebrow">Blog immobilier <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?></p>
     <h1>Conseils pour vendre votre bien au meilleur prix</h1>
     <p class="lead">Découvrez nos analyses locales, guides pratiques et stratégies de vente adaptées à votre profil vendeur.</p>
 

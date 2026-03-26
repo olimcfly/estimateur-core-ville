@@ -147,7 +147,7 @@ final class RssArticle
 
     /**
      * Find recent unused articles suitable for Actualite generation.
-     * Prioritizes local (Bordeaux) sources and filters by age.
+     * Prioritizes local sources (based on site city/region) and filters by age.
      */
     public function findForActualite(int $maxAgeDays = 7, ?string $zonePriority = 'local_first', int $limit = 30): array
     {
@@ -167,7 +167,8 @@ final class RssArticle
         $stmt = Database::connection()->prepare($sql);
         $stmt->bindValue(':wid', $this->websiteId(), \PDO::PARAM_INT);
         $stmt->bindValue(':days', $maxAgeDays, \PDO::PARAM_INT);
-        $stmt->bindValue(':local_zone', 'Bordeaux/Nouvelle-Aquitaine', \PDO::PARAM_STR);
+        $localZone = trim((string) site('city', '')) . '/' . trim((string) site('region', ''));
+        $stmt->bindValue(':local_zone', $localZone, \PDO::PARAM_STR);
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();

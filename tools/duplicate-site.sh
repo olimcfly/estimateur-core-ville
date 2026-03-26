@@ -200,6 +200,7 @@ sed -i "s|MAIL_FROM=.*|MAIL_FROM=\"contact@$DOMAIN\"|" "$ENV_FILE"
 sed -i "s|MAIL_FROM_NAME=.*|MAIL_FROM_NAME=\"Estimation Immobilier $CITY_NAME\"|" "$ENV_FILE"
 sed -i "s|MAIL_HOST=.*|MAIL_HOST=\"mail.$DOMAIN\"|" "$ENV_FILE"
 sed -i "s|MAIL_USERNAME=.*|MAIL_USERNAME=\"contact@$DOMAIN\"|" "$ENV_FILE"
+sed -i "s|SITE_CITY_FACTOR=.*|SITE_CITY_FACTOR=\"$CITY_FACTOR\"|" "$ENV_FILE"
 sed -i "s|SITE_COLOR_PRIMARY=.*|SITE_COLOR_PRIMARY=\"$COLOR_PRIMARY\"|" "$ENV_FILE"
 sed -i "s|SITE_COLOR_PRIMARY_DARK=.*|SITE_COLOR_PRIMARY_DARK=\"$COLOR_PRIMARY_DARK\"|" "$ENV_FILE"
 sed -i "s|SITE_COLOR_ACCENT=.*|SITE_COLOR_ACCENT=\"$COLOR_ACCENT\"|" "$ENV_FILE"
@@ -214,36 +215,35 @@ log_info "Mise à jour de l'EstimationService..."
 
 ESTIMATION_FILE="$DEST_DIR/app/services/EstimationService.php"
 if [ -f "$ESTIMATION_FILE" ]; then
-    # Ajouter le facteur de la ville
-    sed -i "s|str_contains(\$cityLower, 'bordeaux')|str_contains(\$cityLower, '$CITY_SLUG')|g" "$ESTIMATION_FILE"
-    sed -i "s|return 1.14;|return $CITY_FACTOR;|" "$ESTIMATION_FILE"
-    log_ok "EstimationService mis à jour"
+    # Le facteur de la ville est maintenant lu depuis SITE_CITY_FACTOR dans .env — aucune modification nécessaire.
+    log_ok "EstimationService OK (facteur lu depuis SITE_CITY_FACTOR)"
 fi
 
 # =============================================================================
-# ÉTAPE 6: Génération du fichier quartiers.php
+# ÉTAPE 6: Génération du fichier fixtures/quartiers.php
 # =============================================================================
-log_info "Génération des données de quartiers..."
+log_info "Génération des données de quartiers (fixture)..."
 
-QUARTIERS_FILE="$DEST_DIR/app/views/pages/quartiers.php"
-if [ -f "$QUARTIERS_FILE" ]; then
-    # Générer le nouveau tableau PHP des quartiers à partir du JSON
-    QUARTIERS_PHP=$(python3 << 'PYEOF'
+FIXTURE_DIR="$DEST_DIR/database/fixtures/$CITY_SLUG"
+mkdir -p "$FIXTURE_DIR"
+
+# Si cities.json contient des quartiers pour cette ville, générer le fixture
+if jq -e ".[\"$CITY_SLUG\"].quartiers" "$CITIES_FILE" > /dev/null 2>&1; then
+    python3 << PYEOF
 import json, sys
 
-with open(sys.argv[1]) as f:
+with open("$CITIES_FILE") as f:
     data = json.load(f)
 
-city = data[sys.argv[2]]
-quartiers = city["quartiers"]
+city = data["$CITY_SLUG"]
+quartiers = city.get("quartiers", [])
 
-lines = []
-lines.append("$quartiers = [")
-for i, q in enumerate(quartiers):
+lines = ["<?php", "return ["]
+for q in quartiers:
     lines.append("    [")
     lines.append(f"        'nom' => '{q['nom']}',")
     desc = q['description'].replace("'", "\\'")
-    lines.append(f"        'description' => \"{q['description']}\",")
+    lines.append(f"        'description' => '{desc}',")
     lines.append(f"        'prix_m2' => {q['prix_m2']},")
     lines.append(f"        'prix_moyen' => {q['prix_moyen']},")
     carac = "', '".join(q['caracteristiques'])
@@ -253,31 +253,23 @@ for i, q in enumerate(quartiers):
     lines.append(f"        'attractivite' => '{q['attractivite']}',")
     lines.append(f"        'coords' => '{q['coords']}',")
     lines.append(f"        'tendance' => '{q['tendance']}',")
+    zone = q.get('zone', "$CITY_NAME")
+    lines.append(f"        'zone' => '{zone}',")
     lines.append("    ],")
-
 lines.append("];")
-print("\n".join(lines))
+
+with open("$FIXTURE_DIR/quartiers.php", "w") as f:
+    f.write("\n".join(lines) + "\n")
+
+print(f"Fixture écrit: $FIXTURE_DIR/quartiers.php ({len(quartiers)} quartiers)")
 PYEOF
-    "$CITIES_FILE" "$CITY_SLUG")
-
-    # Remplacer le bloc $quartiers dans le fichier
-    # On utilise Python pour un remplacement multi-lignes fiable
-    python3 << PYEOF
-import re
-
-with open("$QUARTIERS_FILE", "r") as f:
-    content = f.read()
-
-# Remplacer le bloc \$quartiers = [...];
-new_quartiers = """$QUARTIERS_PHP"""
-pattern = r'\$quartiers\s*=\s*\[.*?\];'
-content = re.sub(pattern, new_quartiers, content, flags=re.DOTALL)
-
-with open("$QUARTIERS_FILE", "w") as f:
-    f.write(content)
-PYEOF
-
-    log_ok "Quartiers générés"
+    log_ok "Fixture quartiers généré"
+else
+    # Copier le fixture default comme base vide
+    if [ -f "$DEST_DIR/database/fixtures/default/quartiers.php" ]; then
+        cp "$DEST_DIR/database/fixtures/default/quartiers.php" "$FIXTURE_DIR/quartiers.php"
+        log_warn "Aucun quartier dans cities.json — fixture vide créé. Remplissez $FIXTURE_DIR/quartiers.php"
+    fi
 fi
 
 # =============================================================================
@@ -322,9 +314,7 @@ find "$DEST_DIR" -type f -name "*bordeaux*" ! -path "*/vendor/*" ! -path "*/.git
     fi
 done
 
-# Mettre à jour les références aux fichiers renommés dans le code
-replace_in_files "estimation-$CITY_SLUG" "estimation-$CITY_SLUG"
-replace_in_files "og-estimation-$CITY_SLUG" "og-estimation-$CITY_SLUG"
+# (Références aux fichiers déjà mises à jour dans ÉTAPE 2)
 
 log_ok "Fichiers renommés"
 
@@ -351,7 +341,7 @@ log_info "Initialisation du dépôt Git..."
 cd "$DEST_DIR"
 git init
 git add -A
-git commit -m "Initial commit: Estimation Immobilier $CITY_NAME (dupliqué depuis Bordeaux)"
+git commit -m "Initial commit: Estimation Immobilier $CITY_NAME"
 cd - > /dev/null
 
 log_ok "Dépôt Git initialisé"

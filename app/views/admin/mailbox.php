@@ -304,7 +304,7 @@
   $search = $search ?? '';
   $unreadCount = $unreadCount ?? 0;
   $error = $error ?? null;
-  $mailAddress = $mailAddress ?? 'contact@estimation-immobilier-bordeaux.fr';
+  $mailAddress = $mailAddress ?? ('contact@' . (site('domain', '') ?: 'example.test'));
   $drafts = $drafts ?? [];
   $scheduledEmails = $scheduledEmails ?? [];
   $draftCount = $draftCount ?? 0;

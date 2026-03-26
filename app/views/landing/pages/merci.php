@@ -107,7 +107,7 @@ $estimationValue = $estimation ?? 0;
         <p>En attendant, découvrez nos ressources :</p>
         <div class="lp-merci-links">
           <a href="/blog" class="lp-btn lp-btn-ghost" target="_blank">
-            <i class="fas fa-book"></i> Blog immobilier Bordeaux
+            <i class="fas fa-book"></i> Blog immobilier <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
           </a>
           <a href="/quartiers" class="lp-btn lp-btn-ghost" target="_blank">
             <i class="fas fa-map"></i> Guide des quartiers

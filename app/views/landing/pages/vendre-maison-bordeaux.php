@@ -1,6 +1,6 @@
 <?php
 /**
- * Landing Page Google Ads — Mot-clé : "vendre maison bordeaux"
+ * Landing Page Google Ads — Mot-clé : "vendre maison [ville]"
  */
 $formError = $form_error ?? '';
 $siteCity = (string) site('city', '');
@@ -36,7 +36,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
         <div class="lp-stars">
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
         </div>
-        <span>4.8/5 — Des centaines de propriétaires bordelais nous font confiance</span>
+        <span>4.8/5 — Des centaines de propriétaires nous font confiance</span>
       </div>
     </div>
 
@@ -54,7 +54,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
       <?php endif; ?>
 
       <form action="/lp/submit" method="post" class="lp-form" id="lp-form">
-        <input type="hidden" name="landing_slug" value="<?= e((string) ($landing_slug ?? 'vendre-maison-bordeaux')) ?>">
+        <input type="hidden" name="landing_slug" value="<?= e((string) ($landing_slug ?? 'vendre-maison-' . site('city_slug', 'locale'))) ?>">
         <input type="hidden" name="type_bien" value="maison">
         <input type="hidden" name="utm_source" value="">
         <input type="hidden" name="utm_medium" value="">
@@ -128,7 +128,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
       <div class="lp-benefit-card">
         <div class="lp-benefit-icon"><i class="fas fa-map-pin"></i></div>
         <h3>Expertise locale <?= e($siteAreaLabel) ?></h3>
-        <p>Nous connaissons chaque quartier de <?= e($siteAreaLabel) ?> : Chartrons, Caudéran, Saint-Pierre, Bastide, Mériadeck, Talence, Pessac, Mérignac...</p>
+        <p>Nous connaissons chaque quartier de <?= e($siteAreaLabel) ?> et ses spécificités de marché.</p>
       </div>
     </div>
   </div>
@@ -202,7 +202,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
     <div class="lp-faq">
       <details class="lp-faq-item" open>
         <summary>Quel est le prix moyen d'une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> ?</summary>
-        <p>Le prix moyen d'une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> varie entre 3 500 et 6 000 €/m² selon le quartier. Caudéran et les Chartrons sont parmi les quartiers les plus prisés, tandis que la Bastide offre encore des opportunités intéressantes.</p>
+        <p>Le prix moyen d'une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> varie selon les quartiers. Notre outil analyse les données réelles du marché local pour vous fournir une fourchette de prix fiable.</p>
       </details>
       <details class="lp-faq-item">
         <summary>Combien de temps faut-il pour vendre une maison à <?= e($siteCity !== "" ? $siteCity : "votre ville") ?> ?</summary>
@@ -224,7 +224,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
 <section class="lp-section lp-cta-section">
   <div class="lp-container lp-cta-content">
     <h2>Vendez votre maison au meilleur prix</h2>
-    <p>Commencez par une estimation gratuite. Un expert bordelais vous accompagne ensuite.</p>
+    <p>Commencez par une estimation gratuite. Un expert local vous accompagne ensuite.</p>
     <a href="#lp-form" class="lp-btn lp-btn-primary lp-btn-large">
       <i class="fas fa-home"></i> Estimer ma maison gratuitement
     </a>

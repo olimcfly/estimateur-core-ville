@@ -49,7 +49,7 @@ $cId    = $isEdit ? (int) $campaign['id'] : 0;
                     <label class="gads-label">
                         Nom de la campagne <span class="gads-required">*</span>
                         <input type="text" id="gads-name" class="gads-input" required
-                            placeholder="Ex: Estimation Bordeaux - Search"
+                            placeholder="Ex: Estimation <?= htmlspecialchars((string) site('city', 'VotreVille'), ENT_QUOTES, 'UTF-8') ?> - Search"
                             value="<?= e($campaign['name'] ?? '') ?>">
                     </label>
 
@@ -88,7 +88,7 @@ $cId    = $isEdit ? (int) $campaign['id'] : 0;
                     <label class="gads-label">
                         Zone géographique
                         <input type="text" id="gads-location" class="gads-input"
-                            placeholder="Ex: Bordeaux"
+                            placeholder="Ex: <?= htmlspecialchars((string) site('city', 'VotreVille'), ENT_QUOTES, 'UTF-8') ?>"
                             value="<?= e($campaign['target_location'] ?? $config['city']['name'] ?? '') ?>">
                     </label>
 

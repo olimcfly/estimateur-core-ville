@@ -266,7 +266,7 @@
       </div>
       <div class="form-group">
         <label for="ville">Ville</label>
-        <input type="text" id="ville" name="ville" value="<?= $val('ville', 'Bordeaux') ?>">
+        <input type="text" id="ville" name="ville" value="<?= $val('ville', site('city', '')) ?>">
       </div>
       <div class="form-group">
         <label for="quartier">Quartier</label>

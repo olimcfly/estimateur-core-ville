@@ -1,10 +1,10 @@
-<?php $page_title = 'Newsletter - Estimation Immobilière Bordeaux | Conseils & Tendances'; ?>
+<?php $page_title = 'Newsletter - Estimation Immobilière ' . site('city', '') . ' | Conseils & Tendances'; ?>
 
 <section class="section page-hero">
   <div class="container">
     <div class="page-hero-inner card">
       <p class="eyebrow"><i class="fas fa-envelope-open-text"></i> Newsletter</p>
-      <h1>Recevez nos conseils immobiliers à Bordeaux</h1>
+      <h1>Recevez nos conseils immobiliers à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?></h1>
       <p class="lead">
         Chaque semaine, profitez d'analyses du marché local, de conseils de vente et d'alertes sur les tendances des prix.
       </p>
@@ -18,7 +18,7 @@
       <h2><i class="fas fa-paper-plane"></i> Inscription rapide</h2>
       <p>
         Laissez votre email pour recevoir notre newsletter. Aucune publicité inutile : uniquement du contenu utile
-        pour mieux estimer, vendre ou acheter à Bordeaux.
+        pour mieux estimer, vendre ou acheter à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?>.
       </p>
 
       <?php if (isset($success_message)): ?>

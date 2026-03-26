@@ -78,15 +78,16 @@ final class ImageGeneratorService
 
     public function generateSeoPrompt(string $type, string $quartier = '', string $style = ''): string
     {
-        $quartier = $quartier !== '' ? $quartier : 'Bordeaux centre';
+        $siteCity = (string) site('city', 'locale');
+        $quartier = $quartier !== '' ? $quartier : ($siteCity . ' centre');
         $style = $style !== '' ? $style : 'moderne et lumineux';
 
         $prompts = [
-            'estimation' => "Photo professionnelle immobilière d'une belle propriété {$style} dans le quartier {$quartier} à Bordeaux. Vue extérieure avec façade en pierre bordelaise typique, lumière naturelle dorée du soleil couchant, végétation soignée. Style éditorial haut de gamme pour agence immobilière.",
-            'interieur' => "Photo d'intérieur immobilier professionnel, salon {$style} dans un appartement bordelais haussmannien, parquet en point de Hongrie, hauts plafonds avec moulures, grandes fenêtres lumineuses. Décoration épurée et chaleureuse. Photographie immobilière éditoriale.",
-            'quartier' => "Vue panoramique du quartier {$quartier} à Bordeaux, architecture typique en pierre blonde, rues piétonnes animées, terrasses de cafés. Ambiance chaleureuse et authentique du Sud-Ouest. Photographie urbaine professionnelle.",
-            'blog' => "Illustration éditoriale pour blog immobilier, concept de l'estimation immobilière à Bordeaux. Maison bordelaise en pierre avec une loupe ou des éléments graphiques subtils représentant l'analyse de marché. Style professionnel et moderne.",
-            'cta' => "Image d'appel à l'action pour site immobilier, couple souriant devant une belle maison bordelaise {$style}, ambiance positive et professionnelle. Espace pour superposition de texte. Photographie lifestyle immobilier.",
+            'estimation' => "Photo professionnelle immobilière d'une belle propriété {$style} dans le quartier {$quartier} à {$siteCity}. Vue extérieure avec façade typique, lumière naturelle dorée du soleil couchant, végétation soignée. Style éditorial haut de gamme pour agence immobilière.",
+            'interieur' => "Photo d'intérieur immobilier professionnel, salon {$style} dans un appartement {$siteCity}, parquet élégant, hauts plafonds, grandes fenêtres lumineuses. Décoration épurée et chaleureuse. Photographie immobilière éditoriale.",
+            'quartier' => "Vue panoramique du quartier {$quartier} à {$siteCity}, architecture locale typique, rues piétonnes animées, terrasses de cafés. Ambiance chaleureuse et authentique. Photographie urbaine professionnelle.",
+            'blog' => "Illustration éditoriale pour blog immobilier, concept de l'estimation immobilière à {$siteCity}. Maison locale avec une loupe ou des éléments graphiques subtils représentant l'analyse de marché. Style professionnel et moderne.",
+            'cta' => "Image d'appel à l'action pour site immobilier, couple souriant devant une belle maison {$style} à {$siteCity}, ambiance positive et professionnelle. Espace pour superposition de texte. Photographie lifestyle immobilier.",
         ];
 
         return $prompts[$type] ?? $prompts['blog'];

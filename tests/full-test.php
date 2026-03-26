@@ -14,17 +14,18 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
-$hosts = [
+$siteDomain = $_ENV['SITE_DOMAIN'] ?? '';
+$hosts = array_filter([
     'mail1.o2switch.net',
-    'mail.estimation-immobilier-bordeaux.fr',
-    'estimation-immobilier-bordeaux.fr',
-];
+    $siteDomain !== '' ? ('mail.' . $siteDomain) : null,
+    $siteDomain !== '' ? $siteDomain : null,
+]);
 
 $ports = [465, 587];
 
 $smtpUser = $_ENV['MAIL_SMTP_USER'] ?? $_ENV['MAIL_USERNAME'] ?? '';
 $smtpPass = $_ENV['MAIL_SMTP_PASS'] ?? $_ENV['MAIL_PASSWORD'] ?? '';
-$mailFrom = $_ENV['MAIL_FROM_ADDRESS'] ?? $_ENV['MAIL_FROM'] ?? 'contact@estimation-immobilier-bordeaux.fr';
+$mailFrom = $_ENV['MAIL_FROM_ADDRESS'] ?? $_ENV['MAIL_FROM'] ?? ('contact@' . ($siteDomain ?: 'example.test'));
 $mailTo   = $_ENV['MAIL_TEST_TO'] ?? $mailFrom;
 
 // Load .env if dotenv is available

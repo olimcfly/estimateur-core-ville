@@ -300,7 +300,7 @@
           <i class="fas fa-robot"></i> AI
         </button>
       </label>
-      <textarea name="signature" id="field-signature" style="min-height:80px;" placeholder="Cordialement,&#10;Votre &eacute;quipe Estimation Immobilier Bordeaux"><?= htmlspecialchars($template['signature'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+      <textarea name="signature" id="field-signature" style="min-height:80px;" placeholder="Cordialement,&#10;Votre &eacute;quipe Estimation Immobilier <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($template['signature'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
     </div>
 
     <div>

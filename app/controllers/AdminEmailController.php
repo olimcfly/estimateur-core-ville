@@ -203,7 +203,7 @@ final class AdminEmailController
         $prompts = [
             'subject' => "G&eacute;n&egrave;re un objet d'email professionnel et engageant pour un email immobilier. Contexte: {$context}. Valeur actuelle: {$currentValue}. R&eacute;ponds uniquement avec l'objet, sans guillemets.",
             'body' => "G&eacute;n&egrave;re le contenu HTML d'un email professionnel immobilier. Contexte: {$context}. Contenu actuel: {$currentValue}. Utilise un ton professionnel mais chaleureux. Inclus des balises HTML basiques (<p>, <strong>, <br>). Ne g&eacute;n&egrave;re pas la signature.",
-            'signature' => "G&eacute;n&egrave;re une signature email professionnelle pour un agent immobilier &agrave; Bordeaux. Contexte: {$context}. Signature actuelle: {$currentValue}. Format texte simple avec retours &agrave; la ligne.",
+            'signature' => "G&eacute;n&egrave;re une signature email professionnelle pour un agent immobilier. Contexte: {$context}. Signature actuelle: {$currentValue}. Format texte simple avec retours &agrave; la ligne.",
         ];
 
         $prompt = $prompts[$field] ?? "Am&eacute;liore ce texte pour un email immobilier professionnel: {$currentValue}";
@@ -223,7 +223,7 @@ final class AdminEmailController
                 CURLOPT_POSTFIELDS => json_encode([
                     'model' => $model,
                     'messages' => [
-                        ['role' => 'system', 'content' => 'Tu es un assistant sp&eacute;cialis&eacute; en r&eacute;daction d\'emails immobiliers professionnels pour le march&eacute; bordelais.'],
+                        ['role' => 'system', 'content' => 'Tu es un assistant sp&eacute;cialis&eacute; en r&eacute;daction d\'emails immobiliers professionnels pour le march&eacute; local.'],
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'temperature' => 0.7,

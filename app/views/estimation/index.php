@@ -40,10 +40,10 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
         <p style="margin: 0; font-style: italic; color: var(--text); line-height: 1.6;">
-          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux !"
+          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre !"
         </p>
         <p style="margin: 0.8rem 0 0; font-size: 0.85rem; color: var(--muted); font-weight: 600;">
-          — Marie D. • Bordeaux Chartrons
+          — Marie D. • <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
         </p>
       </div>
 
@@ -111,7 +111,7 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
             type="text"
             id="ville"
             name="ville"
-            placeholder="Bordeaux, Talence, Mérignac..."
+            placeholder="<?= htmlspecialchars((string) site('city', 'Votre ville'), ENT_QUOTES, 'UTF-8') ?>..."
             required
             autocomplete="off"
           >
@@ -139,7 +139,7 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
           </li>
           <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
             <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
-            <span><strong>Données réelles</strong> — 5000+ transactions en Gironde</span>
+            <span><strong>Données réelles</strong> — 5000+ transactions locales</span>
           </li>
           <li style="display: flex; align-items: center; gap: 0.75rem;">
             <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>

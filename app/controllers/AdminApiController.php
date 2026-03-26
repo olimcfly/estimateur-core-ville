@@ -444,7 +444,7 @@ final class AdminApiController
             return ['success' => false, 'error' => 'Cle API non configuree (GOOGLE_MAPS_API_KEY)'];
         }
 
-        $url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode('Bordeaux, France') . '&key=' . urlencode($apiKey);
+        $url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode(site('city', 'Paris') . ', France') . '&key=' . urlencode($apiKey);
 
         $start = microtime(true);
         $result = $this->curlGet($url);
@@ -460,7 +460,7 @@ final class AdminApiController
             return ['success' => false, 'error' => $errorMsg, 'latency_ms' => $latency];
         }
 
-        $address = $data['results'][0]['formatted_address'] ?? 'Bordeaux';
+        $address = $data['results'][0]['formatted_address'] ?? site('city', 'locale');
 
         return [
             'success' => true,
@@ -539,7 +539,8 @@ final class AdminApiController
 
     private function testDvf(): array
     {
-        $url = 'https://api.cquest.org/dvf?code_postal=33000&nature_mutation=Vente&limit=1';
+        $siteZip = site('zip', '') ?: '75001';
+        $url = 'https://api.cquest.org/dvf?code_postal=' . $siteZip . '&nature_mutation=Vente&limit=1';
 
         $start = microtime(true);
         $result = $this->curlGet($url);
@@ -560,7 +561,7 @@ final class AdminApiController
         return [
             'success' => true,
             'message' => 'API fonctionnelle',
-            'response' => 'DVF accessible - ' . ($count ?? count($features)) . ' transaction(s) trouvee(s) pour 33000',
+            'response' => 'DVF accessible - ' . ($count ?? count($features)) . ' transaction(s) trouvee(s) pour ' . $siteZip,
             'latency_ms' => $latency,
         ];
     }

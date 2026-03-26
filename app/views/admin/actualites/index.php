@@ -58,7 +58,7 @@
         <?php foreach ($topArticles as $rssArt): ?>
           <div class="rss-preview-item">
             <div class="rss-preview-meta">
-              <?php if (($rssArt['source_zone'] ?? '') === 'Bordeaux/Nouvelle-Aquitaine'): ?>
+              <?php if (($rssArt['source_zone'] ?? '') === site('city', '') . '/' . site('region', '')): ?>
                 <span class="zone-badge zone-local"><i class="fas fa-map-marker-alt"></i> Local</span>
               <?php else: ?>
                 <span class="zone-badge zone-national"><i class="fas fa-globe"></i> National</span>
@@ -104,7 +104,7 @@
           <div class="admin-form-group">
             <label class="admin-label">Priorite geographique</label>
             <select name="zone_priority" class="admin-input">
-              <option value="local_first" <?= ($aiConfig['zone_priority'] ?? '') === 'local_first' ? 'selected' : '' ?>>Local d'abord (Bordeaux prioritaire)</option>
+              <option value="local_first" <?= ($aiConfig['zone_priority'] ?? '') === 'local_first' ? 'selected' : '' ?>>Local d'abord</option>
               <option value="local_only" <?= ($aiConfig['zone_priority'] ?? '') === 'local_only' ? 'selected' : '' ?>>Local uniquement</option>
               <option value="mixed" <?= ($aiConfig['zone_priority'] ?? '') === 'mixed' ? 'selected' : '' ?>>Mixte (local + national)</option>
             </select>
@@ -136,7 +136,7 @@
           </div>
           <div class="admin-form-group" style="grid-column: 1/-1;">
             <label class="admin-label">Mots-cles requis pour la pertinence (separes par des virgules)</label>
-            <input type="text" name="require_keywords" class="admin-input" value="<?= e((string) ($aiConfig['require_keywords'] ?? '')) ?>" placeholder="bordeaux,gironde,nouvelle-aquitaine...">
+            <input type="text" name="require_keywords" class="admin-input" value="<?= e((string) ($aiConfig['require_keywords'] ?? '')) ?>" >
             <small class="admin-help">Les articles contenant ces mots auront un score de pertinence plus eleve.</small>
           </div>
         </div>
@@ -178,7 +178,7 @@
           </div>
           <div class="admin-form-group" style="grid-column: 1/-1;">
             <label class="admin-label">Mots-cles SEO cibles (separes par des virgules)</label>
-            <input type="text" name="seo_focus" class="admin-input" value="<?= e((string) ($aiConfig['seo_focus'] ?? '')) ?>" placeholder="estimation immobilière bordeaux,prix immobilier bordeaux...">
+            <input type="text" name="seo_focus" class="admin-input" value="<?= e((string) ($aiConfig['seo_focus'] ?? '')) ?>" placeholder="estimation immobiliere locale,prix immobilier...">
           </div>
           <div class="admin-form-group" style="grid-column: 1/-1;">
             <label class="admin-label">Consigne d'angle local (instructions pour l'IA)</label>
@@ -222,7 +222,7 @@
     <p class="admin-help" style="margin-bottom: 1rem;">Pipeline alternatif : recherche via Perplexity + generation OpenAI. Utile si les flux RSS ne contiennent pas assez de contenu.</p>
     <form method="post" action="/admin/actualites/generate" class="admin-form-inline" id="form-generate">
       <div class="admin-form-group" style="flex:1;">
-        <input type="text" name="query" class="admin-input" placeholder="Theme de recherche (optionnel, ex: prix immobilier Bordeaux 2026)" value="">
+        <input type="text" name="query" class="admin-input" placeholder="Theme de recherche (optionnel, ex: prix immobilier local 2026)" value="">
       </div>
       <button type="submit" class="admin-btn admin-btn-secondary" id="btn-generate">
         <i class="fas fa-magic"></i> Generer via Perplexity

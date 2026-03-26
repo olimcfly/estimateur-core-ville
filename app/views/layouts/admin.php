@@ -26,7 +26,7 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title><?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Admin - Estimation Immobilier Bordeaux' ?></title>
+  <title><?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Admin - Estimation Immobilier ' . htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?></title>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -673,7 +673,7 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
   <a href="/admin" class="admin-sidebar-brand">
     <span class="admin-sidebar-brand-icon"><i class="fas fa-home"></i></span>
     <span class="admin-sidebar-brand-text">
-      Estimation Bordeaux
+      Estimation <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
       <small>Administration</small>
     </span>
   </a>

@@ -33,7 +33,7 @@ foreach ($articles as $article) {
 // Collect unique cities for the filter
 $cities = [];
 foreach ($silos as $silo) {
-    $city = (string) ($silo['city'] ?? 'Bordeaux');
+    $city = (string) ($silo['city'] ?? site('city', ''));
     if ($city !== '' && !in_array($city, $cities, true)) {
         $cities[] = $city;
     }
@@ -192,7 +192,7 @@ $gmbByArticle = $gmbByArticle ?? [];
                     </label>
                 </div>
                 <label>Sujet de l'article
-                    <input type="text" name="topic" placeholder="Ex: Est-ce le bon moment pour vendre à Bordeaux ?" required>
+                    <input type="text" name="topic" placeholder="Ex: Est-ce le bon moment pour vendre ici ?" required>
                 </label>
                 <button type="submit" class="btn">Générer avec IA</button>
             </form>
@@ -344,7 +344,7 @@ $gmbByArticle = $gmbByArticle ?? [];
     <?php
     $silo = $siloIndex[$siloId];
     $siloColor = e((string) $silo['color']);
-    $siloCity = e((string) ($silo['city'] ?? 'Bordeaux'));
+    $siloCity = e((string) ($silo['city'] ?? site('city', '')));
     $siloArticleCount = count($grouped['pilier']) + count($grouped['satellite']) + count($grouped['standalone']);
     if ($siloArticleCount === 0) continue;
     ?>

@@ -835,8 +835,8 @@ final class AdminDiagnosticController
 
             // ===== LANDING PAGES =====
             'lp_estimation' => [
-                'label' => 'LP Estimation Bordeaux',
-                'route' => '/lp/estimation-bordeaux',
+                'label' => 'LP Estimation ' . site('city', ''),
+                'route' => '/lp/estimation-' . site('city_slug', 'locale'),
                 'icon' => 'fa-bullseye',
                 'category' => 'Landing Pages',
                 'tables' => [
@@ -848,7 +848,7 @@ final class AdminDiagnosticController
             ],
             'lp_vendre' => [
                 'label' => 'LP Vendre Maison',
-                'route' => '/lp/vendre-maison-bordeaux',
+                'route' => '/lp/vendre-maison-' . site('city_slug', 'locale'),
                 'icon' => 'fa-bullseye',
                 'category' => 'Landing Pages',
                 'tables' => [

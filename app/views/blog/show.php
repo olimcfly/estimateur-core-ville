@@ -23,7 +23,8 @@ $datePublished = $publishedAt ?? $createdAt;
 $dateModified = $createdAt ?? $publishedAt;
 
 $baseUrl = App\Core\Config::get('app.base_url', '');
-$siteBase = $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr';
+$siteDomain = site('domain', '');
+$siteBase = $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : ($siteDomain !== '' ? 'https://' . $siteDomain : '');
 $articlePath = '/blog/' . rawurlencode((string) $article['slug']);
 $articleUrl = $siteBase . $articlePath;
 
@@ -36,12 +37,12 @@ $jsonLd = [
     'dateModified' => $dateModified,
     'author' => [
         '@type' => 'Organization',
-        'name' => 'Estimation Immobiliere Bordeaux',
+        'name' => 'Estimation Immobiliere ' . site('city', ''),
         'url' => $siteBase,
     ],
     'publisher' => [
         '@type' => 'Organization',
-        'name' => 'Estimation Immobiliere Bordeaux',
+        'name' => 'Estimation Immobiliere ' . site('city', ''),
         'url' => $siteBase,
         'logo' => [
             '@type' => 'ImageObject',
@@ -53,7 +54,7 @@ $jsonLd = [
         '@id' => $articleUrl,
     ],
     'url' => $articleUrl,
-    'image' => !empty($article['og_image']) ? (string) $article['og_image'] : $siteBase . '/assets/images/og-estimation-bordeaux.png',
+    'image' => !empty($article['og_image']) ? (string) $article['og_image'] : $siteBase . '/assets/images/og-estimation.png',
     'wordCount' => !empty($article['word_count']) ? (int) $article['word_count'] : null,
     'inLanguage' => 'fr-FR',
 ];
@@ -122,7 +123,7 @@ $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JS
 
     <section class="card cta-card">
       <h2>Besoin d'un prix de vente realiste et defendable ?</h2>
-      <p class="muted">Profitez de notre simulateur pour obtenir une fourchette fiable adaptee a Bordeaux.</p>
+      <p class="muted">Profitez de notre simulateur pour obtenir une fourchette fiable adaptée à votre marché local.</p>
       <a href="/estimation" class="btn">Demander mon estimation</a>
     </section>
   </div>

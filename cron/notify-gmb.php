@@ -413,7 +413,7 @@ function buildNotificationEmail(array $pub, ?string $gmbProfileUrl, string $base
                     <tr>
                         <td style="background-color: #1a237e; padding: 25px 30px; border-radius: 10px 10px 0 0; text-align: center;">
                             <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: bold;">
-                                Estimation Bordeaux
+                                Estimation <?= site("city", "") ?>
                             </h1>
                             <p style="margin: 5px 0 0; color: #B3C6FF; font-size: 13px;">
                                 Notification de publication GMB
@@ -470,7 +470,7 @@ function buildNotificationEmail(array $pub, ?string $gmbProfileUrl, string $base
                         <td style="background-color: #f8f9fa; padding: 20px 30px; border-radius: 0 0 10px 10px;
                                    text-align: center; border-top: 1px solid #e0e0e0;">
                             <p style="margin: 0; color: #999; font-size: 12px; line-height: 1.4;">
-                                Ce rappel a été généré automatiquement par votre plateforme Estimation Bordeaux.
+                                Ce rappel a été généré automatiquement par votre plateforme Estimation <?= site("city", "") ?>.
                             </p>
                         </td>
                     </tr>
@@ -506,7 +506,7 @@ function buildExpiredWarningEmail(int $count, string $baseUrl): string
                     <tr>
                         <td style="background-color: #E65100; padding: 25px 30px; border-radius: 10px 10px 0 0; text-align: center;">
                             <h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: bold;">
-                                ⚠️ Estimation Bordeaux
+                                ⚠️ Estimation <?= site("city", "") ?>
                             </h1>
                         </td>
                     </tr>
@@ -536,7 +536,7 @@ function buildExpiredWarningEmail(int $count, string $baseUrl): string
                         <td style="background-color: #f8f9fa; padding: 20px 30px; border-radius: 0 0 10px 10px;
                                    text-align: center; border-top: 1px solid #e0e0e0;">
                             <p style="margin: 0; color: #999; font-size: 12px;">
-                                Ce rappel a été généré automatiquement par votre plateforme Estimation Bordeaux.
+                                Ce rappel a été généré automatiquement par votre plateforme Estimation <?= site("city", "") ?>.
                             </p>
                         </td>
                     </tr>

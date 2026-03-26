@@ -182,7 +182,7 @@
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux et sa métropole - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? ('Estimation immobilier ' . site('city', 'local') . ' — Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché local, résultat en 60 secondes.')), ENT_QUOTES, 'UTF-8') ?>">
   <meta name="theme-color" content="<?= e((string) ($colors['primary'] ?? '#8B1538')) ?>">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">

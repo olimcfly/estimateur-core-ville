@@ -1,6 +1,6 @@
 <?php
 /**
- * Landing Page Google Ads — Mot-clé : "estimation immobilière bordeaux"
+ * Landing Page Google Ads — Mot-clé : "estimation immobilière [ville]"
  *
  * Structure optimisée Quality Score :
  *  1. Hero + Formulaire (above the fold)
@@ -32,7 +32,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
 
       <p class="lp-lead">
         Obtenez une <strong>fourchette de prix fiable</strong> pour votre bien immobilier à <?= e((string) site('city', '')) ?> et sa métropole.
-        Basé sur les données réelles du marché bordelais. <strong>100% gratuit</strong>, sans engagement.
+        Basé sur les données réelles du marché local. <strong>100% gratuit</strong>, sans engagement.
       </p>
 
       <ul class="lp-trust-list">
@@ -65,7 +65,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
       <?php endif; ?>
 
       <form action="/lp/submit" method="post" class="lp-form" id="lp-form">
-        <input type="hidden" name="landing_slug" value="<?= e((string) ($landing_slug ?? 'estimation-bordeaux')) ?>">
+        <input type="hidden" name="landing_slug" value="<?= e((string) ($landing_slug ?? 'estimation-' . site('city_slug', 'locale'))) ?>">
         <input type="hidden" name="utm_source" value="">
         <input type="hidden" name="utm_medium" value="">
         <input type="hidden" name="utm_campaign" value="">
@@ -107,7 +107,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
 
         <div class="lp-field">
           <label for="ville"><i class="fas fa-map-marker-alt"></i> Ville / Quartier</label>
-          <input type="text" id="ville" name="ville" value="<?= e((string) site('city', '')) ?>" placeholder="<?= e((string) site('city', '')) ?>, Chartrons, Caudéran...">
+          <input type="text" id="ville" name="ville" value="<?= e((string) site('city', '')) ?>" placeholder="<?= e((string) site('city', '')) ?>...">
         </div>
 
         <button type="submit" class="lp-btn lp-btn-primary lp-btn-full">
@@ -137,7 +137,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
       <div class="lp-benefit-card">
         <div class="lp-benefit-icon"><i class="fas fa-database"></i></div>
         <h3>Données du marché réel</h3>
-        <p>Notre algorithme analyse les transactions récentes et les prix au m² actuels de chaque quartier bordelais.</p>
+        <p>Notre algorithme analyse les transactions récentes et les prix au m² actuels du marché local.</p>
       </div>
       <div class="lp-benefit-card">
         <div class="lp-benefit-icon"><i class="fas fa-clock"></i></div>
@@ -178,7 +178,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
       <div class="lp-step">
         <div class="lp-step-number">2</div>
         <h3>Recevez votre estimation</h3>
-        <p>Notre algorithme calcule une fourchette de prix basée sur les données réelles du marché bordelais.</p>
+        <p>Notre algorithme calcule une fourchette de prix basée sur les données réelles du marché local.</p>
       </div>
       <div class="lp-step-arrow"><i class="fas fa-chevron-right"></i></div>
       <div class="lp-step">
@@ -227,7 +227,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
         <p class="lp-testimonial-text">"L'estimation était très proche du prix final de vente. Le conseiller m'a rappelé le jour même et m'a accompagné jusqu'à la signature. Très professionnel."</p>
-        <p class="lp-testimonial-author"><strong>Marie D.</strong> — <?= e((string) site('city', '')) ?> Chartrons</p>
+        <p class="lp-testimonial-author"><strong>Marie D.</strong> — <?= e((string) site('city', '')) ?></p>
       </div>
       <div class="lp-testimonial">
         <div class="lp-testimonial-stars">

@@ -1,3 +1,8 @@
+<?php
+$_city     = htmlspecialchars((string) site('city', 'VotreVille'), ENT_QUOTES, 'UTF-8');
+$_citySlug = htmlspecialchars((string) site('city_slug', 'locale'), ENT_QUOTES, 'UTF-8');
+$_domain   = htmlspecialchars((string) site('domain', 'example.fr'), ENT_QUOTES, 'UTF-8');
+?>
 <link rel="stylesheet" href="/assets/css/guide.css">
 
 <div class="guide-container">
@@ -57,21 +62,21 @@
       </thead>
       <tbody>
         <tr>
-          <td><strong>Estimation Bordeaux</strong></td>
-          <td><code>/lp/estimation-bordeaux</code></td>
-          <td>estimation immobilière bordeaux, estimer bien bordeaux, prix immobilier bordeaux</td>
+          <td><strong>Estimation <?= $_city ?></strong></td>
+          <td><code>/lp/estimation-<?= $_citySlug ?></code></td>
+          <td>estimation immobilière <?= $_city ?>, estimer bien <?= $_city ?>, prix immobilier <?= $_city ?></td>
           <td>Capture lead estimation</td>
         </tr>
         <tr>
           <td><strong>Vendre Maison</strong></td>
-          <td><code>/lp/vendre-maison-bordeaux</code></td>
-          <td>vendre maison bordeaux, vente maison bordeaux, mettre en vente maison bordeaux</td>
+          <td><code>/lp/vendre-maison-<?= $_citySlug ?></code></td>
+          <td>vendre maison <?= $_city ?>, vente maison <?= $_city ?>, mettre en vente maison <?= $_city ?></td>
           <td>Capture lead vendeur maison</td>
         </tr>
         <tr>
           <td><strong>Avis de Valeur</strong></td>
           <td><code>/lp/avis-valeur-gratuit</code></td>
-          <td>avis de valeur gratuit, avis de valeur bordeaux, estimation gratuite bordeaux</td>
+          <td>avis de valeur gratuit, avis de valeur <?= $_city ?>, estimation gratuite <?= $_city ?></td>
           <td>Capture lead avis valeur</td>
         </tr>
       </tbody>
@@ -117,12 +122,12 @@
         <tr>
           <td><code>utm_campaign</code></td>
           <td>Nom de la campagne Google Ads</td>
-          <td><code>estimation-bordeaux-2024</code></td>
+          <td><code>estimation-<?= $_citySlug ?>-2024</code></td>
         </tr>
         <tr>
           <td><code>utm_term</code></td>
           <td>Mot-clé qui a déclenché l'annonce</td>
-          <td><code>estimation+immobiliere+bordeaux</code></td>
+          <td><code>estimation+immobiliere+<?= $_citySlug ?></code></td>
         </tr>
         <tr>
           <td><code>utm_content</code></td>
@@ -139,11 +144,11 @@
 
     <h4>Exemple d'URL complète avec UTM :</h4>
     <div class="guide-code">
-<span class="string">https://estimation-immobilier-bordeaux.fr/lp/estimation-bordeaux</span>
+<span class="string">https://<?= $_domain ?>/lp/estimation-<?= $_citySlug ?></span>
   <span class="tag">?utm_source=</span><span class="string">google</span>
   <span class="tag">&amp;utm_medium=</span><span class="string">cpc</span>
-  <span class="tag">&amp;utm_campaign=</span><span class="string">estimation-bordeaux-2024</span>
-  <span class="tag">&amp;utm_term=</span><span class="string">estimation+immobiliere+bordeaux</span>
+  <span class="tag">&amp;utm_campaign=</span><span class="string">estimation-<?= $_citySlug ?>-2024</span>
+  <span class="tag">&amp;utm_term=</span><span class="string">estimation+immobiliere+<?= $_citySlug ?></span>
   <span class="tag">&amp;utm_content=</span><span class="string">annonce-variante-a</span>
     </div>
 
@@ -182,14 +187,14 @@
       Dans le champ "URL finale" de chaque annonce, utilisez l'URL de la landing page correspondante :
     </p>
     <div class="guide-code">
-<span class="comment">-- Campagne "Estimation Bordeaux" --</span>
-<span class="string">https://estimation-immobilier-bordeaux.fr/lp/estimation-bordeaux</span>
+<span class="comment">-- Campagne "Estimation <?= $_city ?>" --</span>
+<span class="string">https://<?= $_domain ?>/lp/estimation-<?= $_citySlug ?></span>
 
 <span class="comment">-- Campagne "Vendre Maison" --</span>
-<span class="string">https://estimation-immobilier-bordeaux.fr/lp/vendre-maison-bordeaux</span>
+<span class="string">https://<?= $_domain ?>/lp/vendre-maison-<?= $_citySlug ?></span>
 
 <span class="comment">-- Campagne "Avis de Valeur" --</span>
-<span class="string">https://estimation-immobilier-bordeaux.fr/lp/avis-valeur-gratuit</span>
+<span class="string">https://<?= $_domain ?>/lp/avis-valeur-gratuit</span>
     </div>
 
     <h4><span class="guide-step-badge">4</span> Configurer le suivi de conversion</h4>
@@ -331,44 +336,44 @@
     </p>
 
     <div class="guide-ad-card">
-      <h4><span class="guide-step-badge">1</span> Campagne : Estimation Immobilière Bordeaux</h4>
+      <h4><span class="guide-step-badge">1</span> Campagne : Estimation Immobilière <?= $_city ?></h4>
       <div class="guide-code">
-<span class="keyword">Titre 1 :</span> <span class="string">Estimation Immobilière Bordeaux</span>
+<span class="keyword">Titre 1 :</span> <span class="string">Estimation Immobilière <?= $_city ?></span>
 <span class="keyword">Titre 2 :</span> <span class="string">Gratuite en 60 Secondes</span>
 <span class="keyword">Titre 3 :</span> <span class="string">Résultat Immédiat</span>
 
-<span class="keyword">Description 1 :</span> <span class="string">Obtenez une estimation gratuite de votre bien à Bordeaux. Données du marché réel, résultat en 60 secondes. Sans engagement.</span>
-<span class="keyword">Description 2 :</span> <span class="string">Plus de 2 400 estimations réalisées à Bordeaux. Note 4.8/5. Un expert vous rappelle sous 24h.</span>
+<span class="keyword">Description 1 :</span> <span class="string">Obtenez une estimation gratuite de votre bien à <?= $_city ?>. Données du marché réel, résultat en 60 secondes. Sans engagement.</span>
+<span class="keyword">Description 2 :</span> <span class="string">Plus de 2 400 estimations réalisées à <?= $_city ?>. Note 4.8/5. Un expert vous rappelle sous 24h.</span>
 
-<span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/estimation-bordeaux</span>
+<span class="keyword">URL finale :</span> <span class="string">https://<?= $_domain ?>/lp/estimation-<?= $_citySlug ?></span>
       </div>
     </div>
 
     <div class="guide-ad-card">
-      <h4><span class="guide-step-badge">2</span> Campagne : Vendre Maison Bordeaux</h4>
+      <h4><span class="guide-step-badge">2</span> Campagne : Vendre Maison <?= $_city ?></h4>
       <div class="guide-code">
-<span class="keyword">Titre 1 :</span> <span class="string">Vendez Votre Maison à Bordeaux</span>
+<span class="keyword">Titre 1 :</span> <span class="string">Vendez Votre Maison à <?= $_city ?></span>
 <span class="keyword">Titre 2 :</span> <span class="string">Estimation Gratuite du Prix</span>
 <span class="keyword">Titre 3 :</span> <span class="string">Accompagnement Expert</span>
 
-<span class="keyword">Description 1 :</span> <span class="string">Vendez votre maison au meilleur prix. Estimation gratuite basée sur le marché bordelais actuel. Expert local.</span>
+<span class="keyword">Description 1 :</span> <span class="string">Vendez votre maison au meilleur prix. Estimation gratuite basée sur le marché local actuel. Expert local.</span>
 <span class="keyword">Description 2 :</span> <span class="string">Fixez le bon prix dès le départ. Rappel expert sous 24h. Service 100% gratuit, sans engagement.</span>
 
-<span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/vendre-maison-bordeaux</span>
+<span class="keyword">URL finale :</span> <span class="string">https://<?= $_domain ?>/lp/vendre-maison-<?= $_citySlug ?></span>
       </div>
     </div>
 
     <div class="guide-ad-card">
       <h4><span class="guide-step-badge">3</span> Campagne : Avis de Valeur Gratuit</h4>
       <div class="guide-code">
-<span class="keyword">Titre 1 :</span> <span class="string">Avis de Valeur Gratuit Bordeaux</span>
+<span class="keyword">Titre 1 :</span> <span class="string">Avis de Valeur Gratuit <?= $_city ?></span>
 <span class="keyword">Titre 2 :</span> <span class="string">Sans Engagement</span>
 <span class="keyword">Titre 3 :</span> <span class="string">Expert Immobilier Local</span>
 
-<span class="keyword">Description 1 :</span> <span class="string">Recevez un avis de valeur gratuit pour votre bien à Bordeaux. Analyse experte basée sur le marché actuel.</span>
+<span class="keyword">Description 1 :</span> <span class="string">Recevez un avis de valeur gratuit pour votre bien à <?= $_city ?>. Analyse experte basée sur le marché actuel.</span>
 <span class="keyword">Description 2 :</span> <span class="string">Idéal pour vente, succession ou divorce. Avis professionnel affiné par un expert. Résultat sous 24h.</span>
 
-<span class="keyword">URL finale :</span> <span class="string">https://estimation-immobilier-bordeaux.fr/lp/avis-valeur-gratuit</span>
+<span class="keyword">URL finale :</span> <span class="string">https://<?= $_domain ?>/lp/avis-valeur-gratuit</span>
       </div>
     </div>
   </div>
@@ -390,36 +395,36 @@
       </thead>
       <tbody>
         <tr>
-          <td><strong>Estimation Bordeaux</strong></td>
+          <td><strong>Estimation <?= $_city ?></strong></td>
           <td>
-            [estimation immobilière bordeaux]<br>
-            [estimer mon bien bordeaux]<br>
-            "estimation maison bordeaux"<br>
-            "prix immobilier bordeaux"<br>
-            [estimation appartement bordeaux]<br>
-            "combien vaut ma maison bordeaux"
+            [estimation immobilière <?= $_city ?>]<br>
+            [estimer mon bien <?= $_city ?>]<br>
+            "estimation maison <?= $_city ?>"<br>
+            "prix immobilier <?= $_city ?>"<br>
+            [estimation appartement <?= $_city ?>]<br>
+            "combien vaut ma maison <?= $_city ?>"
           </td>
           <td>location, louer, agent, recrutement, formation, emploi</td>
         </tr>
         <tr>
           <td><strong>Vendre Maison</strong></td>
           <td>
-            [vendre maison bordeaux]<br>
-            "vendre sa maison bordeaux"<br>
-            [vente maison bordeaux]<br>
-            "mettre en vente maison bordeaux"<br>
-            "prix vente maison bordeaux"
+            [vendre maison <?= $_city ?>]<br>
+            "vendre sa maison <?= $_city ?>"<br>
+            [vente maison <?= $_city ?>]<br>
+            "mettre en vente maison <?= $_city ?>"<br>
+            "prix vente maison <?= $_city ?>"
           </td>
           <td>acheter, location, louer, construire, terrain, neuf</td>
         </tr>
         <tr>
           <td><strong>Avis de Valeur</strong></td>
           <td>
-            [avis de valeur bordeaux]<br>
+            [avis de valeur <?= $_city ?>]<br>
             [avis de valeur gratuit]<br>
-            "avis de valeur immobilier bordeaux"<br>
-            "estimation gratuite bordeaux"<br>
-            [estimation bien immobilier gratuit bordeaux]
+            "avis de valeur immobilier <?= $_city ?>"<br>
+            "estimation gratuite <?= $_city ?>"<br>
+            [estimation bien immobilier gratuit <?= $_city ?>]
           </td>
           <td>location, louer, acheter, notaire (si non pertinent)</td>
         </tr>

@@ -50,7 +50,7 @@ $ctaLabels = [
                         <div class="d-flex align-items-center mb-3">
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: #4285f4; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; margin-right: 12px; flex-shrink: 0;">E</div>
                             <div>
-                                <div style="font-weight: 500; font-size: 14px; color: #202124;">Estimation Immobilier Bordeaux</div>
+                                <div style="font-weight: 500; font-size: 14px; color: #202124;">Estimation Immobilier <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?></div>
                                 <div style="color: #70757a; font-size: 12px;">
                                     <?= !empty($publication['scheduled_at']) ? date('d M Y', strtotime($publication['scheduled_at'])) : 'A planifier' ?>
                                 </div>

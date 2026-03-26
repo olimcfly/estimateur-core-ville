@@ -49,8 +49,8 @@
 
           <label>Quartier (optionnel)
             <select name="quartier">
-              <option value="">Bordeaux centre</option>
-              <option value="Chartrons">Chartrons</option>
+              <option value=""><?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> centre</option>
+              <option value="Centre-ville">Centre-ville</option>
               <option value="Saint-Pierre">Saint-Pierre</option>
               <option value="Saint-Michel">Saint-Michel</option>
               <option value="Caudéran">Caudéran</option>

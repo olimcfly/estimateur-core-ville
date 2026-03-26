@@ -245,7 +245,7 @@
 
       <div class="form-group">
         <label for="quartier">Quartier</label>
-        <input type="text" id="quartier" name="quartier" value="<?= htmlspecialchars((string)($a['quartier'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex: Chartrons, Saint-Pierre...">
+        <input type="text" id="quartier" name="quartier" value="<?= htmlspecialchars((string)($a['quartier'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex: Centre-ville, Nord...">
       </div>
     </div>
 

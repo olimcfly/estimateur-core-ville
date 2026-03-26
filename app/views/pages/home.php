@@ -1,5 +1,5 @@
-<?php $page_title = 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit en 60s'; ?>
-<?php $meta_description = 'Obtenez une estimation immobilière gratuite à Bordeaux et Métropole en 60 secondes. Prix au m² par quartier, tendances du marché bordelais. 100% gratuit, sans engagement.'; ?>
+<?php $page_title = 'Estimation Immobilier ' . site('city', '') . ' et Métropole | Avis de Valeur Gratuit en 60s'; ?>
+<?php $meta_description = 'Obtenez une estimation immobilière gratuite à ' . site('city', 'votre ville') . ' et Métropole en 60 secondes. Prix au m² par quartier, tendances du marché local. 100% gratuit, sans engagement.'; ?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -12,7 +12,7 @@
         <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
       </p>
 
-      <h1>Estimez la valeur de votre bien immobilier à Bordeaux et Métropole</h1>
+      <h1>Estimez la valeur de votre bien immobilier à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?> et Métropole</h1>
 
       <p class="lead">
         Obtenez une fourchette de prix indicative en quelques secondes.
@@ -40,10 +40,10 @@
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
         <p class="testimonial-quote">
-          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et Métropole !"
+          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre !"
         </p>
         <p class="testimonial-author">
-          — Marie D. • Bordeaux Chartrons
+          — Marie D. • <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
         </p>
       </div>
 
@@ -103,7 +103,7 @@
             type="text"
             id="ville"
             name="ville"
-            placeholder="Bordeaux, Talence, Mérignac..."
+            placeholder="<?= htmlspecialchars((string) site('city', 'Votre ville'), ENT_QUOTES, 'UTF-8') ?>..."
             required
             autocomplete="off"
           >
@@ -131,7 +131,7 @@
           </li>
           <li>
             <i class="fas fa-check-circle"></i>
-            <span><strong>Données réelles</strong> — 5000+ transactions à Bordeaux et Métropole</span>
+            <span><strong>Données réelles</strong> — 5000+ transactions locales</span>
           </li>
           <li>
             <i class="fas fa-check-circle"></i>

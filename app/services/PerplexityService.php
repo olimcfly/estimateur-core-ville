@@ -78,8 +78,9 @@ final class PerplexityService
     {
         $baseline = 4200.0;
 
-        if (str_contains(mb_strtolower($city), 'bordeaux')) {
-            $baseline = 4800.0;
+        $siteCity = mb_strtolower((string) site('city', ''));
+        if ($siteCity !== '' && str_contains(mb_strtolower($city), $siteCity)) {
+            $baseline = (float) \App\Core\Config::get('site.city_baseline_price', 4200.0);
         }
 
         if (str_contains(mb_strtolower($propertyType), 'maison')) {

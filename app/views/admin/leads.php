@@ -2136,7 +2136,7 @@ function getPersonaDescription(lead) {
     if (estimation > 500000) {
       desc += 'Avec une estimation de ' + numberFormat(estimation) + ' \u20ac, c\'est un bien haut de gamme qui n\u00e9cessite une approche premium.';
     } else if (estimation > 300000) {
-      desc += 'Le bien estim\u00e9 \u00e0 ' + numberFormat(estimation) + ' \u20ac se situe dans le segment milieu-haut du march\u00e9 bordelais.';
+      desc += 'Le bien estim\u00e9 \u00e0 ' + numberFormat(estimation) + ' \u20ac se situe dans le segment milieu-haut du march\u00e9 local.';
     } else if (estimation > 0) {
       desc += 'Le bien estim\u00e9 \u00e0 ' + numberFormat(estimation) + ' \u20ac repr\u00e9sente une opportunit\u00e9 accessible sur le march\u00e9.';
     }

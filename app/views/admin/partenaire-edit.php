@@ -192,7 +192,7 @@
 
       <div class="form-group">
         <label for="zone_geographique">Zone G&eacute;ographique</label>
-        <input type="text" id="zone_geographique" name="zone_geographique" value="<?= htmlspecialchars((string)($p['zone_geographique'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex: Bordeaux Centre, Rive Droite...">
+        <input type="text" id="zone_geographique" name="zone_geographique" value="<?= htmlspecialchars((string)($p['zone_geographique'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex: Centre-ville, Rive Droite...">
       </div>
 
       <div class="form-group">

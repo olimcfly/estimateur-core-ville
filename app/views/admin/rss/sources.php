@@ -18,7 +18,7 @@
     <i class="fas fa-seedling" style="font-size: 2.5rem; color: var(--admin-primary); margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
     <h3 style="margin: 0 0 0.5rem;">Demarrer avec des sources pre-configurees</h3>
     <p style="color: var(--admin-muted); margin-bottom: 1rem; font-size: 0.9rem;">
-      Ajoutez automatiquement ~19 flux RSS immobiliers (nationaux + Bordeaux/Nouvelle-Aquitaine).
+      Ajoutez automatiquement les flux RSS immobiliers nationaux et locaux configurés.
     </p>
     <form method="post" action="/admin/rss/seed" style="display: inline;">
       <button type="submit" class="admin-btn admin-btn-primary">
@@ -66,7 +66,7 @@
           <label class="admin-label">Zone</label>
           <select name="zone" class="admin-input">
             <option value="national">National</option>
-            <option value="Bordeaux/Nouvelle-Aquitaine">Bordeaux / Nouvelle-Aquitaine</option>
+            <option value="<?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>/<?= htmlspecialchars((string) site('region', ''), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?> / <?= htmlspecialchars((string) site('region', ''), ENT_QUOTES, 'UTF-8') ?></option>
           </select>
         </div>
         <div class="admin-form-group" style="display: flex; align-items: flex-end;">
@@ -110,7 +110,7 @@
                 </td>
                 <td><span class="admin-badge"><?= e($s['category']) ?></span></td>
                 <td>
-                  <span class="rss-source-badge rss-zone-<?= $s['zone'] === 'Bordeaux/Nouvelle-Aquitaine' ? 'local' : 'national' ?>">
+                  <span class="rss-source-badge rss-zone-<?= $s['zone'] === (site('city', '') . '/' . site('region', '')) ? 'local' : 'national' ?>">
                     <?= e($s['zone']) ?>
                   </span>
                 </td>

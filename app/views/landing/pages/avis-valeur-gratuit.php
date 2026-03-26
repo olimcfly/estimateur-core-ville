@@ -1,6 +1,6 @@
 <?php
 /**
- * Landing Page Google Ads — Mot-clé : "avis de valeur gratuit bordeaux"
+ * Landing Page Google Ads — Mot-clé : "avis de valeur gratuit"
  */
 $formError = $form_error ?? '';
 $siteCity = (string) site('city', '');
@@ -35,7 +35,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
         <div class="lp-stars">
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
         </div>
-        <span>4.8/5 — Service noté par nos clients bordelais</span>
+        <span>4.8/5 — Service noté par nos clients</span>
       </div>
     </div>
 
@@ -162,7 +162,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
       <div class="lp-step">
         <div class="lp-step-number">2</div>
         <h3>Estimation instantanée</h3>
-        <p>Recevez une première fourchette de prix basée sur les données du marché bordelais.</p>
+        <p>Recevez une première fourchette de prix basée sur les données du marché local.</p>
       </div>
       <div class="lp-step-arrow"><i class="fas fa-chevron-right"></i></div>
       <div class="lp-step">
@@ -249,7 +249,7 @@ $siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $si
 <section class="lp-section lp-cta-section">
   <div class="lp-container lp-cta-content">
     <h2>Obtenez votre avis de valeur gratuit maintenant</h2>
-    <p>Sans engagement. Un expert bordelais affine votre estimation sous 24h.</p>
+    <p>Sans engagement. Un expert local affine votre estimation sous 24h.</p>
     <a href="#lp-form" class="lp-btn lp-btn-primary lp-btn-large">
       <i class="fas fa-file-signature"></i> Demander mon avis de valeur gratuit
     </a>

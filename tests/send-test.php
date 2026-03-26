@@ -51,8 +51,10 @@ $smtpPort       = (int) ($_ENV['MAIL_SMTP_PORT'] ?? $_ENV['MAIL_PORT']      ?? 5
 $smtpUser       = $_ENV['MAIL_SMTP_USER']        ?? $_ENV['MAIL_USERNAME']  ?? '';
 $smtpPass       = $_ENV['MAIL_SMTP_PASS']        ?? $_ENV['MAIL_PASSWORD']  ?? '';
 $smtpEncryption = $_ENV['MAIL_SMTP_ENCRYPTION']  ?? $_ENV['MAIL_ENCRYPTION'] ?? 'tls';
-$fromAddress    = $_ENV['MAIL_FROM_ADDRESS']      ?? $_ENV['MAIL_FROM']      ?? 'no-reply@estimation-immobilier-bordeaux.fr';
-$fromName       = $_ENV['MAIL_FROM_NAME']         ?? 'Estimation Immobilier Bordeaux';
+$siteDomain     = $_ENV['SITE_DOMAIN']             ?? 'example.test';
+$siteCity       = $_ENV['SITE_CITY']              ?? '';
+$fromAddress    = $_ENV['MAIL_FROM_ADDRESS']      ?? $_ENV['MAIL_FROM']      ?? ('no-reply@' . $siteDomain);
+$fromName       = $_ENV['MAIL_FROM_NAME']         ?? ('Estimation Immobilier' . ($siteCity !== '' ? ' ' . $siteCity : ''));
 
 // Destinataire = argument CLI ou SMTP user par défaut (envoi à soi-même)
 $recipient = $argv[1] ?? $smtpUser;
@@ -120,7 +122,7 @@ try {
     $now = date('Y-m-d H:i:s');
 
     $mail->isHTML(true);
-    $mail->Subject = "Test SMTP — Estimation Immobilier Bordeaux ($now)";
+    $mail->Subject = "Test SMTP — $fromName ($now)";
     $mail->Body    = <<<HTML
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #8B1538;">Test d'envoi SMTP réussi</h2>
@@ -136,11 +138,11 @@ try {
                 <td style="padding: 8px; border: 1px solid #ddd;">{$fromAddress}</td></tr>
         </table>
         <p style="margin-top: 20px; color: #6b6459; font-size: 12px;">
-            Envoyé depuis le script de test — Estimation Immobilier Bordeaux
+            Envoyé depuis le script de test — {$fromName}
         </p>
     </div>
     HTML;
-    $mail->AltBody = "Test SMTP réussi — Estimation Immobilier Bordeaux\n"
+    $mail->AltBody = "Test SMTP réussi — $fromName\n"
         . "Serveur: $smtpHost:$smtpPort | Chiffrement: $smtpEncryption\n"
         . "Date: " . date('Y-m-d H:i:s');
 

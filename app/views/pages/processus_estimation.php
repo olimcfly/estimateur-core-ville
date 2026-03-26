@@ -84,7 +84,7 @@
               <i class="fas fa-database"></i> Recherche comparative
             </h3>
             <p style="margin: 0 0 1rem; color: var(--muted);">
-              Notre moteur recherche les biens similaires vendus récemment à Bordeaux et région.
+              Notre moteur recherche les biens similaires vendus récemment à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?> et région.
             </p>
 
             <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
@@ -158,7 +158,7 @@
               <i class="fas fa-sliders-h"></i> Ajustements locaux
             </h3>
             <p style="margin: 0 0 1rem; color: var(--muted);">
-              Application des ajustements spécifiques à Bordeaux et région. Expertise locale.
+              Application des ajustements spécifiques à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?> et région. Expertise locale.
             </p>
 
             <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
@@ -245,7 +245,7 @@
       <article class="card feature-card">
         <h3><i class="fas fa-brain"></i> Machine Learning</h3>
         <p>
-          Algorithme IA entrainé sur 5000+ transactions. Apprentissage continu des tendances marché Bordeaux.
+          Algorithme IA entrainé sur 5000+ transactions. Apprentissage continu des tendances marché local.
         </p>
       </article>
 
@@ -343,7 +343,7 @@
         <div style="display: grid; gap: 1rem;">
           <div style="padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px;">
             <p style="margin: 0 0 0.3rem; font-weight: 600; font-size: 0.95rem;">Quartier exact</p>
-            <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Chartrons vs Saint-Michel → prix différents.</p>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Quartiers à prix différents selon localisation.</p>
           </div>
           <div style="padding: 0.8rem; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 4px;">
             <p style="margin: 0 0 0.3rem; font-weight: 600; font-size: 0.95rem;">Proximité transports</p>
@@ -376,7 +376,7 @@
           </div>
           <div style="padding: 0.8rem; background: var(--surface); border-left: 3px solid #22c55e; border-radius: 4px;">
             <p style="margin: 0 0 0.3rem; font-weight: 600; font-size: 0.95rem;">Prix au m²</p>
-            <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Comparatif Bordeaux/banlieue/région.</p>
+            <p style="margin: 0; font-size: 0.85rem; color: var(--muted);">Comparatif ville/banlieue/région.</p>
           </div>
           <div style="padding: 0.8rem; background: var(--surface); border-left: 3px solid #22c55e; border-radius: 4px;">
             <p style="margin: 0 0 0.3rem; font-weight: 600; font-size: 0.95rem;">Offre & demande</p>
@@ -465,7 +465,7 @@
           <i class="fas fa-database"></i> 5000+ transactions
         </h3>
         <p>
-          Biens analysés dans notre base de données. Couverture complète du marché bordelais & région.
+          Biens analysés dans notre base de données. Couverture complète du marché local &amp; région.
         </p>
       </article>
 

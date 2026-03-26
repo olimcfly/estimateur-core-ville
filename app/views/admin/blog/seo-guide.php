@@ -54,7 +54,7 @@
             <li>estimer appartement 3 pièces Lyon 6 Foch</li>
             <li>investissement locatif rentable étudiant Toulouse Capitole</li>
             <li>primo accédant aide PTZ Nantes Erdre</li>
-            <li>vendre appartement senior résidence services Bordeaux Chartrons</li>
+            <li>vendre appartement senior résidence services centre-ville</li>
         </ul>
     </section>
 
@@ -143,7 +143,7 @@ Astuce : Intégrez des variantes du mot-clé dans les H2 et H3</div>
         <table class="guide-table">
             <thead><tr><th>Élément</th><th>Règle</th></tr></thead>
             <tbody>
-                <tr><td>Nom de fichier</td><td>Descriptif, minuscules, tirets : vendre-maison-bordeaux.jpg</td></tr>
+                <tr><td>Nom de fichier</td><td>Descriptif, minuscules, tirets : vendre-maison-locale.jpg</td></tr>
                 <tr><td>Balise ALT</td><td>10-15 mots descriptifs avec mot-clé naturel</td></tr>
                 <tr><td>Format</td><td>WebP ou JPEG, max 100-200 Ko</td></tr>
                 <tr><td>Dimensions</td><td>1200x800 px maximum</td></tr>

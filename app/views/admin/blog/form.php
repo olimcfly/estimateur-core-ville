@@ -100,7 +100,7 @@ $semanticChecks = $hasAnalysis ? ($analysis['semantic_checks'] ?? []) : [];
                     </label>
                     <input type="text" name="focus_keyword" id="focusKeyword"
                         value="<?= e((string) ($article['focus_keyword'] ?? '')) ?>"
-                        placeholder="Ex: vendre appartement bordeaux chartrons"
+                        placeholder="Ex: vendre appartement centre-ville"
                         style="font-size: 1.1rem; font-weight: 600; border-color: #D4AF37;">
                     <?php if ($goldenRatio): ?>
                     <div style="margin-top: 0.5rem;">

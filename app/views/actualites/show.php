@@ -20,11 +20,11 @@ $jsonLd = [
     'datePublished' => $publishedAt,
     'author' => [
         '@type' => 'Organization',
-        'name' => 'Estimation Immobilière Bordeaux',
+        'name' => 'Estimation Immobilière ' . site('city', ''),
     ],
     'publisher' => [
         '@type' => 'Organization',
-        'name' => 'Estimation Immobilière Bordeaux',
+        'name' => 'Estimation Immobilière ' . site('city', ''),
     ],
     'mainEntityOfPage' => [
         '@type' => 'WebPage',
@@ -76,7 +76,7 @@ $jsonLd = array_filter($jsonLd, static fn (mixed $value): bool => $value !== nul
 
     <section class="card cta-card">
       <h2>Besoin d'un prix de vente réaliste et défendable ?</h2>
-      <p class="muted">Profitez de notre simulateur pour obtenir une fourchette fiable adaptée à Bordeaux.</p>
+      <p class="muted">Profitez de notre simulateur pour obtenir une fourchette fiable adaptée à votre marché local.</p>
       <a href="/estimation" class="btn">Demander mon estimation</a>
     </section>
   </div>

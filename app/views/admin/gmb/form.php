@@ -141,7 +141,7 @@ $contentLen = mb_strlen($content);
                     <div class="d-flex align-items-center mb-2">
                         <div style="width: 40px; height: 40px; border-radius: 50%; background: #4285f4; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; margin-right: 10px;">E</div>
                         <div>
-                            <div style="font-weight: 500; font-size: 14px;">Estimation Immobilier Bordeaux</div>
+                            <div style="font-weight: 500; font-size: 14px;">Estimation Immobilier <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?></div>
                             <div style="color: #70757a; font-size: 12px;">Il y a quelques instants</div>
                         </div>
                     </div>

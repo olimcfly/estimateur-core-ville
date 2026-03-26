@@ -11,8 +11,8 @@ $jsonLd = [
     'url' => $categoryUrl,
     'isPartOf' => [
         '@type' => 'WebSite',
-        'name' => 'Estimation Immobilier Bordeaux et Metropole',
-        'url' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : 'https://estimation-immobilier-bordeaux.fr',
+        'name' => 'Estimation Immobilier ' . site('city', ''),
+        'url' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : (site('domain', '') !== '' ? 'https://' . site('domain', '') : ''),
     ],
     'breadcrumb' => [
         '@type' => 'BreadcrumbList',

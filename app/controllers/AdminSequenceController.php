@@ -58,7 +58,7 @@ final class AdminSequenceController
             'email_tone' => 'Pr&eacute;cis, factuel, avec des chiffres et des comparaisons.',
             'article_topics' => [
                 '&Eacute;volution des prix au m&sup2; par quartier',
-                'Analyse comparative du march&eacute; immobilier bordelais',
+                'Analyse comparative du march&eacute; immobilier local',
                 'Rendement locatif : les chiffres cl&eacute;s',
                 'Statistiques des transactions immobili&egrave;res',
             ],
@@ -70,10 +70,10 @@ final class AdminSequenceController
             'description' => 'D&eacute;cision bas&eacute;e sur les &eacute;motions, le ressenti et l\'enthousiasme.',
             'email_tone' => 'Chaleureux, enthousiaste, avec des images et des t&eacute;moignages.',
             'article_topics' => [
-                'Coup de coeur : les plus beaux quartiers de Bordeaux',
+                'Coup de coeur : les plus beaux quartiers de notre ville',
                 'T&eacute;moignages de nos clients satisfaits',
-                'Vivre &agrave; Bordeaux : un art de vivre unique',
-                'Les p&eacute;pites cach&eacute;es du march&eacute; bordelais',
+                'Vivre dans notre ville : un art de vivre unique',
+                'Les p&eacute;pites cach&eacute;es du march&eacute; local',
             ],
         ],
         'directif' => [
@@ -83,10 +83,10 @@ final class AdminSequenceController
             'description' => 'D&eacute;cision rapide, orient&eacute;e r&eacute;sultats et efficacit&eacute;.',
             'email_tone' => 'Direct, concis, avec des actions cl&eacute;s et des d&eacute;lais.',
             'article_topics' => [
-                'Guide express : acheter &agrave; Bordeaux en 30 jours',
+                'Guide express : acheter en 30 jours',
                 'Les 5 erreurs &agrave; &eacute;viter lors d\'un achat immobilier',
                 'Checklist : les &eacute;tapes cl&eacute;s de votre projet',
-                'Investir &agrave; Bordeaux : les opportunit&eacute;s &agrave; saisir maintenant',
+                'Investir localement : les opportunit&eacute;s &agrave; saisir maintenant',
             ],
         ],
         'aimable' => [

@@ -344,7 +344,7 @@ $step = $step ?? 'email';
       </div>
 
       <div style="text-align: center;">
-        <a href="https://estimation-immobilier-bordeaux.fr/webmail" target="_blank" rel="noopener" class="back-link" style="font-size: 0.8rem; opacity: 0.6;">
+        <a href="https://<?= htmlspecialchars((string) site("domain", "example.test"), ENT_QUOTES, "UTF-8") ?>/webmail" target="_blank" rel="noopener" class="back-link" style="font-size: 0.8rem; opacity: 0.6;">
           <i class="fas fa-envelope-open"></i>Accéder au webmail
         </a>
       </div>

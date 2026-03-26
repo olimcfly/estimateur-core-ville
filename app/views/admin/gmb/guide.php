@@ -157,7 +157,7 @@
                         <tr>
                             <td><strong>Lundi</strong></td>
                             <td>Actualite marche</td>
-                            <td>"Cette semaine a Bordeaux : les taux immobiliers restent stables a..."</td>
+                            <td>"Cette semaine dans notre marché local : les taux immobiliers restent stables a..."</td>
                         </tr>
                         <tr>
                             <td><strong>Mercredi</strong></td>
@@ -167,7 +167,7 @@
                         <tr>
                             <td><strong>Vendredi</strong></td>
                             <td>Mise en avant service</td>
-                            <td>"Estimation gratuite de votre bien a Bordeaux en 48h..."</td>
+                            <td>"Estimation gratuite de votre bien en 48h..."</td>
                         </tr>
                     </tbody>
                 </table>
@@ -183,7 +183,7 @@
         <div class="admin-card-body">
             <p style="margin: 0 0 0.75rem; line-height: 1.65; font-size: 0.9rem;">Les publications GMB contribuent a votre referencement local :</p>
             <ul style="margin: 0 0 1.25rem; padding-left: 1.25rem; line-height: 1.8; font-size: 0.9rem;">
-                <li><strong>Mots-cles locaux</strong> : Mentionnez "Bordeaux", vos quartiers cibles, la Gironde</li>
+                <li><strong>Mots-cles locaux</strong> : Mentionnez le nom de votre ville, vos quartiers cibles, votre département</li>
                 <li><strong>Signaux d'activite</strong> : Google favorise les fiches actives dans le pack local</li>
                 <li><strong>Liens vers votre site</strong> : Chaque publication avec CTA renvoie du trafic</li>
                 <li><strong>Contenu frais</strong> : Les publications expirent apres 7 jours, restez regulier</li>

@@ -42,8 +42,10 @@ final class EstimationService
     {
         $cityLower = mb_strtolower($city);
 
-        if (str_contains($cityLower, 'bordeaux')) {
-            return 1.14;
+        // Check if the input city matches the configured site city — use config factor
+        $siteCity = mb_strtolower((string) site('city', ''));
+        if ($siteCity !== '' && str_contains($cityLower, $siteCity)) {
+            return (float) \App\Core\Config::get('site.city_factor', 1.0);
         }
 
         if (str_contains($cityLower, 'paris')) {

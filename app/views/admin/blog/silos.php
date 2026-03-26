@@ -34,7 +34,7 @@
                     <input type="text" name="description" placeholder="Brève description du thème">
                 </label>
                 <label>Ville
-                    <input type="text" name="city" value="Bordeaux" placeholder="Ex: Bordeaux, Lyon..." style="width: 140px;">
+                    <input type="text" name="city" value="<?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>" placeholder="Ex: Paris, Lyon..." style="width: 140px;">
                 </label>
                 <label>Couleur
                     <input type="color" name="color" value="#8B1538" style="height: 38px; width: 60px;">

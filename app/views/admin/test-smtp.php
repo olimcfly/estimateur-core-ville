@@ -482,7 +482,7 @@
         <label for="mail_from_name">Nom expediteur <span class="env-hint"><i class="fas fa-file-alt"></i> MAIL_FROM_NAME</span></label>
         <input type="text" id="mail_from_name" name="mail_from_name"
                value="<?= htmlspecialchars($mail_from_name, ENT_QUOTES, 'UTF-8') ?>"
-               placeholder="Estimation Immobilier Bordeaux" />
+               placeholder="Estimation Immobilier <?= htmlspecialchars((string) site('city', ''  ), ENT_QUOTES, 'UTF-8') ?>" />
       </div>
 
       <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--admin-border);">

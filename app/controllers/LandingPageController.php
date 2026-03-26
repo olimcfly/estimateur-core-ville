@@ -34,7 +34,7 @@ final class LandingPageController
         View::renderBare('landing/layout', [
             'page_title'       => "Estimation Immobilière {$location['area']} | Gratuite en 60 secondes",
             'meta_description' => "Obtenez une estimation immobilière gratuite à {$location['area']} en 60 secondes. Résultat instantané basé sur les données réelles du marché local.",
-            'landing_view'     => 'landing/pages/estimation-bordeaux',
+            'landing_view'     => 'landing/pages/estimation-' . site('city_slug', 'locale'),
             'landing_slug'     => 'estimation',
         ]);
     }
@@ -47,7 +47,7 @@ final class LandingPageController
         View::renderBare('landing/layout', [
             'page_title'       => "Vendre sa Maison à {$location['area']} | Estimation Gratuite",
             'meta_description' => "Vous vendez votre maison à {$location['area']} ? Obtenez une estimation gratuite et découvrez le prix de vente optimal. Sans engagement.",
-            'landing_view'     => 'landing/pages/vendre-maison-bordeaux',
+            'landing_view'     => 'landing/pages/vendre-maison-' . site('city_slug', 'locale'),
             'landing_slug'     => 'vendre-maison',
         ]);
     }
@@ -189,7 +189,7 @@ final class LandingPageController
             // Check view exists, fallback to estimation
             $viewPath = __DIR__ . '/../views/' . $landingView . '.php';
             if (!is_file($viewPath)) {
-                $landingView = 'landing/pages/estimation-bordeaux';
+                $landingView = 'landing/pages/estimation-' . site('city_slug', 'locale');
             }
 
             View::renderBare('landing/layout', [

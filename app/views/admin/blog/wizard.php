@@ -42,7 +42,7 @@
                             <i class="fas fa-wand-magic-sparkles"></i> IA
                         </button>
                     </div>
-                    <textarea name="target_audience" id="wizTargetAudience" rows="2" placeholder="Ex: Jeunes couples 25-35 ans, premiers acheteurs a Bordeaux, budget 200-300k&euro;"><?= e((string) ($_POST['target_audience'] ?? '')) ?></textarea>
+                    <textarea name="target_audience" id="wizTargetAudience" rows="2" placeholder="Ex: Jeunes couples 25-35 ans, premiers acheteurs, budget 200-300k&euro;"><?= e((string) ($_POST['target_audience'] ?? '')) ?></textarea>
                     <div class="ai-suggest-result" id="suggest-target_audience"></div>
                 </div>
 
@@ -79,7 +79,7 @@
                         </button>
                     </div>
                     <input type="text" name="focus_keyword" id="wizFocusKeyword" required
-                        placeholder="Ex: vendre appartement bordeaux chartrons"
+                        placeholder="Ex: vendre appartement centre-ville"
                         value="<?= e((string) ($_POST['focus_keyword'] ?? '')) ?>">
                     <small style="color: #888; display: block; margin-top: 0.25rem;">
                         Formule : [Action] + [Type de bien] + [Specificite] + [Ville] + [Quartier]
@@ -95,7 +95,7 @@
                         </button>
                     </div>
                     <textarea name="secondary_keywords" id="wizSecondaryKeywords" rows="3"
-                        placeholder="Separez par des virgules. Ex: estimation gratuite bordeaux, prix immobilier chartrons, vente rapide appartement"><?= e((string) ($_POST['secondary_keywords'] ?? '')) ?></textarea>
+                        placeholder="Separez par des virgules. Ex: estimation gratuite locale, prix immobilier centre-ville, vente rapide appartement"><?= e((string) ($_POST['secondary_keywords'] ?? '')) ?></textarea>
                     <small style="color: #888; display: block; margin-top: 0.25rem;">
                         Astuce : Tapez votre mot-cle dans Google et notez les "Recherches associees" en bas de page.
                     </small>
@@ -138,7 +138,7 @@
                         </button>
                     </div>
                     <input type="text" name="topic" id="wizTopic" required
-                        placeholder="Ex: Comment vendre votre appartement aux Chartrons en 2026"
+                        placeholder="Ex: Comment vendre votre appartement en 2026"
                         value="<?= e((string) ($_POST['topic'] ?? '')) ?>">
                     <div class="ai-suggest-result" id="suggest-topic"></div>
                 </div>

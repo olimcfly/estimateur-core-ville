@@ -75,7 +75,7 @@
   </div>
   <div class="admin-card-body">
     <p style="font-size: 0.85rem; color: var(--admin-muted); margin-bottom: 1rem;">
-      Cochez les articles ci-dessous, puis cliquez sur "Generer l'article". Claude/OpenAI redigera un article de blog original oriente Bordeaux a partir des sources selectionnees.
+      Cochez les articles ci-dessous, puis cliquez sur "Generer l'article". Claude/OpenAI redigera un article de blog original oriente marche local a partir des sources selectionnees.
     </p>
     <form method="post" action="/admin/rss/generate" id="form-generate">
       <div id="selected-articles-summary" style="margin-bottom: 1rem; display: none;">
@@ -115,7 +115,7 @@
             </div>
             <div class="rss-article-content">
               <div class="rss-article-meta">
-                <span class="rss-source-badge rss-zone-<?= $art['source_zone'] === 'Bordeaux/Nouvelle-Aquitaine' ? 'local' : 'national' ?>">
+                <span class="rss-source-badge rss-zone-<?= $art['source_zone'] === (site('city', '') . '/' . site('region', '')) ? 'local' : 'national' ?>">
                   <?= e($art['source_name']) ?>
                 </span>
                 <?php if ($art['pub_date']): ?>

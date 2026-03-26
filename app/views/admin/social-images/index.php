@@ -317,9 +317,9 @@ $error = (string) ($_GET['error'] ?? '');
       fields: [
         { id: 'prix', label: 'Prix affich\u00e9', type: 'text', value: '4 800 \u20ac/m\u00b2' },
         { id: 'label', label: 'Sous-titre prix', type: 'text', value: 'Prix moyen au m\u00b2' },
-        { id: 'quartier', label: 'Quartier', type: 'select', options: ['Bordeaux Centre', <?php foreach ($quartiers as $q): ?>'<?= $q ?>',<?php endforeach; ?>], value: 'Bordeaux Centre' },
+        { id: 'quartier', label: 'Quartier', type: 'select', options: ['<?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> Centre', <?php foreach ($quartiers as $q): ?>'<?= $q ?>',<?php endforeach; ?>], value: '<?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> Centre' },
         { id: 'badge', label: 'Badge', type: 'text', value: 'ESTIMATION GRATUITE' },
-        { id: 'brand', label: 'Marque', type: 'text', value: 'estimation-immobilier-bordeaux.fr' },
+        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#8B1538' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#1a0510' },
       ],
@@ -330,7 +330,7 @@ $error = (string) ($_GET['error'] ?? '');
           '<div class="price-label">' + esc(v.label) + '</div>' +
           '<div class="divider"></div>' +
           '<div class="quartier">' + esc(v.quartier) + '</div>' +
-          '<div class="city">Bordeaux &mdash; Nouvelle-Aquitaine</div>' +
+          '<div class="city"><?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> &mdash; <?= htmlspecialchars((string) site("region", ""), ENT_QUOTES, "UTF-8") ?></div>' +
           '<div class="logo-bottom">' + esc(v.brand) + '</div>' +
         '</div>';
       }
@@ -341,8 +341,8 @@ $error = (string) ($_GET['error'] ?? '');
         { id: 'title', label: 'Titre', type: 'text', value: 'V\u00e9rifiez le DPE avant d\u2019acheter' },
         { id: 'text', label: 'Texte', type: 'textarea', value: 'Le Diagnostic de Performance \u00c9nerg\u00e9tique (DPE) impacte directement la valeur de votre bien. Un logement class\u00e9 F ou G peut perdre jusqu\u2019\u00e0 15% de sa valeur.' },
         { id: 'tag', label: 'Tag', type: 'text', value: 'CONSEIL IMMO' },
-        { id: 'brand', label: 'Marque', type: 'text', value: 'Estimation Immobilier Bordeaux' },
-        { id: 'url', label: 'URL', type: 'text', value: 'estimation-immobilier-bordeaux.fr' },
+        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("city", "") !== "" ? "Estimation Immobilier " . site("city", "") : "Estimation Immobilier", ENT_QUOTES, "UTF-8") ?>' },
+        { id: 'url', label: 'URL', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'cta', label: 'CTA', type: 'text', value: 'Estimez votre bien gratuitement \u2192' },
       ],
       render: function(v) {
@@ -362,8 +362,8 @@ $error = (string) ($_GET['error'] ?? '');
         { id: 'label', label: 'Label', type: 'text', value: 'MARCH\u00c9 IMMOBILIER BORDEAUX' },
         { id: 'value', label: 'Chiffre', type: 'text', value: '+12%' },
         { id: 'unit', label: 'Unit\u00e9', type: 'text', value: 'en 2 ans' },
-        { id: 'desc', label: 'Description', type: 'textarea', value: 'Les prix de l\u2019immobilier \u00e0 Bordeaux ont progress\u00e9 de 12% sur les deux derni\u00e8res ann\u00e9es.' },
-        { id: 'brand', label: 'Marque', type: 'text', value: 'estimation-immobilier-bordeaux.fr' },
+        { id: 'desc', label: 'Description', type: 'textarea', value: 'Les prix de l2019immobilier 00e0 <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> ont progress\u00e9 de 12% sur les deux derni\u00e8res ann\u00e9es.' },
+        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#0f172a' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#1e293b' },
       ],
@@ -381,10 +381,10 @@ $error = (string) ($_GET['error'] ?? '');
       fields: [
         { id: 'brand', label: 'Marque', type: 'text', value: 'ESTIMATION IMMOBILIER BORDEAUX' },
         { id: 'emoji', label: 'Emoji / Ic\u00f4ne', type: 'text', value: '\uD83C\uDFE0' },
-        { id: 'title', label: 'Titre', type: 'text', value: 'Combien vaut votre bien \u00e0 Bordeaux ?' },
+        { id: 'title', label: 'Titre', type: 'text', value: 'Combien vaut votre bien 00e0 <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> ?' },
         { id: 'text', label: 'Texte', type: 'textarea', value: 'Obtenez une estimation gratuite et pr\u00e9cise en quelques minutes.' },
         { id: 'cta', label: 'Bouton CTA', type: 'text', value: 'Estimer mon bien' },
-        { id: 'url', label: 'URL', type: 'text', value: 'estimation-immobilier-bordeaux.fr' },
+        { id: 'url', label: 'URL', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#8B1538' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#1a0510' },
       ],
@@ -406,11 +406,11 @@ $error = (string) ($_GET['error'] ?? '');
     paysage: {
       fields: [
         { id: 'tag', label: 'Tag line', type: 'text', value: 'ESTIMATION GRATUITE' },
-        { id: 'title', label: 'Titre', type: 'text', value: 'Estimez votre bien immobilier \u00e0 Bordeaux' },
+        { id: 'title', label: 'Titre', type: 'text', value: 'Estimez votre bien immobilier 00e0 <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'text', label: 'Sous-texte', type: 'text', value: 'R\u00e9sultat imm\u00e9diat, sans engagement' },
         { id: 'bigValue', label: 'Chiffre droite', type: 'text', value: '4 800\u20ac' },
         { id: 'bigLabel', label: 'Label droite', type: 'text', value: 'Prix moyen / m\u00b2' },
-        { id: 'brand', label: 'Marque', type: 'text', value: 'estimation-immobilier-bordeaux.fr' },
+        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#8B1538' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#2d0a18' },
       ],

@@ -299,6 +299,25 @@
 </style>
 <!-- Admin presence notification: DISABLED on frontend -->
 <!-- To re-enable, uncomment the banner HTML and JS below -->
+
+<?php
+  $stickyConfig = $config ?? [];
+  $stickyCtaLabel = trim((string) ($stickyConfig['cta_label'] ?? 'Voir le prix de mon bien →'));
+  $stickyCtaUrl = trim((string) ($stickyConfig['cta_url'] ?? '/estimation#form-estimation'));
+  $stickyAccentColor = trim((string) ($stickyConfig['color_accent'] ?? '#0F766E'));
+  $stickyAdvisorName = trim((string) ($stickyConfig['advisor_name'] ?? ''));
+?>
+<div class="sticky-cta sticky-cta--visible" style="--sticky-cta-accent: <?= e($stickyAccentColor) ?>;" aria-hidden="true">
+  <div class="sticky-cta__inner">
+    <div class="sticky-cta__copy" aria-hidden="true">
+      <p class="sticky-cta__label">Estimation gratuite</p>
+      <p class="sticky-cta__text">Gratuit · Sans engagement</p>
+    </div>
+    <a href="<?= e($stickyCtaUrl) ?>" class="sticky-cta__button" aria-label="<?= e($stickyAdvisorName !== '' ? 'Voir le prix de mon bien avec ' . $stickyAdvisorName : 'Voir le prix de mon bien') ?>">
+      <?= e($stickyCtaLabel) ?>
+    </a>
+  </div>
+</div>
 <!-- ================================================ -->
 <!-- MOBILE BOTTOM NAV (APP-LIKE)                     -->
 <!-- ================================================ -->
@@ -387,6 +406,59 @@
 })();
 </script>
 <!-- Admin presence JS: DISABLED -->
+
+<script>
+(function() {
+  var stickyCta = document.querySelector('.sticky-cta');
+  if (!stickyCta) return;
+
+  var mobileQuery = window.matchMedia('(max-width: 767px)');
+  var estimationForm = document.getElementById('form-estimation');
+
+  function toggleSticky(forceVisible) {
+    stickyCta.classList.toggle('sticky-cta--visible', !!forceVisible);
+    stickyCta.setAttribute('aria-hidden', forceVisible ? 'false' : 'true');
+  }
+
+  function refreshForViewport() {
+    if (!mobileQuery.matches) {
+      toggleSticky(false);
+      return;
+    }
+
+    if (!estimationForm) {
+      toggleSticky(true);
+    }
+  }
+
+  refreshForViewport();
+
+  if (typeof mobileQuery.addEventListener === 'function') {
+    mobileQuery.addEventListener('change', refreshForViewport);
+  } else if (typeof mobileQuery.addListener === 'function') {
+    mobileQuery.addListener(refreshForViewport);
+  }
+
+  if (!estimationForm || typeof IntersectionObserver !== 'function') {
+    return;
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!mobileQuery.matches) {
+        toggleSticky(false);
+        return;
+      }
+
+      toggleSticky(!entry.isIntersecting);
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  observer.observe(estimationForm);
+})();
+</script>
 
 </body>
 </html>

@@ -43,6 +43,12 @@ Vous pouvez aussi spécifier un dossier de destination :
 
 Crée les 4 sites d'un coup : Nantes, Nandy, Angers, Lannion.
 
+Mode non-interactif pour CI / scripts :
+
+```bash
+DUPLICATION_FORCE_YES=1 ./duplicate-site.sh nantes
+```
+
 ## Villes configurées
 
 | Ville   | Slug    | CP    | Région            | Prix m² moyen | Couleur primaire |

@@ -23,6 +23,18 @@ log_ok()    { echo -e "${GREEN}[OK]${NC} $1"; }
 log_warn()  { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+confirm() {
+    local prompt="$1"
+    if [[ "${DUPLICATION_FORCE_YES:-0}" == "1" ]]; then
+        log_info "$prompt (auto-accepté via DUPLICATION_FORCE_YES=1)"
+        return 0
+    fi
+
+    read -p "$prompt (o/N) " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Oo]$ ]]
+}
+
 # --- Vérifications ---
 if [ $# -lt 1 ]; then
     echo ""
@@ -88,9 +100,7 @@ echo "=============================================="
 echo ""
 
 # --- Confirmation ---
-read -p "Continuer ? (o/N) " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Oo]$ ]]; then
+if ! confirm "Continuer ?"; then
     log_warn "Annulé."
     exit 0
 fi
@@ -102,9 +112,7 @@ log_info "Copie du projet source..."
 
 if [ -d "$DEST_DIR" ]; then
     log_warn "Le dossier $DEST_DIR existe déjà."
-    read -p "Écraser ? (o/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Oo]$ ]]; then
+    if ! confirm "Écraser ?"; then
         exit 0
     fi
     rm -rf "$DEST_DIR"
@@ -131,11 +139,14 @@ log_info "Remplacement des références à Bordeaux..."
 replace_in_files() {
     local search="$1"
     local replace="$2"
-    local file_pattern="${3:-*}"
+    local escaped_search="${search//|/\\|}"
+    local escaped_replace="${replace//\\/\\\\}"
+    escaped_replace="${escaped_replace//&/\\&}"
+    escaped_replace="${escaped_replace//|/\\|}"
 
     find "$DEST_DIR" -type f \( -name "*.php" -o -name "*.json" -o -name "*.xml" -o -name "*.txt" -o -name "*.md" -o -name "*.env*" -o -name "*.sql" -o -name "*.css" -o -name "*.js" -o -name "*.html" -o -name ".htaccess" \) \
         ! -path "*/vendor/*" ! -path "*/.git/*" \
-        -exec sed -i "s|$search|$replace|g" {} +
+        -exec sed -i "s|$escaped_search|$escaped_replace|g" {} +
 }
 
 # Nom de la ville (cas sensible)
@@ -223,7 +234,7 @@ log_info "Génération des données de quartiers..."
 QUARTIERS_FILE="$DEST_DIR/app/views/pages/quartiers.php"
 if [ -f "$QUARTIERS_FILE" ]; then
     # Générer le nouveau tableau PHP des quartiers à partir du JSON
-    QUARTIERS_PHP=$(python3 << 'PYEOF'
+    QUARTIERS_PHP=$(python3 "$CITIES_FILE" "$CITY_SLUG" << 'PYEOF'
 import json, sys
 
 with open(sys.argv[1]) as f:
@@ -253,7 +264,7 @@ for i, q in enumerate(quartiers):
 lines.append("];")
 print("\n".join(lines))
 PYEOF
-    "$CITIES_FILE" "$CITY_SLUG")
+)
 
     # Remplacer le bloc $quartiers dans le fichier
     # On utilise Python pour un remplacement multi-lignes fiable
@@ -318,8 +329,8 @@ find "$DEST_DIR" -type f -name "*bordeaux*" ! -path "*/vendor/*" ! -path "*/.git
 done
 
 # Mettre à jour les références aux fichiers renommés dans le code
-replace_in_files "estimation-$CITY_SLUG" "estimation-$CITY_SLUG"
-replace_in_files "og-estimation-$CITY_SLUG" "og-estimation-$CITY_SLUG"
+replace_in_files "estimation-bordeaux" "estimation-$CITY_SLUG"
+replace_in_files "og-estimation-bordeaux" "og-estimation-$CITY_SLUG"
 
 log_ok "Fichiers renommés"
 
@@ -345,6 +356,12 @@ log_info "Initialisation du dépôt Git..."
 
 cd "$DEST_DIR"
 git init
+if ! git config user.email > /dev/null; then
+    git config user.email "duplication-bot@localhost"
+fi
+if ! git config user.name > /dev/null; then
+    git config user.name "Duplication Bot"
+fi
 git add -A
 git commit -m "Initial commit: Estimation Immobilier $CITY_NAME (dupliqué depuis Bordeaux)"
 cd - > /dev/null

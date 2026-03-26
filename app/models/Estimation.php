@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Core\Config;
 use App\Core\Database;
+use PDO;
 
 final class Estimation
 {
@@ -30,6 +31,23 @@ final class Estimation
         ]);
 
         return (int) Database::connection()->lastInsertId();
+    }
+
+    public function findById(int $id): ?array
+    {
+        $stmt = Database::connection()->prepare(
+            'SELECT id, website_id, ville, estimated_mid
+             FROM estimations
+             WHERE id = :id AND website_id = :website_id
+             LIMIT 1'
+        );
+        $stmt->execute([
+            ':id' => $id,
+            ':website_id' => $this->websiteId(),
+        ]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row !== false ? $row : null;
     }
 
     private function websiteId(): int

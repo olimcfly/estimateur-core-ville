@@ -32,8 +32,8 @@ for slug in $CITIES; do
     echo "[$CURRENT/$TOTAL] Duplication pour $name ($slug)..."
     echo "----------------------------------------------"
 
-    # Exécution non-interactive (répondre oui automatiquement)
-    echo "o" | "$SCRIPT_DIR/duplicate-site.sh" "$slug" "$OUTPUT_PARENT"
+    # Exécution non-interactive
+    DUPLICATION_FORCE_YES=1 "$SCRIPT_DIR/duplicate-site.sh" "$slug" "$OUTPUT_PARENT"
 done
 
 echo ""

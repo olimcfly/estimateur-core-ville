@@ -190,9 +190,10 @@ final class EstimationController
             $telephone = Validator::string($_POST, 'telephone', 6, 30);
             $adresseInput = trim((string) ($_POST['adresse'] ?? ''));
             $adresse = $adresseInput !== '' ? Validator::string($_POST, 'adresse', 5, 255) : 'Non renseignée';
-            $ville = Validator::string($_POST, 'ville', 2, 120);
-            $estimation = Validator::float($_POST, 'estimation', 10000, 100000000);
             $estimationId = isset($_POST['estimation_id']) ? (int) $_POST['estimation_id'] : 0;
+            $leadContext = $this->resolveLeadContext($estimationId);
+            $ville = $leadContext['ville'] ?? Validator::string($_POST, 'ville', 2, 120);
+            $estimation = $leadContext['estimation'] ?? Validator::float($_POST, 'estimation', 10000, 100000000);
             $urgence = Validator::string($_POST, 'urgence', 3, 40);
             $motivation = Validator::string($_POST, 'motivation', 3, 80);
             $notesRaw = trim((string) ($_POST['notes'] ?? ($_POST['message'] ?? '')));
@@ -238,19 +239,24 @@ final class EstimationController
                 'ip' => $this->getClientIp(),
                 'submitted_at' => time(),
             ];
+            unset($_SESSION['lead_form_context']);
 
-            LeadNotificationService::notify($leadId, $temperature, [
-                'nom' => $nom,
-                'email' => $email,
-                'telephone' => $telephone,
-                'adresse' => $adresse,
-                'ville' => $ville,
-                'estimation' => $estimation,
-                'urgence' => $urgence,
-                'motivation' => $motivation,
-                'notes' => $notes,
-                'statut' => 'nouveau',
-            ]);
+            try {
+                LeadNotificationService::notify($leadId, $temperature, [
+                    'nom' => $nom,
+                    'email' => $email,
+                    'telephone' => $telephone,
+                    'adresse' => $adresse,
+                    'ville' => $ville,
+                    'estimation' => $estimation,
+                    'urgence' => $urgence,
+                    'motivation' => $motivation,
+                    'notes' => $notes,
+                    'statut' => 'nouveau',
+                ]);
+            } catch (\Throwable $e) {
+                error_log('Lead notification failed for lead #' . $leadId . ': ' . $e->getMessage());
+            }
 
             $_SESSION['lead_confirmation'] = [
                 'leadId' => $leadId,
@@ -426,6 +432,26 @@ final class EstimationController
                 throw new \RuntimeException('Merci de patienter une minute avant d\'envoyer une nouvelle demande.');
             }
         }
+    }
+
+    /**
+     * @return array{ville: string, estimation: float}|array{}
+     */
+    private function resolveLeadContext(int $estimationId): array
+    {
+        if ($estimationId <= 0) {
+            return [];
+        }
+
+        $estimation = (new Estimation())->findById($estimationId);
+        if ($estimation === null) {
+            throw new \RuntimeException('Estimation introuvable ou expirée. Merci de relancer une estimation.');
+        }
+
+        return [
+            'ville' => (string) $estimation['ville'],
+            'estimation' => (float) $estimation['estimated_mid'],
+        ];
     }
 
     private function getClientIp(): string

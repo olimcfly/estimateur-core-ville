@@ -17,7 +17,7 @@ final class AuthController
         $loggedOut = isset($_GET['logged_out']);
 
         View::renderBare('admin/login', [
-            'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+            'page_title' => 'Connexion Admin - ' . $this->siteName(),
             'step' => 'email',
             'success_message' => $loggedOut ? 'Vous avez été déconnecté avec succès.' : null,
             'already_logged_in' => !$loggedOut && $this->isLoggedIn(),
@@ -31,7 +31,7 @@ final class AuthController
 
         if (!self::checkCsrfToken($csrfToken)) {
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'email',
                 'error_message' => 'Session expirée. Veuillez réessayer.',
             ]);
@@ -45,7 +45,7 @@ final class AuthController
                 $this->handleVerifyCode();
             } else {
                 View::renderBare('admin/login', [
-                    'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                    'page_title' => 'Connexion Admin - ' . $this->siteName(),
                     'step' => 'email',
                     'error_message' => 'Requête invalide.',
                 ]);
@@ -64,7 +64,7 @@ final class AuthController
             }
 
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => $action === 'verify_code' ? 'code' : 'email',
                 'login_email' => $action === 'verify_code' ? strtolower(trim((string) ($_POST['email'] ?? ''))) : '',
                 'error_message' => $message,
@@ -78,7 +78,7 @@ final class AuthController
 
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'email',
                 'error_message' => $email === '' ? 'Veuillez saisir votre adresse email.' : 'Adresse email invalide.',
             ]);
@@ -94,7 +94,7 @@ final class AuthController
                 (string) ($_ENV['ADMIN_EMAIL_2'] ?? ''),
                 (string) ($_ENV['MAIL_FROM_ADDRESS'] ?? ''),
                 (string) ($_ENV['MAIL_USERNAME'] ?? ''),
-                'contact@estimation-immobilier-bordeaux.fr',
+                $this->defaultAdminEmail(),
             ]))));
 
             if (in_array($email, $configuredEmails, true)) {
@@ -107,7 +107,7 @@ final class AuthController
 
         if ($user === null) {
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'email',
                 'error_message' => 'Aucun compte administrateur associé à cet email.',
             ]);
@@ -119,7 +119,7 @@ final class AuthController
 
         $sent = Mailer::send(
             $email,
-            'Votre code de connexion - Estimation Immobilier Bordeaux',
+            'Votre code de connexion - ' . $this->siteName(),
             $this->buildCodeEmail($code, (string) ($user['name'] ?? 'Administrateur'))
         );
 
@@ -127,7 +127,7 @@ final class AuthController
             // Fallback : afficher le code directement si l'email ne peut pas être envoyé
             error_log('Login fallback: SMTP failed for ' . $email . ', showing code on screen');
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'code',
                 'login_email' => $email,
                 'fallback_code' => $code,
@@ -137,7 +137,7 @@ final class AuthController
         }
 
         View::renderBare('admin/login', [
-            'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+            'page_title' => 'Connexion Admin - ' . $this->siteName(),
             'step' => 'code',
             'login_email' => $email,
             'success_message' => 'Un code de connexion a été envoyé à votre adresse email.',
@@ -151,7 +151,7 @@ final class AuthController
 
         if ($email === '' || $code === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'email',
                 'error_message' => 'Veuillez remplir tous les champs.',
             ]);
@@ -160,7 +160,7 @@ final class AuthController
 
         if (!AdminUser::verifyLoginCode($email, $code)) {
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'code',
                 'login_email' => $email,
                 'error_message' => 'Code invalide ou expiré. Veuillez réessayer.',
@@ -175,7 +175,7 @@ final class AuthController
         // Check if user is active
         if (isset($user['is_active']) && !(bool) $user['is_active']) {
             View::renderBare('admin/login', [
-                'page_title' => 'Connexion Admin - Estimation Immobilier Bordeaux',
+                'page_title' => 'Connexion Admin - ' . $this->siteName(),
                 'step' => 'email',
                 'error_message' => 'Ce compte est desactive. Contactez le super-utilisateur.',
             ]);
@@ -218,9 +218,23 @@ final class AuthController
             </div>
             <p style="text-align: center; color: #6b6459; font-size: 0.85rem;">Ce code est valable <strong>10 minutes</strong>.<br>Si vous n'avez pas demandé ce code, ignorez cet email.</p>
             <hr style="border: none; border-top: 1px solid #e8dfd7; margin: 2rem 0;">
-            <p style="text-align: center; color: #999; font-size: 0.8rem;">Estimation Immobilier Bordeaux</p>
+            <p style="text-align: center; color: #999; font-size: 0.8rem;">{$this->siteName()}</p>
         </div>
         HTML;
+    }
+
+
+    private function siteName(): string
+    {
+        $branding = \getBrandingConfig();
+        return trim((string) ($branding['site_name'] ?? '')) ?: 'Estimation Immobilière';
+    }
+
+    private function defaultAdminEmail(): string
+    {
+        $branding = \getBrandingConfig();
+        $email = trim((string) ($branding['support_email'] ?? ''));
+        return $email !== '' ? $email : 'admin@example.com';
     }
 
     public function logout(): void
@@ -828,7 +842,7 @@ final class AuthController
             return;
         }
 
-        $subject = 'Test SMTP - Estimation Immobilier Bordeaux';
+        $subject = 'Test SMTP - ' . $this->siteName();
         $body = '<h2>Test SMTP</h2><p>Ce message confirme que la configuration SMTP fonctionne correctement.</p><p><small>Envoye depuis l\'interface d\'administration.</small></p>';
 
         $result = Mailer::send($to, $subject, $body);

@@ -566,14 +566,14 @@ final class AdminBlogController
             $name = Validator::string($_POST, 'name', 3, 255);
             $description = trim((string) ($_POST['description'] ?? ''));
             $color = trim((string) ($_POST['color'] ?? '#8B1538'));
-            $city = trim((string) ($_POST['city'] ?? 'Bordeaux'));
+            $city = trim((string) ($_POST['city'] ?? ((string) \App\Core\Config::get('city.name', '') ?: 'Ville à configurer')));
 
             $articleModel = new Article();
             $articleModel->createSilo([
                 'name' => $name,
                 'description' => $description,
                 'color' => $color,
-                'city' => $city !== '' ? $city : 'Bordeaux',
+                'city' => $city !== '' ? $city : ((string) \App\Core\Config::get('city.name', '') ?: 'Ville à configurer'),
             ]);
 
             $this->redirect('/admin/blog/silos?message=' . urlencode('Silo créé avec succès.'));
@@ -791,14 +791,14 @@ final class AdminBlogController
                 description TEXT DEFAULT NULL,
                 pillar_article_id INT UNSIGNED DEFAULT NULL,
                 color VARCHAR(7) NOT NULL DEFAULT \'#8B1538\',
-                city VARCHAR(100) NOT NULL DEFAULT \'Bordeaux\',
+                city VARCHAR(100) NOT NULL DEFAULT \'Ville à configurer\',
                 created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 INDEX idx_silo_website (website_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
         } else {
             $this->addMissingColumns($pdo, 'article_silos', [
-                'city' => 'VARCHAR(100) NOT NULL DEFAULT \'Bordeaux\'',
+                'city' => 'VARCHAR(100) NOT NULL DEFAULT \'Ville à configurer\'',
             ]);
         }
 
@@ -853,10 +853,10 @@ final class AdminBlogController
         }
 
         $prompt = match ($field) {
-            'target_audience' => "Tu es un expert marketing immobilier a Bordeaux. Pour un article cible sur le persona \"{$persona}\" avec l'objectif \"{$articleGoal}\", suggere une description d'audience cible detaillee (age, situation, budget, localisation, motivations). Reponds en 2-3 phrases maximum, en francais.",
-            'focus_keyword' => "Tu es un expert SEO immobilier a Bordeaux. Suggere 5 mots-cles focus SEO pertinents pour un article immobilier ciblant le persona \"{$persona}\". Formule : [Action] + [Type de bien] + [Specificite] + [Ville/Quartier]. Reponds avec une liste numerotee, un mot-cle par ligne, sans explication.",
-            'secondary_keywords' => "Tu es un expert SEO immobilier a Bordeaux. Le mot-cle principal est \"{$focusKeyword}\". Suggere 8-10 mots-cles secondaires/semantiques complementaires pour le SEO. Reponds avec les mots-cles separes par des virgules, sans explication.",
-            'topic' => "Tu es un redacteur immobilier expert a Bordeaux. Pour le persona \"{$persona}\" et le mot-cle \"{$focusKeyword}\", suggere 5 titres d'articles SEO accrocheurs et optimises. Reponds avec une liste numerotee, un titre par ligne, sans explication.",
+            'target_audience' => "Tu es un expert marketing immobilier dans une ville cible. Pour un article cible sur le persona \"{$persona}\" avec l'objectif \"{$articleGoal}\", suggere une description d'audience cible detaillee (age, situation, budget, localisation, motivations). Reponds en 2-3 phrases maximum, en francais.",
+            'focus_keyword' => "Tu es un expert SEO immobilier dans une ville cible. Suggere 5 mots-cles focus SEO pertinents pour un article immobilier ciblant le persona \"{$persona}\". Formule : [Action] + [Type de bien] + [Specificite] + [Ville/Quartier]. Reponds avec une liste numerotee, un mot-cle par ligne, sans explication.",
+            'secondary_keywords' => "Tu es un expert SEO immobilier dans une ville cible. Le mot-cle principal est \"{$focusKeyword}\". Suggere 8-10 mots-cles secondaires/semantiques complementaires pour le SEO. Reponds avec les mots-cles separes par des virgules, sans explication.",
+            'topic' => "Tu es un redacteur immobilier expert dans une ville cible. Pour le persona \"{$persona}\" et le mot-cle \"{$focusKeyword}\", suggere 5 titres d'articles SEO accrocheurs et optimises. Reponds avec une liste numerotee, un titre par ligne, sans explication.",
             default => null,
         };
 
@@ -881,7 +881,7 @@ final class AdminBlogController
                 'temperature' => 0.7,
                 'max_tokens' => 300,
                 'messages' => [
-                    ['role' => 'system', 'content' => 'Tu es un assistant specialise en immobilier et SEO a Bordeaux. Reponds de maniere concise et pratique.'],
+                    ['role' => 'system', 'content' => 'Tu es un assistant specialise en immobilier et SEO dans une ville cible. Reponds de maniere concise et pratique.'],
                     ['role' => 'user', 'content' => $prompt],
                 ],
             ], JSON_THROW_ON_ERROR),

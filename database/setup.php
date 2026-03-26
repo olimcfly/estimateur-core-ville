@@ -16,7 +16,8 @@ use App\Core\Config;
 use App\Core\Database;
 use App\Models\AdminUser;
 
-$adminEmail = $argv[1] ?? $_ENV['ADMIN_EMAIL'] ?? 'contact@estimation-immobilier-bordeaux.fr';
+$defaultAdminEmail = (string) (Config::get('mail.admin_email', Config::get('mail.from', '')) ?: 'admin@example.com');
+$adminEmail = $argv[1] ?? $_ENV['ADMIN_EMAIL'] ?? $defaultAdminEmail;
 
 echo "=== Initialisation de la base de données ===\n\n";
 

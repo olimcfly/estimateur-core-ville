@@ -52,6 +52,8 @@
   </div>
 </section>
 
+<?php require __DIR__ . '/partials/trust_block.php'; ?>
+
 <!-- ============================================ -->
 <!-- CTA: ESTIMATION PLUS PRÉCISE -->
 <!-- ============================================ -->

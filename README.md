@@ -1,6 +1,6 @@
-# Estimation Immobilier Bordeaux (PHP MVC)
+# Estimation Immobilier ville configurable (PHP MVC)
 
-Application SaaS d'estimation immobilière pour **Bordeaux et ses alentours** en **PHP 8+**, architecture MVC légère, **MySQL (PDO)**.
+Application SaaS d'estimation immobilière pour **ville configurable et ses alentours** en **PHP 8+**, architecture MVC légère, **MySQL (PDO)**.
 
 ## Fonctionnalités
 
@@ -10,7 +10,7 @@ Application SaaS d'estimation immobilière pour **Bordeaux et ses alentours** en
 - Stockage sécurisé en MySQL via requêtes préparées
 - Liste des leads avec filtres par score (`/leads?score=chaud|tiede|froid`)
 - Blog avec génération d'articles IA (OpenAI)
-- Guide des quartiers bordelais avec carte interactive
+- Guide des quartiers local avec carte interactive
 - Newsletter et pages légales (RGPD)
 - Mode maintenance configurable
 
@@ -47,7 +47,7 @@ Application SaaS d'estimation immobilière pour **Bordeaux et ses alentours** en
 - `POST /api/estimation` → endpoint API JSON
 - `POST /lead` → insertion lead
 - `GET /leads` → visualisation + filtres des leads
-- `GET /quartiers` → guide des quartiers bordelais
+- `GET /quartiers` → guide des quartiers local
 - `GET /blog` → articles immobiliers
 - `GET /contact` → formulaire de contact
 

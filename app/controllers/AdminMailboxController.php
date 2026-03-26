@@ -108,7 +108,7 @@ final class AdminMailboxController
 
         View::renderAdmin('admin/mailbox', [
             'page_title' => 'Boîte Email',
-            'admin_page_title' => 'Boîte Email — contact@estimation-immobilier-bordeaux.fr',
+            'admin_page_title' => 'Boîte Email — ' . $this->fromAddress(),
             'admin_page' => 'mailbox',
             'breadcrumb' => 'Boîte Email',
             'emails' => $emails,
@@ -121,7 +121,7 @@ final class AdminMailboxController
             'search' => $search,
             'unreadCount' => $unreadCount,
             'error' => $error,
-            'mailAddress' => (string) Config::get('mail.from', 'contact@estimation-immobilier-bordeaux.fr'),
+            'mailAddress' => $this->fromAddress(),
             'drafts' => $drafts,
             'scheduledEmails' => $scheduledEmails,
             'draftCount' => $draftCount,
@@ -229,8 +229,8 @@ final class AdminMailboxController
             }
         }
 
-        $fromAddress = (string) Config::get('mail.from', 'contact@estimation-immobilier-bordeaux.fr');
-        $fromName = (string) Config::get('mail.from_name', 'Estimation Immobilier Bordeaux');
+        $fromAddress = $this->fromAddress();
+        $fromName = $this->fromName();
 
         View::renderAdmin('admin/mailbox-compose', [
             'page_title' => 'Nouveau message',
@@ -368,7 +368,7 @@ final class AdminMailboxController
             return;
         }
 
-        $systemPrompt = "Tu es un assistant spécialisé en rédaction d'emails professionnels pour une agence d'estimation immobilière à Bordeaux (estimation-immobilier-bordeaux.fr). Tu rédiges en français sauf si on te demande de traduire. Tu utilises un ton professionnel mais chaleureux. Tu retournes uniquement le contenu HTML de l'email (avec balises <p>, <strong>, <ul>, etc.), sans balises <html>, <body> ou <head>.";
+        $systemPrompt = sprintf("Tu es un assistant spécialisé en rédaction d'emails professionnels pour une agence d'estimation immobilière dans la ville %s. Tu rédiges en français sauf si on te demande de traduire. Tu utilises un ton professionnel mais chaleureux. Tu retournes uniquement le contenu HTML de l'email (avec balises <p>, <strong>, <ul>, etc.), sans balises <html>, <body> ou <head>.", $this->cityName());
 
         $prompts = [
             'write' => "Rédige un email professionnel avec les instructions suivantes :\n{$instructions}\nDestinataire : {$recipient}\nSujet : {$subject}\nRetourne uniquement le contenu HTML du corps de l'email.",
@@ -399,6 +399,22 @@ final class AdminMailboxController
         }
 
         echo json_encode($result);
+    }
+
+
+    private function fromAddress(): string
+    {
+        return (string) Config::get('mail.from', Config::get('mail.admin_email', 'admin@example.com'));
+    }
+
+    private function fromName(): string
+    {
+        return (string) Config::get('mail.from_name', Config::get('app_name', 'Estimation Immobilière'));
+    }
+
+    private function cityName(): string
+    {
+        return (string) (Config::get('city.name', '') ?: 'Ville à configurer');
     }
 
     private function callClaude(string $apiKey, string $system, string $userPrompt): array

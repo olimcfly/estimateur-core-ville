@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Controllers\AuthController;
+use App\Core\Config;
 use App\Core\Validator;
 use App\Core\View;
 use App\Models\DesignTemplate;
@@ -404,7 +405,8 @@ final class EstimationController
         $issuedAt = (int) ($context['issued_at'] ?? 0);
         $expiresAt = (int) ($context['expires_at'] ?? 0);
 
-        if (($context['ip'] ?? '') !== $ip) {
+        $strictIp = (bool) Config::get('lead.strict_ip', true);
+        if ($strictIp && ($context['ip'] ?? '') !== $ip) {
             unset($_SESSION['lead_form_context']);
             throw new \RuntimeException('Vérification de sécurité invalide. Merci de refaire une estimation.');
         }

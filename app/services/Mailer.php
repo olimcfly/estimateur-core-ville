@@ -51,14 +51,15 @@ final class Mailer
         $mail = new PHPMailer(true);
 
         try {
-            $smtpHost = (string) Config::get('mail.smtp_host');
+            $smtpHost = trim((string) Config::get('mail.smtp_host'));
             $fallbackFromName = (string) (Config::get('mail.from_name')
                 ?: Config::get('app_name')
-                ?: ('Estimation Immobilier ' . (Config::get('city.name') ?: 'Local')));
+                ?: 'Estimation Immobilier Local');
             $fromName = $fallbackFromName;
-            $smtpUser = (string) Config::get('mail.smtp_user');
+            $smtpUser = trim((string) Config::get('mail.smtp_user'));
             // Sur o2switch, le From DOIT correspondre au user SMTP pour l'alignement SPF
-            $fromAddress = ($smtpUser !== '') ? $smtpUser : (string) Config::get('mail.from', 'contact@localhost');
+            $configuredFrom = trim((string) Config::get('mail.from'));
+            $fromAddress = ($smtpUser !== '') ? $smtpUser : ($configuredFrom !== '' ? $configuredFrom : 'contact@localhost');
 
             if ($smtpHost !== '') {
                 $mail->isSMTP();

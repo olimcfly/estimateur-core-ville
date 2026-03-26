@@ -260,8 +260,8 @@ final class AdminModule
             $tables = $pdo->query("SHOW TABLES LIKE 'admin_modules'")->fetchAll();
             if (empty($tables)) {
                 self::createTable();
-                self::seedDefaults();
             }
+            self::seedDefaults();
         } catch (\PDOException $e) {
             self::createTable();
             self::seedDefaults();

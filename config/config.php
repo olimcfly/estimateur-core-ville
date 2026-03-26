@@ -25,9 +25,9 @@ return [
         'from'            => $_ENV['MAIL_FROM_ADDRESS'] ?? $_ENV['MAIL_FROM'] ?? '',
         'from_name'       => $_ENV['MAIL_FROM_NAME'] ?? '',
         'admin_email'     => $_ENV['MAIL_ADMIN_EMAIL'] ?? $_ENV['MAIL_FROM_ADDRESS'] ?? $_ENV['MAIL_FROM'] ?? '',
-        'smtp_host'       => $_ENV['MAIL_SMTP_HOST'] ?? $_ENV['MAIL_HOST'] ?? '',
+        'smtp_host'       => $_ENV['MAIL_HOST'] ?? $_ENV['MAIL_SMTP_HOST'] ?? '',
         'smtp_port'       => (int) ($_ENV['MAIL_SMTP_PORT'] ?? $_ENV['MAIL_PORT'] ?? 587),
-        'smtp_user'       => $_ENV['MAIL_SMTP_USER'] ?? $_ENV['MAIL_USERNAME'] ?? '',
+        'smtp_user'       => $_ENV['MAIL_USERNAME'] ?? $_ENV['MAIL_SMTP_USER'] ?? '',
         'smtp_pass'       => $_ENV['MAIL_SMTP_PASS'] ?? $_ENV['MAIL_PASSWORD'] ?? '',
         'smtp_encryption' => $_ENV['MAIL_SMTP_ENCRYPTION'] ?? $_ENV['MAIL_ENCRYPTION'] ?? 'tls',
         'imap_host'       => $_ENV['MAIL_IMAP_HOST'] ?? $_ENV['MAIL_HOST'] ?? '',
@@ -98,5 +98,8 @@ return [
             '/admin/logout',
             '/admin/leads',
         ],
+    ],
+    'lead' => [
+        'strict_ip' => filter_var($_ENV['LEAD_STRICT_IP'] ?? true, FILTER_VALIDATE_BOOLEAN),
     ],
 ];

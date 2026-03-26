@@ -228,6 +228,8 @@ HTML;
         $notes = htmlspecialchars((string) ($lead['notes'] ?: 'Aucune'), ENT_QUOTES, 'UTF-8');
         $temperatureHtml = htmlspecialchars($temperature, ENT_QUOTES, 'UTF-8');
         $date = date('d/m/Y à H:i');
+        $cityName = (string) (Config::get('city.name') ?: 'Local');
+        $notificationBrand = htmlspecialchars('Estimation Immobilier ' . $cityName, ENT_QUOTES, 'UTF-8');
 
         $tempColor = match (true) {
             str_contains(strtolower($temperature), 'chaud') => '#e24b4a',
@@ -325,7 +327,7 @@ HTML;
   <tr>
     <td style="background:#faf9f7;padding:20px 40px;text-align:center;border-top:1px solid #e8dfd7;">
       <p style="margin:0;font-size:12px;color:#6b6459;">
-        Notification automatique &mdash; Estimation Immobilier Bordeaux
+        Notification automatique &mdash; {$notificationBrand}
       </p>
     </td>
   </tr>

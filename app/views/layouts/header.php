@@ -136,10 +136,18 @@
     $scheme = $isHttps ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $canonicalUrl = $scheme . '://' . $host . $canonicalPath;
+    $cityName = (string) (\App\Core\Config::get('city.name', '') ?: 'votre ville');
+    $cityRegion = (string) (\App\Core\Config::get('city.region', '') ?: 'votre région');
+    $siteLabel = 'Estimation Immobilier ' . $cityName;
+    $siteLabelWithRegion = $siteLabel . ' et ' . $cityRegion;
+    $baseUrl = rtrim((string) (\App\Core\Config::get('base_url', '') ?: ($scheme . '://' . $host)), '/');
+    $mailFrom = (string) (\App\Core\Config::get('mail.from', '') ?: ('contact@' . $host));
+    $defaultMetaDescription = 'Estimation immobilière à ' . $cityName . ' - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché local, résultat en 60 secondes.';
+    $defaultOgImage = $baseUrl . '/assets/images/og-estimation-' . mb_strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $cityName)) . '.png';
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux et sa métropole - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? $defaultMetaDescription), ENT_QUOTES, 'UTF-8') ?>">
   <meta name="theme-color" content="#8B1538">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -149,12 +157,12 @@
   <?php endif; ?>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
-  <title><?= isset($page_title) ? $page_title : 'Estimation Immobilier Bordeaux et Métropole' ?></title>
+  <title><?= isset($page_title) ? $page_title : $siteLabelWithRegion ?></title>
 
   <?php
-    $ogTitle = htmlspecialchars((string) ($og_title ?? $page_title ?? 'Estimation Immobilier Bordeaux et Métropole'), ENT_QUOTES, 'UTF-8');
-    $ogDesc = htmlspecialchars((string) ($og_description ?? $meta_description ?? 'Obtenez votre avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8');
-    $ogImg = htmlspecialchars((string) ($og_image ?? 'https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png'), ENT_QUOTES, 'UTF-8');
+    $ogTitle = htmlspecialchars((string) ($og_title ?? $page_title ?? $siteLabelWithRegion), ENT_QUOTES, 'UTF-8');
+    $ogDesc = htmlspecialchars((string) ($og_description ?? $meta_description ?? ('Obtenez votre avis de valeur immobilier gratuit à ' . $cityName . '. Résultat en 60 secondes.')), ENT_QUOTES, 'UTF-8');
+    $ogImg = htmlspecialchars((string) ($og_image ?? $defaultOgImage), ENT_QUOTES, 'UTF-8');
     $ogType = !empty($article) ? 'article' : 'website';
   ?>
   <!-- Open Graph -->
@@ -163,7 +171,7 @@
   <meta property="og:description" content="<?= $ogDesc ?>">
   <meta property="og:url" content="<?= e($canonicalUrl) ?>">
   <meta property="og:locale" content="fr_FR">
-  <meta property="og:site_name" content="Estimation Immobilier Bordeaux et Métropole">
+  <meta property="og:site_name" content="<?= e($siteLabelWithRegion) ?>">
   <meta property="og:image" content="<?= $ogImg ?>">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -179,24 +187,24 @@
   {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    "name": "Estimation Immobilier Bordeaux et Métropole",
-    "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et Métropole. Prix au m² par quartier, tendances du marché bordelais.",
-    "url": "https://estimation-immobilier-bordeaux.fr",
-    "email": "contact@estimation-immobilier-bordeaux.fr",
+    "name": "<?= e($siteLabelWithRegion) ?>",
+    "description": "Avis de valeur et estimation immobilière gratuite à <?= e($cityName) ?> et <?= e($cityRegion) ?>. Prix au m² local et tendances du marché immobilier.",
+    "url": "<?= e($baseUrl) ?>",
+    "email": "<?= e($mailFrom) ?>",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Bordeaux",
-      "addressLocality": "Bordeaux",
-      "addressRegion": "Nouvelle-Aquitaine",
-      "postalCode": "33000",
+      "streetAddress": "<?= e($cityName) ?>",
+      "addressLocality": "<?= e($cityName) ?>",
+      "addressRegion": "<?= e($cityRegion) ?>",
+      "postalCode": "<?= e((string) (\App\Core\Config::get('city.code_postal', ''))) ?>",
       "addressCountry": "FR"
     },
     "areaServed": [
-      { "@type": "City", "name": "Bordeaux" },
-      { "@type": "Place", "name": "Bordeaux Métropole" }
+      { "@type": "City", "name": "<?= e($cityName) ?>" },
+      { "@type": "Place", "name": "<?= e($cityRegion) ?>" }
     ],
     "priceRange": "Gratuit",
-    "knowsAbout": ["estimation immobilière", "avis de valeur", "prix immobilier Bordeaux", "marché immobilier Gironde"]
+    "knowsAbout": ["estimation immobilière", "avis de valeur", "prix immobilier <?= e($cityName) ?>", "marché immobilier <?= e($cityRegion) ?>"]
   }
   </script>
 
@@ -210,7 +218,7 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Accueil",
-        "item": "https://estimation-immobilier-bordeaux.fr"
+        "item": "<?= e($baseUrl) ?>"
       },
       <?php if ($canonicalPath !== '/'): ?>
       {
@@ -799,7 +807,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="header-wrapper">
     <a href="/" class="brand">
       <div class="brand-icon"><i class="fas fa-chart-area"></i></div>
-      Estimation Immobilier <span>Bordeaux et Métropole</span>
+      Estimation Immobilier <span><?= e($cityName) ?> et <?= e($cityRegion) ?></span>
     </a>
 
     <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
@@ -855,7 +863,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <ul class="dropdown-menu" aria-label="Sous-menu ressources">
           <li><a href="/guides">Guides complets</a></li>
           <li><a href="/tools/calculatrice">Calculatrice prix</a></li>
-          <li><a href="/quartiers">Quartiers Bordeaux</a></li>
+          <li><a href="/quartiers">Quartiers <?= e($cityName) ?></a></li>
           <li><a href="/newsletter">Newsletter</a></li>
         </ul>
       </div>

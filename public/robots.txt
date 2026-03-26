@@ -5,4 +5,4 @@ Disallow: /leads
 Disallow: /api/
 Disallow: /phpinfo.php
 
-Sitemap: https://estimation-immobilier-bordeaux.fr/sitemap.xml
+Sitemap: https://estimation-immobilier-[ville].fr/sitemap.xml

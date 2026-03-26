@@ -1,5 +1,9 @@
-<?php $page_title = 'Estimation Immobilier Bordeaux et Métropole | Avis de Valeur Gratuit en 60s'; ?>
-<?php $meta_description = 'Obtenez une estimation immobilière gratuite à Bordeaux et Métropole en 60 secondes. Prix au m² par quartier, tendances du marché bordelais. 100% gratuit, sans engagement.'; ?>
+<?php
+$cityName = (string) (\App\Core\Config::get('city.name', '') ?: 'votre ville');
+$cityRegion = (string) (\App\Core\Config::get('city.region', '') ?: 'votre région');
+$page_title = 'Estimation Immobilier ' . $cityName . ' et ' . $cityRegion . ' | Avis de Valeur Gratuit en 60s';
+$meta_description = 'Obtenez une estimation immobilière gratuite à ' . $cityName . ' et ' . $cityRegion . ' en 60 secondes. Prix au m² local, tendances du marché. 100% gratuit, sans engagement.';
+?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -12,7 +16,7 @@
         <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
       </p>
 
-      <h1>Estimez la valeur de votre bien immobilier à Bordeaux et Métropole</h1>
+      <h1>Estimez la valeur de votre bien immobilier à <?= e($cityName) ?> et <?= e($cityRegion) ?></h1>
 
       <p class="lead">
         Obtenez une fourchette de prix indicative en quelques secondes.
@@ -40,10 +44,10 @@
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
         <p class="testimonial-quote">
-          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à Bordeaux et Métropole !"
+          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre à <?= e($cityName) ?> !"
         </p>
         <p class="testimonial-author">
-          — Marie D. • Bordeaux Chartrons
+          — Marie D.
         </p>
       </div>
 
@@ -103,7 +107,7 @@
             type="text"
             id="ville"
             name="ville"
-            placeholder="Bordeaux, Talence, Mérignac..."
+            placeholder="<?= e($cityName) ?>, secteur proche..."
             required
             autocomplete="off"
           >
@@ -131,7 +135,7 @@
           </li>
           <li>
             <i class="fas fa-check-circle"></i>
-            <span><strong>Données réelles</strong> — 5000+ transactions à Bordeaux et Métropole</span>
+            <span><strong>Données réelles</strong> — transactions récentes sur <?= e($cityName) ?> et sa région</span>
           </li>
           <li>
             <i class="fas fa-check-circle"></i>

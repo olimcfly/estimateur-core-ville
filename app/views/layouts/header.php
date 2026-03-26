@@ -182,8 +182,8 @@
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? $defaultMetaDescription), ENT_QUOTES, 'UTF-8') ?>">
-  <meta name="theme-color" content="#8B1538">
+  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux et sa métropole - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="theme-color" content="<?= e((string) ($colors['primary'] ?? '#8B1538')) ?>">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
@@ -312,6 +312,13 @@
       --success-rgb: <?= e((string) ($rgbColors['success'] ?? '34, 197, 94')) ?>;
       --warning-rgb: <?= e((string) ($rgbColors['warning'] ?? '249, 115, 22')) ?>;
       --neutral-rgb: <?= e((string) ($rgbColors['neutral'] ?? '0, 0, 0')) ?>;
+      --primary-alt: <?= e((string) ($colors['primary_alt'] ?? '#C41E3A')) ?>;
+      --text-inverse: <?= e((string) ($colors['text_inverse'] ?? '#ffffff')) ?>;
+      --font-display: <?= e((string) ($colors['font_display'] ?? '\'Playfair Display\', serif')) ?>;
+      --z-sticky-cta: 999;
+      --z-header: 1000;
+      --z-mobile-overlay: 1050;
+      --z-popup-lead: 1100;
     }
 
     /* HEADER */

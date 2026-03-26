@@ -174,7 +174,7 @@
     // Mobile dropdown toggles (touch-friendly)
     document.querySelectorAll('.has-dropdown > .nav-link').forEach(function(link) {
       link.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth < 768) {
           e.preventDefault();
           e.stopPropagation();
           var parent = this.parentElement;
@@ -189,7 +189,7 @@
 
     // Close menu on resize to desktop
     window.addEventListener('resize', function() {
-      if (window.innerWidth > 768) {
+      if (window.innerWidth >= 768) {
         closeMenu();
       }
     });
@@ -197,7 +197,7 @@
     // Close menu when clicking a dropdown sub-link or regular nav link (mobile)
     nav.querySelectorAll('.dropdown-menu a, .nav-item:not(.has-dropdown) .nav-link, .nav-cta-mobile a').forEach(function(link) {
       link.addEventListener('click', function() {
-        if (window.innerWidth <= 768) {
+        if (window.innerWidth < 768) {
           closeMenu();
         }
       });
@@ -205,122 +205,9 @@
   })();
 </script>
 
-<!-- Admin presence: banner created dynamically via JS only when admin is active (not in DOM at crawl time) -->
-<!-- Admin presence alert banner -->
-<div id="admin-presence-alert" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#8B1538,#C41E3A);color:#fff;padding:1rem 2rem;font-family:'DM Sans',sans-serif;box-shadow:0 -4px 20px rgba(0,0,0,0.15);animation:slideUpPresence 0.4s ease-out;">
-  <div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:0.75rem;flex:1;min-width:200px;">
-      <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <i class="fas fa-user-shield" style="font-size:1.1rem;"></i>
-      </div>
-      <div>
-        <strong id="admin-presence-text" style="font-size:0.95rem;display:block;">L'administrateur travaille actuellement sur cette page.</strong>
-        <span style="font-size:0.82rem;opacity:0.9;">Veuillez patienter ou nous contacter pour toute question.</span>
-      </div>
-    </div>
-    <div style="display:flex;gap:0.5rem;flex-shrink:0;">
-      <a href="/contact" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;background:rgba(255,255,255,0.2);color:#fff;text-decoration:none;border-radius:6px;font-size:0.85rem;font-weight:600;transition:background 0.2s;">
-        <i class="fas fa-envelope"></i> Nous contacter
-      </a>
-      <button onclick="document.getElementById('admin-presence-alert').style.display='none'" style="background:rgba(255,255,255,0.1);border:none;color:#fff;padding:0.5rem;border-radius:6px;cursor:pointer;font-size:1rem;line-height:1;" title="Fermer">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-  </div>
-</div>
-<style>
-@keyframes slideUpPresence { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-</style>
-<!-- Admin presence notification: DISABLED on frontend -->
-<!-- To re-enable, uncomment the banner HTML and JS below -->
-<!-- ================================================ -->
-<!-- MOBILE BOTTOM NAV (APP-LIKE)                     -->
-<!-- ================================================ -->
-<nav class="mobile-bottom-nav" aria-label="Navigation mobile">
-  <div class="mobile-bottom-nav__inner">
-    <a href="/" class="mobile-bottom-nav__item <?= ($canonicalPath ?? '/') === '/' ? 'active' : '' ?>" aria-label="Accueil">
-      <i class="fas fa-home"></i>
-      <span>Accueil</span>
-    </a>
-    <a href="/blog" class="mobile-bottom-nav__item <?= str_starts_with(($canonicalPath ?? ''), '/blog') ? 'active' : '' ?>" aria-label="Blog">
-      <i class="fas fa-newspaper"></i>
-      <span>Blog</span>
-    </a>
-    <a href="/estimation#form-estimation" class="mobile-bottom-nav__cta" aria-label="Estimer mon bien">
-      <span class="mobile-bottom-nav__cta-icon"><i class="fas fa-chart-line"></i></span>
-      <span>Estimer</span>
-    </a>
-    <a href="/services" class="mobile-bottom-nav__item <?= str_starts_with(($canonicalPath ?? ''), '/services') ? 'active' : '' ?>" aria-label="Services">
-      <i class="fas fa-concierge-bell"></i>
-      <span>Services</span>
-    </a>
-    <a href="/contact" class="mobile-bottom-nav__item <?= str_starts_with(($canonicalPath ?? ''), '/contact') ? 'active' : '' ?>" aria-label="Contact">
-      <i class="fas fa-envelope"></i>
-      <span>Contact</span>
-    </a>
-  </div>
-</nav>
+<?php include __DIR__ . '/sticky-cta.php'; ?>
 
-<script>
-(function() {
-  var dismissed = false;
-  var alertEl = null;
 
-  function createBanner(name) {
-    if (alertEl) return;
-    var style = document.createElement('style');
-    style.textContent = '@keyframes slideUpPresence{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}';
-    document.head.appendChild(style);
-
-    alertEl = document.createElement('div');
-    alertEl.id = 'admin-presence-alert';
-    alertEl.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#8B1538,#C41E3A);color:#fff;padding:1rem 2rem;font-family:"DM Sans",sans-serif;box-shadow:0 -4px 20px rgba(0,0,0,0.15);animation:slideUpPresence 0.4s ease-out;';
-    alertEl.innerHTML = '<div style="max-width:900px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">'
-      + '<div style="display:flex;align-items:center;gap:0.75rem;flex:1;min-width:200px;">'
-      + '<div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-      + '<i class="fas fa-user-shield" style="font-size:1.1rem;"></i></div>'
-      + '<div><strong id="admin-presence-text" style="font-size:0.95rem;display:block;"></strong>'
-      + '<span style="font-size:0.82rem;opacity:0.9;">Veuillez patienter ou nous contacter pour toute question.</span></div></div>'
-      + '<div style="display:flex;gap:0.5rem;flex-shrink:0;">'
-      + '<a href="/contact" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;background:rgba(255,255,255,0.2);color:#fff;text-decoration:none;border-radius:6px;font-size:0.85rem;font-weight:600;transition:background 0.2s;">'
-      + '<i class="fas fa-envelope"></i> Nous contacter</a>'
-      + '<button style="background:rgba(255,255,255,0.1);border:none;color:#fff;padding:0.5rem;border-radius:6px;cursor:pointer;font-size:1rem;line-height:1;" title="Fermer">'
-      + '<i class="fas fa-times"></i></button></div></div>';
-
-    document.body.appendChild(alertEl);
-    alertEl.querySelector('#admin-presence-text').textContent = name + ' travaille actuellement sur le site.';
-    alertEl.querySelector('button').addEventListener('click', function() {
-      dismissed = true;
-      alertEl.remove();
-      alertEl = null;
-    });
-  }
-
-  function checkPresence() {
-    if (dismissed) return;
-    fetch('/api/presence/check', { credentials: 'same-origin' })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.active) {
-          var name = data.admin_name || "L'administrateur";
-          if (!alertEl) {
-            createBanner(name);
-          } else {
-            document.getElementById('admin-presence-text').textContent = name + ' travaille actuellement sur le site.';
-          }
-        } else if (alertEl) {
-          alertEl.remove();
-          alertEl = null;
-        }
-      })
-      .catch(function() {});
-  }
-
-  checkPresence();
-  setInterval(checkPresence, 45000);
-})();
-</script>
-<!-- Admin presence JS: DISABLED -->
 
 </body>
 </html>

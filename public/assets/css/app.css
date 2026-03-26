@@ -15,6 +15,13 @@
   --warning: #d97706;
   --warning-rgb: 217, 119, 6;
   --primary-rgb: 139, 21, 56;
+  --header-height-desktop: 72px;
+  --header-height-mobile: 60px;
+  --sticky-cta-height: 64px;
+  --z-sticky-cta: 999;
+  --z-header: 1000;
+  --z-mobile-overlay: 1050;
+  --z-popup-lead: 1100;
 }
 
 /* ============================= */
@@ -107,6 +114,14 @@ body {
     radial-gradient(circle at 90% 0%, rgba(139, 21, 56, 0.08), transparent 30%),
     var(--bg);
   line-height: 1.6;
+  padding-top: var(--header-height-desktop);
+}
+
+@media (max-width: 767.98px) {
+  body {
+    padding-top: var(--header-height-mobile);
+    padding-bottom: calc(var(--sticky-cta-height) + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 a { 
@@ -126,7 +141,7 @@ a {
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-header);
   backdrop-filter: blur(12px);
   background: rgba(250, 249, 247, 0.92);
   border-bottom: 1px solid rgba(232, 223, 215, 0.8);
@@ -869,7 +884,7 @@ h4 {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767.98px) {
   .blog-grid {
     grid-template-columns: 1fr;
   }
@@ -3718,7 +3733,7 @@ main {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
   .hero {
     padding: 3rem 0 2.5rem;
   }
@@ -3968,7 +3983,7 @@ main {
 }
 
 /* iOS zoom prevention on input focus */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
   input, select, textarea {
     font-size: 16px;
   }
@@ -4013,7 +4028,7 @@ html {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-sticky-cta);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -4026,7 +4041,7 @@ html {
   display: flex;
   align-items: stretch;
   justify-content: space-around;
-  height: 56px;
+  height: var(--sticky-cta-height);
   max-width: 500px;
   margin: 0 auto;
 }
@@ -4127,7 +4142,7 @@ html {
 /* TABLET BREAKPOINT (601px - 1024px)            */
 /* ============================================= */
 
-@media (min-width: 601px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1023.98px) {
   .container {
     width: min(1120px, calc(100% - 2rem));
   }
@@ -4242,10 +4257,10 @@ html {
 }
 
 /* ============================================= */
-/* MOBILE BREAKPOINT (max-width: 600px)          */
+/* MOBILE BREAKPOINT (max-width: 767.98px)          */
 /* ============================================= */
 
-@media (max-width: 600px) {
+@media (max-width: 767.98px) {
   /* Show bottom nav */
   .mobile-bottom-nav {
     display: block;
@@ -4253,7 +4268,7 @@ html {
 
   /* Add bottom padding to body so content isn't hidden behind bottom nav */
   body {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--sticky-cta-height) + env(safe-area-inset-bottom, 0px));
   }
 
   /* Hide footer CTA band on mobile (bottom nav handles this) */

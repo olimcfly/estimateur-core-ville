@@ -182,8 +182,8 @@
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? $defaultMetaDescription), ENT_QUOTES, 'UTF-8') ?>">
-  <meta name="theme-color" content="#8B1538">
+  <meta name="description" content="<?= htmlspecialchars((string) ($meta_description ?? 'Estimation immobilier Bordeaux et sa métropole - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché bordelais, résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8') ?>">
+  <meta name="theme-color" content="<?= e((string) ($colors['primary'] ?? '#8B1538')) ?>">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
@@ -301,13 +301,20 @@
       --success-rgb: <?= e((string) ($rgbColors['success'] ?? '34, 197, 94')) ?>;
       --warning-rgb: <?= e((string) ($rgbColors['warning'] ?? '249, 115, 22')) ?>;
       --neutral-rgb: <?= e((string) ($rgbColors['neutral'] ?? '0, 0, 0')) ?>;
+      --primary-alt: <?= e((string) ($colors['primary_alt'] ?? '#C41E3A')) ?>;
+      --text-inverse: <?= e((string) ($colors['text_inverse'] ?? '#ffffff')) ?>;
+      --font-display: <?= e((string) ($colors['font_display'] ?? '\'Playfair Display\', serif')) ?>;
+      --z-sticky-cta: 999;
+      --z-header: 1000;
+      --z-mobile-overlay: 1050;
+      --z-popup-lead: 1100;
     }
 
     /* HEADER PREMIUM */
     .site-header {
       position: sticky;
       top: 0;
-      z-index: 999;
+      z-index: var(--z-header);
       backdrop-filter: blur(12px);
       background: rgba(var(--bg-rgb), 0.95);
       border-bottom: 1px solid rgba(var(--border-rgb), 0.6);
@@ -334,7 +341,7 @@
       gap: 0.6rem;
       text-decoration: none;
       margin: 0;
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-display);
       font-weight: 700;
       font-size: 1.15rem;
       letter-spacing: -0.02em;
@@ -347,9 +354,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--primary), #C41E3A);
+      background: linear-gradient(135deg, var(--primary), var(--primary-alt));
       border-radius: 8px;
-      color: #fff;
+      color: var(--text-inverse);
       font-size: 1rem;
       box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
       flex-shrink: 0;
@@ -439,7 +446,7 @@
       list-style: none;
       margin: 0;
       padding: 0.5rem 0;
-      z-index: 1000;
+      z-index: calc(var(--z-header) + 1);
     }
 
     .has-dropdown:hover .dropdown-menu {
@@ -519,8 +526,8 @@
       align-items: center;
       gap: 0.4rem;
       padding: 0.7rem 1.4rem;
-      background: linear-gradient(135deg, var(--primary), #C41E3A);
-      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-alt));
+      color: var(--text-inverse);
       text-decoration: none;
       border: none;
       border-radius: 8px;
@@ -535,7 +542,7 @@
     .btn-cta:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.3);
-      background: linear-gradient(135deg, var(--primary-dark), #a01833);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     }
 
     .btn-cta i {
@@ -551,7 +558,7 @@
       border: none;
       cursor: pointer;
       padding: 0.6rem;
-      z-index: 1001;
+      z-index: calc(var(--z-mobile-overlay) + 1);
       border-radius: 8px;
       transition: background 0.2s ease;
     }
@@ -583,7 +590,7 @@
     }
 
     /* RESPONSIVE */
-    @media (max-width: 1024px) {
+    @media (max-width: 1023.98px) {
       .top-nav {
         gap: 0;
       }
@@ -611,7 +618,7 @@
       }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 767.98px) {
       .menu-toggle {
         display: flex;
       }
@@ -631,7 +638,7 @@
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        z-index: 998;
+        z-index: var(--z-mobile-overlay);
       }
 
       .top-nav.active {
@@ -748,7 +755,7 @@
       }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 767.98px) {
       .header-container {
         padding: 0.8rem 0;
       }
@@ -790,7 +797,7 @@
       display: none;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 767.98px) {
       .btn-header-cta {
         display: none;
       }
@@ -807,8 +814,8 @@
         justify-content: center;
         gap: 0.5rem;
         padding: 1rem 1.5rem;
-        background: linear-gradient(135deg, var(--primary), #C41E3A);
-        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-alt));
+        color: var(--text-inverse);
         text-decoration: none;
         border-radius: 12px;
         font-weight: 700;

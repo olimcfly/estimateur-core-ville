@@ -19,121 +19,117 @@
   </div>
 </section>
 
-<footer class="site-footer">
+<?php
+  $config = $config ?? getSiteConfig();
+  $siteName = (string) ($config['site_name'] ?? 'Estimation Immobilier');
+  $siteLogo = (string) ($config['site_logo'] ?? '/favicon.svg');
+  $city = (string) ($config['ville'] ?? 'votre ville');
+  $advisorName = (string) ($config['advisor_name'] ?? 'Conseiller immobilier');
+  $advisorPhone = (string) ($config['advisor_phone'] ?? '');
+  $advisorEmail = (string) ($config['advisor_email'] ?? '');
+  $advisorPhoto = (string) ($config['advisor_photo'] ?? '/favicon.svg');
+  $services = is_array($config['footer_services'] ?? null) ? $config['footer_services'] : [];
+  $resources = is_array($config['footer_resources'] ?? null) ? $config['footer_resources'] : [];
+  $legalLinks = is_array($config['footer_legal'] ?? null) ? $config['footer_legal'] : [];
+  $socialLinks = is_array($config['social_links'] ?? null) ? $config['social_links'] : [];
+  $accentColor = (string) ($config['color_accent'] ?? '#D4AF37');
+  $newsletterAction = (string) ($config['newsletter_action_url'] ?? '/api/newsletter');
+  $currentYear = (int) date('Y');
+?>
+
+<footer class="site-footer" style="--color-accent: <?= e($accentColor) ?>;">
   <div class="container">
-
-    <!-- FOOTER MAIN -->
-    <div class="footer-grid">
-
-      <!-- COL 1: BRAND -->
-      <div class="footer-column footer-col-brand">
-        <a href="/" class="footer-logo-link">
-          <span class="footer-logo-icon"><i class="fas fa-home"></i></span>
-          <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux et Métropole</strong></span>
+    <div class="site-footer__grid">
+      <section class="site-footer__identity">
+        <a href="/" class="site-footer__brand" aria-label="<?= e($siteName) ?>">
+          <img src="<?= e($siteLogo) ?>" alt="Logo <?= e($siteName) ?>" class="site-footer__logo">
+          <span class="site-footer__site-name"><?= e($siteName) ?></span>
         </a>
-        <p class="footer-desc">
-          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et Métropole depuis 2020.
-        </p>
-        <div class="footer-social">
-          <a href="https://facebook.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://instagram.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
-          <a href="https://linkedin.com/company/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-          <a href="https://twitter.com/estimation_bdx" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-        </div>
-      </div>
-
-      <!-- COL 2: SERVICES -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Services</h4>
-        <ul class="footer-links">
-          <li><a href="/#form-estimation">Estimation en ligne</a></li>
-          <li><a href="/processus-estimation">Notre processus</a></li>
-          <li><a href="/quartiers">Quartiers de Bordeaux</a></li>
-          <li><a href="/#how-it-works">Comment ça marche</a></li>
-          <li><a href="/#example-result">Voir un exemple</a></li>
-        </ul>
-      </div>
-
-      <!-- COL 3: RESSOURCES -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Ressources</h4>
-        <ul class="footer-links">
-          <li><a href="/blog">Blog & actualités</a></li>
-          <li><a href="/guides">Guides immobiliers</a></li>
-          <li><a href="/#faq">FAQ</a></li>
-          <li><a href="/newsletter">Newsletter</a></li>
-        </ul>
-      </div>
-
-      <!-- COL 4: ENTREPRISE -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Entreprise</h4>
-        <ul class="footer-links">
-          <li><a href="/a-propos">À propos</a></li>
-          <li><a href="/contact">Contact</a></li>
-          <li><a href="/mentions-legales">Mentions légales</a></li>
-          <li><a href="/politique-confidentialite">Confidentialité</a></li>
-          <li><a href="/conditions-utilisation">CGU</a></li>
-        </ul>
-      </div>
-
-      <!-- COL 5: CONTACT -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Nous contacter</h4>
-        <ul class="footer-contact">
-          <li>
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Bordeaux, 33000<br>Nouvelle-Aquitaine</span>
-          </li>
-          <li>
-            <a href="/contact">
-              <i class="fas fa-comment-dots"></i>
-              <span>Nous contacter</span>
+        <p class="site-footer__tagline">Votre spécialiste de l'estimation immobilière à <?= e($city) ?></p>
+        <div class="site-footer__social" aria-label="Réseaux sociaux">
+          <?php foreach ($socialLinks as $social):
+            $platform = (string) ($social['platform'] ?? 'Réseau social');
+            $url = (string) ($social['url'] ?? '#');
+            $icon = (string) ($social['icon'] ?? 'fas fa-share-alt');
+            $hasInlineIcon = str_contains($icon, '<svg');
+          ?>
+            <a href="<?= e($url) ?>" target="_blank" rel="noopener noreferrer" class="site-footer__social-link" aria-label="<?= e($platform) ?>">
+              <?php if ($hasInlineIcon): ?>
+                <?= $icon ?>
+              <?php else: ?>
+                <i class="<?= e($icon) ?>" aria-hidden="true"></i>
+              <?php endif; ?>
             </a>
-          </li>
-          <li>
-            <a href="mailto:contact@estimation-immobilier-bordeaux.fr">
-              <i class="fas fa-envelope"></i>
-              <span>contact@estimation-immobilier-bordeaux.fr</span>
-            </a>
-          </li>
+          <?php endforeach; ?>
+        </div>
+        <div class="site-footer__trust" aria-label="Badges de confiance">
+          <span class="site-footer__badge"><?= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 17a7 7 0 1 1 7-7 7 7 0 0 1-7 7Zm-1-5.5 5-5-1.4-1.4L11 10.7 9.4 9.1 8 10.5Z"/></svg>' ?>SSL</span>
+          <span class="site-footer__badge"><?= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5Zm0 17c-3-1.2-5-4.6-5-8V7.2l5-1.9 5 1.9V11c0 3.4-2 6.8-5 8Zm-1.2-4.6 4.7-4.7-1.4-1.4-3.3 3.3-1.4-1.4-1.4 1.4Z"/></svg>' ?>RGPD</span>
+          <span class="site-footer__badge"><?= '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7l10 15L22 7Zm-1 13-4-6 1.7-1.1 2.4 3.6 4.5-5.4L17.4 7Z"/></svg>' ?>Vérifié</span>
+        </div>
+      </section>
+
+      <section class="site-footer__column site-footer__column--services" data-accordion>
+        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Nos services</button>
+        <ul class="site-footer__links" data-accordion-panel>
+          <?php foreach ($services as $item):
+            $label = (string) ($item['label'] ?? 'Service');
+            $url = (string) ($item['url'] ?? '#');
+          ?>
+            <li><a href="<?= e($url) ?>"><?= e($label) ?></a></li>
+          <?php endforeach; ?>
         </ul>
-      </div>
+      </section>
 
-    </div>
+      <section class="site-footer__column site-footer__column--resources" data-accordion>
+        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Ressources</button>
+        <ul class="site-footer__links" data-accordion-panel>
+          <?php foreach ($resources as $item):
+            $label = (string) ($item['label'] ?? 'Ressource');
+            $url = (string) ($item['url'] ?? '#');
+          ?>
+            <li><a href="<?= e($url) ?>"><?= e($label) ?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      </section>
 
-    <!-- NEWSLETTER -->
-    <div class="footer-newsletter-band">
-      <div class="footer-newsletter-text">
-        <i class="fas fa-envelope-open-text"></i>
-        <div>
-          <strong>Restez informé</strong>
-          <span>Recevez nos analyses du marché de Bordeaux et sa métropole et nos conseils immobiliers.</span>
+      <section class="site-footer__column site-footer__column--contact" data-accordion>
+        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Nous contacter</button>
+        <div class="site-footer__contact" data-accordion-panel>
+          <div class="site-footer__advisor">
+            <img src="<?= e($advisorPhoto) ?>" alt="<?= e($advisorName) ?>" class="site-footer__advisor-photo">
+            <strong><?= e($advisorName) ?></strong>
+          </div>
+          <?php if ($advisorPhone !== ''): ?>
+            <a class="site-footer__contact-link" href="tel:<?= e(preg_replace('/\s+/', '', $advisorPhone) ?? $advisorPhone) ?>"><?= e($advisorPhone) ?></a>
+          <?php endif; ?>
+          <?php if ($advisorEmail !== ''): ?>
+            <a class="site-footer__contact-link" href="mailto:<?= e($advisorEmail) ?>"><?= e($advisorEmail) ?></a>
+          <?php endif; ?>
+          <p class="site-footer__address"><?= e($city) ?>, France</p>
+          <form class="site-footer__newsletter" method="POST" action="<?= e($newsletterAction) ?>" data-newsletter-form>
+            <label class="sr-only" for="footer-newsletter-email">Adresse email</label>
+            <input id="footer-newsletter-email" type="email" name="email" required placeholder="Votre email">
+            <button type="submit">S'inscrire</button>
+          </form>
+          <p class="site-footer__newsletter-feedback" data-newsletter-feedback aria-live="polite"></p>
         </div>
-      </div>
-      <form class="footer-newsletter-form" method="POST" action="/api/newsletter">
-        <input type="email" name="email" placeholder="Votre adresse email" required aria-label="Email pour newsletter">
-        <button type="submit">S'inscrire</button>
-      </form>
+      </section>
     </div>
+  </div>
 
-    <!-- FOOTER BOTTOM -->
-    <div class="footer-bottom">
-      <div class="footer-bottom-left">
-        <p>&copy; 2026 Estimation Immobilier Bordeaux et Métropole &mdash; SAS OCDM Agency. Tous droits réservés.</p>
-      </div>
-      <div class="footer-bottom-right">
-        <div class="footer-trust">
-          <span class="trust-badge"><i class="fas fa-lock"></i> SSL</span>
-          <span class="trust-badge"><i class="fas fa-shield-alt"></i> RGPD</span>
-          <span class="trust-badge"><i class="fas fa-check-circle"></i> Vérifié</span>
-        </div>
-        <a href="#top" class="back-to-top" aria-label="Retour en haut">
-          <i class="fas fa-chevron-up"></i>
-        </a>
-      </div>
+  <div class="site-footer__bottom">
+    <div class="container site-footer__bottom-inner">
+      <p>© <?= e((string) $currentYear) ?> <?= e($siteName) ?> — SAS OCDM Agency</p>
+      <nav class="site-footer__legal" aria-label="Liens légaux">
+        <?php foreach ($legalLinks as $item):
+          $label = (string) ($item['label'] ?? 'Lien légal');
+          $url = (string) ($item['url'] ?? '#');
+        ?>
+          <a href="<?= e($url) ?>"><?= e($label) ?></a>
+        <?php endforeach; ?>
+      </nav>
     </div>
-
   </div>
 </footer>
 
@@ -202,6 +198,76 @@
         }
       });
     });
+  })();
+
+  // Footer accordion (mobile) + newsletter AJAX submit
+  (function() {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const accordionItems = document.querySelectorAll('[data-accordion]');
+    const newsletterForms = document.querySelectorAll('[data-newsletter-form]');
+
+    function setAccordionState() {
+      accordionItems.forEach((item) => {
+        const toggle = item.querySelector('.site-footer__accordion-toggle');
+        const panel = item.querySelector('[data-accordion-panel]');
+        if (!toggle || !panel) return;
+
+        if (mq.matches) {
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          panel.hidden = !expanded;
+          toggle.disabled = false;
+        } else {
+          panel.hidden = false;
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.disabled = true;
+        }
+      });
+    }
+
+    accordionItems.forEach((item) => {
+      const toggle = item.querySelector('.site-footer__accordion-toggle');
+      const panel = item.querySelector('[data-accordion-panel]');
+      if (!toggle || !panel) return;
+
+      toggle.addEventListener('click', () => {
+        if (!mq.matches) return;
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isExpanded));
+        panel.hidden = isExpanded;
+      });
+    });
+
+    newsletterForms.forEach((form) => {
+      const feedback = form.parentElement ? form.parentElement.querySelector('[data-newsletter-feedback]') : null;
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (feedback) feedback.textContent = 'Inscription en cours...';
+
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: new FormData(form)
+          });
+
+          if (!response.ok) {
+            throw new Error('Newsletter error');
+          }
+
+          form.reset();
+          if (feedback) feedback.textContent = 'Merci, votre inscription est confirmée.';
+        } catch (error) {
+          if (feedback) feedback.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+        }
+      });
+    });
+
+    setAccordionState();
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', setAccordionState);
+    } else {
+      window.addEventListener('resize', setAccordionState);
+    }
   })();
 </script>
 

@@ -636,8 +636,8 @@ PROMPT;
     private function getAvailableLandingPages(): array
     {
         return [
-            ['url' => '/lp/estimation-bordeaux', 'label' => 'Estimation Bordeaux'],
-            ['url' => '/lp/vendre-maison-bordeaux', 'label' => 'Vendre Maison Bordeaux'],
+            ['url' => '/lp/estimation', 'label' => 'Estimation'],
+            ['url' => '/lp/vendre-maison', 'label' => 'Vendre Maison'],
             ['url' => '/lp/avis-valeur-gratuit', 'label' => 'Avis de Valeur Gratuit'],
         ];
     }

@@ -414,7 +414,7 @@ const GADS = (() => {
         const mainKeyword = ag.keywords.find(k => k.keyword.trim() !== '' && !k.is_negative);
         const keyword = mainKeyword ? mainKeyword.keyword : ag.name;
 
-        const landingUrl = ag.landing_url || '/lp/estimation-bordeaux';
+        const landingUrl = ag.landing_url || '/lp/estimation';
         const d = window.GADS_INIT || {};
 
         btn.disabled = true;
@@ -427,7 +427,7 @@ const GADS = (() => {
             body: JSON.stringify({
                 keyword: keyword,
                 landing_url: landingUrl,
-                city: d.cityName || 'Bordeaux',
+                city: d.cityName || 'Local',
             }),
         })
         .then(r => r.json())

@@ -136,6 +136,49 @@
     $scheme = $isHttps ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $canonicalUrl = $scheme . '://' . $host . $canonicalPath;
+
+    $branding = is_array($branding ?? null) ? $branding : getBrandingConfig();
+    $brandSiteName = trim((string) ($branding['site_name'] ?? ''));
+    if ($brandSiteName === '') {
+        $brandSiteName = 'Estimation Immobilière';
+    }
+
+    $brandCityName = trim((string) ($branding['city_name'] ?? ''));
+    if ($brandCityName === '') {
+        $brandCityName = 'votre ville';
+    }
+
+    $brandAreaLabel = trim((string) ($branding['area_label'] ?? ''));
+    if ($brandAreaLabel === '') {
+        $brandAreaLabel = $brandCityName !== 'votre ville' ? $brandCityName : 'votre secteur';
+    }
+
+    $brandBaseUrl = trim((string) ($branding['base_url'] ?? ''));
+    if ($brandBaseUrl === '') {
+        $brandBaseUrl = $scheme . '://' . $host;
+    }
+    $brandEmail = trim((string) ($branding['support_email'] ?? ''));
+    if ($brandEmail === '') {
+        $brandEmail = 'contact@example.test';
+    }
+
+    $defaultMetaDescription = sprintf(
+        'Estimation immobilière %s - Obtenez votre avis de valeur immobilier gratuit. Données réelles du marché local, résultat en 60 secondes.',
+        $brandAreaLabel
+    );
+    $defaultTitle = sprintf('%s | %s', $brandSiteName, $brandAreaLabel);
+    $defaultOgDescription = sprintf(
+        'Obtenez votre avis de valeur immobilier gratuit à %s. Résultat en 60 secondes.',
+        $brandAreaLabel
+    );
+    $defaultOgImage = rtrim($brandBaseUrl, '/') . '/favicon.svg';
+    $defaultLocality = $brandCityName !== 'votre ville' ? $brandCityName : 'Ville';
+    $brandKeywords = [
+        'estimation immobilière',
+        'avis de valeur',
+        'prix immobilier ' . $defaultLocality,
+        'marché immobilier local',
+    ];
   ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -149,12 +192,12 @@
   <?php endif; ?>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="<?= e($canonicalUrl) ?>">
-  <title><?= isset($page_title) ? $page_title : 'Estimation Immobilier Bordeaux et Métropole' ?></title>
+  <title><?= isset($page_title) ? $page_title : $defaultTitle ?></title>
 
   <?php
-    $ogTitle = htmlspecialchars((string) ($og_title ?? $page_title ?? 'Estimation Immobilier Bordeaux et Métropole'), ENT_QUOTES, 'UTF-8');
-    $ogDesc = htmlspecialchars((string) ($og_description ?? $meta_description ?? 'Obtenez votre avis de valeur immobilier gratuit à Bordeaux. Résultat en 60 secondes.'), ENT_QUOTES, 'UTF-8');
-    $ogImg = htmlspecialchars((string) ($og_image ?? 'https://estimation-immobilier-bordeaux.fr/assets/images/og-estimation-bordeaux.png'), ENT_QUOTES, 'UTF-8');
+    $ogTitle = htmlspecialchars((string) ($og_title ?? $page_title ?? $defaultTitle), ENT_QUOTES, 'UTF-8');
+    $ogDesc = htmlspecialchars((string) ($og_description ?? $meta_description ?? $defaultOgDescription), ENT_QUOTES, 'UTF-8');
+    $ogImg = htmlspecialchars((string) ($og_image ?? $defaultOgImage), ENT_QUOTES, 'UTF-8');
     $ogType = !empty($article) ? 'article' : 'website';
   ?>
   <!-- Open Graph -->
@@ -163,7 +206,7 @@
   <meta property="og:description" content="<?= $ogDesc ?>">
   <meta property="og:url" content="<?= e($canonicalUrl) ?>">
   <meta property="og:locale" content="fr_FR">
-  <meta property="og:site_name" content="Estimation Immobilier Bordeaux et Métropole">
+  <meta property="og:site_name" content="<?= e($brandSiteName) ?>">
   <meta property="og:image" content="<?= $ogImg ?>">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -179,24 +222,24 @@
   {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
-    "name": "Estimation Immobilier Bordeaux et Métropole",
-    "description": "Avis de valeur et estimation immobilière gratuite à Bordeaux et Métropole. Prix au m² par quartier, tendances du marché bordelais.",
-    "url": "https://estimation-immobilier-bordeaux.fr",
-    "email": "contact@estimation-immobilier-bordeaux.fr",
+    "name": "<?= e($brandSiteName) ?>",
+    "description": "<?= e('Avis de valeur et estimation immobilière gratuite à ' . $brandAreaLabel . '. Prix au m² et tendances du marché local.') ?>",
+    "url": "<?= e($brandBaseUrl) ?>",
+    "email": "<?= e($brandEmail) ?>",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Bordeaux",
-      "addressLocality": "Bordeaux",
-      "addressRegion": "Nouvelle-Aquitaine",
-      "postalCode": "33000",
+      "streetAddress": "<?= e($defaultLocality) ?>",
+      "addressLocality": "<?= e($defaultLocality) ?>",
+      "addressRegion": "<?= e($brandAreaLabel) ?>",
+      "postalCode": "",
       "addressCountry": "FR"
     },
     "areaServed": [
-      { "@type": "City", "name": "Bordeaux" },
-      { "@type": "Place", "name": "Bordeaux Métropole" }
+      { "@type": "City", "name": "<?= e($defaultLocality) ?>" },
+      { "@type": "Place", "name": "<?= e($brandAreaLabel) ?>" }
     ],
     "priceRange": "Gratuit",
-    "knowsAbout": ["estimation immobilière", "avis de valeur", "prix immobilier Bordeaux", "marché immobilier Gironde"]
+    "knowsAbout": ["<?= e($brandKeywords[0]) ?>", "<?= e($brandKeywords[1]) ?>", "<?= e($brandKeywords[2]) ?>", "<?= e($brandKeywords[3]) ?>"]
   }
   </script>
 
@@ -210,7 +253,7 @@
         "@type": "ListItem",
         "position": 1,
         "name": "Accueil",
-        "item": "https://estimation-immobilier-bordeaux.fr"
+        "item": "<?= e($brandBaseUrl) ?>"
       },
       <?php if ($canonicalPath !== '/'): ?>
       {
@@ -806,7 +849,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="header-wrapper">
     <a href="/" class="brand">
       <div class="brand-icon"><i class="fas fa-chart-area"></i></div>
-      Estimation Immobilier <span>Bordeaux et Métropole</span>
+      <?= e($brandSiteName) ?> <span><?= e($brandAreaLabel) ?></span>
     </a>
 
     <button class="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
@@ -862,7 +905,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <ul class="dropdown-menu" aria-label="Sous-menu ressources">
           <li><a href="/guides">Guides complets</a></li>
           <li><a href="/tools/calculatrice">Calculatrice prix</a></li>
-          <li><a href="/quartiers">Quartiers Bordeaux</a></li>
+          <li><a href="/quartiers">Quartiers</a></li>
           <li><a href="/newsletter">Newsletter</a></li>
         </ul>
       </div>

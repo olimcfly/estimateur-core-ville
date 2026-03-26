@@ -12,14 +12,14 @@ use App\Models\RssArticle;
 final class ActualiteService
 {
     private const SEARCH_TOPICS = [
-        'marché immobilier Bordeaux actualité prix',
-        'immobilier Bordeaux Métropole tendances',
-        'vente immobilière Gironde nouveautés',
-        'prix immobilier quartiers Bordeaux évolution',
-        'investissement immobilier Bordeaux CUB',
-        'immobilier neuf Bordeaux programmes',
-        'taux crédit immobilier impact Bordeaux',
-        'urbanisme Bordeaux projets aménagement',
+        'marché immobilier local actualité prix',
+        'immobilier métropole tendances',
+        'vente immobilière région nouveautés',
+        'prix immobilier quartiers évolution',
+        'investissement immobilier local',
+        'immobilier neuf programmes',
+        'taux crédit immobilier impact local',
+        'urbanisme projets aménagement',
     ];
 
     // ─── RSS-based pipeline (NEW) ────────────────────────────────────────
@@ -78,7 +78,7 @@ final class ActualiteService
             }
 
             // Bonus for local sources
-            if (($article['source_zone'] ?? '') === 'Bordeaux/Nouvelle-Aquitaine') {
+            if (in_array((string) ($article['source_zone'] ?? ''), $this->localSourceZones(), true)) {
                 $score += 3;
             }
 
@@ -224,10 +224,11 @@ final class ActualiteService
     // ─── Perplexity-based pipeline (existing) ────────────────────────────
 
     /**
-     * Search Perplexity for real estate news around Bordeaux.
+     * Search Perplexity for real estate news around the configured local area.
      */
     public function searchNews(?string $customQuery = null): array
     {
+        $location = $this->locationContext();
         $query = $customQuery ?? self::SEARCH_TOPICS[array_rand(self::SEARCH_TOPICS)];
 
         $apiKey = (string) Config::get('perplexity.api_key', '');
@@ -240,10 +241,13 @@ final class ActualiteService
         }
 
         $prompt = sprintf(
-            "Recherche les actualités immobilières récentes à Bordeaux et ses alentours (Gironde, Nouvelle-Aquitaine) sur le thème : \"%s\".\n"
+            "Recherche les actualités immobilières récentes à %s (ville: %s, région: %s) sur le thème : \"%s\".\n"
             . "Retourne exactement 5 idées d'articles sous forme JSON avec les clés : title, summary, angle (l'angle éditorial unique).\n"
             . "Concentre-toi sur les données les plus récentes (dernière semaine/mois).\n"
             . "Réponds UNIQUEMENT en JSON valide : {\"articles\": [...]}",
+            $location['area'],
+            $location['city'],
+            $location['region'],
             $query
         );
 
@@ -254,7 +258,7 @@ final class ActualiteService
             'model' => $model,
             'temperature' => 0.3,
             'messages' => [
-                ['role' => 'system', 'content' => 'Tu es un expert en veille immobilière sur Bordeaux et sa métropole. Tu fournis des actualités factuelles et récentes.'],
+                ['role' => 'system', 'content' => 'Tu es un expert en veille immobilière locale. Tu fournis des actualités factuelles et récentes.'],
                 ['role' => 'user', 'content' => $prompt],
             ],
         ], [
@@ -307,9 +311,10 @@ final class ActualiteService
      */
     public function generateArticleFromIdeas(array $ideas, string $query): array
     {
+        $location = $this->locationContext();
         $apiKey = (string) Config::get('openai.api_key', '');
         if ($apiKey === '' || empty($ideas)) {
-            return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière Bordeaux']);
+            return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière locale']);
         }
 
         $ideasText = '';
@@ -319,9 +324,9 @@ final class ActualiteService
                 . " | Angle: " . ($idea['angle'] ?? '') . "\n";
         }
 
-        $prompt = "Tu es un rédacteur expert en immobilier à Bordeaux. Voici 5 idées d'articles d'actualité immobilière :\n\n"
+        $prompt = "Tu es un rédacteur expert en immobilier à {$location['area']}. Voici 5 idées d'articles d'actualité immobilière :\n\n"
             . $ideasText . "\n"
-            . "1. Choisis la MEILLEURE idée (la plus intéressante, actuelle et utile pour des propriétaires/vendeurs bordelais).\n"
+            . "1. Choisis la MEILLEURE idée (la plus intéressante, actuelle et utile pour des propriétaires/vendeurs locaux).\n"
             . "2. Rédige un article complet en HTML (balises h2, h3, p, ul, li, strong) de 800-1200 mots.\n"
             . "3. L'article doit être factuel, informatif, avec des données chiffrées quand possible.\n"
             . "4. Inclus un CTA vers l'estimation immobilière à la fin.\n\n"
@@ -335,7 +340,7 @@ final class ActualiteService
             'temperature' => 0.7,
             'response_format' => ['type' => 'json_object'],
             'messages' => [
-                ['role' => 'system', 'content' => 'Tu es un journaliste immobilier spécialisé sur Bordeaux et la Gironde. Tu rédiges des articles professionnels et engageants.'],
+                ['role' => 'system', 'content' => 'Tu es un journaliste immobilier spécialisé sur le marché local. Tu rédiges des articles professionnels et engageants.'],
                 ['role' => 'user', 'content' => $prompt],
             ],
         ], [
@@ -344,7 +349,7 @@ final class ActualiteService
         ]);
 
         if (!is_array($response)) {
-            return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière Bordeaux']);
+            return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière locale']);
         }
 
         $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
@@ -356,7 +361,7 @@ final class ActualiteService
         $decoded = json_decode((string) $content, true);
 
         if (!is_array($decoded) || !isset($decoded['title'], $decoded['content_html'])) {
-            return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière Bordeaux']);
+            return $this->fallbackArticle($ideas[0] ?? ['title' => 'Actualité immobilière locale']);
         }
 
         return [
@@ -375,7 +380,7 @@ final class ActualiteService
     public function generateImage(string $imagePrompt): ?string
     {
         if (trim($imagePrompt) === '') {
-            $imagePrompt = 'Professional real estate photography of beautiful Bordeaux architecture, stone buildings, sunny day, editorial style';
+            $imagePrompt = 'Professional real estate photography of local residential architecture, sunny day, editorial style';
         }
 
         $imageService = new ImageGeneratorService();
@@ -435,11 +440,12 @@ final class ActualiteService
      */
     private function buildActualitePrompt(array $rssArticles, array $aiConfig): string
     {
+        $location = $this->locationContext();
         $tone = $aiConfig['article_tone'] ?? 'journalistique';
         $length = $aiConfig['article_length'] ?? '800-1200';
-        $localAngle = $aiConfig['local_angle'] ?? "Adapter l'angle à Bordeaux et sa métropole.";
+        $localAngle = $aiConfig['local_angle'] ?? "Adapter l'angle à {$location['area']}.";
         $ctaStyle = $aiConfig['cta_style'] ?? 'soft';
-        $seoKeywords = $aiConfig['seo_focus'] ?? 'estimation immobilière bordeaux';
+        $seoKeywords = $aiConfig['seo_focus'] ?? 'estimation immobilière locale, prix immobilier local, marché immobilier local';
 
         $sourcesList = '';
         foreach ($rssArticles as $i => $a) {
@@ -457,7 +463,7 @@ final class ActualiteService
         };
 
         return <<<PROMPT
-Rôle : Tu es un journaliste spécialisé en immobilier local à Bordeaux. Tu rédiges des ACTUALITÉS (pas des articles de blog) pour un site d'estimation immobilière.
+Rôle : Tu es un journaliste spécialisé en immobilier local à {$location['area']}. Tu rédiges des ACTUALITÉS (pas des articles de blog) pour un site d'estimation immobilière.
 
 IMPORTANT — DIFFÉRENCE ACTUALITÉ vs BLOG :
 - Une ACTUALITÉ est factuelle, informative, basée sur des faits récents et des sources vérifiables.
@@ -465,7 +471,7 @@ IMPORTANT — DIFFÉRENCE ACTUALITÉ vs BLOG :
 - Ici tu rédiges une ACTUALITÉ : ton {$tone}, factuel, sourcé.
 
 Contexte :
-- Public : propriétaires et vendeurs de biens immobiliers à Bordeaux et métropole.
+- Public : propriétaires et vendeurs de biens immobiliers à {$location['area']}.
 - Objectif : informer des dernières actualités locales du marché immobilier.
 - Mots-clés SEO à intégrer naturellement : {$seoKeywords}
 - Angle local : {$localAngle}
@@ -475,14 +481,14 @@ Articles RSS sources (classés par pertinence locale) :
 
 Tâche :
 1. Analyse les articles sources ci-dessus.
-2. Sélectionne le sujet le plus pertinent et ACTUEL pour les propriétaires bordelais.
-3. Privilégie les sujets LOCAUX (Bordeaux, Gironde, Nouvelle-Aquitaine) sur les sujets nationaux.
+2. Sélectionne le sujet le plus pertinent et ACTUEL pour les propriétaires locaux.
+3. Privilégie les sujets LOCAUX ({$location['city']}, {$location['region']}, {$location['area']}) sur les sujets nationaux.
 4. Rédige une actualité ORIGINALE de {$length} mots en HTML.
 5. Structure :
    - Titre accrocheur (H1) orienté actualité locale
    - Chapô / introduction factuelle (2-3 phrases)
    - 2-4 sous-sections (H2) avec analyse et faits
-   - Mention des impacts concrets pour les propriétaires bordelais
+   - Mention des impacts concrets pour les propriétaires locaux
    - {$ctaInstruction}
 6. NE COPIE PAS les sources : reformule, synthétise, ajoute de la valeur.
 7. Cite les sources dans le texte quand pertinent (ex: "selon Sud Ouest", "d'après les notaires").
@@ -619,7 +625,7 @@ PROMPT;
             'temperature' => 0.7,
             'response_format' => ['type' => 'json_object'],
             'messages' => [
-                ['role' => 'system', 'content' => 'Tu es un journaliste immobilier spécialisé sur Bordeaux. Tu rédiges des actualités factuelles et sourcées.'],
+                ['role' => 'system', 'content' => 'Tu es un journaliste immobilier spécialisé sur le marché local. Tu rédiges des actualités factuelles et sourcées.'],
                 ['role' => 'user', 'content' => $prompt],
             ],
         ], [
@@ -675,38 +681,76 @@ PROMPT;
     private function fallbackNewsResults(string $query): array
     {
         return [
-            ['title' => 'Évolution des prix immobiliers à Bordeaux ce mois', 'summary' => 'Les prix au m² continuent leur ajustement dans les quartiers centraux.', 'angle' => 'Analyse quartier par quartier'],
-            ['title' => 'Nouveaux projets urbains en métropole bordelaise', 'summary' => 'Plusieurs projets d\'aménagement transforment le paysage immobilier.', 'angle' => 'Impact sur les valeurs immobilières'],
-            ['title' => 'Taux de crédit : impact sur le marché bordelais', 'summary' => 'L\'évolution des taux influence les décisions d\'achat et de vente.', 'angle' => 'Opportunités pour vendeurs'],
-            ['title' => 'Le marché locatif étudiant à Bordeaux', 'summary' => 'La demande locative étudiante reste forte dans certains quartiers.', 'angle' => 'Investissement locatif'],
-            ['title' => 'Rénovation énergétique : les aides disponibles en Gironde', 'summary' => 'Les nouvelles réglementations impactent la valeur des biens.', 'angle' => 'Valorisation du patrimoine'],
+            ['title' => 'Évolution des prix immobiliers locaux ce mois', 'summary' => 'Les prix au m² continuent leur ajustement dans les quartiers centraux.', 'angle' => 'Analyse quartier par quartier'],
+            ['title' => 'Nouveaux projets urbains dans la zone locale', 'summary' => 'Plusieurs projets d\'aménagement transforment le paysage immobilier.', 'angle' => 'Impact sur les valeurs immobilières'],
+            ['title' => 'Taux de crédit : impact sur le marché local', 'summary' => 'L\'évolution des taux influence les décisions d\'achat et de vente.', 'angle' => 'Opportunités pour vendeurs'],
+            ['title' => 'Le marché locatif étudiant local', 'summary' => 'La demande locative étudiante reste forte dans certains quartiers.', 'angle' => 'Investissement locatif'],
+            ['title' => 'Rénovation énergétique : les aides disponibles localement', 'summary' => 'Les nouvelles réglementations impactent la valeur des biens.', 'angle' => 'Valorisation du patrimoine'],
         ];
     }
 
     private function fallbackArticle(array $idea): array
     {
-        $title = $idea['title'] ?? 'Actualité immobilière Bordeaux';
-        $summary = $idea['summary'] ?? 'Les dernières nouvelles du marché immobilier bordelais.';
+        $location = $this->locationContext();
+        $title = $idea['title'] ?? 'Actualité immobilière locale';
+        $summary = $idea['summary'] ?? 'Les dernières nouvelles du marché immobilier local.';
 
         return [
             'title' => $title,
-            'meta_title' => $title . ' | Actualités Immobilier Bordeaux',
+            'meta_title' => $title . ' | Actualités Immobilier ' . $location['city'],
             'meta_description' => $summary,
             'excerpt' => $summary,
             'content' => '<h2>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</h2>'
                 . '<p>' . htmlspecialchars($summary, ENT_QUOTES, 'UTF-8') . '</p>'
                 . '<h2>Ce que cela signifie pour vous</h2>'
-                . '<p>Le marché immobilier bordelais continue d\'évoluer. Que vous soyez propriétaire souhaitant vendre ou simplement curieux de la valeur de votre bien, il est important de rester informé des dernières tendances.</p>'
+                . '<p>Le marché immobilier local continue d\'évoluer. Que vous soyez propriétaire souhaitant vendre ou simplement curieux de la valeur de votre bien, il est important de rester informé des dernières tendances.</p>'
                 . '<h2>Les quartiers à surveiller</h2>'
-                . '<ul><li><strong>Chartrons</strong> : un quartier en constante valorisation</li>'
-                . '<li><strong>Bastide</strong> : le renouveau de la rive droite</li>'
-                . '<li><strong>Saint-Michel</strong> : authenticité et dynamisme</li>'
-                . '<li><strong>Caudéran</strong> : le calme résidentiel prisé des familles</li></ul>'
+                . '<ul><li><strong>Centre-ville</strong> : une zone en constante valorisation</li>'
+                . '<li><strong>Secteurs en renouvellement</strong> : potentiel de progression</li>'
+                . '<li><strong>Quartiers résidentiels</strong> : stabilité et demande</li>'
+                . '<li><strong>Pôles bien desservis</strong> : attractivité durable</li></ul>'
                 . '<h2>Estimez votre bien gratuitement</h2>'
-                . '<p>Vous souhaitez connaître la valeur actuelle de votre bien immobilier à Bordeaux ? '
+                . '<p>Vous souhaitez connaître la valeur actuelle de votre bien immobilier à ' . htmlspecialchars($location['area'], ENT_QUOTES, 'UTF-8') . ' ? '
                 . '<strong><a href="/estimation">Lancez votre estimation gratuite</a></strong> et obtenez un résultat en moins de 2 minutes.</p>',
-            'image_prompt' => 'Professional editorial photo of Bordeaux city skyline with stone architecture and Garonne river, warm lighting, real estate magazine style',
+            'image_prompt' => 'Professional editorial photo of a local city skyline with classic architecture, warm lighting, real estate magazine style',
         ];
+    }
+
+    /**
+     * @return array{city:string,region:string,area:string}
+     */
+    private function locationContext(): array
+    {
+        $branding = function_exists('getBrandingConfig') ? \getBrandingConfig() : [];
+        $city = trim((string) ($branding['city_name'] ?? (string) Config::get('city.name', '')));
+        $region = trim((string) Config::get('city.region', ''));
+        $area = trim((string) ($branding['area_label'] ?? $region));
+
+        if ($city === '') {
+            $city = 'ville locale';
+        }
+        if ($region === '') {
+            $region = 'région locale';
+        }
+        if ($area === '') {
+            $area = $city;
+        }
+
+        return ['city' => $city, 'region' => $region, 'area' => $area];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function localSourceZones(): array
+    {
+        $location = $this->locationContext();
+        $zones = ['locale', 'local'];
+        $combined = $location['city'] . '/' . $location['region'];
+        if (trim($combined, '/ ') !== '') {
+            $zones[] = $combined;
+        }
+        return array_values(array_unique($zones));
     }
 
     private function postJson(string $endpoint, array $payload, array $headers): ?array

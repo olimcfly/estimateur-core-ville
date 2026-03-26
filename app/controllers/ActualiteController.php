@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Config;
 use App\Core\View;
 use App\Models\Actualite;
 
@@ -11,6 +12,10 @@ final class ActualiteController
 {
     public function index(): void
     {
+        $city = trim((string) Config::get('city.name', ''));
+        $region = trim((string) Config::get('city.region', ''));
+        $area = $region !== '' ? $region : ($city !== '' ? $city : 'votre secteur');
+
         try {
             $model = new Actualite();
             $page = max(1, (int) ($_GET['page'] ?? 1));
@@ -33,8 +38,8 @@ final class ActualiteController
             'page' => $page,
             'totalPages' => $totalPages,
             'total' => $total,
-            'page_title' => 'Actualités Immobilières Bordeaux',
-            'meta_description' => 'Suivez l\'actualité du marché immobilier à Bordeaux et en Gironde. Analyses, tendances des prix, projets urbains et conseils pour vendeurs.',
+            'page_title' => 'Actualités Immobilières ' . $area,
+            'meta_description' => 'Suivez l\'actualité du marché immobilier à ' . $area . '. Analyses, tendances des prix, projets urbains et conseils pour vendeurs.',
         ]);
     }
 

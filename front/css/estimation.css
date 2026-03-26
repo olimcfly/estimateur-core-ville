@@ -1,0 +1,15 @@
+#page-estimation {
+  display: grid;
+  gap: 2rem;
+}
+
+#estimation-result[hidden],
+#lead-popup[hidden] {
+  display: none;
+}
+
+.lead-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}

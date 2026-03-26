@@ -5,3 +5,7 @@
 /config/smtp_override.json
 /vendor/
 .phpunit.cache
+
+/logs/
+/public/error_log
+*.zip

@@ -43,6 +43,7 @@ $router->get('/estimation/confirmation', [EstimationController::class, 'confirma
 $router->get('/leads', [EstimationController::class, 'leads']);
 $router->post('/estimation', [EstimationController::class, 'estimate']);
 $router->post('/api/estimation', [EstimationController::class, 'apiEstimate']);
+$router->post('/api/leads', [EstimationController::class, 'apiStorePopupLead']);
 $router->post('/lead', [EstimationController::class, 'storeLead']);
 
 // Auth routes

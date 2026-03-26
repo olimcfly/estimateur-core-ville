@@ -1,4 +1,7 @@
 <?php $page_title = 'Résultat de votre estimation - Avis de Valeur Indicatif'; ?>
+<?php $accentColor = (string) ($siteConfig['color_accent'] ?? '#8B1538'); ?>
+<?php $advisorName = (string) ($siteConfig['advisor_name'] ?? 'Notre conseiller'); ?>
+<?php $cityName = (string) ($estimate['city'] ?? ($siteConfig['ville'] ?? 'votre ville')); ?>
 
 <!-- ============================================ -->
 <!-- RÉSULTAT ESTIMATION - FOURCHETTE 3 PRIX -->
@@ -46,13 +49,222 @@
             Ils donnent une indication, mais ne remplacent pas un Avis de Valeur professionnel.
           </p>
         </div>
+
+        <div class="result-popup-action">
+          <button type="button" class="btn btn-secondary" id="openLeadPopupButton">
+            Affiner mon estimation
+          </button>
+        </div>
       </article>
     </div>
 
   </div>
 </section>
 
-<?php require __DIR__ . '/partials/trust_block.php'; ?>
+<div
+  id="leadPopupOverlay"
+  class="lead-popup-overlay"
+  aria-hidden="true"
+  data-ville="<?= e($cityName) ?>"
+  data-type-bien="<?= e((string) ($estimate['property_type'] ?? '')) ?>"
+  data-surface="<?= e((string) ($estimate['surface'] ?? '')) ?>"
+  data-pieces="<?= e((string) ($estimate['rooms'] ?? '')) ?>"
+  data-estimation-moyenne="<?= e((string) ($estimate['estimated_mid'] ?? '')) ?>"
+>
+  <div class="lead-popup" role="dialog" aria-modal="true" aria-labelledby="leadPopupTitle">
+    <button type="button" class="lead-popup-close" id="closeLeadPopupButton" aria-label="Fermer">&times;</button>
+    <h3 id="leadPopupTitle">Recevez votre estimation précise à <?= e($cityName) ?></h3>
+
+    <form id="leadPopupForm" novalidate>
+      <label for="popup-prenom">Prénom *</label>
+      <input type="text" id="popup-prenom" name="prenom" required>
+
+      <label for="popup-email">Email *</label>
+      <input type="email" id="popup-email" name="email" required>
+
+      <label for="popup-telephone">Téléphone *</label>
+      <input type="tel" id="popup-telephone" name="telephone" placeholder="06 12 34 56 78" required>
+      <p class="popup-inline-error" id="popupTelephoneError" aria-live="polite"></p>
+
+      <button type="submit" class="lead-popup-submit">Recevoir mon rapport complet</button>
+      <p class="lead-popup-copy"><?= e($advisorName) ?> vous contactera sous 24h pour affiner cette estimation</p>
+      <p class="popup-inline-success" id="popupSuccessMessage" aria-live="polite"></p>
+      <p class="popup-inline-error" id="popupGlobalError" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<style>
+  .result-popup-action { margin-top: 1.5rem; text-align: center; }
+  .result-popup-action .btn {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+  }
+  .lead-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 2000;
+  }
+  .lead-popup-overlay.is-open { display: flex; }
+  .lead-popup {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 24px 56px rgba(0, 0, 0, 0.25);
+  }
+  .lead-popup h3 { margin: 0 0 1rem; font-size: 1.3rem; line-height: 1.3; }
+  .lead-popup-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: none;
+    background: transparent;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #333;
+  }
+  #leadPopupForm { display: grid; gap: 0.7rem; }
+  #leadPopupForm label { font-size: 0.9rem; font-weight: 600; }
+  #leadPopupForm input {
+    width: 100%;
+    border: 1px solid #d8d8d8;
+    border-radius: 10px;
+    padding: 0.75rem 0.8rem;
+    font-size: 1rem;
+  }
+  .lead-popup-submit {
+    margin-top: 0.35rem;
+    border: none;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background: <?= e($accentColor) ?>;
+    cursor: pointer;
+  }
+  .lead-popup-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+  .lead-popup-copy { margin: 0.25rem 0 0; font-size: 0.9rem; color: #565656; }
+  .popup-inline-error { margin: 0; font-size: 0.85rem; color: #c62828; min-height: 1.1em; }
+  .popup-inline-success { margin: 0; font-size: 0.85rem; color: #2e7d32; min-height: 1.1em; }
+  @media (max-width: 480px) {
+    .lead-popup { padding: 24px 18px; border-radius: 14px; }
+  }
+</style>
+
+<script>
+  (function () {
+    var overlay = document.getElementById('leadPopupOverlay');
+    var openButton = document.getElementById('openLeadPopupButton');
+    var closeButton = document.getElementById('closeLeadPopupButton');
+    var form = document.getElementById('leadPopupForm');
+    if (!overlay || !openButton || !closeButton || !form) return;
+
+    var telInput = document.getElementById('popup-telephone');
+    var telError = document.getElementById('popupTelephoneError');
+    var globalError = document.getElementById('popupGlobalError');
+    var successMessage = document.getElementById('popupSuccessMessage');
+    var submitButton = form.querySelector('.lead-popup-submit');
+    var hasSubmitted = false;
+
+    function openPopup() {
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePopup() {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    setTimeout(function () {
+      if (!hasSubmitted) {
+        openPopup();
+      }
+    }, 4000);
+
+    openButton.addEventListener('click', openPopup);
+    closeButton.addEventListener('click', closePopup);
+
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) {
+        closePopup();
+      }
+    });
+
+    window.addEventListener('scroll', function () {
+      if (hasSubmitted || overlay.classList.contains('is-open')) return;
+      var scrollTop = window.scrollY || window.pageYOffset || 0;
+      var documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (documentHeight > 0 && (scrollTop / documentHeight) > 0.5) {
+        openPopup();
+      }
+    }, { passive: true });
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      telError.textContent = '';
+      globalError.textContent = '';
+      successMessage.textContent = '';
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      var telephoneClean = (telInput.value || '').replace(/\s+/g, '');
+      var phoneRegex = /^(0|\+33)[1-9][0-9]{8}$/;
+      if (!phoneRegex.test(telephoneClean)) {
+        telError.textContent = 'Numéro de téléphone invalide.';
+        telInput.focus();
+        return;
+      }
+
+      submitButton.disabled = true;
+
+      fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prenom: form.prenom.value.trim(),
+          email: form.email.value.trim(),
+          telephone: telephoneClean,
+          ville: overlay.dataset.ville || '',
+          type_bien: overlay.dataset.typeBien || '',
+          surface: overlay.dataset.surface || '',
+          pieces: overlay.dataset.pieces || '',
+          estimation_moyenne: overlay.dataset.estimationMoyenne || '',
+          source: 'estimation_popup'
+        })
+      })
+      .then(function (response) { return response.json(); })
+      .then(function (payload) {
+        if (!payload || !payload.success) {
+          throw new Error((payload && payload.error) ? payload.error : 'Envoi impossible.');
+        }
+        hasSubmitted = true;
+        successMessage.textContent = 'Merci, votre demande a bien été envoyée.';
+        setTimeout(closePopup, 1200);
+      })
+      .catch(function (error) {
+        globalError.textContent = error.message || 'Une erreur est survenue.';
+      })
+      .finally(function () {
+        submitButton.disabled = false;
+      });
+    });
+  })();
+</script>
 
 <!-- ============================================ -->
 <!-- CTA: ESTIMATION PLUS PRÉCISE -->

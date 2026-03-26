@@ -8,6 +8,7 @@ use App\Controllers\AuthController;
 use App\Core\Validator;
 use App\Core\View;
 use App\Models\DesignTemplate;
+use App\Models\Estimation;
 use App\Models\Lead;
 use App\Services\EstimationService;
 use App\Services\LeadNotificationService;
@@ -92,11 +93,29 @@ final class EstimationController
 
             $estimate = $this->estimationService->estimate($city, $propertyType, $surface, $rooms);
             $now = time();
+            $estimationId = 0;
             $_SESSION['lead_form_context'] = [
                 'ip' => $this->getClientIp(),
                 'issued_at' => $now,
                 'expires_at' => $now + self::LEAD_FORM_TTL_SECONDS,
             ];
+
+            try {
+                $estimationId = (new Estimation())->create([
+                    'ville' => $city,
+                    'type_bien' => $propertyType,
+                    'surface_m2' => $surface,
+                    'pieces' => $rooms,
+                    'per_sqm_low' => $estimate['per_sqm_low'],
+                    'per_sqm_mid' => $estimate['per_sqm_mid'],
+                    'per_sqm_high' => $estimate['per_sqm_high'],
+                    'estimated_low' => $estimate['estimated_low'],
+                    'estimated_mid' => $estimate['estimated_mid'],
+                    'estimated_high' => $estimate['estimated_high'],
+                ]);
+            } catch (\Throwable $e) {
+                error_log('Estimation save failed: ' . $e->getMessage());
+            }
 
             // Capture lead "tendance" (sans coordonnées)
             try {
@@ -118,6 +137,7 @@ final class EstimationController
 
             View::render('estimation/result', [
                 'estimate' => $estimate,
+                'estimationId' => $estimationId,
                 'errors' => [],
             ]);
         } catch (\Throwable $throwable) {
@@ -171,6 +191,7 @@ final class EstimationController
             $adresse = $adresseInput !== '' ? Validator::string($_POST, 'adresse', 5, 255) : 'Non renseignée';
             $ville = Validator::string($_POST, 'ville', 2, 120);
             $estimation = Validator::float($_POST, 'estimation', 10000, 100000000);
+            $estimationId = isset($_POST['estimation_id']) ? (int) $_POST['estimation_id'] : 0;
             $urgence = Validator::string($_POST, 'urgence', 3, 40);
             $motivation = Validator::string($_POST, 'motivation', 3, 80);
             $notesRaw = trim((string) ($_POST['notes'] ?? ($_POST['message'] ?? '')));
@@ -230,9 +251,10 @@ final class EstimationController
                 'statut' => 'nouveau',
             ]);
 
-            View::render('estimation/lead_saved', [
+            $_SESSION['lead_confirmation'] = [
                 'leadId' => $leadId,
                 'temperature' => $temperature,
+                'estimationId' => $estimationId,
                 'lead' => [
                     'nom' => $nom,
                     'email' => $email,
@@ -245,12 +267,34 @@ final class EstimationController
                     'notes' => $notes,
                     'statut' => 'nouveau',
                 ],
-            ]);
+            ];
+
+            header('Location: /estimation/confirmation');
+            exit;
         } catch (\Throwable $throwable) {
             View::render('estimation/index', [
                 'errors' => [$throwable->getMessage()],
             ]);
         }
+    }
+
+    public function confirmation(): void
+    {
+        $confirmation = $_SESSION['lead_confirmation'] ?? null;
+
+        if (!is_array($confirmation)) {
+            header('Location: /estimation');
+            exit;
+        }
+
+        unset($_SESSION['lead_confirmation']);
+
+        View::render('estimation/lead_saved', [
+            'leadId' => $confirmation['leadId'] ?? 0,
+            'temperature' => $confirmation['temperature'] ?? 'froid',
+            'lead' => $confirmation['lead'] ?? [],
+            'estimationId' => $confirmation['estimationId'] ?? 0,
+        ]);
     }
 
 

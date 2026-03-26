@@ -39,6 +39,7 @@ use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
 $router->get('/estimation', [EstimationController::class, 'index']);
+$router->get('/estimation/confirmation', [EstimationController::class, 'confirmation']);
 $router->get('/leads', [EstimationController::class, 'leads']);
 $router->post('/estimation', [EstimationController::class, 'estimate']);
 $router->post('/api/estimation', [EstimationController::class, 'apiEstimate']);

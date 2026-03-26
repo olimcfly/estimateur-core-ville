@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS achats (
     email_acheteur VARCHAR(180) NULL,
     telephone_acheteur VARCHAR(40) NULL,
     adresse_bien VARCHAR(255) NULL,
-    ville VARCHAR(120) NOT NULL DEFAULT 'Ville à configurer',
+    ville VARCHAR(120) NULL DEFAULT NULL,
     quartier VARCHAR(120) NULL,
     type_bien VARCHAR(80) NULL,
     surface_m2 DECIMAL(8,2) NULL,

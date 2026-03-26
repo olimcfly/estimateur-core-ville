@@ -240,7 +240,7 @@
 
       <div class="form-group">
         <label for="ville">Ville</label>
-        <input type="text" id="ville" name="ville" value="<?= htmlspecialchars((string)($a['ville'] ?? 'Bordeaux'), ENT_QUOTES, 'UTF-8') ?>">
+        <input type="text" id="ville" name="ville" value="<?= htmlspecialchars((string)($a['ville'] ?? (string) site('city', '')), ENT_QUOTES, 'UTF-8') ?>">
       </div>
 
       <div class="form-group">

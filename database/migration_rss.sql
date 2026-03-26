@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS rss_sources (
     feed_url VARCHAR(500) NOT NULL,
     site_url VARCHAR(500) DEFAULT NULL,
     category VARCHAR(100) NOT NULL DEFAULT 'general',
-    zone ENUM('national', 'Ville à configurer/Nouvelle-Aquitaine') NOT NULL DEFAULT 'national',
+    zone VARCHAR(120) NOT NULL DEFAULT 'national',
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     last_fetched_at DATETIME DEFAULT NULL,
     last_error TEXT DEFAULT NULL,

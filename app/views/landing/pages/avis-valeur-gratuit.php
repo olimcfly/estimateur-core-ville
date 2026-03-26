@@ -3,6 +3,9 @@
  * Landing Page Google Ads — Mot-clé : "avis de valeur gratuit bordeaux"
  */
 $formError = $form_error ?? '';
+$siteCity = (string) site('city', '');
+$siteArea = trim((string) site('region', ''));
+$siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $siteArea : $siteArea) : ($siteCity !== '' ? $siteCity : 'votre secteur');
 ?>
 
 <!-- HERO -->
@@ -14,10 +17,10 @@ $formError = $form_error ?? '';
         <i class="fas fa-file-alt"></i> Avis de valeur professionnel
       </p>
 
-      <h1>Avis de Valeur <span class="lp-highlight">Gratuit</span> pour votre bien à Bordeaux et sa métropole</h1>
+      <h1>Avis de Valeur <span class="lp-highlight">Gratuit</span> pour votre bien à <?= e($siteAreaLabel) ?></h1>
 
       <p class="lp-lead">
-        Recevez un <strong>avis de valeur gratuit et sans engagement</strong> pour votre appartement ou maison à Bordeaux et sa métropole.
+        Recevez un <strong>avis de valeur gratuit et sans engagement</strong> pour votre appartement ou maison à <?= e($siteAreaLabel) ?>.
         Analyse basée sur les <strong>données réelles du marché</strong>, affinée par un expert immobilier local.
       </p>
 
@@ -93,7 +96,7 @@ $formError = $form_error ?? '';
 
         <div class="lp-field">
           <label for="ville"><i class="fas fa-map-marker-alt"></i> Localisation</label>
-          <input type="text" id="ville" name="ville" value="Bordeaux" placeholder="Bordeaux, Mérignac, Talence...">
+          <input type="text" id="ville" name="ville" value="<?= e($siteCity !== "" ? $siteCity : "") ?>" placeholder="<?= e($siteCity !== "" ? $siteCity : "") ?>, Mérignac, Talence...">
         </div>
 
         <button type="submit" class="lp-btn lp-btn-primary lp-btn-full">
@@ -200,7 +203,7 @@ $formError = $form_error ?? '';
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
         <p class="lp-testimonial-text">"J'avais besoin d'un avis de valeur pour une succession. Le service a été rapide et l'expert très compétent. Le document m'a été très utile auprès du notaire."</p>
-        <p class="lp-testimonial-author"><strong>Catherine V.</strong> — Bordeaux Bastide</p>
+        <p class="lp-testimonial-author"><strong>Catherine V.</strong> — <?= e($siteCity !== "" ? $siteCity : "") ?> Bastide</p>
       </div>
       <div class="lp-testimonial">
         <div class="lp-testimonial-stars">

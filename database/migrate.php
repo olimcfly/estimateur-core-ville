@@ -169,7 +169,7 @@ $migrations = [
             email_acheteur VARCHAR(180) NULL,
             telephone_acheteur VARCHAR(40) NULL,
             adresse_bien VARCHAR(255) NULL,
-            ville VARCHAR(120) NOT NULL DEFAULT 'Ville à configurer',
+            ville VARCHAR(120) NULL DEFAULT NULL,
             quartier VARCHAR(120) NULL,
             type_bien VARCHAR(80) NULL,
             surface_m2 DECIMAL(8,2) NULL,
@@ -360,7 +360,7 @@ $migrations = [
             feed_url VARCHAR(500) NOT NULL,
             site_url VARCHAR(500) DEFAULT NULL,
             category VARCHAR(100) NOT NULL DEFAULT 'general',
-            zone ENUM('national', 'locale/régionale') NOT NULL DEFAULT 'national',
+            zone VARCHAR(120) NOT NULL DEFAULT 'national',
             is_active TINYINT(1) NOT NULL DEFAULT 1,
             last_fetched_at DATETIME DEFAULT NULL,
             last_error TEXT DEFAULT NULL,
@@ -501,7 +501,7 @@ echo "  OK\n";
 
 // Seed default admin if table was just created
 if (!in_array('admin_users', $existingTables, true)) {
-    $adminEmail = $_ENV['ADMIN_EMAIL'] ?? 'contact@example.com';
+    $adminEmail = $_ENV['ADMIN_EMAIL'] ?? ('contact@' . (site('domain', 'example.test') ?: 'example.test'));
     echo "\n  Ajout de l'admin par défaut ({$adminEmail})... ";
     $stmt = $pdo->prepare(
         'INSERT IGNORE INTO admin_users (email, name, created_at) VALUES (:email, :name, NOW())'
@@ -513,32 +513,12 @@ if (!in_array('admin_users', $existingTables, true)) {
 // Seed default email library templates
 if (!in_array('email_library', $existingTables, true)) {
     echo "\n  Ajout des modèles email par défaut... ";
-    $libraryTemplates = [
-        ['Première prise de contact', 'prospection', 'Votre estimation immobilière gratuite dans votre ville',
-         '<p>Bonjour {{nom}},</p><p>Je me permets de vous contacter suite à votre intérêt pour le marché immobilier local.</p><p>En tant que spécialiste de l\'estimation immobilière dans votre ville, je serais ravi de vous accompagner dans votre projet. Nous proposons une <strong>estimation gratuite et sans engagement</strong> de votre bien.</p><p>Seriez-vous disponible pour en discuter cette semaine ?</p><p>Bien cordialement</p>',
-         'premier contact,prospection,estimation gratuite'],
-        ['Relance après estimation', 'relance', 'Suite à votre estimation - Prochaines étapes',
-         '<p>Bonjour {{nom}},</p><p>Je reviens vers vous suite à l\'estimation de votre bien situé à {{ville}}.</p><p>Pour rappel, nous avions estimé votre {{type_bien}} à <strong>{{estimation}}</strong>. Le marché local étant actuellement dynamique, c\'est le moment idéal pour concrétiser votre projet.</p><p>Souhaitez-vous que nous planifions un rendez-vous pour discuter de la suite ?</p><p>Cordialement</p>',
-         'relance,estimation,suivi'],
-        ['Bienvenue nouveau client', 'bienvenue', 'Bienvenue chez Estimation Immobilière !',
-         '<p>Bonjour {{nom}},</p><p>Merci de votre confiance ! Nous sommes ravis de vous compter parmi nos clients.</p><p>Voici ce que vous pouvez attendre de nous :</p><ul><li>Un accompagnement personnalisé tout au long de votre projet</li><li>Une connaissance approfondie du marché local</li><li>Des estimations précises basées sur les données du marché</li></ul><p>N\'hésitez pas à me contacter pour toute question.</p><p>À très bientôt !</p>',
-         'bienvenue,onboarding,nouveau client'],
-        ['Résultat d\'estimation', 'estimation', 'Résultat de l\'estimation de votre bien à {{ville}}',
-         '<p>Bonjour {{nom}},</p><p>Suite à notre analyse du marché et des caractéristiques de votre {{type_bien}}, voici le résultat de notre estimation :</p><p style="font-size:1.2em;text-align:center;padding:15px;background:#f8f7f5;border-radius:8px;"><strong>Valeur estimée : {{estimation}}</strong></p><p>Cette estimation prend en compte :</p><ul><li>Les transactions récentes dans votre quartier</li><li>Les caractéristiques spécifiques de votre bien</li><li>Les tendances actuelles du marché local</li></ul><p>Je reste à votre disposition pour en discuter de vive voix.</p><p>Cordialement</p>',
-         'estimation,résultat,valeur'],
-        ['Suivi après visite', 'suivi', 'Suite à notre rencontre - Votre projet immobilier',
-         '<p>Bonjour {{nom}},</p><p>C\'était un plaisir de vous rencontrer aujourd\'hui et de visiter votre {{type_bien}} à {{ville}}.</p><p>Comme convenu, je vous transmettrai une estimation détaillée dans les prochaines 48 heures.</p><p>En attendant, n\'hésitez pas à me contacter si vous avez des questions.</p><p>Bien cordialement</p>',
-         'suivi,visite,rendez-vous'],
-        ['Proposition partenaire', 'partenaire', 'Proposition de partenariat immobilier dans votre ville',
-         '<p>Bonjour,</p><p>Je me permets de vous contacter car nous développons un réseau de partenaires professionnels dans le secteur immobilier local.</p><p>Notre plateforme <strong>example.com</strong> génère un trafic qualifié de propriétaires et acquéreurs potentiels. Un partenariat pourrait être mutuellement bénéfique.</p><p>Seriez-vous ouvert à un échange pour en discuter ?</p><p>Cordialement</p>',
-         'partenaire,collaboration,réseau'],
-        ['Newsletter marché immobilier', 'marketing', 'Marché immobilier Ville à configurer : les tendances du mois',
-         '<p>Bonjour {{nom}},</p><p>Voici les dernières tendances du marché immobilier local :</p><h3>📊 Chiffres clés du mois</h3><ul><li>Prix moyen au m² : en légère hausse</li><li>Délai de vente moyen : stable</li><li>Nombre de transactions : en progression</li></ul><h3>🏡 Quartiers à surveiller</h3><p>Les quartiers Chartrons, Bastide et Saint-Michel continuent d\'attirer les acquéreurs.</p><p>Pour une estimation gratuite de votre bien, <a href="https://example.com">cliquez ici</a>.</p><p>À bientôt !</p>',
-         'newsletter,marché,tendances,marketing'],
-        ['Relance douce (pas de réponse)', 'relance', 'Avez-vous encore un projet immobilier dans votre ville ?',
-         '<p>Bonjour {{nom}},</p><p>Je me permets de revenir vers vous car nous avions échangé au sujet de votre projet immobilier.</p><p>Votre situation a peut-être évolué depuis. Si c\'est le cas, je reste à votre entière disposition pour :</p><ul><li>Mettre à jour l\'estimation de votre bien</li><li>Vous informer sur l\'évolution du marché dans votre secteur</li><li>Répondre à vos questions</li></ul><p>N\'hésitez pas à me recontacter quand vous le souhaitez.</p><p>Bien cordialement</p>',
-         'relance,douce,rappel,suivi'],
-    ];
+    $citySlug = strtolower((string) site('city_slug', 'default'));
+    $emailsFixture = __DIR__ . '/fixtures/' . $citySlug . '/emails.php';
+    if (!is_file($emailsFixture)) {
+        $emailsFixture = __DIR__ . '/fixtures/default/emails.php';
+    }
+    $libraryTemplates = require $emailsFixture;
     $stmt = $pdo->prepare('INSERT INTO email_library (name, category, subject, body_html, tags, is_default) VALUES (:name, :category, :subject, :body_html, :tags, 1)');
     foreach ($libraryTemplates as [$name, $cat, $subj, $body, $tags]) {
         $stmt->execute(['name' => $name, 'category' => $cat, 'subject' => $subj, 'body_html' => $body, 'tags' => $tags]);

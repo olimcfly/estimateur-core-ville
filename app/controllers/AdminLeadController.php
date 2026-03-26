@@ -813,7 +813,7 @@ final class AdminLeadController
                 'email' => 'VARCHAR(180) NULL DEFAULT NULL',
                 'telephone' => 'VARCHAR(40) NULL DEFAULT NULL',
                 'adresse' => 'VARCHAR(255) NULL DEFAULT NULL',
-                'ville' => 'VARCHAR(120) NOT NULL DEFAULT \'Bordeaux\'',
+                'ville' => 'VARCHAR(120) NULL DEFAULT NULL',
                 'type_bien' => 'VARCHAR(80) NULL',
                 'surface_m2' => 'DECIMAL(8,2) NULL',
                 'pieces' => 'INT UNSIGNED NULL',

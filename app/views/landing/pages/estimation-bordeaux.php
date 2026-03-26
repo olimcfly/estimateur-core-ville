@@ -11,6 +11,9 @@
  *  6. CTA final
  */
 $formError = $form_error ?? '';
+$siteCity = (string) site('city', '');
+$siteArea = trim((string) site('region', ''));
+$siteAreaLabel = $siteArea !== '' ? ($siteCity !== '' ? $siteCity . ' et ' . $siteArea : $siteArea) : ($siteCity !== '' ? $siteCity : 'votre secteur');
 ?>
 
 <!-- ═══════════════════════════════════════════ -->
@@ -25,10 +28,10 @@ $formError = $form_error ?? '';
         <i class="fas fa-chart-line"></i> Estimation immobilière en ligne
       </p>
 
-      <h1>Estimation Immobilière <span class="lp-highlight">Bordeaux et sa Métropole</span> — Gratuite en 60 secondes</h1>
+      <h1>Estimation Immobilière <span class="lp-highlight"><?= e((string) site('city', '')) ?> et sa Métropole</span> — Gratuite en 60 secondes</h1>
 
       <p class="lp-lead">
-        Obtenez une <strong>fourchette de prix fiable</strong> pour votre bien immobilier à Bordeaux et sa métropole.
+        Obtenez une <strong>fourchette de prix fiable</strong> pour votre bien immobilier à <?= e((string) site('city', '')) ?> et sa métropole.
         Basé sur les données réelles du marché bordelais. <strong>100% gratuit</strong>, sans engagement.
       </p>
 
@@ -36,7 +39,7 @@ $formError = $form_error ?? '';
         <li><i class="fas fa-bolt"></i> <strong>Résultat immédiat</strong> — en 60 secondes</li>
         <li><i class="fas fa-hand-holding-usd"></i> <strong>100% gratuit</strong> — aucun frais caché</li>
         <li><i class="fas fa-shield-alt"></i> <strong>Données sécurisées</strong> — RGPD conforme</li>
-        <li><i class="fas fa-chart-bar"></i> <strong>Marché actuel</strong> — prix réels Bordeaux 2024</li>
+        <li><i class="fas fa-chart-bar"></i> <strong>Marché actuel</strong> — prix réels <?= e((string) site('city', '')) ?> 2024</li>
       </ul>
 
       <!-- Social proof compact -->
@@ -44,7 +47,7 @@ $formError = $form_error ?? '';
         <div class="lp-stars">
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
         </div>
-        <span>4.8/5 — Plus de <strong>2 400 estimations</strong> réalisées à Bordeaux et sa métropole</span>
+        <span>4.8/5 — Plus de <strong>2 400 estimations</strong> réalisées à <?= e((string) site('city', '')) ?> et sa métropole</span>
       </div>
     </div>
 
@@ -104,7 +107,7 @@ $formError = $form_error ?? '';
 
         <div class="lp-field">
           <label for="ville"><i class="fas fa-map-marker-alt"></i> Ville / Quartier</label>
-          <input type="text" id="ville" name="ville" value="Bordeaux" placeholder="Bordeaux, Chartrons, Caudéran...">
+          <input type="text" id="ville" name="ville" value="<?= e((string) site('city', '')) ?>" placeholder="<?= e((string) site('city', '')) ?>, Chartrons, Caudéran...">
         </div>
 
         <button type="submit" class="lp-btn lp-btn-primary lp-btn-full">
@@ -127,7 +130,7 @@ $formError = $form_error ?? '';
   <div class="lp-container">
     <div class="lp-section-heading">
       <p class="lp-eyebrow"><i class="fas fa-award"></i> Pourquoi nous choisir</p>
-      <h2>L'estimation immobilière la plus fiable de <span class="lp-highlight">Bordeaux et sa métropole</span></h2>
+      <h2>L'estimation immobilière la plus fiable de <span class="lp-highlight"><?= e((string) site('city', '')) ?> et sa métropole</span></h2>
     </div>
 
     <div class="lp-benefits-grid">
@@ -194,7 +197,7 @@ $formError = $form_error ?? '';
   <div class="lp-container">
     <div class="lp-section-heading">
       <p class="lp-eyebrow"><i class="fas fa-users"></i> Ils nous font confiance</p>
-      <h2>Ce que disent nos clients à Bordeaux et sa métropole</h2>
+      <h2>Ce que disent nos clients à <?= e((string) site('city', '')) ?> et sa métropole</h2>
     </div>
 
     <!-- Chiffres clés -->
@@ -224,14 +227,14 @@ $formError = $form_error ?? '';
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
         <p class="lp-testimonial-text">"L'estimation était très proche du prix final de vente. Le conseiller m'a rappelé le jour même et m'a accompagné jusqu'à la signature. Très professionnel."</p>
-        <p class="lp-testimonial-author"><strong>Marie D.</strong> — Bordeaux Chartrons</p>
+        <p class="lp-testimonial-author"><strong>Marie D.</strong> — <?= e((string) site('city', '')) ?> Chartrons</p>
       </div>
       <div class="lp-testimonial">
         <div class="lp-testimonial-stars">
           <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
         </div>
         <p class="lp-testimonial-text">"Simple, rapide et gratuit. J'ai obtenu une fourchette de prix en moins d'une minute. L'avis de valeur m'a aidé à fixer le bon prix pour mon appartement."</p>
-        <p class="lp-testimonial-author"><strong>Pierre L.</strong> — Bordeaux Saint-Pierre</p>
+        <p class="lp-testimonial-author"><strong>Pierre L.</strong> — <?= e((string) site('city', '')) ?> Saint-Pierre</p>
       </div>
       <div class="lp-testimonial">
         <div class="lp-testimonial-stars">
@@ -251,7 +254,7 @@ $formError = $form_error ?? '';
   <div class="lp-container">
     <div class="lp-section-heading">
       <p class="lp-eyebrow"><i class="fas fa-question-circle"></i> Questions fréquentes</p>
-      <h2>Tout savoir sur l'estimation immobilière à Bordeaux</h2>
+      <h2>Tout savoir sur l'estimation immobilière à <?= e((string) site('city', '')) ?></h2>
     </div>
 
     <div class="lp-faq">
@@ -261,7 +264,7 @@ $formError = $form_error ?? '';
       </details>
       <details class="lp-faq-item">
         <summary>Comment est calculée l'estimation ?</summary>
-        <p>Notre algorithme analyse les transactions immobilières récentes à Bordeaux, les prix au m² par quartier, le type de bien et sa surface pour vous fournir une fourchette de prix réaliste.</p>
+        <p>Notre algorithme analyse les transactions immobilières récentes à <?= e((string) site('city', '')) ?>, les prix au m² par quartier, le type de bien et sa surface pour vous fournir une fourchette de prix réaliste.</p>
       </details>
       <details class="lp-faq-item">
         <summary>Combien de temps faut-il pour recevoir le résultat ?</summary>
@@ -289,6 +292,6 @@ $formError = $form_error ?? '';
     <a href="#lp-form" class="lp-btn lp-btn-primary lp-btn-large">
       <i class="fas fa-paper-plane"></i> Estimer mon bien gratuitement
     </a>
-    <p class="lp-cta-sub">Plus de 2 400 estimations réalisées à Bordeaux et sa métropole</p>
+    <p class="lp-cta-sub">Plus de 2 400 estimations réalisées à <?= e((string) site('city', '')) ?> et sa métropole</p>
   </div>
 </section>

@@ -11,9 +11,10 @@ final class AIService
 {
     public function generateArticle(string $persona, string $awarenessLevel, string $topic): array
     {
+        $location = $this->locationContext();
         $trendInsights = $this->fetchPerplexityTrends($topic, $persona);
 
-        $prompt = "Tu es un copywriter immobilier expert Bordeaux. Rédige un article SEO en HTML strict avec les balises <h2>, <h3>, <p>, <ul>, <li>.\n"
+        $prompt = "Tu es un copywriter immobilier expert local ({$location['area']}). Rédige un article SEO en HTML strict avec les balises <h2>, <h3>, <p>, <ul>, <li>.\n"
             . "Persona cible: {$persona}. Niveau de conscience: {$awarenessLevel}. Sujet: {$topic}.\n"
             . "Intègre ce contexte marché:\n{$trendInsights}\n"
             . "Structure attendue: introduction engageante, 3 sections H2, sous-sections H3, FAQ, puis CTA estimation.\n"
@@ -61,23 +62,25 @@ final class AIService
         return [
             'title' => (string) $decoded['title'],
             'meta_title' => (string) ($decoded['meta_title'] ?? $decoded['title']),
-            'meta_description' => (string) ($decoded['meta_description'] ?? 'Découvrez notre analyse du marché immobilier à Bordeaux.'),
+            'meta_description' => (string) ($decoded['meta_description'] ?? 'Découvrez notre analyse du marché immobilier local.'),
             'content' => (string) $decoded['content_html'],
         ];
     }
 
     private function fetchPerplexityTrends(string $topic, string $persona): string
     {
+        $location = $this->locationContext();
         $apiKey = (string) Config::get('perplexity.api_key', '');
         if ($apiKey === '') {
-            return 'Tendance locale stable, demande soutenue sur Bordeaux intra-rocade, forte sensibilité au prix juste.';
+            return 'Tendance locale stable, demande soutenue sur les secteurs recherchés, forte sensibilité au prix juste.';
         }
 
         $endpoint = (string) Config::get('perplexity.endpoint');
         $model = (string) Config::get('perplexity.model');
 
         $prompt = sprintf(
-            'Résume en 6 points les tendances immobilières vendeurs à Bordeaux pour le sujet "%s" et le persona "%s".',
+            'Résume en 6 points les tendances immobilières vendeurs à %s pour le sujet "%s" et le persona "%s".',
+            $location['area'],
             $topic,
             $persona
         );
@@ -94,7 +97,7 @@ final class AIService
         ]);
 
         if (!is_array($response)) {
-            return 'Tendance locale stable, demande soutenue sur Bordeaux intra-rocade, forte sensibilité au prix juste.';
+            return 'Tendance locale stable, demande soutenue sur les secteurs recherchés, forte sensibilité au prix juste.';
         }
 
         $inputTokens = (int) ($response['usage']['prompt_tokens'] ?? 0);
@@ -147,11 +150,12 @@ final class AIService
 
     private function fallbackArticle(string $persona, string $awarenessLevel, string $topic, string $trendInsights): array
     {
+        $location = $this->locationContext();
         $title = $topic;
         return [
             'title' => $title,
-            'meta_title' => $title . ' | Blog Immobilier Bordeaux',
-            'meta_description' => 'Conseils concrets pour vendre votre bien à Bordeaux selon votre situation.',
+            'meta_title' => $title . ' | Blog Immobilier ' . $location['city'],
+            'meta_description' => 'Conseils concrets pour vendre votre bien à ' . $location['area'] . ' selon votre situation.',
             'content' => '<p>Vous souhaitez vendre dans les meilleures conditions ? Voici un guide pragmatique orienté résultats.</p>'
                 . '<h2>Ce que dit le marché local</h2><p>' . nl2br(e($trendInsights)) . '</p>'
                 . '<h2>Plan d\'action pour ' . e($persona) . '</h2><p>Commencez par une estimation précise puis préparez un plan de mise en vente adapté.</p>'
@@ -159,5 +163,31 @@ final class AIService
                 . '<h3>Comment accélérer la vente ?</h3><p>Soignez la présentation du bien et ciblez les bons acquéreurs.</p>'
                 . '<p><strong>CTA :</strong> Demandez votre estimation immobilière personnalisée dès maintenant.</p>',
         ];
+    }
+
+    /**
+     * @return array{city:string,area:string}
+     */
+    private function locationContext(): array
+    {
+        $branding = function_exists('getBrandingConfig') ? \getBrandingConfig() : [];
+        $city = trim((string) ($branding['city_name'] ?? ''));
+        $area = trim((string) ($branding['area_label'] ?? ''));
+
+        if ($city === '') {
+            $city = trim((string) Config::get('city.name', ''));
+        }
+        if ($city === '') {
+            $city = 'votre ville';
+        }
+
+        if ($area === '') {
+            $area = trim((string) Config::get('city.region', ''));
+        }
+        if ($area === '') {
+            $area = $city !== 'votre ville' ? $city : 'votre secteur';
+        }
+
+        return ['city' => $city, 'area' => $area];
     }
 }

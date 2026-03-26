@@ -1,5 +1,61 @@
 </main>
 
+<?php
+  $branding = is_array($branding ?? null) ? $branding : getBrandingConfig();
+  $settingsMap = getSettingsMap();
+
+  $siteName = trim((string) ($branding['site_name'] ?? ''));
+  if ($siteName === '') {
+      $siteName = 'Estimation Immobilière';
+  }
+
+  $cityName = trim((string) ($branding['city_name'] ?? ''));
+  if ($cityName === '') {
+      $cityName = 'Votre ville';
+  }
+
+  $areaLabel = trim((string) ($branding['area_label'] ?? ''));
+  if ($areaLabel === '') {
+      $areaLabel = $cityName !== 'Votre ville' ? $cityName : 'Votre secteur';
+  }
+
+  $supportEmail = trim((string) ($branding['support_email'] ?? ''));
+  if ($supportEmail === '') {
+      $supportEmail = 'contact@localhost';
+  }
+
+  $footerSocialLinks = [
+      'facebook' => trim((string) ($settingsMap['social_facebook_url'] ?? '')),
+      'instagram' => trim((string) ($settingsMap['social_instagram_url'] ?? '')),
+      'linkedin' => trim((string) ($settingsMap['social_linkedin_url'] ?? '')),
+      'x' => trim((string) ($settingsMap['social_x_url'] ?? '')),
+  ];
+
+  $footerTagline = trim((string) ($settingsMap['footer_tagline'] ?? ''));
+  if ($footerTagline === '') {
+      $footerTagline = sprintf(
+          'Votre partenaire de confiance pour l\'estimation immobilière sur %s.',
+          $areaLabel
+      );
+  }
+
+  $footerNewsletterText = trim((string) ($settingsMap['footer_newsletter_text'] ?? ''));
+  if ($footerNewsletterText === '') {
+      $footerNewsletterText = sprintf(
+          'Recevez nos analyses du marché local à %s et nos conseils immobiliers.',
+          $areaLabel
+      );
+  }
+
+  $footerAddressLine1 = trim((string) ($settingsMap['footer_address_line_1'] ?? $cityName));
+  $footerAddressLine2 = trim((string) ($settingsMap['footer_address_line_2'] ?? $areaLabel));
+
+  $footerLegalEntity = trim((string) ($settingsMap['footer_legal_entity'] ?? ''));
+  if ($footerLegalEntity === '') {
+      $footerLegalEntity = 'Éditeur local';
+  }
+?>
+
 <!-- ================================================ -->
 <!-- FOOTER PRO -->
 <!-- ================================================ -->
@@ -9,7 +65,7 @@
   <div class="container">
     <div class="footer-cta-inner">
       <div class="footer-cta-text">
-        <h3>Estimez votre bien immobilier à Bordeaux et sa métropole</h3>
+        <h3>Estimez votre bien immobilier à <?= e($areaLabel) ?></h3>
         <p>Algorithme IA + expertise locale pour une estimation fiable en quelques minutes.</p>
       </div>
       <a href="/#form-estimation" class="btn-footer-cta">
@@ -29,16 +85,24 @@
       <div class="footer-column footer-col-brand">
         <a href="/" class="footer-logo-link">
           <span class="footer-logo-icon"><i class="fas fa-home"></i></span>
-          <span class="footer-logo-text">Estimation Immobilier <strong>Bordeaux et Métropole</strong></span>
+          <span class="footer-logo-text"><?= e($siteName) ?> <strong><?= e($areaLabel) ?></strong></span>
         </a>
         <p class="footer-desc">
-          Votre partenaire de confiance pour l'estimation immobilière sur Bordeaux et Métropole depuis 2020.
+          <?= e($footerTagline) ?>
         </p>
         <div class="footer-social">
-          <a href="https://facebook.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://instagram.com/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
-          <a href="https://linkedin.com/company/estimation-bordeaux" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-          <a href="https://twitter.com/estimation_bdx" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="social-icon"><i class="fab fa-x-twitter"></i></a>
+          <?php if ($footerSocialLinks['facebook'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['facebook']) ?>" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <?php endif; ?>
+          <?php if ($footerSocialLinks['instagram'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['instagram']) ?>" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <?php endif; ?>
+          <?php if ($footerSocialLinks['linkedin'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['linkedin']) ?>" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          <?php endif; ?>
+          <?php if ($footerSocialLinks['x'] !== ''): ?>
+          <a href="<?= e($footerSocialLinks['x']) ?>" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="social-icon"><i class="fab fa-x-twitter"></i></a>
+          <?php endif; ?>
         </div>
       </div>
 
@@ -48,7 +112,7 @@
         <ul class="footer-links">
           <li><a href="/#form-estimation">Estimation en ligne</a></li>
           <li><a href="/processus-estimation">Notre processus</a></li>
-          <li><a href="/quartiers">Quartiers de Bordeaux</a></li>
+          <li><a href="/quartiers">Quartiers</a></li>
           <li><a href="/#how-it-works">Comment ça marche</a></li>
           <li><a href="/#example-result">Voir un exemple</a></li>
         </ul>
@@ -83,7 +147,7 @@
         <ul class="footer-contact">
           <li>
             <i class="fas fa-map-marker-alt"></i>
-            <span>Bordeaux, 33000<br>Nouvelle-Aquitaine</span>
+            <span><?= e($footerAddressLine1) ?><br><?= e($footerAddressLine2) ?></span>
           </li>
           <li>
             <a href="/contact">
@@ -92,9 +156,9 @@
             </a>
           </li>
           <li>
-            <a href="mailto:contact@estimation-immobilier-bordeaux.fr">
+            <a href="mailto:<?= e($supportEmail) ?>">
               <i class="fas fa-envelope"></i>
-              <span>contact@estimation-immobilier-bordeaux.fr</span>
+              <span><?= e($supportEmail) ?></span>
             </a>
           </li>
         </ul>
@@ -108,7 +172,7 @@
         <i class="fas fa-envelope-open-text"></i>
         <div>
           <strong>Restez informé</strong>
-          <span>Recevez nos analyses du marché de Bordeaux et sa métropole et nos conseils immobiliers.</span>
+          <span><?= e($footerNewsletterText) ?></span>
         </div>
       </div>
       <form class="footer-newsletter-form" method="POST" action="/api/newsletter">
@@ -120,7 +184,7 @@
     <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
       <div class="footer-bottom-left">
-        <p>&copy; 2026 Estimation Immobilier Bordeaux et Métropole &mdash; SAS OCDM Agency. Tous droits réservés.</p>
+        <p>&copy; <?= date('Y') ?> <?= e($siteName) ?> &mdash; <?= e($footerLegalEntity) ?>. Tous droits réservés.</p>
       </div>
       <div class="footer-bottom-right">
         <div class="footer-trust">

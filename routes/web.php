@@ -38,6 +38,7 @@ use App\Controllers\AdminSeoHubController;
 use App\Controllers\ToolController;
 
 $router->get('/', [PageController::class, 'home']);
+$router->get('/sitemap.xml', [PageController::class, 'sitemap']);
 $router->get('/estimation', [EstimationController::class, 'index']);
 $router->get('/estimation/confirmation', [EstimationController::class, 'confirmation']);
 $router->get('/leads', [EstimationController::class, 'leads']);
@@ -204,8 +205,11 @@ $router->post('/admin/sequences/save-persona', [AdminSequenceController::class, 
 $router->get('/admin/sequences/article-suggestions', [AdminSequenceController::class, 'articleSuggestions']);
 
 // Google Ads Landing Pages (capture pages — no navigation)
-$router->get('/lp/estimation-bordeaux', [LandingPageController::class, 'estimationBordeaux']);
-$router->get('/lp/vendre-maison-bordeaux', [LandingPageController::class, 'vendreMaisonBordeaux']);
+$router->get('/lp/estimation', [LandingPageController::class, 'estimation']);
+$router->get('/lp/vendre-maison', [LandingPageController::class, 'vendreMaison']);
+// Legacy aliases (temporary migration)
+$router->get('/lp/estimation-bordeaux', [LandingPageController::class, 'legacyEstimationBordeaux']);
+$router->get('/lp/vendre-maison-bordeaux', [LandingPageController::class, 'legacyVendreMaisonBordeaux']);
 $router->get('/lp/avis-valeur-gratuit', [LandingPageController::class, 'avisValeurGratuit']);
 $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
 

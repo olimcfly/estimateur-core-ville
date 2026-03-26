@@ -211,9 +211,11 @@ HTML;
 
     private static function sendAdminEmail(int $leadId, string $temperature, array $lead): void
     {
-        $adminEmail = (string) (Config::get('mail.admin_email')
-            ?: Config::get('mail.from')
-            ?: 'contact@localhost');
+        $configuredAdminEmail = trim((string) Config::get('mail.admin_email'));
+        $configuredFromEmail = trim((string) Config::get('mail.from'));
+        $adminEmail = $configuredAdminEmail !== ''
+            ? $configuredAdminEmail
+            : ($configuredFromEmail !== '' ? $configuredFromEmail : 'contact@localhost');
 
         $nom = htmlspecialchars((string) $lead['nom'], ENT_QUOTES, 'UTF-8');
         $email = htmlspecialchars((string) $lead['email'], ENT_QUOTES, 'UTF-8');

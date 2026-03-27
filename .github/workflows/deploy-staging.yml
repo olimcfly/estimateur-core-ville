@@ -1,0 +1,27 @@
+name: Deploy to Staging (esti-core-ville)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.STAGING_DEPLOY_PATH }}
+            git pull origin main
+            composer install --no-dev --optimize-autoloader --no-interaction
+            chmod -R 755 .
+            chmod -R 777 logs/

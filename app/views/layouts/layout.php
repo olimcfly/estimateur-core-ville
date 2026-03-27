@@ -5,4 +5,3 @@
   <?php include $page_template; ?>
 </main>
 <?php include __DIR__ . '/footer.php'; ?>
-<?php include __DIR__ . '/sticky-cta.php'; ?>

@@ -1,5 +1,3 @@
-</main>
-
 <?php
   $branding = is_array($branding ?? null) ? $branding : getBrandingConfig();
   $settingsMap = getSettingsMap();
@@ -54,13 +52,15 @@
   if ($footerLegalEntity === '') {
       $footerLegalEntity = 'Éditeur local';
   }
+
+  $config = $config ?? getSiteConfig();
+  $siteName = (string) ($config['site_name'] ?? $siteName);
+  $services = is_array($config['footer_services'] ?? null) ? $config['footer_services'] : [];
+  $resources = is_array($config['footer_resources'] ?? null) ? $config['footer_resources'] : [];
+  $legalLinks = is_array($config['footer_legal'] ?? null) ? $config['footer_legal'] : [];
+  $newsletterAction = (string) ($config['newsletter_action_url'] ?? '/api/newsletter');
 ?>
 
-<!-- ================================================ -->
-<!-- FOOTER PRO -->
-<!-- ================================================ -->
-
-<!-- PRE-FOOTER CTA -->
 <section class="footer-cta-band">
   <div class="container">
     <div class="footer-cta-inner">
@@ -75,75 +75,30 @@
   </div>
 </section>
 
-<?php
-  $config = $config ?? getSiteConfig();
-  $siteName = (string) ($config['site_name'] ?? 'Estimation Immobilier');
-  $siteLogo = (string) ($config['site_logo'] ?? '/favicon.svg');
-  $city = (string) ($config['ville'] ?? 'votre ville');
-  $advisorName = (string) ($config['advisor_name'] ?? 'Conseiller immobilier');
-  $advisorPhone = (string) ($config['advisor_phone'] ?? '');
-  $advisorEmail = (string) ($config['advisor_email'] ?? '');
-  $advisorPhoto = (string) ($config['advisor_photo'] ?? '/favicon.svg');
-  $services = is_array($config['footer_services'] ?? null) ? $config['footer_services'] : [];
-  $resources = is_array($config['footer_resources'] ?? null) ? $config['footer_resources'] : [];
-  $legalLinks = is_array($config['footer_legal'] ?? null) ? $config['footer_legal'] : [];
-  $socialLinks = is_array($config['social_links'] ?? null) ? $config['social_links'] : [];
-  $accentColor = (string) ($config['color_accent'] ?? '#D4AF37');
-  $newsletterAction = (string) ($config['newsletter_action_url'] ?? '/api/newsletter');
-  $currentYear = (int) date('Y');
-?>
-
-      <!-- COL 1: BRAND -->
-      <div class="footer-column footer-col-brand">
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <section class="footer-column footer-col-brand">
         <a href="/" class="footer-logo-link">
           <span class="footer-logo-icon"><i class="fas fa-home"></i></span>
           <span class="footer-logo-text"><?= e($siteName) ?> <strong><?= e($areaLabel) ?></strong></span>
         </a>
-        <p class="footer-desc">
-          <?= e($footerTagline) ?>
-        </p>
+        <p class="footer-desc"><?= e($footerTagline) ?></p>
         <div class="footer-social">
-          <?php if ($footerSocialLinks['facebook'] !== ''): ?>
-          <a href="<?= e($footerSocialLinks['facebook']) ?>" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-          <?php endif; ?>
-          <?php if ($footerSocialLinks['instagram'] !== ''): ?>
-          <a href="<?= e($footerSocialLinks['instagram']) ?>" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
-          <?php endif; ?>
-          <?php if ($footerSocialLinks['linkedin'] !== ''): ?>
-          <a href="<?= e($footerSocialLinks['linkedin']) ?>" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-          <?php endif; ?>
-          <?php if ($footerSocialLinks['x'] !== ''): ?>
-          <a href="<?= e($footerSocialLinks['x']) ?>" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="social-icon"><i class="fab fa-x-twitter"></i></a>
-          <?php endif; ?>
+          <?php if ($footerSocialLinks['facebook'] !== ''): ?><a href="<?= e($footerSocialLinks['facebook']) ?>" target="_blank" rel="noopener noreferrer" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a><?php endif; ?>
+          <?php if ($footerSocialLinks['instagram'] !== ''): ?><a href="<?= e($footerSocialLinks['instagram']) ?>" target="_blank" rel="noopener noreferrer" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a><?php endif; ?>
+          <?php if ($footerSocialLinks['linkedin'] !== ''): ?><a href="<?= e($footerSocialLinks['linkedin']) ?>" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="social-icon"><i class="fab fa-linkedin-in"></i></a><?php endif; ?>
+          <?php if ($footerSocialLinks['x'] !== ''): ?><a href="<?= e($footerSocialLinks['x']) ?>" target="_blank" rel="noopener noreferrer" title="X" class="social-icon"><i class="fab fa-x-twitter"></i></a><?php endif; ?>
         </div>
-      </div>
+      </section>
 
-      <!-- COL 2: SERVICES -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Services</h4>
-        <ul class="footer-links">
+      <section class="footer-column" data-accordion>
+        <button class="footer-heading site-footer__accordion-toggle" type="button" aria-expanded="false">Services</button>
+        <ul class="footer-links" data-accordion-panel>
           <li><a href="/#form-estimation">Estimation en ligne</a></li>
           <li><a href="/processus-estimation">Notre processus</a></li>
           <li><a href="/quartiers">Quartiers</a></li>
           <li><a href="/#how-it-works">Comment ça marche</a></li>
-          <li><a href="/#example-result">Voir un exemple</a></li>
-        </ul>
-      </div>
-
-      <!-- COL 3: RESSOURCES -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Ressources</h4>
-        <ul class="footer-links">
-          <li><a href="/blog">Blog & actualités</a></li>
-          <li><a href="/guides">Guides immobiliers</a></li>
-          <li><a href="/#faq">FAQ</a></li>
-          <li><a href="/newsletter">Newsletter</a></li>
-        </ul>
-      </div>
-
-      <section class="site-footer__column site-footer__column--services" data-accordion>
-        <button class="site-footer__heading site-footer__accordion-toggle" type="button" aria-expanded="false">Nos services</button>
-        <ul class="site-footer__links" data-accordion-panel>
           <?php foreach ($services as $item):
             $label = (string) ($item['label'] ?? 'Service');
             $url = (string) ($item['url'] ?? '#');
@@ -153,30 +108,38 @@
         </ul>
       </section>
 
-      <!-- COL 5: CONTACT -->
-      <div class="footer-column">
-        <h4 class="footer-heading">Nous contacter</h4>
-        <ul class="footer-contact">
-          <li>
-            <i class="fas fa-map-marker-alt"></i>
-            <span><?= e($footerAddressLine1) ?><br><?= e($footerAddressLine2) ?></span>
-          </li>
-          <li>
-            <a href="/contact">
-              <i class="fas fa-comment-dots"></i>
-              <span>Nous contacter</span>
-            </a>
-          </li>
-          <li>
-            <a href="mailto:<?= e($supportEmail) ?>">
-              <i class="fas fa-envelope"></i>
-              <span><?= e($supportEmail) ?></span>
-            </a>
-          </li>
+      <section class="footer-column" data-accordion>
+        <button class="footer-heading site-footer__accordion-toggle" type="button" aria-expanded="false">Ressources</button>
+        <ul class="footer-links" data-accordion-panel>
+          <li><a href="/blog">Blog & actualités</a></li>
+          <li><a href="/guides">Guides immobiliers</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+          <li><a href="/newsletter">Newsletter</a></li>
+          <?php foreach ($resources as $item):
+            $label = (string) ($item['label'] ?? 'Ressource');
+            $url = (string) ($item['url'] ?? '#');
+          ?>
+            <li><a href="<?= e($url) ?>"><?= e($label) ?></a></li>
+          <?php endforeach; ?>
         </ul>
       </section>
 
-    <!-- NEWSLETTER -->
+      <section class="footer-column" data-accordion>
+        <button class="footer-heading site-footer__accordion-toggle" type="button" aria-expanded="false">Informations</button>
+        <ul class="footer-links" data-accordion-panel>
+          <li><a href="/contact">Nous contacter</a></li>
+          <li><a href="mailto:<?= e($supportEmail) ?>"><?= e($supportEmail) ?></a></li>
+          <li><span><?= e($footerAddressLine1) ?>, <?= e($footerAddressLine2) ?></span></li>
+          <?php foreach ($legalLinks as $item):
+            $label = (string) ($item['label'] ?? 'Lien légal');
+            $url = (string) ($item['url'] ?? '#');
+          ?>
+            <li><a href="<?= e($url) ?>"><?= e($label) ?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      </section>
+    </div>
+
     <div class="footer-newsletter-band">
       <div class="footer-newsletter-text">
         <i class="fas fa-envelope-open-text"></i>
@@ -184,11 +147,14 @@
           <strong>Restez informé</strong>
           <span><?= e($footerNewsletterText) ?></span>
         </div>
-      </section>
+      </div>
+      <form action="<?= e($newsletterAction) ?>" method="post" class="footer-newsletter-form" data-newsletter-form>
+        <input type="email" name="email" placeholder="Votre e-mail" required>
+        <button type="submit" class="btn-footer-cta">S'inscrire</button>
+      </form>
+      <p class="footer-newsletter-feedback" data-newsletter-feedback aria-live="polite"></p>
     </div>
-  </div>
 
-    <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
       <div class="footer-bottom-left">
         <p>&copy; <?= date('Y') ?> <?= e($siteName) ?> &mdash; <?= e($footerLegalEntity) ?>. Tous droits réservés.</p>
@@ -208,7 +174,6 @@
 </footer>
 
 <script>
-  // Property image alt text
   document.querySelectorAll('img[data-address][data-bedrooms]').forEach((propertyImage) => {
     const address = (propertyImage.dataset.address || '').trim();
     const bedrooms = (propertyImage.dataset.bedrooms || '').trim();
@@ -216,7 +181,6 @@
     propertyImage.alt = `${address} - ${bedrooms} pièces`;
   });
 
-  // Header sticky + menu mobile
   (function() {
     const header = document.querySelector('[data-header]');
     const toggle = document.querySelector('[data-menu-toggle]');
@@ -226,17 +190,11 @@
 
     if (!header) return;
 
-    function setBodyOffset() {
-      document.body.style.paddingTop = header.offsetHeight + 'px';
-    }
-
-    function onScroll() {
-      header.classList.toggle('site-header--scrolled', window.scrollY > 10);
-    }
+    function setBodyOffset() { document.body.style.paddingTop = header.offsetHeight + 'px'; }
+    function onScroll() { header.classList.toggle('site-header--scrolled', window.scrollY > 10); }
 
     setBodyOffset();
     onScroll();
-
     window.addEventListener('resize', setBodyOffset);
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -261,24 +219,17 @@
     }
 
     toggle.addEventListener('click', function() {
-      if (mobileMenu.classList.contains('is-open')) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
+      if (mobileMenu.classList.contains('is-open')) closeMenu(); else openMenu();
     });
 
     overlay.addEventListener('click', closeMenu);
     mobileLinks.forEach((link) => link.addEventListener('click', closeMenu));
 
     window.addEventListener('resize', function() {
-      if (window.innerWidth >= 1024) {
-        closeMenu();
-      }
+      if (window.innerWidth >= 1024) closeMenu();
     });
   })();
 
-  // Footer accordion (mobile) + newsletter AJAX submit
   (function() {
     const mq = window.matchMedia('(max-width: 767px)');
     const accordionItems = document.querySelectorAll('[data-accordion]');
@@ -289,7 +240,6 @@
         const toggle = item.querySelector('.site-footer__accordion-toggle');
         const panel = item.querySelector('[data-accordion-panel]');
         if (!toggle || !panel) return;
-
         if (mq.matches) {
           const expanded = toggle.getAttribute('aria-expanded') === 'true';
           panel.hidden = !expanded;
@@ -306,7 +256,6 @@
       const toggle = item.querySelector('.site-footer__accordion-toggle');
       const panel = item.querySelector('[data-accordion-panel]');
       if (!toggle || !panel) return;
-
       toggle.addEventListener('click', () => {
         if (!mq.matches) return;
         const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
@@ -320,18 +269,13 @@
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (feedback) feedback.textContent = 'Inscription en cours...';
-
         try {
           const response = await fetch(form.action, {
             method: 'POST',
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             body: new FormData(form)
           });
-
-          if (!response.ok) {
-            throw new Error('Newsletter error');
-          }
-
+          if (!response.ok) throw new Error('Newsletter error');
           form.reset();
           if (feedback) feedback.textContent = 'Merci, votre inscription est confirmée.';
         } catch (error) {
@@ -341,17 +285,12 @@
     });
 
     setAccordionState();
-    if (typeof mq.addEventListener === 'function') {
-      mq.addEventListener('change', setAccordionState);
-    } else {
-      window.addEventListener('resize', setAccordionState);
-    }
+    if (typeof mq.addEventListener === 'function') mq.addEventListener('change', setAccordionState);
+    else window.addEventListener('resize', setAccordionState);
   })();
 </script>
 
 <?php include __DIR__ . '/sticky-cta.php'; ?>
-
-
 
 <script>
 (function() {

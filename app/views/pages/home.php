@@ -1,5 +1,17 @@
-<?php $page_title = 'Estimation Immobilier ' . site('city', '') . ' et Métropole | Avis de Valeur Gratuit en 60s'; ?>
-<?php $meta_description = 'Obtenez une estimation immobilière gratuite à ' . site('city', 'votre ville') . ' et Métropole en 60 secondes. Prix au m² par quartier, tendances du marché local. 100% gratuit, sans engagement.'; ?>
+<?php
+  $cityName = trim((string) ($city_name ?? site('city', '')));
+  if ($cityName === '') {
+      $cityName = 'votre ville';
+  }
+
+  $areaLabel = trim((string) ($area_label ?? ''));
+  if ($areaLabel === '') {
+      $areaLabel = $cityName . ' et Métropole';
+  }
+
+  $page_title = 'Estimation Immobilier ' . $areaLabel . ' | Avis de Valeur Gratuit en 60s';
+  $meta_description = 'Obtenez une estimation immobilière gratuite à ' . $areaLabel . ' en 60 secondes. Prix au m² par quartier, tendances du marché local. 100% gratuit, sans engagement.';
+?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -7,17 +19,32 @@
 <section class="hero">
   <div class="container hero-grid">
     <!-- COLONNE 1: HEADLINE -->
-    <div>
-      <p class="eyebrow">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow--hero">
         <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
       </p>
 
-      <h1>Estimez la valeur de votre bien immobilier à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?> et Métropole</h1>
+      <h1>Estimez la valeur de votre bien immobilier à <?= htmlspecialchars($areaLabel, ENT_QUOTES, 'UTF-8') ?>, avec une méthode fiable et locale</h1>
 
-      <p class="lead">
-        Obtenez une fourchette de prix indicative en quelques secondes.
-        3 informations suffisent pour recevoir votre avis de valeur gratuit.
+      <p class="lead hero-lead">
+        Obtenez une fourchette de prix claire en moins d'une minute, basée sur les tendances réelles du marché local.
+        Gratuit, sans engagement, immédiatement exploitable pour préparer votre projet de vente.
       </p>
+
+      <div class="hero-proofbar" aria-label="Preuves de confiance">
+        <div class="hero-proofbar__item">
+          <strong>5 000+</strong>
+          <span>références analysées</span>
+        </div>
+        <div class="hero-proofbar__item">
+          <strong>60 sec</strong>
+          <span>pour obtenir votre estimation</span>
+        </div>
+        <div class="hero-proofbar__item">
+          <strong>100%</strong>
+          <span>gratuit et sans engagement</span>
+        </div>
+      </div>
 
       <ul class="trust-list">
         <li>
@@ -43,16 +70,16 @@
           "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre !"
         </p>
         <p class="testimonial-author">
-          — Marie D. • <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
+          — Marie D. • <?= htmlspecialchars($cityName, ENT_QUOTES, 'UTF-8') ?>
         </p>
       </div>
 
       <!-- CTA BUTTONS -->
       <div class="hero-actions">
-        <a href="/estimation" class="btn btn-primary">
+        <a href="/estimation" class="btn btn-primary btn-hero-primary">
           <i class="fas fa-bolt"></i> Estimer gratuitement
         </a>
-        <a href="#how-it-works" class="btn btn-ghost">
+        <a href="#how-it-works" class="btn btn-ghost btn-hero-secondary">
           <i class="fas fa-info-circle"></i> Comment ça marche
         </a>
       </div>
@@ -103,7 +130,7 @@
             type="text"
             id="ville"
             name="ville"
-            placeholder="<?= htmlspecialchars((string) site('city', 'Votre ville'), ENT_QUOTES, 'UTF-8') ?>..."
+            placeholder="<?= htmlspecialchars($cityName, ENT_QUOTES, 'UTF-8') ?>..."
             required
             autocomplete="off"
           >
@@ -154,7 +181,7 @@
 <!-- ============================================ -->
 <!-- COMPRENDRE L'AVIS DE VALEUR -->
 <!-- ============================================ -->
-<section class="section section-alt" id="avis-de-valeur">
+<section class="section section-alt section-premium-light" id="avis-de-valeur">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">
@@ -243,7 +270,7 @@
 <!-- ============================================ -->
 <!-- 3 ÉTAPES -->
 <!-- ============================================ -->
-<section class="section" id="how-it-works">
+<section class="section section-premium-neutral" id="how-it-works">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">
@@ -277,7 +304,7 @@
 <!-- ============================================ -->
 <!-- FAQ -->
 <!-- ============================================ -->
-<section class="section section-alt" id="faq">
+<section class="section section-alt section-premium-contrast" id="faq">
   <div class="container">
     <div class="section-heading">
       <p class="eyebrow">
@@ -323,7 +350,7 @@
 <!-- ============================================ -->
 <!-- CTA FINAL -->
 <!-- ============================================ -->
-<section class="section">
+<section class="section section-premium-cta">
   <div class="container">
     <div class="card cta-final-card">
       <p class="eyebrow" style="margin-bottom: 1rem;">

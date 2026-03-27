@@ -24,9 +24,12 @@ final class PageController
 
     public function home(): void
     {
+        $city = $this->cityName();
         $area = $this->cityAreaLabel();
         View::render('pages/home', [
             'page_title' => "Estimation Immobilier {$area} | Avis de Valeur Gratuit",
+            'city_name' => $city,
+            'area_label' => $area,
         ]);
     }
 

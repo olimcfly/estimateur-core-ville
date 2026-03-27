@@ -1,5 +1,17 @@
-<?php $page_title = 'Estimation Immobilier ' . site('city', '') . ' et Métropole | Avis de Valeur Gratuit en 60s'; ?>
-<?php $meta_description = 'Obtenez une estimation immobilière gratuite à ' . site('city', 'votre ville') . ' et Métropole en 60 secondes. Prix au m² par quartier, tendances du marché local. 100% gratuit, sans engagement.'; ?>
+<?php
+  $cityName = trim((string) ($city_name ?? site('city', '')));
+  if ($cityName === '') {
+      $cityName = 'votre ville';
+  }
+
+  $areaLabel = trim((string) ($area_label ?? ''));
+  if ($areaLabel === '') {
+      $areaLabel = $cityName . ' et Métropole';
+  }
+
+  $page_title = 'Estimation Immobilier ' . $areaLabel . ' | Avis de Valeur Gratuit en 60s';
+  $meta_description = 'Obtenez une estimation immobilière gratuite à ' . $areaLabel . ' en 60 secondes. Prix au m² par quartier, tendances du marché local. 100% gratuit, sans engagement.';
+?>
 
 <!-- ============================================ -->
 <!-- HERO + FORMULAIRE SIMPLE -->
@@ -12,7 +24,7 @@
         <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
       </p>
 
-      <h1>Estimez la valeur de votre bien immobilier à <?= htmlspecialchars((string) site('city', 'votre ville'), ENT_QUOTES, 'UTF-8') ?> et Métropole, avec une méthode fiable et locale</h1>
+      <h1>Estimez la valeur de votre bien immobilier à <?= htmlspecialchars($areaLabel, ENT_QUOTES, 'UTF-8') ?>, avec une méthode fiable et locale</h1>
 
       <p class="lead hero-lead">
         Obtenez une fourchette de prix claire en moins d'une minute, basée sur les tendances réelles du marché local.
@@ -58,7 +70,7 @@
           "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre !"
         </p>
         <p class="testimonial-author">
-          — Marie D. • <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
+          — Marie D. • <?= htmlspecialchars($cityName, ENT_QUOTES, 'UTF-8') ?>
         </p>
       </div>
 
@@ -118,7 +130,7 @@
             type="text"
             id="ville"
             name="ville"
-            placeholder="<?= htmlspecialchars((string) site('city', 'Votre ville'), ENT_QUOTES, 'UTF-8') ?>..."
+            placeholder="<?= htmlspecialchars($cityName, ENT_QUOTES, 'UTF-8') ?>..."
             required
             autocomplete="off"
           >

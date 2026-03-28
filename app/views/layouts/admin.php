@@ -19,6 +19,15 @@ try {
 
 // Banner/toast notifications toggle
 $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
+$__adminBranding = function_exists('getBrandingConfig') ? getBrandingConfig() : [];
+$__adminSiteConfig = function_exists('getSiteConfig') ? getSiteConfig() : [];
+$__adminSiteName = trim((string) ($__adminBranding['site_name'] ?? ''));
+if ($__adminSiteName === '') {
+    $__adminSiteName = 'Plateforme immobilière';
+}
+$__adminPrimary = (string) ($__adminSiteConfig['colors']['primary'] ?? '#1f6f8b');
+$__adminAccent = (string) ($__adminSiteConfig['colors']['accent'] ?? '#22a06b');
+$__adminPrimaryDark = (string) ($__adminSiteConfig['colors']['primary_dark'] ?? '#174f64');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -26,10 +35,10 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title><?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Admin - Estimation Immobilier ' . htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?></title>
+  <title><?= isset($page_title) ? htmlspecialchars($page_title, ENT_QUOTES, 'UTF-8') : 'Admin - ' . htmlspecialchars($__adminSiteName, ENT_QUOTES, 'UTF-8') ?></title>
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- FontAwesome 6.4.0 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Bootstrap 5.3 -->
@@ -46,9 +55,9 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
       --admin-sidebar-bg: #1a1410;
       --admin-sidebar-text: #c8c0b8;
       --admin-sidebar-hover: rgba(255,255,255,0.08);
-      --admin-sidebar-active: rgba(139, 21, 56, 0.4);
-      --admin-primary: #8B1538;
-      --admin-accent: #D4AF37;
+      --admin-sidebar-active: rgba(31, 111, 139, 0.35);
+      --admin-primary: <?= htmlspecialchars($__adminPrimary, ENT_QUOTES, 'UTF-8') ?>;
+      --admin-accent: <?= htmlspecialchars($__adminAccent, ENT_QUOTES, 'UTF-8') ?>;
       --admin-text: #1a1410;
       --admin-surface: #ffffff;
       --admin-muted: #6b6459;
@@ -103,7 +112,7 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--admin-primary), #C41E3A);
+      background: linear-gradient(135deg, var(--admin-primary), <?= htmlspecialchars($__adminPrimaryDark, ENT_QUOTES, 'UTF-8') ?>);
       border-radius: 8px;
       color: #fff;
       font-size: 1rem;
@@ -111,7 +120,7 @@ $_bannerNotifEnabled = $_moduleAccess('notifications_banner');
     }
 
     .admin-sidebar-brand-text {
-      font-family: 'Playfair Display', serif;
+      font-family: inherit;
       font-weight: 700;
       font-size: 1rem;
       line-height: 1.2;

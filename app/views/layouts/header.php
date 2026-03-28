@@ -275,20 +275,38 @@
 
   <!-- CSS Principal -->
   <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/shell.css">
 
   <?php
     $config = getSiteConfig();
     $siteLogo = (string) ($config['site_logo'] ?? '');
     $siteName = (string) ($config['site_name'] ?? '');
-    $ctaLabel = (string) ($config['cta_label'] ?? '');
-    $ctaUrl = (string) ($config['cta_url'] ?? '/');
+    if ($siteName === '') {
+        $siteName = (string) ($branding['site_name'] ?? 'Estimation Immobilière');
+    }
+    $ctaLabel = trim((string) ($config['cta_label'] ?? ''));
+    if ($ctaLabel === '') {
+        $ctaLabel = 'Estimer mon bien';
+    }
+    $ctaUrl = trim((string) ($config['cta_url'] ?? '/estimation#form-estimation'));
+    if ($ctaUrl === '') {
+        $ctaUrl = '/estimation#form-estimation';
+    }
     $navLinks = is_array($config['nav_links'] ?? null) ? $config['nav_links'] : [];
+    if ($navLinks === []) {
+        $navLinks = [
+            ['label' => 'Accueil', 'url' => '/'],
+            ['label' => 'Estimation', 'url' => '/estimation'],
+            ['label' => 'Services', 'url' => '/services'],
+            ['label' => 'Quartiers', 'url' => '/quartiers'],
+            ['label' => 'Contact', 'url' => '/contact'],
+        ];
+    }
+    $contactPhone = getContactPhone();
     $accentColor = (string) ($config['color_accent'] ?? ($colors['accent'] ?? '#D4AF37'));
   ?>
-  <!-- CSS Header Personnalisé -->
+  <!-- Runtime design tokens (white-label) -->
   <style>
-
-
     :root {
       --bg: <?= e((string) ($colors['bg'] ?? '#faf9f7')) ?>;
       --surface: <?= e((string) ($colors['surface'] ?? '#ffffff')) ?>;
@@ -319,256 +337,6 @@
       --z-header: 1000;
       --z-mobile-overlay: 1050;
       --z-popup-lead: 1100;
-    }
-
-    /* HEADER */
-    .site-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      height: 72px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      transition: box-shadow 0.3s ease;
-    }
-
-    .site-header--scrolled {
-      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .site-header__container {
-      width: min(1400px, calc(100% - 2rem));
-      height: 100%;
-      margin-inline: auto;
-    }
-
-    .site-header__inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      height: 100%;
-    }
-
-    .site-header__brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      text-decoration: none;
-      min-width: 0;
-      flex-shrink: 0;
-    }
-
-    .site-header__logo {
-      height: 40px;
-      width: auto;
-      object-fit: contain;
-      display: block;
-      flex-shrink: 0;
-    }
-
-    .site-header__brand-text {
-      font-family: var(--font-heading, 'Playfair Display', serif);
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .site-header__nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      gap: 1.25rem;
-      min-width: 0;
-    }
-
-    .site-header__nav-link {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      text-decoration: none;
-      color: var(--muted);
-      font-weight: 500;
-      font-size: 0.95rem;
-      padding: 0.5rem 0;
-      transition: color 0.2s ease;
-    }
-
-    .site-header__nav-link:hover,
-    .site-header__nav-link:focus-visible {
-      color: var(--text);
-    }
-
-    .site-header__nav-link--active {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .site-header__nav-link--active::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -0.35rem;
-      height: 2px;
-      background: var(--color-accent);
-      border-radius: 999px;
-    }
-
-    .site-header__actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-shrink: 0;
-    }
-
-    .site-header__cta {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      background: var(--color-accent);
-      color: #fff;
-      font-weight: 600;
-      border: 1px solid transparent;
-      white-space: nowrap;
-      transition: filter 0.2s ease;
-    }
-
-    .site-header__cta:hover,
-    .site-header__cta:focus-visible {
-      filter: brightness(0.95);
-    }
-
-    .site-header__toggle {
-      display: none;
-      width: 44px;
-      height: 44px;
-      border: 0;
-      background: transparent;
-      padding: 0;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1003;
-    }
-
-    .site-header__toggle-line {
-      position: absolute;
-      width: 24px;
-      height: 2px;
-      background: var(--text);
-      border-radius: 2px;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      transform-origin: center;
-    }
-
-    .site-header__toggle-line:nth-child(1) { transform: translateY(-7px); }
-    .site-header__toggle-line:nth-child(2) { transform: translateY(0); }
-    .site-header__toggle-line:nth-child(3) { transform: translateY(7px); }
-
-    .site-header__toggle.is-active .site-header__toggle-line:nth-child(1) {
-      transform: translateY(0) rotate(45deg);
-    }
-
-    .site-header__toggle.is-active .site-header__toggle-line:nth-child(2) {
-      opacity: 0;
-    }
-
-    .site-header__toggle.is-active .site-header__toggle-line:nth-child(3) {
-      transform: translateY(0) rotate(-45deg);
-    }
-
-    .site-header__overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--surface);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-      z-index: 1001;
-    }
-
-    .site-header__overlay.is-open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    .site-header__mobile-panel {
-      position: fixed;
-      inset: 0;
-      z-index: 1002;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 1rem;
-      background: var(--surface);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      padding: calc(72px + 1rem) 1rem 1.5rem;
-    }
-
-    .site-header__mobile-panel.is-open {
-      transform: translateX(0);
-    }
-
-    .site-header__mobile-nav {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .site-header__mobile-link {
-      display: block;
-      padding: 20px;
-      text-decoration: none;
-      color: var(--text);
-      font-size: 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .site-header__mobile-link--active {
-      color: var(--color-accent);
-      font-weight: 600;
-    }
-
-    .site-header__mobile-cta {
-      width: 100%;
-      text-align: center;
-    }
-
-    @media (min-width: 1024px) {
-      .site-header__mobile-panel,
-      .site-header__overlay {
-        display: none;
-      }
-    }
-
-    @media (max-width: 1023px) {
-      .site-header__nav {
-        display: none;
-      }
-
-      .site-header__toggle {
-        display: inline-flex;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .site-header__cta--desktop,
-      .site-header__brand-text {
-        display: none;
-      }
     }
   </style>
 </head>
@@ -607,6 +375,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </nav>
 
       <div class="site-header__actions">
+        <?php if ($contactPhone['display'] !== '' && $contactPhone['href'] !== ''): ?>
+          <a href="<?= e($contactPhone['href']) ?>" class="site-header__phone site-header__phone--desktop" aria-label="Appeler <?= e($contactPhone['display']) ?>">
+            <i class="fas fa-phone"></i>
+            <span><?= e($contactPhone['display']) ?></span>
+          </a>
+          <a href="<?= e($contactPhone['href']) ?>" class="site-header__phone site-header__phone--mobile" aria-label="Appeler maintenant">
+            <i class="fas fa-phone"></i>
+          </a>
+        <?php endif; ?>
+        <a href="<?= e($ctaUrl) ?>" class="site-header__cta site-header__cta--mobile" aria-label="Estimer mon bien">
+          Estimer
+        </a>
         <a href="<?= e($ctaUrl) ?>" class="site-header__cta site-header__cta--desktop"><?= e($ctaLabel) ?></a>
         <button type="button" class="site-header__toggle" aria-label="Ouvrir le menu" aria-expanded="false" data-menu-toggle>
           <span class="site-header__toggle-line"></span>
@@ -631,7 +411,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <?php endforeach; ?>
     </nav>
 
+    <?php if ($contactPhone['display'] !== '' && $contactPhone['href'] !== ''): ?>
+      <a href="<?= e($contactPhone['href']) ?>" class="site-header__mobile-link" data-menu-link>
+        <i class="fas fa-phone"></i> <?= e($contactPhone['display']) ?>
+      </a>
+    <?php endif; ?>
+
     <a href="<?= e($ctaUrl) ?>" class="site-header__cta site-header__mobile-cta" data-menu-link><?= e($ctaLabel) ?></a>
   </div>
 </header>
-

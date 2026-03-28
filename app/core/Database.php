@@ -15,6 +15,11 @@ final class Database
 
     private function __construct()
     {
+        $this->connection = self::connectionFromConfig();
+    }
+
+    public static function connectionFromConfig(): PDO
+    {
         $host = (string) Config::get('db.host');
         $port = (int) Config::get('db.port', 3306);
         $name = (string) Config::get('db.name');
@@ -26,10 +31,36 @@ final class Database
             throw new RuntimeException('La configuration DB_NAME est requise.');
         }
 
-        $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=%s', $host, $port, $name, $charset);
+        return self::newPdoConnection($host, $port, $name, $user, $pass, $charset);
+    }
+
+    public static function connectWithCredentials(
+        string $host,
+        int $port,
+        string $database,
+        string $user,
+        string $password,
+        string $charset = 'utf8mb4'
+    ): PDO {
+        if (trim($database) === '') {
+            throw new RuntimeException('Le nom de base est requis.');
+        }
+
+        return self::newPdoConnection($host, $port, $database, $user, $password, $charset);
+    }
+
+    private static function newPdoConnection(
+        string $host,
+        int $port,
+        string $database,
+        string $user,
+        string $password,
+        string $charset
+    ): PDO {
+        $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=%s', $host, $port, $database, $charset);
 
         try {
-            $this->connection = new PDO($dsn, $user, $pass, [
+            return new PDO($dsn, $user, $password, [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,

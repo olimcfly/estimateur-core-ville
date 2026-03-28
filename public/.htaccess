@@ -1,18 +1,30 @@
 ServerSignature Off
+Options -Indexes
 DirectorySlash Off
+
+# Keep only one 404 behavior (no duplicate ErrorDocument rules)
+ErrorDocument 404 /index.php
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+
+  # Block diagnostic leftovers if reintroduced under /public.
+  RewriteRule ^(?:test-[^/]+|diagnostic-[^/]+|phpinfo|debug-[^/]+)\.php$ - [F,L,NC]
+
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^ index.php [L,QSA]
 </IfModule>
+
+<FilesMatch "^(?:\.env(?:\..*)?|composer\.(?:json|lock)|phpunit\.xml|composer\.phar)$">
+  Require all denied
+</FilesMatch>
+
+<FilesMatch "(?:^|/)(?:error_log|.*\.(?:sql|log|bak|sh|ini|yml|yaml|dist|dump|gz))$">
+  Require all denied
+</FilesMatch>
 
 <IfModule mod_headers.c>
   <FilesMatch "\.(?:css|js|jpg|jpeg|png|gif|webp|svg|ico)$">
     Header set Cache-Control "max-age=3600, public"
   </FilesMatch>
 </IfModule>
-
-<FilesMatch "^\.env|composer\.(json|lock)|config\.php$">
-  Require all denied
-</FilesMatch>

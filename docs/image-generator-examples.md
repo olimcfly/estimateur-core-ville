@@ -156,10 +156,11 @@ Dans `/admin/modules/generateur-images.php` :
 <?php
 // Charger le generateur depuis le dossier /generator/
 session_start();
-require_once '../config/database.php';
+require_once __DIR__ . '/../../app/core/bootstrap.php';
 require_once '../auth/check.php';
 
-$site_config = getSiteConfig($_SESSION['website_id']);
+$pdo = \App\Core\Database::connection();
+$site_config = getSiteConfig();
 
 ?>
 <!DOCTYPE html>

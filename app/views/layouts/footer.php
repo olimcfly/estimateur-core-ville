@@ -21,6 +21,7 @@
   if ($supportEmail === '') {
       $supportEmail = 'contact@localhost';
   }
+  $contactPhone = getContactPhone();
 
   $footerSocialLinks = [
       'facebook' => trim((string) ($settingsMap['social_facebook_url'] ?? '')),
@@ -68,7 +69,7 @@
         <h3>Estimez votre bien immobilier à <?= e($areaLabel) ?></h3>
         <p>Algorithme IA + expertise locale pour une estimation fiable en quelques minutes.</p>
       </div>
-      <a href="/#form-estimation" class="btn-footer-cta">
+      <a href="/estimation#form-estimation" class="btn-footer-cta">
         <i class="fas fa-chart-line"></i> Estimer mon bien
       </a>
     </div>
@@ -95,7 +96,7 @@
       <section class="footer-column" data-accordion>
         <button class="footer-heading site-footer__accordion-toggle" type="button" aria-expanded="false">Services</button>
         <ul class="footer-links" data-accordion-panel>
-          <li><a href="/#form-estimation">Estimation en ligne</a></li>
+          <li><a href="/estimation#form-estimation">Estimation en ligne</a></li>
           <li><a href="/processus-estimation">Notre processus</a></li>
           <li><a href="/quartiers">Quartiers</a></li>
           <li><a href="/#how-it-works">Comment ça marche</a></li>
@@ -129,6 +130,9 @@
         <ul class="footer-links" data-accordion-panel>
           <li><a href="/contact">Nous contacter</a></li>
           <li><a href="mailto:<?= e($supportEmail) ?>"><?= e($supportEmail) ?></a></li>
+          <?php if ($contactPhone['display'] !== '' && $contactPhone['href'] !== ''): ?>
+            <li><a href="<?= e($contactPhone['href']) ?>"><?= e($contactPhone['display']) ?></a></li>
+          <?php endif; ?>
           <li><span><?= e($footerAddressLine1) ?>, <?= e($footerAddressLine2) ?></span></li>
           <?php foreach ($legalLinks as $item):
             $label = (string) ($item['label'] ?? 'Lien légal');

@@ -14,7 +14,7 @@ final class EstimationService
         $roomsFactor = $this->resolveRoomsFactor($rooms);
 
         // Simulation locale simple (pas d'appel API pour l'instant)
-        $basePerSqm = 4200.0;
+        $basePerSqm = (float) \App\Core\Config::get('site.city_baseline_price', 4200.0);
         $perSqmMid = round($basePerSqm * $cityFactor * $typeFactor * $surfaceFactor * $roomsFactor, 2);
 
         $perSqmLow = round($perSqmMid * 0.9, 2);

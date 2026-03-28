@@ -2,6 +2,21 @@
 $cityName = (string) (\App\Core\Config::get('city.name', '') ?: 'votre ville');
 $page_title = 'Estimation Immobilière ' . $cityName . ' - Avis de Valeur Indicatif Gratuit';
 $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour votre bien immobilier à ' . $cityName . ' en 60 secondes. 3 informations suffisent. 100% gratuit, sans engagement.';
+$estimationContext = isset($estimationContext) && is_array($estimationContext) ? $estimationContext : getEstimationContext();
+$contextJson = json_encode($estimationContext, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+if ($contextJson === false) {
+  $contextJson = '{}';
+}
+$quartiers = isset($estimationContext['quartiers']) && is_array($estimationContext['quartiers']) ? $estimationContext['quartiers'] : [];
+$quartiersCount = count($quartiers);
+$zoneLabel = $quartiersCount > 0 ? ($quartiersCount . ' quartiers couverts') : ('Zone locale : ' . $cityName);
+$localProofLine = $quartiersCount > 0
+  ? 'Données locales sur ' . $quartiersCount . ' quartiers'
+  : 'Données locales de marché vérifiées';
+
+$page_title = 'Estimation vendeur à ' . $cityName . ' | Avis de valeur indicatif + accompagnement local';
+$meta_description = 'Recevez une estimation vendeur à ' . $cityName . ' en 60 secondes. Première fourchette indicative gratuite, puis avis de valeur par conseiller local si besoin.';
+$socialProof = function_exists('getSocialProofConfig') ? getSocialProofConfig() : [];
 ?>
 
 <!-- ============================================ -->
@@ -11,12 +26,12 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
   <div class="container hero-grid">
     <!-- COLONNE 1: HEADLINE -->
     <div>
-      <p class="eyebrow"><i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne</p>
-      <h1>Estimez la valeur de votre bien immobilier à <?= e($cityName) ?></h1>
+      <p class="eyebrow"><i class="fas fa-chart-line"></i> Estimation vendeur locale</p>
+      <h1>Vendez au bon prix à <?= e($cityName) ?> : estimation instantanée + avis de valeur possible</h1>
 
       <p class="lead">
-        Obtenez une fourchette de prix indicative en quelques secondes.
-        3 informations suffisent pour recevoir votre avis de valeur gratuit.
+        Première fourchette de prix en moins d'une minute pour préparer votre vente.
+        Ensuite, vous pouvez demander un avis de valeur détaillé avec un conseiller local.
       </p>
 
       <ul class="trust-list">
@@ -33,16 +48,40 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
           <strong>Données sécurisées</strong> — RGPD conforme
         </li>
       </ul>
+      <p class="est-inline-local-proof"><i class="fas fa-map-marker-alt"></i> <?= e($localProofLine) ?> · <?= e($zoneLabel) ?></p>
+
+      <div class="est-social-proof" aria-label="Preuves sociales">
+        <?php if (!empty($socialProof['google_reviews_count'])): ?>
+          <span class="est-social-proof__item">
+            <i class="fas fa-star"></i>
+            <?= e((string) $socialProof['google_reviews_count']) ?> avis<?= !empty($socialProof['google_rating']) ? ' · ' . e((string) $socialProof['google_rating']) . '/5' : '' ?>
+          </span>
+        <?php endif; ?>
+        <?php if (!empty($socialProof['clients_supported'])): ?>
+          <span class="est-social-proof__item">
+            <i class="fas fa-users"></i>
+            <?= e((string) $socialProof['clients_supported']) ?> vendeurs accompagnés
+          </span>
+        <?php endif; ?>
+        <span class="est-social-proof__item">
+          <i class="fas fa-clock"></i>
+          Réponse moyenne <?= e((string) ((int) ($socialProof['avg_delay_hours'] ?? 24))) ?>h
+        </span>
+        <span class="est-social-proof__item">
+          <i class="fas fa-location-dot"></i>
+          <?= e((string) ($socialProof['local_support_label'] ?? ('Accompagnement local à ' . $cityName))) ?>
+        </span>
+      </div>
 
       <!-- SOCIAL PROOF -->
-      <div style="margin-top: 2rem; padding: 1.2rem; background: rgba(var(--primary-rgb), 0.04); border-radius: 12px; border-left: 3px solid var(--primary);">
-        <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+      <div class="est-inline-testimonial">
+        <p class="est-inline-testimonial-label">
           <i class="fas fa-quote-left"></i> Témoignage client
         </p>
-        <p style="margin: 0; font-style: italic; color: var(--text); line-height: 1.6;">
+        <p class="est-inline-testimonial-quote">
           "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre !"
         </p>
-        <p style="margin: 0.8rem 0 0; font-size: 0.85rem; color: var(--muted); font-weight: 600;">
+        <p class="est-inline-testimonial-author">
           — Marie D. • <?= htmlspecialchars((string) site('city', ''), ENT_QUOTES, 'UTF-8') ?>
         </p>
       </div>
@@ -68,9 +107,9 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
       </div>
 
       <?php if (!empty($errors)): ?>
-        <div style="padding: 1rem; margin-bottom: 1rem; background: rgba(var(--warning-rgb), 0.1); border: 1px solid var(--warning); border-radius: 8px;">
+        <div class="est-inline-alert">
           <?php foreach ($errors as $error): ?>
-            <p style="margin: 0; color: var(--danger); font-size: 0.9rem;"><i class="fas fa-exclamation-circle"></i> <?= e((string) $error) ?></p>
+            <p class="est-inline-alert-text"><i class="fas fa-exclamation-circle"></i> <?= e((string) $error) ?></p>
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
@@ -117,47 +156,119 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
           >
         </label>
 
+        <?php if (!empty($estimationContext['quartiers']) && is_array($estimationContext['quartiers'])): ?>
+          <label for="quartier">
+            <span><i class="fas fa-city"></i> Quartier (optionnel)</span>
+            <select id="quartier" name="quartier">
+              <option value="">-- Sélectionner un quartier --</option>
+              <?php foreach ($estimationContext['quartiers'] as $quartier): ?>
+                <option value="<?= e((string) $quartier) ?>"><?= e((string) $quartier) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </label>
+        <?php endif; ?>
+
         <!-- BOUTON -->
-        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1rem; padding: 1rem;">
+        <button type="submit" class="btn btn-primary est-inline-btn-block">
           <i class="fas fa-bolt"></i> Obtenir mon estimation gratuite
         </button>
 
-        <p class="form-footer" style="text-align: center; margin: 0.8rem 0 0; font-size: 0.8rem; color: var(--muted);">
+        <p class="form-footer est-inline-form-footer">
           <i class="fas fa-lock"></i> Aucune donnée personnelle requise
         </p>
       </form>
 
-      <div style="padding: 1.5rem;">
-        <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem;">
-          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+      <div class="est-inline-benefits">
+        <ul class="est-inline-benefits-list">
+          <li class="est-inline-benefits-item">
+            <i class="fas fa-check-circle est-inline-benefits-icon"></i>
             <span><strong>100% gratuit</strong> — aucun frais caché</span>
           </li>
-          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <li class="est-inline-benefits-item">
+            <i class="fas fa-check-circle est-inline-benefits-icon"></i>
             <span><strong>Résultat immédiat</strong> — en moins d'1 minute</span>
           </li>
-          <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <li class="est-inline-benefits-item">
+            <i class="fas fa-check-circle est-inline-benefits-icon"></i>
             <span><strong>Données réelles</strong> — 5000+ transactions locales</span>
           </li>
-          <li style="display: flex; align-items: center; gap: 0.75rem;">
-            <i class="fas fa-check-circle" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <li class="est-inline-benefits-item est-inline-benefits-item--last">
+            <i class="fas fa-check-circle est-inline-benefits-icon"></i>
             <span><strong>Sans engagement</strong> — aucune obligation</span>
           </li>
         </ul>
 
-        <a href="#form-estimation" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.1rem; padding: 1.1rem;" onclick="document.getElementById('property_type').focus(); return false;">
+        <a href="#form-estimation" class="btn btn-primary est-inline-btn-block est-inline-btn-block--lg" onclick="document.getElementById('property_type').focus(); return false;">
           <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
         </a>
 
-        <p style="text-align: center; margin: 1rem 0 0; font-size: 0.8rem; color: var(--muted);">
+        <p class="est-inline-text-centered-muted">
           <i class="fas fa-lock"></i> Données sécurisées & conformes RGPD
         </p>
       </div>
     </aside>
   </div>
 </section>
+
+<section class="section section-alt est-inline-legal-reassurance" aria-label="Cadre légal">
+  <div class="container">
+    <div class="card est-inline-legal-card">
+      <h2>Important — cadre légal de l’estimation</h2>
+      <p>
+        Cette estimation est une <strong>fourchette indicative</strong> basée sur les données de marché locales.
+        Elle ne remplace pas un <strong>avis de valeur professionnel</strong> après visite du bien.
+      </p>
+      <ul class="est-inline-legal-list">
+        <li><i class="fas fa-check-circle"></i> Résultat instantané pour cadrer votre projet de vente.</li>
+        <li><i class="fas fa-check-circle"></i> Aucun engagement, aucune obligation de mandat.</li>
+        <li><i class="fas fa-check-circle"></i> Possibilité d’échange avec un conseiller local ensuite.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script id="estimation-context" type="application/json"><?= e($contextJson) ?></script>
+<script type="application/ld+json">
+<?= json_encode([
+  '@context' => 'https://schema.org',
+  '@type' => 'Service',
+  'name' => 'Estimation vendeur immobilière',
+  'areaServed' => $cityName,
+  'serviceType' => 'Estimation immobilière indicative',
+  'description' => 'Fourchette de prix indicative gratuite avant avis de valeur professionnel.',
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+</script>
+<script>
+  (function () {
+    var raw = document.getElementById('estimation-context');
+    if (!raw) return;
+
+    var context = {};
+    try {
+      context = JSON.parse(raw.textContent || '{}');
+    } catch (e) {
+      context = {};
+    }
+
+    window.ESTIMATION_CONTEXT = context;
+
+    var villeInput = document.getElementById('ville');
+    var quartierSelect = document.getElementById('quartier');
+
+    if (villeInput && context.city_name && !villeInput.value) {
+      villeInput.value = context.city_name;
+    }
+
+    if (!villeInput || !quartierSelect) return;
+
+    var cityName = (context.city_name || '').trim();
+    quartierSelect.addEventListener('change', function () {
+      var quartier = (quartierSelect.value || '').trim();
+      if (!cityName) return;
+      villeInput.value = quartier ? cityName + ' - ' + quartier : cityName;
+    });
+  })();
+</script>
 
 <?php require __DIR__ . '/../partials/trust-block.php'; ?>
 
@@ -176,60 +287,60 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
     <div class="comparison-grid">
 
       <!-- COLONNE GAUCHE: CE QUE NOUS PROPOSONS -->
-      <article class="card" style="border-top: 4px solid var(--accent);">
-        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-          <i class="fas fa-chart-bar" style="color: var(--accent);"></i>
+      <article class="card est-inline-comparison-card est-inline-comparison-card--accent">
+        <h3 class="est-inline-comparison-title">
+          <i class="fas fa-chart-bar est-inline-icon-accent"></i>
           Notre estimation en ligne
         </h3>
-        <p style="color: var(--muted); margin-bottom: 1rem;">
+        <p class="est-inline-comparison-intro">
           Notre outil analyse les <strong>données statistiques du marché</strong> (transactions récentes, prix au m² par quartier, tendances)
           pour vous donner une <strong>fourchette indicative</strong> de la valeur de votre bien.
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-check" style="color: var(--success); margin-top: 0.2rem;"></i>
+        <ul class="est-inline-comparison-list">
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-check est-inline-icon-success"></i>
             <span>Résultat instantané et gratuit</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-check" style="color: var(--success); margin-top: 0.2rem;"></i>
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-check est-inline-icon-success"></i>
             <span>Basé sur les données statistiques du marché local</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-info-circle" style="color: var(--warning); margin-top: 0.2rem;"></i>
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-info-circle est-inline-icon-warning"></i>
             <span>Donne une <strong>indication</strong>, pas un prix de vente garanti</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-info-circle" style="color: var(--warning); margin-top: 0.2rem;"></i>
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-info-circle est-inline-icon-warning"></i>
             <span>Ne prend pas en compte l'état précis du bien, les travaux, la vue, la luminosité, etc.</span>
           </li>
         </ul>
       </article>
 
       <!-- COLONNE DROITE: AVIS DE VALEUR DU CONSEILLER -->
-      <article class="card" style="border-top: 4px solid var(--primary);">
-        <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-          <i class="fas fa-user-tie" style="color: var(--primary);"></i>
+      <article class="card est-inline-comparison-card est-inline-comparison-card--primary">
+        <h3 class="est-inline-comparison-title">
+          <i class="fas fa-user-tie est-inline-icon-primary"></i>
           L'avis de valeur d'un conseiller immobilier
         </h3>
-        <p style="color: var(--muted); margin-bottom: 1rem;">
+        <p class="est-inline-comparison-intro">
           Un <strong>avis de valeur</strong> est une estimation rédigée par un <strong>professionnel de l'immobilier</strong> qui connaît le marché local.
           Il s'appuie sur une visite du bien et sur des références de ventes récentes pour proposer un prix de mise en vente cohérent.
         </p>
-        <ul style="list-style: none; padding: 0; margin: 0;">
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+        <ul class="est-inline-comparison-list">
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-certificate est-inline-icon-primary"></i>
             <span>Réalisé par un <strong>conseiller immobilier</strong> connaissant votre quartier</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-certificate est-inline-icon-primary"></i>
             <span>Visite physique du bien et analyse détaillée</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-certificate est-inline-icon-primary"></i>
             <span>Prend en compte l'état, les travaux, la situation, l'environnement et la demande sur le secteur</span>
           </li>
-          <li style="padding: 0.5rem 0; display: flex; align-items: flex-start; gap: 0.5rem;">
-            <i class="fas fa-certificate" style="color: var(--primary); margin-top: 0.2rem;"></i>
+          <li class="est-inline-comparison-item">
+            <i class="fas fa-certificate est-inline-icon-primary"></i>
             <span>Base de travail pour fixer un prix de mise en vente réaliste</span>
           </li>
         </ul>
@@ -238,9 +349,9 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
     </div>
 
     <!-- ENCART IMPORTANT -->
-    <div class="card" style="margin-top: 2rem; padding: 1.5rem 2rem; background: rgba(var(--primary-rgb), 0.04); border-left: 4px solid var(--primary);">
-      <p style="margin: 0; font-size: 0.95rem; line-height: 1.7;">
-        <i class="fas fa-exclamation-triangle" style="color: var(--primary);"></i>
+    <div class="card est-inline-important-note">
+      <p class="est-inline-important-note-text">
+        <i class="fas fa-exclamation-triangle est-inline-icon-primary"></i>
         <strong>Important :</strong> Tous les outils en ligne (y compris le nôtre) fournissent des <strong>estimations statistiques</strong> à partir de données de marché.
         Pour affiner le prix de vente de votre bien, l'idéal est de compléter cette première estimation par un <strong>avis de valeur</strong> réalisé par un conseiller immobilier
         qui se déplace chez vous et analyse votre bien dans le détail.
@@ -335,17 +446,17 @@ $meta_description = 'Obtenez une fourchette de prix indicative gratuite pour vot
 <!-- ============================================ -->
 <section class="section">
   <div class="container">
-    <div class="card" style="padding: 3rem; background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--accent-rgb), 0.03)); border: 2px solid var(--accent); text-align: center;">
-      <p class="eyebrow" style="margin-bottom: 1rem;">
+    <div class="card est-inline-final-cta">
+      <p class="eyebrow est-inline-final-cta-eyebrow">
         <i class="fas fa-calculator"></i> Commencez maintenant
       </p>
-      <h2 style="margin-bottom: 1rem; font-size: 2rem;">
+      <h2 class="est-inline-final-cta-title">
         Obtenez votre fourchette de prix en 30 secondes
       </h2>
-      <p class="lead" style="max-width: 600px; margin: 0 auto 2rem;">
+      <p class="lead est-inline-final-cta-lead">
         3 informations suffisent. Gratuit, sans engagement, sans inscription.
       </p>
-      <a href="#form-estimation" class="btn btn-primary" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
+      <a href="#form-estimation" class="btn btn-primary est-inline-final-cta-btn">
         <i class="fas fa-calculator"></i> Lancer mon estimation gratuite
       </a>
     </div>

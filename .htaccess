@@ -1,28 +1,48 @@
 ServerSignature Off
+Options -Indexes
 DirectorySlash Off
+
+# Single source of truth for 403/404 (avoid contradictory duplicate ErrorDocument rules)
+ErrorDocument 403 /index.php
+ErrorDocument 404 /index.php
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # Keep admin API reachable before any hardening deny rules (e.g. ^modules/ - [F]).
+  # Keep admin API reachable before hardening deny rules.
   RewriteRule ^admin/api/ - [L]
 
-  # Serve static assets from /public/assets when DocumentRoot is the project root.
+  # Never expose infrastructure/sources over HTTP.
+  RewriteRule ^(?:\.git|\.github|vendor|tests?|database|cron|tools|logs|config|includes)/ - [F,L,NC]
+
+  # Block ad-hoc diagnostics and test entrypoints.
+  RewriteRule ^(?:routing|test-[^/]+|diagnostic-[^/]+|phpinfo|debug-[^/]+)\.php$ - [F,L,NC]
+  RewriteRule ^public/(?:test-[^/]+|diagnostic-[^/]+|phpinfo|debug-[^/]+)\.php$ - [F,L,NC]
+
+  # Serve static assets from /public/assets when DocumentRoot is project root.
   RewriteRule ^assets/(.*)$ public/assets/$1 [L]
 
-  # Front controller: route everything except real files through index.php.
-  # Note: we do NOT exclude directories (!-d) because Apache would serve
-  # physical dirs like public/admin/login/ instead of letting PHP route handle them.
+  # MVC front controller fallback (legacy-compatible):
+  # prefer front/page.php if present, otherwise use index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/front/page.php -f
+  RewriteRule ^ front/page.php [L,QSA]
+
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^ index.php [L,QSA]
 </IfModule>
+
+# Deny secrets and sensitive artifacts even if physically present.
+<FilesMatch "^(?:\.env(?:\..*)?|composer\.(?:json|lock)|phpunit\.xml|composer\.phar)$">
+  Require all denied
+</FilesMatch>
+
+<FilesMatch "(?:^|/)(?:error_log|.*\.(?:sql|log|bak|sh|ini|yml|yaml|dist|dump|gz))$">
+  Require all denied
+</FilesMatch>
 
 <IfModule mod_headers.c>
   <FilesMatch "\.(?:css|js|jpg|jpeg|png|gif|webp|svg|ico)$">
     Header set Cache-Control "max-age=3600, public"
   </FilesMatch>
 </IfModule>
-
-<FilesMatch "^\.env|composer\.(json|lock)|config\.php$">
-  Require all denied
-</FilesMatch>

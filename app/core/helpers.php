@@ -60,6 +60,7 @@ if (!function_exists('hex_to_rgb')) {
 if (!function_exists('getSiteConfig')) {
     function getSiteConfig(): array
     {
+        $settings = getSettingsMap();
         $defaultColors = (array) Config::get('site.colors', []);
         $colors = $defaultColors;
         $googleSiteVerification = '';
@@ -102,6 +103,64 @@ if (!function_exists('getSiteConfig')) {
             // Table/settings can be unavailable in some environments.
         }
 
+        $siteCity = trim((string) Config::get('site.city', Config::get('city.name', '')));
+        $siteRegion = trim((string) Config::get('site.region', Config::get('city.region', '')));
+        $siteZip = trim((string) Config::get('site.zip', Config::get('city.code_postal', '')));
+        $siteCitySlug = trim((string) Config::get('site.city_slug', ''));
+        if ($siteCitySlug === '' && $siteCity !== '') {
+            $normalized = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $siteCity);
+            $normalized = is_string($normalized) ? strtolower($normalized) : strtolower($siteCity);
+            $normalized = preg_replace('/[^a-z0-9]+/', '-', $normalized) ?? '';
+            $siteCitySlug = trim($normalized, '-');
+        }
+        if ($siteCitySlug === '') {
+            $siteCitySlug = 'default';
+        }
+
+        $pickSetting = static function (array $keys, string $fallback = '') use ($settings): string {
+            foreach ($keys as $key) {
+                $value = trim((string) ($settings[$key] ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
+
+            return $fallback;
+        };
+
+        $advisorName = $pickSetting(['advisor_name', 'site.advisor_name']);
+        $advisorPhoto = $pickSetting(['advisor_photo', 'site.advisor_photo']);
+        $advisorExperienceYears = $pickSetting(['advisor_experience_years', 'site.advisor_experience_years']);
+        $advisorZone = $pickSetting(['advisor_zone', 'site.advisor_zone'], $siteRegion);
+        $advisorTagline = $pickSetting(['advisor_tagline', 'site.advisor_tagline']);
+        $accentColor = $pickSetting(['color_accent', 'site.color_accent'], (string) ($colors['accent'] ?? '#D4AF37'));
+
+        $quartiers = Config::get('city.quartiers', []);
+        if (!is_array($quartiers)) {
+            $quartiers = [];
+        }
+        $quartiers = array_values(array_filter(array_map(
+            static fn (mixed $quartier): string => trim((string) $quartier),
+            $quartiers
+        ), static fn (string $quartier): bool => $quartier !== ''));
+
+        if ($quartiers === []) {
+            $fixturePath = base_path('database/fixtures/' . $siteCitySlug . '/quartiers.php');
+            if (!is_file($fixturePath)) {
+                $fixturePath = base_path('database/fixtures/default/quartiers.php');
+            }
+
+            if (is_file($fixturePath)) {
+                $fixtureData = require $fixturePath;
+                if (is_array($fixtureData)) {
+                    $quartiers = array_values(array_unique(array_filter(array_map(
+                        static fn (mixed $row): string => is_array($row) ? trim((string) ($row['name'] ?? '')) : '',
+                        $fixtureData
+                    ), static fn (string $name): bool => $name !== '')));
+                }
+            }
+        }
+
         $rgbColors = [];
 
         foreach ($colors as $name => $hexColor) {
@@ -115,6 +174,82 @@ if (!function_exists('getSiteConfig')) {
             'rgb_colors' => $rgbColors,
             'google_site_verification' => $googleSiteVerification,
             'tracking' => $tracking,
+            'config_id' => (int) Config::get('website.id', 0),
+            'ville' => $siteCity,
+            'city_slug' => $siteCitySlug,
+            'zip' => $siteZip,
+            'region' => $siteRegion,
+            'quartiers' => $quartiers,
+            'advisor_name' => $advisorName,
+            'advisor_photo' => $advisorPhoto,
+            'advisor_experience_years' => $advisorExperienceYears,
+            'advisor_zone' => $advisorZone,
+            'advisor_tagline' => $advisorTagline,
+            'color_accent' => $accentColor,
+            'testimonials' => [],
+        ];
+    }
+}
+
+if (!function_exists('getEstimationContext')) {
+    /**
+     * Build normalized context expected by estimation UI.
+     *
+     * @return array{
+     *   config_id:int,
+     *   city_slug:string,
+     *   city_name:string,
+     *   zones:array<int,string>,
+     *   quartiers:array<int,string>,
+     *   advisor_context:array{name:string,zone:string,tagline:string}
+     * }
+     */
+    function getEstimationContext(): array
+    {
+        $siteConfig = getSiteConfig();
+        $cityName = trim((string) ($siteConfig['ville'] ?? Config::get('city.name', '')));
+        if ($cityName === '') {
+            $cityName = 'votre ville';
+        }
+        $citySlug = trim((string) ($siteConfig['city_slug'] ?? 'default'));
+        if ($citySlug === '') {
+            $citySlug = 'default';
+        }
+
+        $quartiers = isset($siteConfig['quartiers']) && is_array($siteConfig['quartiers'])
+            ? array_values(array_filter(array_map(
+                static fn (mixed $value): string => trim((string) $value),
+                $siteConfig['quartiers']
+            ), static fn (string $value): bool => $value !== ''))
+            : [];
+
+        $zones = [];
+        if ($cityName !== '') {
+            $zones[] = $cityName;
+        }
+        $region = trim((string) ($siteConfig['region'] ?? ''));
+        if ($region !== '') {
+            $zones[] = $region;
+        }
+        if ($quartiers !== []) {
+            $zones[] = 'Quartiers';
+        }
+        if ($zones === []) {
+            $zones[] = 'Zone locale';
+        }
+        $zones = array_values(array_unique($zones));
+
+        return [
+            'config_id' => (int) ($siteConfig['config_id'] ?? Config::get('website.id', 0)),
+            'city_slug' => $citySlug,
+            'city_name' => $cityName,
+            'zones' => $zones,
+            'quartiers' => $quartiers,
+            'advisor_context' => [
+                'name' => trim((string) ($siteConfig['advisor_name'] ?? '')),
+                'zone' => trim((string) ($siteConfig['advisor_zone'] ?? '')),
+                'tagline' => trim((string) ($siteConfig['advisor_tagline'] ?? '')),
+            ],
         ];
     }
 }
@@ -238,6 +373,98 @@ if (!function_exists('getBrandingConfig')) {
             'area_label' => $areaLabel,
             'support_email' => $supportEmail,
             'base_url' => $baseUrl,
+        ];
+    }
+}
+
+if (!function_exists('getContactPhone')) {
+    /**
+     * Resolve contact phone from settings/config and return display + tel href.
+     *
+     * @return array{display:string,href:string}
+     */
+    function getContactPhone(): array
+    {
+        $settings = getSettingsMap();
+        $pick = static function (array $keys) use ($settings): string {
+            foreach ($keys as $key) {
+                $value = trim((string) ($settings[$key] ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
+            return '';
+        };
+
+        $display = $pick(['contact_phone', 'phone_number', 'phone', 'telephone', 'advisor_phone']);
+        if ($display === '') {
+            $display = trim((string) Config::get('twilio.phone_number', ''));
+        }
+
+        if ($display === '') {
+            return ['display' => '', 'href' => ''];
+        }
+
+        $href = preg_replace('/[^0-9+]/', '', $display) ?? '';
+        if ($href === '') {
+            return ['display' => '', 'href' => ''];
+        }
+
+        return [
+            'display' => $display,
+            'href' => 'tel:' . $href,
+        ];
+    }
+}
+
+if (!function_exists('getSocialProofConfig')) {
+    /**
+     * Build normalized social-proof metrics for public pages.
+     *
+     * @return array{
+     *   google_reviews_count:int,
+     *   google_rating:string,
+     *   avg_delay_hours:int,
+     *   clients_supported:int,
+     *   sales_count:int,
+     *   sectors_covered:int,
+     *   local_support_label:string,
+     *   google_maps_url:string
+     * }
+     */
+    function getSocialProofConfig(): array
+    {
+        $settings = getSettingsMap();
+        $siteConfig = getSiteConfig();
+        $cityName = trim((string) ($siteConfig['ville'] ?? Config::get('city.name', 'votre ville')));
+        if ($cityName === '') {
+            $cityName = 'votre ville';
+        }
+
+        $quartiers = is_array($siteConfig['quartiers'] ?? null) ? $siteConfig['quartiers'] : [];
+        $quartiersCount = count($quartiers);
+
+        $intSetting = static function (string $key, int $fallback = 0) use ($settings): int {
+            $value = trim((string) ($settings[$key] ?? ''));
+            if ($value === '' || !is_numeric($value)) {
+                return $fallback;
+            }
+            return max(0, (int) $value);
+        };
+        $stringSetting = static function (string $key, string $fallback = '') use ($settings): string {
+            $value = trim((string) ($settings[$key] ?? ''));
+            return $value !== '' ? $value : $fallback;
+        };
+
+        return [
+            'google_reviews_count' => $intSetting('social_proof_google_reviews_count', 0),
+            'google_rating' => $stringSetting('social_proof_google_rating', ''),
+            'avg_delay_hours' => $intSetting('social_proof_avg_delay_hours', 24),
+            'clients_supported' => $intSetting('social_proof_clients_supported', 0),
+            'sales_count' => $intSetting('social_proof_sales_count', 0),
+            'sectors_covered' => $intSetting('social_proof_sectors_count', $quartiersCount),
+            'local_support_label' => $stringSetting('social_proof_local_support_label', 'Accompagnement local à ' . $cityName),
+            'google_maps_url' => $stringSetting('social_proof_google_maps_url', ''),
         ];
     }
 }

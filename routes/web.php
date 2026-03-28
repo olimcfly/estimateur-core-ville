@@ -213,6 +213,8 @@ $router->get('/lp/estimation-bordeaux', [LandingPageController::class, 'legacyEs
 $router->get('/lp/vendre-maison-bordeaux', [LandingPageController::class, 'legacyVendreMaisonBordeaux']);
 $router->get('/lp/avis-valeur-gratuit', [LandingPageController::class, 'avisValeurGratuit']);
 $router->post('/lp/submit', [LandingPageController::class, 'submitLead']);
+$router->get('/capture/{slug}', [LandingPageController::class, 'capture']);
+$router->get('/capture/{slug}.php', [LandingPageController::class, 'capture']);
 
 // Admin: Google Ads guide & campaign generator
 $router->get('/admin/google-ads', [LandingPageController::class, 'guide']);

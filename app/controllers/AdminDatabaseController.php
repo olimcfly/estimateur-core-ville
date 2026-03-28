@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Config;
+use App\Core\Database;
 use App\Core\View;
 use PDO;
-use PDOException;
 
 final class AdminDatabaseController
 {
@@ -35,12 +35,7 @@ final class AdminDatabaseController
 
         if ($action === 'connect' || !empty($_SESSION['db_admin_connected']) || $autoConnect) {
             try {
-                $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $dbHost, $dbPort, $dbName);
-                $pdo = new PDO($dsn, $dbUser, $dbPass, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_TIMEOUT => 5,
-                ]);
+                $pdo = Database::connectWithCredentials($dbHost, $dbPort, $dbName, $dbUser, $dbPass);
 
                 $connected = true;
 
@@ -68,7 +63,7 @@ final class AdminDatabaseController
                 // Detect missing tables/columns from code
                 $missingItems = $this->detectMissingItems($pdo, $tables, $tableDetails);
 
-            } catch (PDOException $e) {
+            } catch (\Throwable $e) {
                 $error = $autoConnect
                     ? 'Connexion automatique échouée: ' . $e->getMessage()
                     : $e->getMessage();
@@ -166,7 +161,7 @@ final class AdminDatabaseController
             $pdo->exec($sql);
 
             $_SESSION['db_flash'] = ['type' => 'success', 'message' => "Table '{$tableName}' créée avec succès."];
-        } catch (PDOException $e) {
+        } catch (\Throwable $e) {
             $_SESSION['db_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];
         }
 
@@ -209,7 +204,7 @@ final class AdminDatabaseController
             $pdo->exec($sql);
 
             $_SESSION['db_flash'] = ['type' => 'success', 'message' => "Colonne '{$colName}' ajoutée à '{$tableName}'."];
-        } catch (PDOException $e) {
+        } catch (\Throwable $e) {
             $_SESSION['db_flash'] = ['type' => 'error', 'message' => 'Erreur: ' . $e->getMessage()];
         }
 
@@ -219,17 +214,14 @@ final class AdminDatabaseController
 
     private function getAdminConnection(): PDO
     {
-        $dsn = sprintf(
-            'mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4',
-            $_SESSION['db_admin_host'] ?? Config::get('db.host'),
+        return Database::connectWithCredentials(
+            (string) ($_SESSION['db_admin_host'] ?? Config::get('db.host')),
             (int) ($_SESSION['db_admin_port'] ?? Config::get('db.port', 3306)),
-            $_SESSION['db_admin_name'] ?? Config::get('db.name'),
+            (string) ($_SESSION['db_admin_name'] ?? Config::get('db.name')),
+            (string) ($_SESSION['db_admin_user'] ?? ''),
+            (string) ($_SESSION['db_admin_pass'] ?? ''),
+            (string) Config::get('db.charset', 'utf8mb4'),
         );
-
-        return new PDO($dsn, $_SESSION['db_admin_user'] ?? '', $_SESSION['db_admin_pass'] ?? '', [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
     }
 
     /**

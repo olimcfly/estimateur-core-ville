@@ -2,6 +2,12 @@
 $baseUrl = App\Core\Config::get('app.base_url', '');
 $categoryPath = '/blog/' . rawurlencode((string) $category_slug);
 $categoryUrl = $baseUrl !== '' ? rtrim((string) $baseUrl, '/') . $categoryPath : $categoryPath;
+$branding = function_exists('getBrandingConfig') ? getBrandingConfig() : [];
+$brandName = trim((string) ($branding['site_name'] ?? ''));
+if ($brandName === '') {
+    $city = trim((string) site('city', ''));
+    $brandName = $city !== '' ? ('Plateforme immobilière ' . $city) : 'Plateforme immobilière';
+}
 
 $jsonLd = [
     '@context' => 'https://schema.org',
@@ -11,7 +17,7 @@ $jsonLd = [
     'url' => $categoryUrl,
     'isPartOf' => [
         '@type' => 'WebSite',
-        'name' => 'Estimation Immobilier ' . site('city', ''),
+        'name' => $brandName,
         'url' => $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : (site('domain', '') !== '' ? 'https://' . site('domain', '') : ''),
     ],
     'breadcrumb' => [

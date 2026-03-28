@@ -76,7 +76,7 @@
 
       <!-- CTA BUTTONS -->
       <div class="hero-actions">
-        <a href="/estimation" class="btn btn-primary btn-hero-primary">
+        <a href="#form-estimation" class="btn btn-primary btn-hero-primary">
           <i class="fas fa-bolt"></i> Estimer gratuitement
         </a>
         <a href="#how-it-works" class="btn btn-ghost btn-hero-secondary">
@@ -94,7 +94,7 @@
         <p class="muted">Remplissez ces 3 informations pour obtenir une fourchette de prix.</p>
       </div>
 
-      <form action="/estimation" method="post" class="form-grid">
+      <form action="/estimation" method="post" class="form-grid" id="home-mini-estimator" data-mini-estimator>
         <!-- CHAMP 1: TYPE DE BIEN -->
         <label for="property_type">
           <span><i class="fas fa-home"></i> Type de bien</span>
@@ -135,6 +135,7 @@
             autocomplete="off"
           >
         </label>
+        <input type="hidden" name="pieces" value="3">
 
         <!-- BOUTON -->
         <button type="submit" class="btn btn-primary btn-full btn-pulse">
@@ -145,6 +146,13 @@
           <i class="fas fa-lock"></i> Aucune donnée personnelle requise
         </p>
       </form>
+
+      <div class="mini-estimator-result" data-mini-estimator-result hidden aria-live="polite">
+        <p class="mini-estimator-result__label">Votre fourchette indicative</p>
+        <p class="mini-estimator-result__price" data-mini-estimator-price></p>
+        <p class="mini-estimator-result__meta" data-mini-estimator-meta></p>
+        <a href="/estimation#form-estimation" class="btn btn-primary btn-full">Recevoir un avis de valeur détaillé</a>
+      </div>
 
       <div class="hero-benefits">
         <ul class="hero-benefits-list">
@@ -166,7 +174,7 @@
           </li>
         </ul>
 
-        <a href="/estimation" class="btn btn-primary btn-full btn-pulse">
+        <a href="#form-estimation" class="btn btn-primary btn-full btn-pulse">
           <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
         </a>
 
@@ -362,7 +370,7 @@
       <p class="lead" style="max-width: 600px; margin: 0 auto 2rem;">
         3 informations suffisent. Gratuit, sans engagement, sans inscription.
       </p>
-      <a href="/estimation" class="btn btn-primary btn-pulse" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
+      <a href="#form-estimation" class="btn btn-primary btn-pulse" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
         <i class="fas fa-calculator"></i> Lancer mon estimation gratuite
       </a>
     </div>
@@ -417,4 +425,62 @@
     }
   ]
 }
+</script>
+
+<script>
+  (function() {
+    const form = document.querySelector('[data-mini-estimator]');
+    const resultBox = document.querySelector('[data-mini-estimator-result]');
+    const priceEl = document.querySelector('[data-mini-estimator-price]');
+    const metaEl = document.querySelector('[data-mini-estimator-meta]');
+    if (!form || !resultBox || !priceEl || !metaEl) return;
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const currencyFormatter = new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0
+    });
+
+    function setLoadingState(loading) {
+      if (!submitBtn) return;
+      submitBtn.disabled = loading;
+      submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
+      submitBtn.textContent = loading ? 'Calcul en cours...' : 'Obtenir mon estimation gratuite';
+    }
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      setLoadingState(true);
+      resultBox.hidden = true;
+
+      try {
+        const payload = new FormData(form);
+        const response = await fetch('/api/estimation', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: payload
+        });
+        const data = await response.json();
+        if (!response.ok || !data || !data.success || !data.data) {
+          throw new Error((data && data.error) ? data.error : 'Estimation indisponible');
+        }
+
+        const estimatedLow = Number(data.data.estimated_low || 0);
+        const estimatedHigh = Number(data.data.estimated_high || 0);
+        const perSqmMid = Number(data.data.per_sqm_mid || 0);
+        priceEl.textContent = currencyFormatter.format(estimatedLow) + ' – ' + currencyFormatter.format(estimatedHigh);
+        metaEl.textContent = 'Base de calcul : ' + currencyFormatter.format(perSqmMid) + ' / m² (indicatif).';
+        resultBox.hidden = false;
+      } catch (error) {
+        priceEl.textContent = 'Impossible de calculer pour le moment.';
+        metaEl.textContent = 'Vous pouvez continuer vers le formulaire complet pour obtenir un avis détaillé.';
+        resultBox.hidden = false;
+      } finally {
+        setLoadingState(false);
+      }
+    });
+  })();
 </script>

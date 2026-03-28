@@ -2,10 +2,45 @@
 /storage/cache/*
 /logs/*.log
 .env
+.env.*
+!.env.example
 /config/smtp_override.json
 /vendor/
 .phpunit.cache
 
 /logs/
+/front/error_log
 /public/error_log
+
+# Debug / diagnostics artifacts (must never ship)
+/routing.php
+/diagnostic-*.php
+/test-*.php
+/public/phpinfo.php
+/public/debug-*.php
+/public/test-*.php
+
+# Runtime / temporary artifacts
+*.log
+*.tmp
+*.swp
+*.swo
+*.pid
+*.seed
+*.stackdump
+*.bak
+*.old
+*.orig
 *.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.sql.gz
+*.dump
+*.dmp
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

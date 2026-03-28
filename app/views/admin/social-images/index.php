@@ -1,6 +1,16 @@
 <?php
 $message = (string) ($_GET['message'] ?? '');
 $error = (string) ($_GET['error'] ?? '');
+$socialPrimary = (string) site('colors.primary', '#1f6f8b');
+$socialAccent = (string) site('colors.accent', '#22a06b');
+$socialDark = (string) site('colors.primary_dark', '#174f64');
+$socialDomain = (string) site('domain', '');
+$socialCity = (string) site('city', '');
+$socialRegion = (string) site('region', '');
+$socialSiteName = trim((string) (getBrandingConfig()['site_name'] ?? ''));
+if ($socialSiteName === '') {
+  $socialSiteName = $socialCity !== '' ? ('Plateforme immobilière ' . $socialCity) : 'Plateforme immobilière';
+}
 ?>
 
 <style>
@@ -320,7 +330,7 @@ $error = (string) ($_GET['error'] ?? '');
         { id: 'quartier', label: 'Quartier', type: 'select', options: ['<?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> Centre', <?php foreach ($quartiers as $q): ?>'<?= $q ?>',<?php endforeach; ?>], value: '<?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> Centre' },
         { id: 'badge', label: 'Badge', type: 'text', value: 'ESTIMATION GRATUITE' },
         { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
-        { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#8B1538' },
+        { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '<?= htmlspecialchars($socialPrimary, ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#1a0510' },
       ],
       render: function(v) {
@@ -341,7 +351,7 @@ $error = (string) ($_GET['error'] ?? '');
         { id: 'title', label: 'Titre', type: 'text', value: 'V\u00e9rifiez le DPE avant d\u2019acheter' },
         { id: 'text', label: 'Texte', type: 'textarea', value: 'Le Diagnostic de Performance \u00c9nerg\u00e9tique (DPE) impacte directement la valeur de votre bien. Un logement class\u00e9 F ou G peut perdre jusqu\u2019\u00e0 15% de sa valeur.' },
         { id: 'tag', label: 'Tag', type: 'text', value: 'CONSEIL IMMO' },
-        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("city", "") !== "" ? "Estimation Immobilier " . site("city", "") : "Estimation Immobilier", ENT_QUOTES, "UTF-8") ?>' },
+        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars($socialSiteName, ENT_QUOTES, "UTF-8") ?>' },
         { id: 'url', label: 'URL', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
         { id: 'cta', label: 'CTA', type: 'text', value: 'Estimez votre bien gratuitement \u2192' },
       ],
@@ -359,7 +369,7 @@ $error = (string) ($_GET['error'] ?? '');
     },
     stat: {
       fields: [
-        { id: 'label', label: 'Label', type: 'text', value: 'MARCH\u00c9 IMMOBILIER BORDEAUX' },
+        { id: 'label', label: 'Label', type: 'text', value: 'MARCH\u00c9 IMMOBILIER LOCAL' },
         { id: 'value', label: 'Chiffre', type: 'text', value: '+12%' },
         { id: 'unit', label: 'Unit\u00e9', type: 'text', value: 'en 2 ans' },
         { id: 'desc', label: 'Description', type: 'textarea', value: 'Les prix de l2019immobilier 00e0 <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> ont progress\u00e9 de 12% sur les deux derni\u00e8res ann\u00e9es.' },
@@ -379,13 +389,13 @@ $error = (string) ($_GET['error'] ?? '');
     },
     story: {
       fields: [
-        { id: 'brand', label: 'Marque', type: 'text', value: 'ESTIMATION IMMOBILIER BORDEAUX' },
+        { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars($socialSiteName, ENT_QUOTES, "UTF-8") ?>' },
         { id: 'emoji', label: 'Emoji / Ic\u00f4ne', type: 'text', value: '\uD83C\uDFE0' },
         { id: 'title', label: 'Titre', type: 'text', value: 'Combien vaut votre bien 00e0 <?= htmlspecialchars((string) site("city", ""), ENT_QUOTES, "UTF-8") ?> ?' },
         { id: 'text', label: 'Texte', type: 'textarea', value: 'Obtenez une estimation gratuite et pr\u00e9cise en quelques minutes.' },
         { id: 'cta', label: 'Bouton CTA', type: 'text', value: 'Estimer mon bien' },
         { id: 'url', label: 'URL', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
-        { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#8B1538' },
+        { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '<?= htmlspecialchars($socialPrimary, ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#1a0510' },
       ],
       render: function(v) {
@@ -411,7 +421,7 @@ $error = (string) ($_GET['error'] ?? '');
         { id: 'bigValue', label: 'Chiffre droite', type: 'text', value: '4 800\u20ac' },
         { id: 'bigLabel', label: 'Label droite', type: 'text', value: 'Prix moyen / m\u00b2' },
         { id: 'brand', label: 'Marque', type: 'text', value: '<?= htmlspecialchars((string) site("domain", ""), ENT_QUOTES, "UTF-8") ?>' },
-        { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '#8B1538' },
+        { id: 'bg1', label: 'Couleur d\u00e9but', type: 'color', value: '<?= htmlspecialchars($socialPrimary, ENT_QUOTES, "UTF-8") ?>' },
         { id: 'bg2', label: 'Couleur fin', type: 'color', value: '#2d0a18' },
       ],
       render: function(v) {

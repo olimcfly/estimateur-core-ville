@@ -9,6 +9,22 @@ $advisorZone = isset($siteConfig['advisor_zone']) ? trim((string) $siteConfig['a
 $advisorTagline = isset($siteConfig['advisor_tagline']) ? trim((string) $siteConfig['advisor_tagline']) : '';
 $accentColor = isset($siteConfig['color_accent']) ? trim((string) $siteConfig['color_accent']) : '';
 $testimonials = isset($siteConfig['testimonials']) && is_array($siteConfig['testimonials']) ? $siteConfig['testimonials'] : [];
+$contactPhone = function_exists('getContactPhone') ? getContactPhone() : ['display' => '', 'href' => ''];
+$supportEmail = function_exists('getBrandingConfig') ? (string) ((getBrandingConfig()['support_email'] ?? '')) : '';
+$socialProof = function_exists('getSocialProofConfig') ? getSocialProofConfig() : [];
+
+if ($advisorName === '') {
+    $advisorName = 'Conseiller local dédié';
+}
+if ($advisorZone === '') {
+    $advisorZone = $trustVille !== '' ? $trustVille : 'votre secteur';
+}
+if ($advisorTagline === '') {
+    $advisorTagline = 'Nous vous aidons à positionner votre bien au bon prix, sans pression commerciale.';
+}
+if ($advisorExperienceYears === '') {
+    $advisorExperienceYears = 'Expertise locale';
+}
 
 $advisorTitleParts = [];
 if ($advisorName !== '') {
@@ -30,6 +46,8 @@ $experienceLine = trim(implode(' · ', $experienceParts));
 
 $visibleTestimonials = array_slice($testimonials, 0, 3);
 $buttonStyle = $accentColor !== '' ? ' style="background:' . e($accentColor) . ';border-color:' . e($accentColor) . ';"' : '';
+$contactHref = $contactPhone['href'] !== '' ? (string) $contactPhone['href'] : ($supportEmail !== '' ? 'mailto:' . $supportEmail : '/contact');
+$contactLabel = $contactPhone['display'] !== '' ? 'Appeler ' . (string) $contactPhone['display'] : 'Me contacter directement';
 ?>
 
 <section class="section trust-block" aria-label="Bloc de confiance">
@@ -39,6 +57,10 @@ $buttonStyle = $accentColor !== '' ? ' style="background:' . e($accentColor) . '
         <?php if ($advisorPhoto !== ''): ?>
           <div class="trust-block__avatar-wrap">
             <img src="<?= e($advisorPhoto) ?>" alt="<?= $advisorName !== '' ? e($advisorName) : 'Conseiller immobilier' ?>" class="trust-block__avatar">
+          </div>
+        <?php else: ?>
+          <div class="trust-block__avatar-wrap trust-block__avatar-wrap--fallback" aria-hidden="true">
+            <span><?= e(mb_strtoupper((string) mb_substr($advisorName, 0, 1, 'UTF-8'), 'UTF-8')) ?></span>
           </div>
         <?php endif; ?>
 
@@ -54,11 +76,24 @@ $buttonStyle = $accentColor !== '' ? ' style="background:' . e($accentColor) . '
           <p class="trust-block__tagline"><?= e($advisorTagline) ?></p>
         <?php endif; ?>
 
-        <a href="/contact" class="btn trust-block__btn"<?= $buttonStyle ?>>Me contacter directement</a>
+        <a href="<?= e($contactHref) ?>" class="btn trust-block__btn"<?= $buttonStyle ?>><?= e($contactLabel) ?></a>
       </article>
 
       <article class="trust-block__card trust-block__card--testimonials">
         <h3 class="trust-block__title">Ils nous ont confié leur projet</h3>
+        <div class="trust-block__proof-chips">
+          <?php if (!empty($socialProof['sales_count'])): ?>
+            <span class="trust-block__proof-chip"><i class="fas fa-key"></i> <?= e((string) $socialProof['sales_count']) ?> ventes accompagnées</span>
+          <?php endif; ?>
+          <?php if (!empty($socialProof['sectors_covered'])): ?>
+            <span class="trust-block__proof-chip"><i class="fas fa-map"></i> <?= e((string) $socialProof['sectors_covered']) ?> secteurs couverts</span>
+          <?php endif; ?>
+          <?php if (!empty($socialProof['google_maps_url'])): ?>
+            <a href="<?= e((string) $socialProof['google_maps_url']) ?>" target="_blank" rel="noopener noreferrer" class="trust-block__proof-chip trust-block__proof-chip--link">
+              <i class="fas fa-location-dot"></i> Voir nos avis Google
+            </a>
+          <?php endif; ?>
+        </div>
 
         <?php if (!empty($visibleTestimonials)): ?>
           <div class="trust-block__testimonials-list">

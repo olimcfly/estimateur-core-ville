@@ -25,6 +25,12 @@ $dateModified = $createdAt ?? $publishedAt;
 $baseUrl = App\Core\Config::get('app.base_url', '');
 $siteDomain = site('domain', '');
 $siteBase = $baseUrl !== '' ? rtrim((string) $baseUrl, '/') : ($siteDomain !== '' ? 'https://' . $siteDomain : '');
+$branding = function_exists('getBrandingConfig') ? getBrandingConfig() : [];
+$brandName = trim((string) ($branding['site_name'] ?? ''));
+if ($brandName === '') {
+    $city = trim((string) site('city', ''));
+    $brandName = $city !== '' ? ('Plateforme immobilière ' . $city) : 'Plateforme immobilière';
+}
 $articlePath = '/blog/' . rawurlencode((string) $article['slug']);
 $articleUrl = $siteBase . $articlePath;
 
@@ -37,12 +43,12 @@ $jsonLd = [
     'dateModified' => $dateModified,
     'author' => [
         '@type' => 'Organization',
-        'name' => 'Estimation Immobiliere ' . site('city', ''),
+        'name' => $brandName,
         'url' => $siteBase,
     ],
     'publisher' => [
         '@type' => 'Organization',
-        'name' => 'Estimation Immobiliere ' . site('city', ''),
+        'name' => $brandName,
         'url' => $siteBase,
         'logo' => [
             '@type' => 'ImageObject',

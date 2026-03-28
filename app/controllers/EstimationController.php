@@ -34,6 +34,7 @@ final class EstimationController
     {
         View::render('estimation/index', [
             'errors' => [],
+            'estimationContext' => getEstimationContext(),
         ]);
     }
 

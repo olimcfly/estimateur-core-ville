@@ -11,6 +11,13 @@ use App\Services\Mailer;
 
 final class LeadNotificationService
 {
+    private static function color(string $key, string $fallback): string
+    {
+        $value = (string) Config::get('site.colors.' . $key, $fallback);
+        $value = trim($value);
+        return $value !== '' ? $value : $fallback;
+    }
+
     /**
      * Send both prospect confirmation and admin notification emails.
      *
@@ -83,14 +90,16 @@ final class LeadNotificationService
             $ville = htmlspecialchars((string) $lead['ville'], ENT_QUOTES, 'UTF-8');
             $subject = "Nouveau lead #{$leadId} - {$nom} ({$ville})";
 
+            $primary = self::color('primary', '#1f6f8b');
+            $text = self::color('text', '#1a1410');
             $html = '<div style="font-family:Arial,sans-serif;padding:20px;background:#f5f5f5;">'
                 . '<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">'
-                . '<div style="background:#1a1410;padding:20px 30px;"><h2 style="margin:0;color:#fff;font-size:16px;">Nouveau lead recu</h2></div>'
+                . '<div style="background:' . htmlspecialchars($text, ENT_QUOTES, 'UTF-8') . ';padding:20px 30px;"><h2 style="margin:0;color:#fff;font-size:16px;">Nouveau lead recu</h2></div>'
                 . '<div style="padding:20px 30px;">'
                 . '<p><strong>Lead #' . $leadId . '</strong> - ' . htmlspecialchars($temperature, ENT_QUOTES, 'UTF-8') . '</p>'
                 . '<p>Nom: <strong>' . $nom . '</strong></p>'
                 . '<p>Ville: <strong>' . $ville . '</strong></p>'
-                . '<p style="margin-top:15px;"><a href="' . htmlspecialchars((string) Config::get('base_url', ''), ENT_QUOTES, 'UTF-8') . '/admin/leads/' . $leadId . '" style="background:#8B1538;color:#fff;padding:8px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Voir le lead</a></p>'
+                . '<p style="margin-top:15px;"><a href="' . htmlspecialchars((string) Config::get('base_url', ''), ENT_QUOTES, 'UTF-8') . '/admin/leads/' . $leadId . '" style="background:' . htmlspecialchars($primary, ENT_QUOTES, 'UTF-8') . ';color:#fff;padding:8px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Voir le lead</a></p>'
                 . '</div></div></div>';
 
             try {
@@ -115,6 +124,13 @@ final class LeadNotificationService
 
         $subject = "Votre demande d'avis de valeur a bien été enregistrée";
 
+        $primary = self::color('primary', '#1f6f8b');
+        $accent = self::color('accent', '#22a06b');
+        $text = self::color('text', '#1a1410');
+        $border = self::color('border', '#e8dfd7');
+        $surface = self::color('surface', '#ffffff');
+        $muted = self::color('muted', '#6b6459');
+
         $html = <<<HTML
 <!DOCTYPE html>
 <html lang="fr">
@@ -122,11 +138,11 @@ final class LeadNotificationService
 <body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:30px 0;">
 <tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+<table width="600" cellpadding="0" cellspacing="0" style="background:{$surface};border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
 
   <!-- Header -->
   <tr>
-    <td style="background:#8B1538;padding:30px 40px;text-align:center;">
+    <td style="background:{$primary};padding:30px 40px;text-align:center;">
       <h1 style="margin:0;color:#ffffff;font-size:22px;">{$brandName}</h1>
     </td>
   </tr>
@@ -134,32 +150,32 @@ final class LeadNotificationService
   <!-- Body -->
   <tr>
     <td style="padding:35px 40px;">
-      <h2 style="margin:0 0 15px;color:#1a1410;font-size:20px;">Bonjour {$nom},</h2>
+      <h2 style="margin:0 0 15px;color:{$text};font-size:20px;">Bonjour {$nom},</h2>
       <p style="color:#333;line-height:1.7;margin:0 0 20px;">
         Nous avons bien reçu votre demande d'avis de valeur. Un conseiller immobilier spécialisé sur <strong>{$ville}</strong> vous recontactera très prochainement pour organiser un rendez-vous.
       </p>
 
       <!-- Recap -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf9f7;border-radius:8px;border:1px solid #e8dfd7;margin:20px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf9f7;border-radius:8px;border:1px solid {$border};margin:20px 0;">
         <tr>
           <td style="padding:20px 25px;">
-            <h3 style="margin:0 0 15px;color:#8B1538;font-size:16px;">Récapitulatif de votre demande</h3>
+            <h3 style="margin:0 0 15px;color:{$primary};font-size:16px;">Récapitulatif de votre demande</h3>
             <table width="100%" cellpadding="4" cellspacing="0">
               <tr>
-                <td style="color:#6b6459;width:40%;padding:6px 0;border-bottom:1px solid #e8dfd7;">Ville</td>
-                <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><strong>{$ville}</strong></td>
+                <td style="color:{$muted};width:40%;padding:6px 0;border-bottom:1px solid {$border};">Ville</td>
+                <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><strong>{$ville}</strong></td>
               </tr>
               <tr>
-                <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Estimation en ligne</td>
-                <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><strong>{$estimation} &euro;</strong></td>
+                <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Estimation en ligne</td>
+                <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><strong>{$estimation} &euro;</strong></td>
               </tr>
               <tr>
-                <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Délai souhaité</td>
-                <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;">{$urgenceLabel}</td>
+                <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Délai souhaité</td>
+                <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};">{$urgenceLabel}</td>
               </tr>
               <tr>
-                <td style="color:#6b6459;padding:6px 0;">Raison</td>
-                <td style="color:#1a1410;padding:6px 0;">{$motivationLabel}</td>
+                <td style="color:{$muted};padding:6px 0;">Raison</td>
+                <td style="color:{$text};padding:6px 0;">{$motivationLabel}</td>
               </tr>
             </table>
           </td>
@@ -170,15 +186,15 @@ final class LeadNotificationService
       <h3 style="margin:25px 0 10px;color:#1a1410;font-size:16px;">Prochaines étapes</h3>
       <table cellpadding="0" cellspacing="0">
         <tr>
-          <td style="padding:6px 10px 6px 0;vertical-align:top;color:#8B1538;font-weight:bold;">1.</td>
+          <td style="padding:6px 10px 6px 0;vertical-align:top;color:{$primary};font-weight:bold;">1.</td>
           <td style="padding:6px 0;color:#333;line-height:1.6;">Un conseiller vous contacte pour convenir d'un rendez-vous</td>
         </tr>
         <tr>
-          <td style="padding:6px 10px 6px 0;vertical-align:top;color:#8B1538;font-weight:bold;">2.</td>
+          <td style="padding:6px 10px 6px 0;vertical-align:top;color:{$primary};font-weight:bold;">2.</td>
           <td style="padding:6px 0;color:#333;line-height:1.6;">Visite de votre bien pour une évaluation précise</td>
         </tr>
         <tr>
-          <td style="padding:6px 10px 6px 0;vertical-align:top;color:#8B1538;font-weight:bold;">3.</td>
+          <td style="padding:6px 10px 6px 0;vertical-align:top;color:{$primary};font-weight:bold;">3.</td>
           <td style="padding:6px 0;color:#333;line-height:1.6;">Remise de votre avis de valeur détaillé</td>
         </tr>
       </table>
@@ -192,8 +208,8 @@ final class LeadNotificationService
 
   <!-- Footer -->
   <tr>
-    <td style="background:#faf9f7;padding:20px 40px;text-align:center;border-top:1px solid #e8dfd7;">
-      <p style="margin:0;font-size:12px;color:#6b6459;">
+    <td style="background:#faf9f7;padding:20px 40px;text-align:center;border-top:1px solid {$border};">
+      <p style="margin:0;font-size:12px;color:{$muted};">
         Cet email a été envoyé suite à votre demande d'avis de valeur sur notre site.<br>
         Vos données sont traitées conformément à notre politique de confidentialité.
       </p>
@@ -241,6 +257,12 @@ HTML;
 
         $subject = "Nouveau lead #{$leadId} - {$nom} ({$ville})";
 
+        $primary = self::color('primary', '#1f6f8b');
+        $accent = self::color('accent', '#22a06b');
+        $text = self::color('text', '#1a1410');
+        $border = self::color('border', '#e8dfd7');
+        $muted = self::color('muted', '#6b6459');
+
         $html = <<<HTML
 <!DOCTYPE html>
 <html lang="fr">
@@ -252,9 +274,9 @@ HTML;
 
   <!-- Header -->
   <tr>
-    <td style="background:#1a1410;padding:25px 40px;">
+    <td style="background:{$text};padding:25px 40px;">
       <h1 style="margin:0;color:#ffffff;font-size:18px;">Nouveau lead reçu</h1>
-      <p style="margin:5px 0 0;color:#D4AF37;font-size:14px;">#{$leadId} &mdash; {$date}</p>
+      <p style="margin:5px 0 0;color:{$accent};font-size:14px;">#{$leadId} &mdash; {$date}</p>
     </td>
   </tr>
 
@@ -274,23 +296,23 @@ HTML;
   <!-- Contact info -->
   <tr>
     <td style="padding:20px 40px;">
-      <h3 style="margin:0 0 12px;color:#8B1538;font-size:16px;">Coordonnées du prospect</h3>
+      <h3 style="margin:0 0 12px;color:{$primary};font-size:16px;">Coordonnées du prospect</h3>
       <table width="100%" cellpadding="4" cellspacing="0">
         <tr>
-          <td style="color:#6b6459;width:35%;padding:6px 0;border-bottom:1px solid #e8dfd7;">Nom</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><strong>{$nom}</strong></td>
+          <td style="color:{$muted};width:35%;padding:6px 0;border-bottom:1px solid {$border};">Nom</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><strong>{$nom}</strong></td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Email</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><a href="mailto:{$email}" style="color:#8B1538;">{$email}</a></td>
+          <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Email</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><a href="mailto:{$email}" style="color:{$primary};">{$email}</a></td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Téléphone</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><a href="tel:{$telephone}" style="color:#8B1538;">{$telephone}</a></td>
+          <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Téléphone</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><a href="tel:{$telephone}" style="color:{$primary};">{$telephone}</a></td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;">Adresse du bien</td>
-          <td style="color:#1a1410;padding:6px 0;">{$adresse}</td>
+          <td style="color:{$muted};padding:6px 0;">Adresse du bien</td>
+          <td style="color:{$text};padding:6px 0;">{$adresse}</td>
         </tr>
       </table>
     </td>
@@ -299,27 +321,27 @@ HTML;
   <!-- Estimation details -->
   <tr>
     <td style="padding:0 40px 20px;">
-      <h3 style="margin:0 0 12px;color:#8B1538;font-size:16px;">Détails de la demande</h3>
+      <h3 style="margin:0 0 12px;color:{$primary};font-size:16px;">Détails de la demande</h3>
       <table width="100%" cellpadding="4" cellspacing="0">
         <tr>
-          <td style="color:#6b6459;width:35%;padding:6px 0;border-bottom:1px solid #e8dfd7;">Ville</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><strong>{$ville}</strong></td>
+          <td style="color:{$muted};width:35%;padding:6px 0;border-bottom:1px solid {$border};">Ville</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><strong>{$ville}</strong></td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Estimation en ligne</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;"><strong>{$estimation} &euro;</strong></td>
+          <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Estimation en ligne</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};"><strong>{$estimation} &euro;</strong></td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Délai souhaité</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;">{$urgenceLabel}</td>
+          <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Délai souhaité</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};">{$urgenceLabel}</td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;border-bottom:1px solid #e8dfd7;">Motivation</td>
-          <td style="color:#1a1410;padding:6px 0;border-bottom:1px solid #e8dfd7;">{$motivationLabel}</td>
+          <td style="color:{$muted};padding:6px 0;border-bottom:1px solid {$border};">Motivation</td>
+          <td style="color:{$text};padding:6px 0;border-bottom:1px solid {$border};">{$motivationLabel}</td>
         </tr>
         <tr>
-          <td style="color:#6b6459;padding:6px 0;">Notes</td>
-          <td style="color:#1a1410;padding:6px 0;">{$notes}</td>
+          <td style="color:{$muted};padding:6px 0;">Notes</td>
+          <td style="color:{$text};padding:6px 0;">{$notes}</td>
         </tr>
       </table>
     </td>
@@ -327,8 +349,8 @@ HTML;
 
   <!-- Footer -->
   <tr>
-    <td style="background:#faf9f7;padding:20px 40px;text-align:center;border-top:1px solid #e8dfd7;">
-      <p style="margin:0;font-size:12px;color:#6b6459;">
+    <td style="background:#faf9f7;padding:20px 40px;text-align:center;border-top:1px solid {$border};">
+      <p style="margin:0;font-size:12px;color:{$muted};">
         Notification automatique &mdash; {$brandName}
       </p>
     </td>

@@ -65,6 +65,35 @@ final class LandingPageController
         ]);
     }
 
+
+    public function capture(string $slug): void
+    {
+        $normalized = strtolower(trim($slug));
+        if (str_ends_with($normalized, '.php')) {
+            $normalized = substr($normalized, 0, -4);
+        }
+
+        $normalized = preg_replace('/[^a-z0-9\-]/', '', $normalized) ?? '';
+
+        if ($normalized === 'avis-valeur-gratuit') {
+            $this->avisValeurGratuit();
+            return;
+        }
+
+        if (preg_match('/^estimation(?:-[a-z0-9\-]+)?$/', $normalized) === 1) {
+            $this->estimation();
+            return;
+        }
+
+        if (preg_match('/^vendre-maison(?:-[a-z0-9\-]+)?$/', $normalized) === 1) {
+            $this->vendreMaison();
+            return;
+        }
+
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo '404 - Capture introuvable';
+    }
     public function legacyEstimationBordeaux(): void
     {
         $this->redirectLegacy('/lp/estimation');

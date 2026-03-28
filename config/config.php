@@ -66,12 +66,15 @@ return [
         'name'          => $_ENV['CITY_NAME'] ?? '',
         'region'        => $_ENV['CITY_REGION'] ?? '',
         'code_postal'   => $_ENV['CITY_CODE_POSTAL'] ?? '',
-        'quartiers'     => array_map('trim', explode(',', $_ENV['CITY_QUARTIERS'] ?? '')),
+        'quartiers'     => array_values(array_filter(
+            array_map('trim', explode(',', (string) ($_ENV['CITY_QUARTIERS'] ?? ''))),
+            static fn (string $quartier): bool => $quartier !== ''
+        )),
         'prix_m2_moyen' => (int) ($_ENV['CITY_PRIX_M2'] ?? 0),
         'colors' => [
-            'primary'   => $_ENV['SITE_COLOR_PRIMARY'] ?? '#8B1538',
+            'primary'   => $_ENV['SITE_COLOR_PRIMARY'] ?? '#1f6f8b',
             'secondary' => $_ENV['SITE_COLOR_SECONDARY'] ?? '#FFFFFF',
-            'accent'    => $_ENV['SITE_COLOR_ACCENT'] ?? '#D4AF37',
+            'accent'    => $_ENV['SITE_COLOR_ACCENT'] ?? '#22a06b',
         ],
     ],
     'site' => array_merge($siteConfig, [
@@ -80,10 +83,10 @@ return [
             'surface'      => $_ENV['SITE_COLOR_SURFACE'] ?? '#ffffff',
             'text'         => $_ENV['SITE_COLOR_TEXT'] ?? '#1a1410',
             'muted'        => $_ENV['SITE_COLOR_MUTED'] ?? '#6b6459',
-            'primary'      => $_ENV['SITE_COLOR_PRIMARY'] ?? '#8B1538',
-            'primary_dark' => $_ENV['SITE_COLOR_PRIMARY_DARK'] ?? '#6b0f2d',
-            'accent'       => $_ENV['SITE_COLOR_ACCENT'] ?? '#D4AF37',
-            'accent_light' => $_ENV['SITE_COLOR_ACCENT_LIGHT'] ?? '#E8C547',
+            'primary'      => $_ENV['SITE_COLOR_PRIMARY'] ?? '#1f6f8b',
+            'primary_dark' => $_ENV['SITE_COLOR_PRIMARY_DARK'] ?? '#174f64',
+            'accent'       => $_ENV['SITE_COLOR_ACCENT'] ?? '#22a06b',
+            'accent_light' => $_ENV['SITE_COLOR_ACCENT_LIGHT'] ?? '#4bc48b',
             'border'       => $_ENV['SITE_COLOR_BORDER'] ?? '#e8dfd7',
             'success'      => $_ENV['SITE_COLOR_SUCCESS'] ?? '#22c55e',
             'warning'      => $_ENV['SITE_COLOR_WARNING'] ?? '#f97316',

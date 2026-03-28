@@ -346,7 +346,7 @@ if (empty($quartiers)) { $quartiers = [
 $quartiersVille    = array_filter($quartiers, fn($q) => $q['zone'] !== 'Métropole');
 $quartiersMetropole = array_filter($quartiers, fn($q) => $q['zone'] === 'Métropole');
 // BC alias
-$quartiersBordeaux = $quartiersVille;
+$quartiersVillePrincipale = $quartiersVille;
 ?>
 
 <section class="section page-hero">
@@ -429,7 +429,7 @@ $quartiersBordeaux = $quartiersVille;
       <i class="fas fa-city"></i> Quartiers de <?= htmlspecialchars($city, ENT_QUOTES, 'UTF-8') ?>
     </h3>
     <div class="quartier-grid">
-      <?php foreach ($quartiersBordeaux as $index => $quartier): ?>
+      <?php foreach ($quartiersVillePrincipale as $index => $quartier): ?>
         <article class="card quartier-card" data-quartier="<?= htmlspecialchars($quartier['nom']); ?>">
           <div class="quartier-card-header">
             <div>

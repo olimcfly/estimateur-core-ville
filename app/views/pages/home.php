@@ -319,60 +319,26 @@
 }
 </script>
 
-<script>
-  (function() {
-    const form = document.querySelector('[data-mini-estimator]');
-    const resultBox = document.querySelector('[data-mini-estimator-result]');
-    const priceEl = document.querySelector('[data-mini-estimator-price]');
-    const metaEl = document.querySelector('[data-mini-estimator-meta]');
-    if (!form || !resultBox || !priceEl || !metaEl) return;
+  <h3>Combien de temps faut-il pour obtenir un résultat ?</h3>
+  <p>Quelques minutes suffisent pour recevoir une première estimation.</p>
 
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const currencyFormatter = new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    });
+  <h3>Est-ce fiable pour connaître le prix immobilier à [VILLE] ?</h3>
+  <p>L’estimation s’appuie sur des données locales et les caractéristiques de votre bien, puis peut être affinée avec un expert local.</p>
 
-    function setLoadingState(loading) {
-      if (!submitBtn) return;
-      submitBtn.disabled = loading;
-      submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
-      submitBtn.textContent = loading ? 'Calcul en cours...' : 'Obtenir mon estimation gratuite';
-    }
+  <h3>Puis-je estimer une maison et un appartement ?</h3>
+  <p>Oui, vous pouvez faire une estimation maison [VILLE] comme une estimation appartement [VILLE].</p>
 
-    form.addEventListener('submit', async function(event) {
-      event.preventDefault();
-      setLoadingState(true);
-      resultBox.hidden = true;
+  <h3>Dois-je obligatoirement être rappelé ?</h3>
+  <p>Non. Vous gardez le contrôle. Un accompagnement humain est proposé uniquement si vous le souhaitez.</p>
 
-      try {
-        const payload = new FormData(form);
-        const response = await fetch('/api/estimation', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json'
-          },
-          body: payload
-        });
-        const data = await response.json();
-        if (!response.ok || !data || !data.success || !data.data) {
-          throw new Error((data && data.error) ? data.error : 'Estimation indisponible');
-        }
+  <h3>Mes données sont-elles confidentielles ?</h3>
+  <p>Oui. Vos informations sont traitées de manière confidentielle et utilisées uniquement dans le cadre de votre estimation.</p>
+</section>
 
-        const estimatedLow = Number(data.data.estimated_low || 0);
-        const estimatedHigh = Number(data.data.estimated_high || 0);
-        const perSqmMid = Number(data.data.per_sqm_mid || 0);
-        priceEl.textContent = currencyFormatter.format(estimatedLow) + ' – ' + currencyFormatter.format(estimatedHigh);
-        metaEl.textContent = 'Base de calcul : ' + currencyFormatter.format(perSqmMid) + ' / m² (indicatif).';
-        resultBox.hidden = false;
-      } catch (error) {
-        priceEl.textContent = 'Impossible de calculer pour le moment.';
-        metaEl.textContent = 'Vous pouvez continuer vers le formulaire complet pour obtenir un avis détaillé.';
-        resultBox.hidden = false;
-      } finally {
-        setLoadingState(false);
-      }
-    });
-  })();
-</script>
+<!-- CTA FINAL -->
+<section>
+  <h2>Prêt à connaître le juste prix de votre bien à [VILLE] ?</h2>
+  <p>Faites votre estimation maintenant et avancez avec une base claire pour vendre dans de bonnes conditions.</p>
+  <button>Lancer mon estimation gratuite</button>
+  <p>Rapide • Fiable • Local • Sans engagement</p>
+</section>

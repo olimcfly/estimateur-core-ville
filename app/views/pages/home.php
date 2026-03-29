@@ -1,486 +1,118 @@
-<?php
-  $cityName = trim((string) ($city_name ?? site('city', '')));
-  if ($cityName === '') {
-      $cityName = 'votre ville';
-  }
-
-  $areaLabel = trim((string) ($area_label ?? ''));
-  if ($areaLabel === '') {
-      $areaLabel = $cityName . ' et Métropole';
-  }
-
-  $page_title = 'Estimation Immobilier ' . $areaLabel . ' | Avis de Valeur Gratuit en 60s';
-  $meta_description = 'Obtenez une estimation immobilière gratuite à ' . $areaLabel . ' en 60 secondes. Prix au m² par quartier, tendances du marché local. 100% gratuit, sans engagement.';
-?>
-
-<!-- ============================================ -->
-<!-- HERO + FORMULAIRE SIMPLE -->
-<!-- ============================================ -->
-<section class="hero">
-  <div class="container hero-grid">
-    <!-- COLONNE 1: HEADLINE -->
-    <div class="hero-copy">
-      <p class="eyebrow eyebrow--hero">
-        <i class="fas fa-chart-line"></i> Avis de valeur indicatif en ligne
-      </p>
-
-      <h1>Estimez la valeur de votre bien immobilier à <?= htmlspecialchars($areaLabel, ENT_QUOTES, 'UTF-8') ?>, avec une méthode fiable et locale</h1>
-
-      <p class="lead hero-lead">
-        Obtenez une fourchette de prix claire en moins d'une minute, basée sur les tendances réelles du marché local.
-        Gratuit, sans engagement, immédiatement exploitable pour préparer votre projet de vente.
-      </p>
-
-      <div class="hero-proofbar" aria-label="Preuves de confiance">
-        <div class="hero-proofbar__item">
-          <strong>5 000+</strong>
-          <span>références analysées</span>
-        </div>
-        <div class="hero-proofbar__item">
-          <strong>60 sec</strong>
-          <span>pour obtenir votre estimation</span>
-        </div>
-        <div class="hero-proofbar__item">
-          <strong>100%</strong>
-          <span>gratuit et sans engagement</span>
-        </div>
-      </div>
-
-      <ul class="trust-list">
-        <li>
-          <i class="fas fa-bolt"></i>
-          <strong>3 champs</strong> — Résultat immédiat
-        </li>
-        <li>
-          <i class="fas fa-hand-holding-usd"></i>
-          <strong>100% gratuit</strong> — Sans engagement
-        </li>
-        <li>
-          <i class="fas fa-shield-alt"></i>
-          <strong>Données sécurisées</strong> — RGPD conforme
-        </li>
-      </ul>
-
-      <!-- SOCIAL PROOF -->
-      <div class="testimonial-block">
-        <p class="testimonial-label">
-          <i class="fas fa-quote-left"></i> Témoignage client
-        </p>
-        <p class="testimonial-quote">
-          "L'avis de valeur était très proche de l'offre reçue. Recommandé pour avoir une estimation fiable avant de vendre !"
-        </p>
-        <p class="testimonial-author">
-          — Marie D. • <?= htmlspecialchars($cityName, ENT_QUOTES, 'UTF-8') ?>
-        </p>
-      </div>
-
-      <!-- CTA BUTTONS -->
-      <div class="hero-actions">
-        <a href="#form-estimation" class="btn btn-primary btn-hero-primary">
-          <i class="fas fa-bolt"></i> Estimer gratuitement
-        </a>
-        <a href="#how-it-works" class="btn btn-ghost btn-hero-secondary">
-          <i class="fas fa-info-circle"></i> Comment ça marche
-        </a>
-      </div>
-    </div>
-
-    <!-- COLONNE 2: CTA RAPIDE -->
-    <aside class="hero-panel card" id="form-estimation">
-      <div class="panel-header">
-        <h2>
-          <i class="fas fa-calculator"></i> Votre avis de valeur gratuit
-        </h2>
-        <p class="muted">Remplissez ces 3 informations pour obtenir une fourchette de prix.</p>
-      </div>
-
-      <form action="/estimation" method="post" class="form-grid" id="home-mini-estimator" data-mini-estimator>
-        <!-- CHAMP 1: TYPE DE BIEN -->
-        <label for="property_type">
-          <span><i class="fas fa-home"></i> Type de bien</span>
-          <select id="property_type" name="type_bien" required>
-            <option value="">-- Sélectionner --</option>
-            <option value="appartement">Appartement</option>
-            <option value="maison">Maison / Villa</option>
-            <option value="studio">Studio</option>
-            <option value="loft">Loft</option>
-            <option value="maison de ville">Maison de ville</option>
-          </select>
-        </label>
-
-        <!-- CHAMP 2: SUPERFICIE -->
-        <label for="surface">
-          <span><i class="fas fa-ruler-combined"></i> Superficie (m²)</span>
-          <input
-            type="number"
-            id="surface"
-            name="surface"
-            min="10"
-            max="500"
-            step="1"
-            placeholder="Ex: 75"
-            required
-          >
-        </label>
-
-        <!-- CHAMP 3: LOCALITÉ -->
-        <label for="ville">
-          <span><i class="fas fa-map-marker-alt"></i> Localité</span>
-          <input
-            type="text"
-            id="ville"
-            name="ville"
-            placeholder="<?= htmlspecialchars($cityName, ENT_QUOTES, 'UTF-8') ?>..."
-            required
-            autocomplete="off"
-          >
-        </label>
-        <input type="hidden" name="pieces" value="3">
-
-        <!-- BOUTON -->
-        <button type="submit" class="btn btn-primary btn-full btn-pulse">
-          <i class="fas fa-bolt"></i> Obtenir mon estimation gratuite
-        </button>
-
-        <p class="form-footer">
-          <i class="fas fa-lock"></i> Aucune donnée personnelle requise
-        </p>
-      </form>
-
-      <div class="mini-estimator-result" data-mini-estimator-result hidden aria-live="polite">
-        <p class="mini-estimator-result__label">Votre fourchette indicative</p>
-        <p class="mini-estimator-result__price" data-mini-estimator-price></p>
-        <p class="mini-estimator-result__meta" data-mini-estimator-meta></p>
-        <a href="/estimation#form-estimation" class="btn btn-primary btn-full">Recevoir un avis de valeur détaillé</a>
-      </div>
-
-      <div class="hero-benefits">
-        <ul class="hero-benefits-list">
-          <li>
-            <i class="fas fa-check-circle"></i>
-            <span><strong>100% gratuit</strong> — aucun frais caché</span>
-          </li>
-          <li>
-            <i class="fas fa-check-circle"></i>
-            <span><strong>Résultat immédiat</strong> — en moins d'1 minute</span>
-          </li>
-          <li>
-            <i class="fas fa-check-circle"></i>
-            <span><strong>Données réelles</strong> — 5000+ transactions locales</span>
-          </li>
-          <li>
-            <i class="fas fa-check-circle"></i>
-            <span><strong>Sans engagement</strong> — aucune obligation</span>
-          </li>
-        </ul>
-
-        <a href="#form-estimation" class="btn btn-primary btn-full btn-pulse">
-          <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
-        </a>
-
-        <p class="form-footer">
-          <i class="fas fa-lock"></i> Données sécurisées & conformes RGPD
-        </p>
-      </div>
-    </aside>
-  </div>
+<!-- HERO SECTION -->
+<section>
+  <h1>Estimation immobilière à [VILLE] : obtenez le bon prix pour vendre sereinement</h1>
+  <p>
+    En quelques minutes, découvrez une estimation claire de votre bien basée sur les données réelles du marché local à [VILLE] et l’expertise de [NOM_MARQUE].
+    Évitez les erreurs de prix qui font perdre du temps… ou de l’argent.
+  </p>
+  <button>Estimer mon bien gratuitement</button>
+  <p>Sans engagement • Résultat rapide • Données confidentielles • Accompagnement humain si besoin</p>
 </section>
 
-<!-- ============================================ -->
-<!-- COMPRENDRE L'AVIS DE VALEUR -->
-<!-- ============================================ -->
-<section class="section section-alt section-premium-light" id="avis-de-valeur">
-  <div class="container">
-    <div class="section-heading">
-      <p class="eyebrow">
-        <i class="fas fa-gavel"></i> Ce qu'il faut savoir
-      </p>
-      <h2>Estimation en ligne vs. Avis de valeur réalisé par un conseiller immobilier</h2>
-    </div>
-
-    <div class="comparison-grid">
-
-      <!-- COLONNE GAUCHE: CE QUE NOUS PROPOSONS -->
-      <article class="card comparison-card">
-        <h3 class="comparison-header">
-          <i class="fas fa-chart-bar" style="color: var(--accent);"></i>
-          Notre estimation en ligne
-        </h3>
-        <p class="muted" style="margin-bottom: 1rem;">
-          Notre outil analyse les <strong>données statistiques du marché</strong> (transactions récentes, prix au m² par quartier, tendances)
-          pour vous donner une <strong>fourchette indicative</strong> de la valeur de votre bien.
-        </p>
-        <ul class="comparison-list">
-          <li>
-            <i class="fas fa-check" style="color: var(--success);"></i>
-            <span>Résultat instantané et gratuit</span>
-          </li>
-          <li>
-            <i class="fas fa-check" style="color: var(--success);"></i>
-            <span>Basé sur les données statistiques du marché local</span>
-          </li>
-          <li>
-            <i class="fas fa-info-circle" style="color: var(--warning);"></i>
-            <span>Donne une <strong>indication</strong>, pas un prix de vente garanti</span>
-          </li>
-          <li>
-            <i class="fas fa-info-circle" style="color: var(--warning);"></i>
-            <span>Ne prend pas en compte l'état précis du bien, les travaux, la vue, la luminosité, etc.</span>
-          </li>
-        </ul>
-      </article>
-
-      <!-- COLONNE DROITE: AVIS DE VALEUR DU CONSEILLER -->
-      <article class="card comparison-card comparison-primary">
-        <h3 class="comparison-header">
-          <i class="fas fa-user-tie" style="color: var(--primary);"></i>
-          L'avis de valeur d'un conseiller immobilier
-        </h3>
-        <p class="muted" style="margin-bottom: 1rem;">
-          Un <strong>avis de valeur</strong> est une estimation rédigée par un <strong>professionnel de l'immobilier</strong> qui connaît le marché local.
-          Il s'appuie sur une visite du bien et sur des références de ventes récentes pour proposer un prix de mise en vente cohérent.
-        </p>
-        <ul class="comparison-list">
-          <li>
-            <i class="fas fa-certificate" style="color: var(--primary);"></i>
-            <span>Réalisé par un <strong>conseiller immobilier</strong> connaissant votre quartier</span>
-          </li>
-          <li>
-            <i class="fas fa-certificate" style="color: var(--primary);"></i>
-            <span>Visite physique du bien et analyse détaillée</span>
-          </li>
-          <li>
-            <i class="fas fa-certificate" style="color: var(--primary);"></i>
-            <span>Prend en compte l'état, les travaux, la situation, l'environnement et la demande sur le secteur</span>
-          </li>
-          <li>
-            <i class="fas fa-certificate" style="color: var(--primary);"></i>
-            <span>Base de travail pour fixer un prix de mise en vente réaliste</span>
-          </li>
-        </ul>
-      </article>
-
-    </div>
-
-    <!-- ENCART IMPORTANT -->
-    <div class="card note-card">
-      <p>
-        <i class="fas fa-exclamation-triangle" style="color: var(--primary);"></i>
-        <strong>Important :</strong> Tous les outils en ligne (y compris le nôtre) fournissent des <strong>estimations statistiques</strong> à partir de données de marché.
-        Pour affiner le prix de vente de votre bien, l'idéal est de compléter cette première estimation par un <strong>avis de valeur</strong> réalisé par un conseiller immobilier
-        qui se déplace chez vous et analyse votre bien dans le détail.
-      </p>
-    </div>
-
-  </div>
+<!-- BLOC PROBLÈME -->
+<section>
+  <h2>Un mauvais prix peut vous coûter cher</h2>
+  <p>
+    Quand un bien est affiché trop haut, il reçoit moins de visites, reste plus longtemps sur le marché et finit souvent par être négocié à la baisse.
+    Quand il est affiché trop bas, vous pouvez perdre plusieurs milliers d’euros dès la mise en vente.
+  </p>
+  <p>
+    À [VILLE], où les écarts de prix varient fortement selon [SECTEUR], estimer son bien avec précision est la première décision stratégique.
+  </p>
 </section>
 
-<!-- ============================================ -->
-<!-- 3 ÉTAPES -->
-<!-- ============================================ -->
-<section class="section section-premium-neutral" id="how-it-works">
-  <div class="container">
-    <div class="section-heading">
-      <p class="eyebrow">
-        <i class="fas fa-bolt"></i> Simple et rapide
-      </p>
-      <h2>Comment ça marche ?</h2>
-    </div>
-
-    <div class="steps-grid">
-      <article class="card step-card">
-        <div class="step-number">1</div>
-        <h3>Remplissez 3 champs</h3>
-        <p>Type de bien, superficie et localité. C'est tout ce dont nous avons besoin.</p>
-      </article>
-
-      <article class="card step-card">
-        <div class="step-number">2</div>
-        <h3>Recevez votre fourchette</h3>
-        <p>Notre moteur calcule une estimation basse, moyenne et haute basée sur les données du marché.</p>
-      </article>
-
-      <article class="card step-card">
-        <div class="step-number">3</div>
-        <h3>Allez plus loin</h3>
-        <p>Pour une évaluation précise, demandez un avis de valeur à un conseiller immobilier.</p>
-      </article>
-    </div>
-  </div>
+<!-- BLOC BÉNÉFICES -->
+<section>
+  <h2>Pourquoi les propriétaires de [VILLE] utilisent notre estimation</h2>
+  <ul>
+    <li>
+      <h3>Un prix réaliste, adapté à votre secteur</h3>
+      <p>Nous croisons les prix immobiliers observés à [VILLE], les ventes comparables et les spécificités de votre bien.</p>
+    </li>
+    <li>
+      <h3>Un gain de temps immédiat</h3>
+      <p>Vous obtenez une première estimation en quelques minutes, sans rendez-vous obligatoire.</p>
+    </li>
+    <li>
+      <h3>Une décision plus sereine</h3>
+      <p>Vous avancez avec une base fiable pour fixer un prix cohérent et préparer votre vente.</p>
+    </li>
+    <li>
+      <h3>Une démarche 100 % sans engagement</h3>
+      <p>Vous restez libre à chaque étape, avec la possibilité d’être accompagné si vous le souhaitez.</p>
+    </li>
+  </ul>
 </section>
 
-<!-- ============================================ -->
-<!-- FAQ -->
-<!-- ============================================ -->
-<section class="section section-alt section-premium-contrast" id="faq">
-  <div class="container">
-    <div class="section-heading">
-      <p class="eyebrow">
-        <i class="fas fa-comments"></i> Questions fréquentes
-      </p>
-      <h2>Vos questions, nos réponses</h2>
-    </div>
-
-    <div class="faq-grid">
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Cette estimation est-elle fiable ?</h3>
-        <p>Notre outil donne une <strong>indication statistique</strong> basée sur les données du marché. Pour fixer un prix de mise en vente précis, il est recommandé de demander un <strong>avis de valeur</strong> à un conseiller immobilier qui visitera votre bien.</p>
-      </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Qu'est-ce qu'un avis de valeur ?</h3>
-        <p>C'est un document rédigé par un <strong>professionnel de l'immobilier</strong> (conseiller ou agent immobilier) après visite du bien. Il s'appuie sur l'analyse du marché local et sur les caractéristiques réelles de votre logement pour proposer un prix de mise en vente cohérent.</p>
-      </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Pourquoi les outils en ligne ne suffisent pas ?</h3>
-        <p>Les outils en ligne utilisent des <strong>statistiques générales</strong> (prix au m², tendances, historique des ventes). Ils ne voient pas l'état réel du bien, les travaux, la luminosité, la vue ou le voisinage. Seul un professionnel qui se rend sur place peut intégrer ces critères dans un avis de valeur.</p>
-      </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> L'estimation en ligne est-elle gratuite ?</h3>
-        <p>Oui, 100% gratuite et sans engagement. Vous obtenez une fourchette indicative en quelques secondes, sans donner vos coordonnées.</p>
-      </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> Puis-je obtenir un avis de valeur ensuite ?</h3>
-        <p>Oui ! Après votre estimation en ligne, nous vous proposons de demander un avis de valeur réalisé par un conseiller immobilier pour une évaluation complète de votre bien.</p>
-      </article>
-
-      <article class="card faq-card">
-        <h3><i class="fas fa-question-circle"></i> En quoi est-ce utile alors ?</h3>
-        <p>Notre outil vous donne une <strong>première indication</strong> rapide et gratuite. C'est un bon point de départ avant de faire appel à un conseiller immobilier pour un avis de valeur complet.</p>
-      </article>
-    </div>
-  </div>
+<!-- BLOC COMMENT ÇA MARCHE -->
+<section>
+  <h2>Comment estimer son bien à [VILLE] en 3 étapes</h2>
+  <ul>
+    <li>
+      <h3>1. Décrivez votre bien</h3>
+      <p>Adresse, type de bien, surface, caractéristiques principales.</p>
+    </li>
+    <li>
+      <h3>2. Recevez votre estimation</h3>
+      <p>Notre outil analyse les données locales et vous propose une fourchette de prix cohérente.</p>
+    </li>
+    <li>
+      <h3>3. Affinez avec un expert local (optionnel)</h3>
+      <p>Un conseiller [NOM_MARQUE] peut vous aider à ajuster le prix selon la réalité du terrain à [SECTEUR].</p>
+    </li>
+  </ul>
 </section>
 
-<!-- ============================================ -->
+<!-- BLOC DIFFÉRENCIATION -->
+<section>
+  <h2>Plus fiable qu’un simulateur générique</h2>
+  <p>
+    Un simulateur standard applique souvent une moyenne large, sans comprendre les nuances de votre quartier.
+    Notre approche combine des données de marché locales à [VILLE], les critères précis de votre bien, et la lecture terrain de l’expertise locale [NOM_MARQUE].
+  </p>
+  <p>
+    Résultat : une estimation maison [VILLE] ou estimation appartement [VILLE] plus utile pour vendre au bon prix.
+  </p>
+</section>
+
+<!-- BLOC PREUVE / RÉASSURANCE -->
+<section>
+  <h2>Des repères concrets pour décider avec confiance</h2>
+  <ul>
+    <li>[+X biens analysés] sur [VILLE] et ses alentours</li>
+    <li>[Données mises à jour] pour refléter le marché actuel</li>
+    <li>[Expertise locale] sur [SECTEUR]</li>
+    <li>Confidentialité respectée : vos informations restent privées</li>
+    <li>Accompagnement humain disponible au <a href="tel:[TELEPHONE]">[TELEPHONE]</a> ou par email <a href="mailto:[EMAIL]">[EMAIL]</a></li>
+  </ul>
+</section>
+
+<!-- FAQ COURTE -->
+<section>
+  <h2>Questions fréquentes</h2>
+  <h3>L’estimation immobilière à [VILLE] est-elle vraiment gratuite ?</h3>
+  <p>Oui, l’estimation est gratuite et sans engagement.</p>
+
+  <h3>Combien de temps faut-il pour obtenir un résultat ?</h3>
+  <p>Quelques minutes suffisent pour recevoir une première estimation.</p>
+
+  <h3>Est-ce fiable pour connaître le prix immobilier à [VILLE] ?</h3>
+  <p>L’estimation s’appuie sur des données locales et les caractéristiques de votre bien, puis peut être affinée avec un expert local.</p>
+
+  <h3>Puis-je estimer une maison et un appartement ?</h3>
+  <p>Oui, vous pouvez faire une estimation maison [VILLE] comme une estimation appartement [VILLE].</p>
+
+  <h3>Dois-je obligatoirement être rappelé ?</h3>
+  <p>Non. Vous gardez le contrôle. Un accompagnement humain est proposé uniquement si vous le souhaitez.</p>
+
+  <h3>Mes données sont-elles confidentielles ?</h3>
+  <p>Oui. Vos informations sont traitées de manière confidentielle et utilisées uniquement dans le cadre de votre estimation.</p>
+</section>
+
 <!-- CTA FINAL -->
-<!-- ============================================ -->
-<section class="section section-premium-cta">
-  <div class="container">
-    <div class="card cta-final-card">
-      <p class="eyebrow" style="margin-bottom: 1rem;">
-        <i class="fas fa-calculator"></i> Commencez maintenant
-      </p>
-      <h2 style="margin-bottom: 1rem; font-size: 2rem;">
-        Obtenez votre fourchette de prix en 30 secondes
-      </h2>
-      <p class="lead" style="max-width: 600px; margin: 0 auto 2rem;">
-        3 informations suffisent. Gratuit, sans engagement, sans inscription.
-      </p>
-      <a href="#form-estimation" class="btn btn-primary btn-pulse" style="display: inline-flex; font-size: 1.1rem; padding: 1.2rem 2rem;">
-        <i class="fas fa-calculator"></i> Lancer mon estimation gratuite
-      </a>
-    </div>
-  </div>
+<section>
+  <h2>Prêt à connaître le juste prix de votre bien à [VILLE] ?</h2>
+  <p>Faites votre estimation maintenant et avancez avec une base claire pour vendre dans de bonnes conditions.</p>
+  <button>Lancer mon estimation gratuite</button>
+  <p>Rapide • Fiable • Local • Sans engagement</p>
 </section>
-
-<!-- Schema.org FAQPage -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Cette estimation immobilière en ligne est-elle fiable ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Notre outil donne une indication statistique basée sur les données du marché. Pour fixer un prix de mise en vente précis, il est recommandé de demander un avis de valeur à un conseiller immobilier qui visitera votre bien."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Qu'est-ce qu'un avis de valeur immobilier ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "C'est un document rédigé par un professionnel de l'immobilier (conseiller ou agent immobilier) après visite du bien. Il s'appuie sur l'analyse du marché local et sur les caractéristiques réelles de votre logement pour proposer un prix de mise en vente cohérent."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "L'estimation en ligne est-elle gratuite ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Oui, 100% gratuite et sans engagement. Vous obtenez une fourchette indicative en quelques secondes, sans donner vos coordonnées."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Pourquoi les outils d'estimation en ligne ne suffisent pas ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Les outils en ligne utilisent des statistiques générales (prix au m², tendances, historique des ventes). Ils ne voient pas l'état réel du bien, les travaux, la luminosité, la vue ou le voisinage. Seul un professionnel qui se rend sur place peut intégrer ces critères dans un avis de valeur."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Puis-je obtenir un avis de valeur après l'estimation en ligne ?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Oui ! Après votre estimation en ligne, nous vous proposons de demander un avis de valeur réalisé par un conseiller immobilier pour une évaluation complète de votre bien."
-      }
-    }
-  ]
-}
-</script>
-
-<script>
-  (function() {
-    const form = document.querySelector('[data-mini-estimator]');
-    const resultBox = document.querySelector('[data-mini-estimator-result]');
-    const priceEl = document.querySelector('[data-mini-estimator-price]');
-    const metaEl = document.querySelector('[data-mini-estimator-meta]');
-    if (!form || !resultBox || !priceEl || !metaEl) return;
-
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const currencyFormatter = new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 0
-    });
-
-    function setLoadingState(loading) {
-      if (!submitBtn) return;
-      submitBtn.disabled = loading;
-      submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
-      submitBtn.textContent = loading ? 'Calcul en cours...' : 'Obtenir mon estimation gratuite';
-    }
-
-    form.addEventListener('submit', async function(event) {
-      event.preventDefault();
-      setLoadingState(true);
-      resultBox.hidden = true;
-
-      try {
-        const payload = new FormData(form);
-        const response = await fetch('/api/estimation', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json'
-          },
-          body: payload
-        });
-        const data = await response.json();
-        if (!response.ok || !data || !data.success || !data.data) {
-          throw new Error((data && data.error) ? data.error : 'Estimation indisponible');
-        }
-
-        const estimatedLow = Number(data.data.estimated_low || 0);
-        const estimatedHigh = Number(data.data.estimated_high || 0);
-        const perSqmMid = Number(data.data.per_sqm_mid || 0);
-        priceEl.textContent = currencyFormatter.format(estimatedLow) + ' – ' + currencyFormatter.format(estimatedHigh);
-        metaEl.textContent = 'Base de calcul : ' + currencyFormatter.format(perSqmMid) + ' / m² (indicatif).';
-        resultBox.hidden = false;
-      } catch (error) {
-        priceEl.textContent = 'Impossible de calculer pour le moment.';
-        metaEl.textContent = 'Vous pouvez continuer vers le formulaire complet pour obtenir un avis détaillé.';
-        resultBox.hidden = false;
-      } finally {
-        setLoadingState(false);
-      }
-    });
-  })();
-</script>

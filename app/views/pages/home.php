@@ -1,97 +1,323 @@
-<!-- HERO SECTION -->
-<section>
-  <h1>Estimation immobilière à [VILLE] : obtenez le bon prix pour vendre sereinement</h1>
-  <p>
-    En quelques minutes, découvrez une estimation claire de votre bien basée sur les données réelles du marché local à [VILLE] et l’expertise de [NOM_MARQUE].
-    Évitez les erreurs de prix qui font perdre du temps… ou de l’argent.
-  </p>
-  <button>Estimer mon bien gratuitement</button>
-  <p>Sans engagement • Résultat rapide • Données confidentielles • Accompagnement humain si besoin</p>
+<?php
+  $cityName = trim((string) ($city_name ?? site('city', '')));
+  if ($cityName === '') {
+      $cityName = 'Bordeaux';
+  }
+
+  $areaLabel = trim((string) ($area_label ?? ''));
+  if ($areaLabel === '') {
+      $areaLabel = 'Bordeaux et Métropole';
+  }
+
+  $page_title = 'Estimation immobilière Bordeaux Métropole | Maison & Appartement';
+  $meta_description = 'Découvrez combien vaut votre maison à Bordeaux et dans la métropole. Estimation gratuite, sans engagement, résultat immédiat basé sur les ventes réelles locales.';
+?>
+
+<!-- ============================================ -->
+<!-- HERO CAPTURE BORDEAUX -->
+<!-- ============================================ -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow eyebrow--hero">
+        <i class="fas fa-house"></i> 🏠 Page de capture — Bordeaux & Métropole
+      </p>
+
+      <h1>Votre maison vaut combien aujourd’hui à Bordeaux ou dans la métropole ?</h1>
+
+      <p class="lead hero-lead">
+        Obtenez en quelques clics une estimation basée sur les ventes réelles autour de votre bien :
+        Bordeaux, Mérignac, Pessac, Talence, Bègles, Bruges et les communes voisines.
+      </p>
+
+      <ul class="trust-list">
+        <li><i class="fas fa-check-circle"></i> ✅ Gratuit</li>
+        <li><i class="fas fa-check-circle"></i> ✅ Sans engagement</li>
+        <li><i class="fas fa-check-circle"></i> ✅ Résultat immédiat</li>
+      </ul>
+
+      <div class="hero-actions">
+        <a href="#form-estimation" class="btn btn-primary btn-hero-primary">
+          <i class="fas fa-bolt"></i> 👉 Lancer mon estimation gratuite
+        </a>
+      </div>
+    </div>
+
+    <aside class="hero-panel card" id="form-estimation">
+      <div class="panel-header">
+        <h2>
+          <i class="fas fa-calculator"></i> Estimation gratuite immédiate
+        </h2>
+        <p class="muted">Renseignez 3 informations pour recevoir votre fourchette de prix.</p>
+      </div>
+
+      <form action="/estimation" method="post" class="form-grid" id="home-mini-estimator" data-mini-estimator>
+        <label for="property_type">
+          <span><i class="fas fa-home"></i> Type de bien</span>
+          <select id="property_type" name="type_bien" required>
+            <option value="">-- Sélectionner --</option>
+            <option value="appartement">Appartement</option>
+            <option value="maison">Maison / Villa</option>
+            <option value="studio">Studio</option>
+            <option value="loft">Loft</option>
+            <option value="maison de ville">Maison de ville</option>
+          </select>
+        </label>
+
+        <label for="surface">
+          <span><i class="fas fa-ruler-combined"></i> Superficie (m²)</span>
+          <input
+            type="number"
+            id="surface"
+            name="surface"
+            min="10"
+            max="500"
+            step="1"
+            placeholder="Ex: 85"
+            required
+          >
+        </label>
+
+        <label for="ville">
+          <span><i class="fas fa-map-marker-alt"></i> Commune</span>
+          <input
+            type="text"
+            id="ville"
+            name="ville"
+            placeholder="Bordeaux, Mérignac, Pessac..."
+            required
+            autocomplete="off"
+          >
+        </label>
+        <input type="hidden" name="pieces" value="3">
+
+        <button type="submit" class="btn btn-primary btn-full btn-pulse">
+          <i class="fas fa-bolt"></i> Obtenir mon estimation gratuite
+        </button>
+
+        <p class="form-footer">
+          <i class="fas fa-lock"></i> Données confidentielles • Sans engagement
+        </p>
+      </form>
+
+      <div class="mini-estimator-result" data-mini-estimator-result hidden aria-live="polite">
+        <p class="mini-estimator-result__label">Votre fourchette indicative</p>
+        <p class="mini-estimator-result__price" data-mini-estimator-price></p>
+        <p class="mini-estimator-result__meta" data-mini-estimator-meta></p>
+        <a href="/estimation#form-estimation" class="btn btn-primary btn-full">Recevoir un avis de valeur détaillé</a>
+      </div>
+    </aside>
+  </div>
 </section>
 
-<!-- BLOC PROBLÈME -->
-<section>
-  <h2>Un mauvais prix peut vous coûter cher</h2>
-  <p>
-    Quand un bien est affiché trop haut, il reçoit moins de visites, reste plus longtemps sur le marché et finit souvent par être négocié à la baisse.
-    Quand il est affiché trop bas, vous pouvez perdre plusieurs milliers d’euros dès la mise en vente.
-  </p>
-  <p>
-    À [VILLE], où les écarts de prix varient fortement selon [SECTEUR], estimer son bien avec précision est la première décision stratégique.
-  </p>
+<!-- ============================================ -->
+<!-- LE VRAI PROBLÈME -->
+<!-- ============================================ -->
+<section class="section section-alt section-premium-light" id="enjeu-prix">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Le vrai problème aujourd’hui</h2>
+    </div>
+
+    <div class="card note-card">
+      <p>
+        À Bordeaux et dans la métropole, le marché n’est plus aussi simple qu’avant.
+        D’un quartier à l’autre, d’une rue à l’autre, et parfois même d’un type de bien à l’autre,
+        les écarts peuvent être importants.
+      </p>
+      <p>
+        Beaucoup de propriétaires pensent connaître la valeur de leur bien… mais se basent sur des comparaisons imprécises,
+        des annonces trop optimistes, ou des prix qui ne reflètent plus vraiment le marché actuel.
+      </p>
+    </div>
+
+    <div class="comparison-grid">
+      <article class="card comparison-card">
+        <h3>Résultat :</h3>
+        <ul class="comparison-list">
+          <li><i class="fas fa-xmark" style="color: var(--danger);"></i> ❌ un prix trop haut qui bloque les visites</li>
+          <li><i class="fas fa-xmark" style="color: var(--danger);"></i> ❌ un prix trop bas qui fait perdre de l’argent</li>
+          <li><i class="fas fa-xmark" style="color: var(--danger);"></i> ❌ des semaines, parfois des mois, perdus inutilement</li>
+        </ul>
+      </article>
+    </div>
+  </div>
 </section>
 
-<!-- BLOC BÉNÉFICES -->
-<section>
-  <h2>Pourquoi les propriétaires de [VILLE] utilisent notre estimation</h2>
-  <ul>
-    <li>
-      <h3>Un prix réaliste, adapté à votre secteur</h3>
-      <p>Nous croisons les prix immobiliers observés à [VILLE], les ventes comparables et les spécificités de votre bien.</p>
-    </li>
-    <li>
-      <h3>Un gain de temps immédiat</h3>
-      <p>Vous obtenez une première estimation en quelques minutes, sans rendez-vous obligatoire.</p>
-    </li>
-    <li>
-      <h3>Une décision plus sereine</h3>
-      <p>Vous avancez avec une base fiable pour fixer un prix cohérent et préparer votre vente.</p>
-    </li>
-    <li>
-      <h3>Une démarche 100 % sans engagement</h3>
-      <p>Vous restez libre à chaque étape, avec la possibilité d’être accompagné si vous le souhaitez.</p>
-    </li>
-  </ul>
+<!-- ============================================ -->
+<!-- CE QUE VOUS OBTENEZ -->
+<!-- ============================================ -->
+<section class="section section-premium-neutral" id="benefices">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Ce que vous obtenez</h2>
+      <p class="lead">Une estimation claire, locale et cohérente avec votre secteur.</p>
+    </div>
+
+    <div class="card note-card">
+      <p>
+        Votre estimation s’appuie sur l’analyse du marché autour de votre bien,
+        pour vous donner une base sérieuse avant de vendre.
+      </p>
+      <ul class="comparison-list">
+        <li><i class="fas fa-check" style="color: var(--success);"></i> ✔️ une estimation plus réaliste de la valeur de votre bien</li>
+        <li><i class="fas fa-check" style="color: var(--success);"></i> ✔️ une vision plus claire du marché bordelais actuel</li>
+        <li><i class="fas fa-check" style="color: var(--success);"></i> ✔️ un meilleur point de départ pour vendre au bon prix</li>
+      </ul>
+      <p>Le tout, sans engagement et sans pression commerciale.</p>
+    </div>
+
+    <p style="text-align:center; margin-top: 1rem;">
+      <a href="#form-estimation" class="btn btn-primary"><i class="fas fa-bolt"></i> 👉 Obtenir mon estimation gratuite</a>
+    </p>
+  </div>
 </section>
 
-<!-- BLOC COMMENT ÇA MARCHE -->
-<section>
-  <h2>Comment estimer son bien à [VILLE] en 3 étapes</h2>
-  <ul>
-    <li>
-      <h3>1. Décrivez votre bien</h3>
-      <p>Adresse, type de bien, surface, caractéristiques principales.</p>
-    </li>
-    <li>
-      <h3>2. Recevez votre estimation</h3>
-      <p>Notre outil analyse les données locales et vous propose une fourchette de prix cohérente.</p>
-    </li>
-    <li>
-      <h3>3. Affinez avec un expert local (optionnel)</h3>
-      <p>Un conseiller [NOM_MARQUE] peut vous aider à ajuster le prix selon la réalité du terrain à [SECTEUR].</p>
-    </li>
-  </ul>
+<!-- ============================================ -->
+<!-- COMMENT ÇA MARCHE -->
+<!-- ============================================ -->
+<section class="section section-alt section-premium-contrast" id="how-it-works">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Comment ça marche</h2>
+      <p class="lead">Simple, rapide, local.</p>
+    </div>
+
+    <div class="steps-grid">
+      <article class="card step-card">
+        <div class="step-number">1️⃣</div>
+        <h3>Vous renseignez les informations de votre bien</h3>
+        <p>En quelques minutes seulement.</p>
+      </article>
+
+      <article class="card step-card">
+        <div class="step-number">2️⃣</div>
+        <h3>Le marché local est analysé</h3>
+        <p>À partir des ventes réelles et des éléments de comparaison autour de chez vous.</p>
+      </article>
+
+      <article class="card step-card">
+        <div class="step-number">3️⃣</div>
+        <h3>Vous découvrez votre estimation</h3>
+        <p>Immédiatement, avec une base plus fiable pour prendre vos décisions.</p>
+      </article>
+    </div>
+  </div>
 </section>
 
-<!-- BLOC DIFFÉRENCIATION -->
-<section>
-  <h2>Plus fiable qu’un simulateur générique</h2>
-  <p>
-    Un simulateur standard applique souvent une moyenne large, sans comprendre les nuances de votre quartier.
-    Notre approche combine des données de marché locales à [VILLE], les critères précis de votre bien, et la lecture terrain de l’expertise locale [NOM_MARQUE].
-  </p>
-  <p>
-    Résultat : une estimation maison [VILLE] ou estimation appartement [VILLE] plus utile pour vendre au bon prix.
-  </p>
+<!-- ============================================ -->
+<!-- SECTEURS PRIS EN COMPTE -->
+<!-- ============================================ -->
+<section class="section section-premium-light" id="secteurs">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Secteurs pris en compte</h2>
+    </div>
+
+    <div class="card note-card">
+      <p><strong>Bordeaux :</strong> Centre, Chartrons, Caudéran, Bastide, Saint-Michel, Nansouty, Bacalan…</p>
+      <p><strong>Métropole :</strong> Mérignac, Pessac, Talence, Bègles, Bruges…</p>
+    </div>
+
+    <p style="text-align:center; margin-top: 1rem;">
+      <a href="#form-estimation" class="btn btn-primary"><i class="fas fa-bolt"></i> 👉 Je découvre mon estimation</a>
+    </p>
+  </div>
 </section>
 
-<!-- BLOC PREUVE / RÉASSURANCE -->
-<section>
-  <h2>Des repères concrets pour décider avec confiance</h2>
-  <ul>
-    <li>[+X biens analysés] sur [VILLE] et ses alentours</li>
-    <li>[Données mises à jour] pour refléter le marché actuel</li>
-    <li>[Expertise locale] sur [SECTEUR]</li>
-    <li>Confidentialité respectée : vos informations restent privées</li>
-    <li>Accompagnement humain disponible au <a href="tel:[TELEPHONE]">[TELEPHONE]</a> ou par email <a href="mailto:[EMAIL]">[EMAIL]</a></li>
-  </ul>
+<!-- ============================================ -->
+<!-- POURQUOI MAINTENANT -->
+<!-- ============================================ -->
+<section class="section section-alt section-premium-contrast" id="pourquoi-maintenant">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Pourquoi faire cette estimation maintenant ?</h2>
+    </div>
+
+    <div class="faq-grid">
+      <article class="card faq-card">
+        <h3>Vendre au bon prix</h3>
+        <p>Évitez les erreurs fréquentes liées à une mauvaise lecture du marché local.</p>
+      </article>
+      <article class="card faq-card">
+        <h3>Gagner du temps</h3>
+        <p>Un bien bien positionné attire plus facilement les bons acheteurs.</p>
+      </article>
+      <article class="card faq-card">
+        <h3>Décider avec plus de sérénité</h3>
+        <p>Même si vous ne vendez pas tout de suite, vous savez enfin où vous en êtes.</p>
+      </article>
+    </div>
+
+    <p style="text-align:center; margin-top: 1rem;">
+      <a href="#form-estimation" class="btn btn-primary"><i class="fas fa-bolt"></i> 👉 Accéder à mon estimation</a>
+    </p>
+  </div>
 </section>
 
-<!-- FAQ COURTE -->
-<section>
-  <h2>Questions fréquentes</h2>
-  <h3>L’estimation immobilière à [VILLE] est-elle vraiment gratuite ?</h3>
-  <p>Oui, l’estimation est gratuite et sans engagement.</p>
+<!-- ============================================ -->
+<!-- CETTE ESTIMATION EST UTILE SI -->
+<!-- ============================================ -->
+<section class="section section-premium-cta" id="utile-si">
+  <div class="container">
+    <div class="card cta-final-card">
+      <h2 style="margin-bottom: 1.5rem;">Cette estimation est utile si…</h2>
+
+      <div class="faq-grid">
+        <article class="card faq-card">
+          <h3>Vous pensez vendre prochainement</h3>
+          <p>Commencez par vérifier la vraie valeur de votre bien avant de prendre une décision.</p>
+        </article>
+        <article class="card faq-card">
+          <h3>Votre bien est déjà en vente mais ça bloque</h3>
+          <p>Le problème vient parfois simplement du positionnement prix.</p>
+        </article>
+        <article class="card faq-card">
+          <h3>Vous êtes juste curieux</h3>
+          <p>Vous voulez savoir ce que vaut votre maison aujourd’hui, sans engagement.</p>
+        </article>
+      </div>
+
+      <a href="#form-estimation" class="btn btn-primary btn-pulse" style="display: inline-flex; margin-top: 1.5rem;">
+        <i class="fas fa-bolt"></i> Lancer mon estimation gratuite
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Schema.org FAQPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Cette estimation est-elle gratuite ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Oui, elle est gratuite, sans engagement, avec un résultat immédiat."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Sur quelles communes l'estimation s'applique-t-elle ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "L'outil couvre Bordeaux, Mérignac, Pessac, Talence, Bègles, Bruges et les communes voisines."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Pourquoi faire une estimation maintenant ?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pour éviter un mauvais positionnement prix, gagner du temps et décider plus sereinement."
+      }
+    }
+  ]
+}
+</script>
 
   <h3>Combien de temps faut-il pour obtenir un résultat ?</h3>
   <p>Quelques minutes suffisent pour recevoir une première estimation.</p>

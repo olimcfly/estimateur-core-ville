@@ -27,7 +27,8 @@ final class PageController
         $city = $this->cityName();
         $area = $this->cityAreaLabel();
         View::render('pages/home', [
-            'page_title' => "Estimation Immobilier {$area} | Avis de Valeur Gratuit",
+            'page_title' => "Estimation immobilière vendeurs {$area} | Vendre au bon prix",
+            'meta_description' => "Propriétaire vendeur à {$area} : obtenez une estimation immobilière claire, locale et sans engagement pour lancer votre vente sereinement.",
             'city_name' => $city,
             'area_label' => $area,
         ]);
@@ -50,6 +51,9 @@ final class PageController
             ['path' => '/estimation', 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['path' => '/services', 'changefreq' => 'monthly', 'priority' => '0.8'],
             ['path' => '/quartiers', 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['path' => '/financement', 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['path' => '/villes', 'changefreq' => 'weekly', 'priority' => '0.8'],
+            ['path' => '/ville/toulon', 'changefreq' => 'weekly', 'priority' => '0.8'],
             ['path' => '/blog', 'changefreq' => 'weekly', 'priority' => '0.7'],
             ['path' => '/processus-estimation', 'changefreq' => 'monthly', 'priority' => '0.7'],
             ['path' => '/exemples-estimation', 'changefreq' => 'monthly', 'priority' => '0.7'],
@@ -151,7 +155,8 @@ final class PageController
     {
         $area = $this->cityAreaLabel();
         View::render('pages/contact', [
-            'page_title' => "Contact | Estimation Immobilier {$area}",
+            'page_title' => "Contact vendeurs | Estimation immobilière {$area}",
+            'meta_description' => "Contactez notre équipe dédiée aux propriétaires vendeurs à {$area}. Réponse rapide et accompagnement local.",
         ]);
     }
 
@@ -233,6 +238,69 @@ final class PageController
         ]);
     }
 
+
+
+
+    public function financement(): void
+    {
+        $area = $this->cityAreaLabel();
+        View::render('pages/financement', [
+            'page_title' => "Financement immobilier vendeur | {$area}",
+            'meta_description' => "Anticipez votre financement à {$area} : capacité, achat-revente, crédit relais et stratégie de transition pour vendre sereinement.",
+        ]);
+    }
+
+    public function villes(): void
+    {
+        View::render('pages/villes', [
+            'page_title' => 'Villes couvertes | Estimation immobilière locale',
+            'meta_description' => 'Découvrez nos pages locales d’estimation immobilière pour propriétaires vendeurs.',
+        ]);
+    }
+
+    public function ville(string $slug): void
+    {
+        $slug = trim(mb_strtolower($slug));
+        $map = [
+            'toulon' => [
+                'name' => 'Toulon',
+                'market' => 'Le marché toulonnais reste actif avec des écarts marqués selon la proximité mer et les quartiers résidentiels.',
+                'areas' => ['Le Mourillon', 'Le Faron', 'Pont-du-Las', 'Cap Brun'],
+            ],
+            'hyeres' => [
+                'name' => 'Hyères',
+                'market' => 'À Hyères, les biens bien valorisés et bien présentés se distinguent rapidement, surtout sur les secteurs recherchés.',
+                'areas' => ['Centre-ville', 'Costebelle', 'Giens', 'Hyères Ouest'],
+            ],
+            'la-seyne-sur-mer' => [
+                'name' => 'La Seyne-sur-Mer',
+                'market' => 'Le marché seynois offre des opportunités mais impose un positionnement prix précis pour éviter l’allongement des délais.',
+                'areas' => ['Les Sablettes', 'Tamaris', 'Balaguier', 'Centre'],
+            ],
+            'sanary-sur-mer' => [
+                'name' => 'Sanary-sur-Mer',
+                'market' => 'Sanary attire une demande qualitative ; la cohérence prix/prestations reste la clé pour vendre efficacement.',
+                'areas' => ['Port', 'Beaucours', 'La Gorguette', 'Pierredon'],
+            ],
+            'bordeaux' => [
+                'name' => 'Bordeaux',
+                'market' => 'Le marché bordelais se segmente fortement : l’adresse, l’état du bien et le DPE influencent fortement la vitesse de vente.',
+                'areas' => ['Chartrons', 'Caudéran', 'Bastide', 'Saint-Michel'],
+            ],
+        ];
+        $cityData = $map[$slug] ?? null;
+        $cityName = $cityData['name'] ?? ucwords(str_replace('-', ' ', $slug));
+        $marketInsight = $cityData['market'] ?? 'Le marché local reste sélectif : les biens bien positionnés se vendent plus vite que la moyenne.';
+        $localAreas = $cityData['areas'] ?? [];
+
+        View::render('pages/ville', [
+            'city_name' => $cityName,
+            'market_insight' => $marketInsight,
+            'local_areas' => $localAreas,
+            'page_title' => "Estimation immobilière à {$cityName} | Propriétaires vendeurs",
+            'meta_description' => "Estimation immobilière à {$cityName} : repères marché local, stratégie vendeurs et CTA pour vendre au bon prix.",
+        ]);
+    }
 
     public function mentionsLegales(): void
     {

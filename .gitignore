@@ -44,3 +44,4 @@
 # OS / editor noise
 .DS_Store
 Thumbs.db
+error_log

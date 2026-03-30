@@ -32,9 +32,12 @@ final class EstimationController
 
     public function index(): void
     {
+        $city = (string) (Config::get('city.name', '') ?: site('city', 'votre ville'));
         View::render('estimation/index', [
             'errors' => [],
             'estimationContext' => getEstimationContext(),
+            'page_title' => "Obtenez une estimation fiable de votre bien à {$city}",
+            'meta_description' => "Obtenez votre estimation immobilière à {$city} en 60 secondes : formulaire simple, sans engagement, orienté vendeurs.",
         ]);
     }
 

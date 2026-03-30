@@ -6,16 +6,16 @@ $areaLabel = trim((string) ($area_label ?? ($cityName . ' et alentours')));
   <div class="container premium-hero__grid">
     <div class="premium-hero__content">
       <p class="premium-kicker">Spécial propriétaires vendeurs · <?= e($areaLabel) ?></p>
-      <h1>Connaissez la valeur réelle de votre bien avant de vendre</h1>
-      <p class="premium-lead">Obtenez une première estimation fiable en moins d’une minute, puis une stratégie claire pour vendre au bon prix et au bon moment.</p>
+      <h1>Combien vaut votre bien aujourd’hui à <?= e($cityName) ?> ?</h1>
+      <p class="premium-lead">Obtenez une estimation basée sur les ventes réelles autour de chez vous. Gratuit, rapide, sans engagement.</p>
       <div class="premium-actions">
         <a class="btn btn-gold" href="/estimation#form-estimation">Estimer mon bien</a>
         <a class="btn btn-secondary" href="/contact">Parler à un conseiller</a>
       </div>
       <ul class="premium-inline-trust">
-        <li>Sans engagement</li>
-        <li>Données locales</li>
-        <li>Accompagnement humain</li>
+        <li>✔ Résultat en quelques minutes</li>
+        <li>✔ Données du marché local</li>
+        <li>✔ Sans inscription obligatoire</li>
       </ul>
     </div>
     <aside class="premium-card premium-card--emphasis">
@@ -32,13 +32,32 @@ $areaLabel = trim((string) ($area_label ?? ($cityName . ' et alentours')));
 <section class="section section-alt">
   <div class="container">
     <header class="section-head">
-      <h2>Un parcours simple pour vendre avec confiance</h2>
-      <p>Chaque étape est pensée pour vous donner de la clarté et accélérer votre prise de décision.</p>
+      <h2>Le marché immobilier a changé.</h2>
+      <p>Et aujourd’hui, une mauvaise estimation peut vous faire perdre des milliers d’euros.</p>
+      <ul class="premium-bullet-list">
+        <li>Certains biens restent en vente trop longtemps</li>
+        <li>D’autres sont vendus trop bas</li>
+        <li>Les écarts de prix entre quartiers sont énormes</li>
+      </ul>
     </header>
-    <div class="premium-grid-3">
-      <article class="premium-card"><h3>1. Estimer</h3><p>Renseignez les caractéristiques clés de votre bien pour obtenir une fourchette instantanée.</p></article>
-      <article class="premium-card"><h3>2. Positionner</h3><p>Comprenez les signaux du marché local et ajustez votre prix de mise en vente.</p></article>
-      <article class="premium-card"><h3>3. Convertir</h3><p>Déployez une stratégie de vente crédible pour générer des visites sérieuses.</p></article>
+    <div class="premium-grid-2">
+      <article class="premium-card">
+        <h3>Notre solution</h3>
+        <p>Notre outil vous donne une estimation cohérente avec votre marché local.</p>
+        <ul class="premium-bullet-list">
+          <li>Analyse des ventes récentes</li>
+          <li>Prise en compte de votre secteur</li>
+          <li>Vision claire du prix actuel</li>
+        </ul>
+      </article>
+      <article class="premium-card">
+        <h3>Process en 3 étapes</h3>
+        <ol class="premium-bullet-list">
+          <li>Vous renseignez votre bien</li>
+          <li>Nous analysons les données du marché</li>
+          <li>Vous obtenez une estimation claire</li>
+        </ol>
+      </article>
     </div>
   </div>
 </section>
@@ -55,12 +74,12 @@ $areaLabel = trim((string) ($area_label ?? ($cityName . ' et alentours')));
       </ul>
     </article>
     <article class="premium-card">
-      <h2>Vos avantages avec notre approche</h2>
+      <h2>Bénéfices</h2>
       <ul class="premium-bullet-list">
-        <li>Décision plus sereine dès le départ</li>
-        <li>Moins d’allers-retours sur le prix</li>
-        <li>Meilleure qualité des contacts acheteurs</li>
-        <li>Processus plus fluide jusqu’à la vente</li>
+        <li>Vendre au bon prix</li>
+        <li>Éviter les erreurs classiques</li>
+        <li>Gagner du temps</li>
+        <li>Comprendre le marché</li>
       </ul>
     </article>
   </div>
@@ -78,7 +97,8 @@ $areaLabel = trim((string) ($area_label ?? ($cityName . ' et alentours')));
       <article class="premium-card"><h3>Et après l’estimation ?</h3><p>Vous pouvez demander un accompagnement personnalisé pour préparer votre vente.</p></article>
     </div>
     <div class="premium-final-cta">
-      <a class="btn btn-gold" href="/estimation#form-estimation">Je lance mon estimation</a>
+      <h3>Découvrez la valeur de votre bien maintenant</h3>
+      <a class="btn btn-gold" href="/estimation#form-estimation">👉 Estimation gratuite en 30 secondes</a>
     </div>
   </div>
 </section>

@@ -5949,6 +5949,104 @@ button:focus-visible {
 }
 
 /* ===================================================== */
+/* TABLET (768px → 1024px)                               */
+/* ===================================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    width: min(980px, calc(100% - 4.5rem));
+  }
+
+  .hero {
+    padding: 5.5rem 0 3.75rem;
+  }
+
+  .hero::before {
+    top: -26%;
+    right: -16%;
+    width: 420px;
+    height: 420px;
+    opacity: 0.56;
+  }
+
+  .hero::after {
+    bottom: -22%;
+    left: -12%;
+    width: 300px;
+    height: 300px;
+    opacity: 0.4;
+  }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+    gap: 1.9rem;
+    align-items: start;
+  }
+
+  .hero-copy {
+    max-width: 62ch;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.05rem, 3.2vw, 2.65rem);
+    line-height: 1.14;
+    max-width: 12ch;
+    margin-bottom: 1rem;
+  }
+
+  .hero-lead {
+    font-size: clamp(1.25rem, 2.15vw, 1.375rem);
+    line-height: 1.62;
+    max-width: 60ch;
+  }
+
+  .hero-actions {
+    margin: 1.3rem 0 1.45rem;
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  .hero-actions .btn {
+    width: auto;
+    min-height: 52px;
+    padding: 0.92rem 1.45rem;
+    font-size: 1rem;
+  }
+
+  .trust-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    margin-top: 0.9rem;
+  }
+
+  .trust-list li {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.98rem;
+  }
+
+  .hero-panel {
+    padding: 1.35rem;
+  }
+
+  .panel-header {
+    margin-bottom: 1rem;
+  }
+
+  .panel-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .section {
+    padding: 3.5rem 0;
+  }
+
+  .section .container {
+    max-width: 980px;
+    margin-inline: auto;
+  }
+}
+
+/* ===================================================== */
 /* Estimation page: extracted former inline styles       */
 /* ===================================================== */
 .est-inline-testimonial {

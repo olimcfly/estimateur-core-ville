@@ -50,6 +50,9 @@ final class PageController
             ['path' => '/estimation', 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['path' => '/services', 'changefreq' => 'monthly', 'priority' => '0.8'],
             ['path' => '/quartiers', 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['path' => '/financement', 'changefreq' => 'monthly', 'priority' => '0.8'],
+            ['path' => '/villes', 'changefreq' => 'weekly', 'priority' => '0.8'],
+            ['path' => '/ville/toulon', 'changefreq' => 'weekly', 'priority' => '0.8'],
             ['path' => '/blog', 'changefreq' => 'weekly', 'priority' => '0.7'],
             ['path' => '/processus-estimation', 'changefreq' => 'monthly', 'priority' => '0.7'],
             ['path' => '/exemples-estimation', 'changefreq' => 'monthly', 'priority' => '0.7'],
@@ -233,6 +236,41 @@ final class PageController
         ]);
     }
 
+
+
+
+    public function financement(): void
+    {
+        $area = $this->cityAreaLabel();
+        View::render('pages/financement', [
+            'page_title' => "Financement immobilier | {$area}",
+        ]);
+    }
+
+    public function villes(): void
+    {
+        View::render('pages/villes', [
+            'page_title' => 'Villes couvertes | Estimation immobilière locale',
+        ]);
+    }
+
+    public function ville(string $slug): void
+    {
+        $slug = trim(mb_strtolower($slug));
+        $map = [
+            'toulon' => 'Toulon',
+            'hyeres' => 'Hyères',
+            'la-seyne-sur-mer' => 'La Seyne-sur-Mer',
+            'sanary-sur-mer' => 'Sanary-sur-Mer',
+            'bordeaux' => 'Bordeaux',
+        ];
+        $cityName = $map[$slug] ?? ucwords(str_replace('-', ' ', $slug));
+
+        View::render('pages/ville', [
+            'city_name' => $cityName,
+            'page_title' => "Estimation immobilière à {$cityName}",
+        ]);
+    }
 
     public function mentionsLegales(): void
     {

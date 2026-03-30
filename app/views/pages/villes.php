@@ -1,6 +1,4 @@
 <?php
-$page_title = 'Villes couvertes | Estimation immobilière locale';
-$meta_description = 'Découvrez nos zones couvertes et lancez votre estimation immobilière locale.';
 $cities = [
   ['slug' => 'toulon', 'name' => 'Toulon'],
   ['slug' => 'hyeres', 'name' => 'Hyères'],
@@ -10,14 +8,17 @@ $cities = [
 ?>
 <section class="section">
   <div class="container">
-    <h1>Nos villes d'estimation</h1>
-    <p>Chaque ville dispose d'une page locale optimisée SEO et conversion vendeurs.</p>
+    <header class="section-head">
+      <h1>Villes couvertes pour votre estimation immobilière</h1>
+      <p>Chaque page locale vous aide à comprendre le marché et à vendre au bon prix dans votre secteur.</p>
+    </header>
+
     <div class="premium-grid-2">
       <?php foreach ($cities as $city): ?>
         <article class="premium-card">
-          <h2><?= e($city['name']) ?></h2>
-          <p>Estimation immobilière à <?= e($city['name']) ?>, tendances locales et plan d'action vendeur.</p>
-          <a class="btn btn-secondary" href="/ville/<?= e($city['slug']) ?>">Voir la page locale</a>
+          <h2>Estimation à <?= e($city['name']) ?></h2>
+          <p>Accédez à un contenu local dédié : repères marché, arguments vendeurs et CTA estimation.</p>
+          <a class="btn btn-secondary" href="/ville/<?= e($city['slug']) ?>">Voir la page <?= e($city['name']) ?></a>
         </article>
       <?php endforeach; ?>
     </div>

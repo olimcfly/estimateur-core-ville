@@ -15,6 +15,11 @@
 })();
 </script>
 
+<?php
+  $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+  $canonicalPath = (string) parse_url($requestUri, PHP_URL_PATH);
+  $canonicalPath = $canonicalPath !== '' ? $canonicalPath : '/';
+?>
 <?php include __DIR__ . '/sticky-cta.php'; ?>
 </body>
 </html>

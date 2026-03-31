@@ -38,3 +38,9 @@ Date: 2026-03-31
 - Séparer secrets prod/test/demo.
 - Préfixer clairement par environnement (`PROD_`, `TEST_`, `DEMO_`) ou par domaine (`SAAS_MAIN_`, `IMMO_TEST_`, etc.).
 
+
+## Rotation des secrets (priorité critique)
+
+- Si des clés API, mots de passe SMTP, JWT ou tokens ont été partagés en clair, ils doivent être considérés comme compromis.
+- Action immédiate: régénérer toutes les clés (`OPENAI`, `ANTHROPIC`, `PERPLEXITY`, SMTP, JWT, APP_SECRET_KEY) et invalider les anciennes.
+- Ne jamais versionner un `.env` réel; conserver uniquement des templates sans valeurs sensibles (`.env.example`).

@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "accueil": "Home",
+    "acheter": "Buy",
+    "louer": "Rent",
+    "vendre": "Sell",
+    "estimation": "Valuation",
+    "blog": "Blog",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "hero": {
+    "titre": "Find the right property at the right price",
+    "soustitre": "Buy, sell, or rent across France with trusted real-estate data.",
+    "recherche_placeholder": "City, district, property type..."
+  },
+  "recherche": {
+    "filtres": "Filters",
+    "trier_par": "Sort by",
+    "resultats": "Results",
+    "aucun_resultat": "No results found",
+    "chargement": "Loading listings..."
+  },
+  "bien": {
+    "chambres": "Bedrooms",
+    "pieces": "Rooms",
+    "surface": "Area",
+    "etage": "Floor",
+    "reference": "Reference",
+    "contacter": "Contact",
+    "favori": "Favorite",
+    "partager": "Share",
+    "voir_plus": "View more",
+    "prix_m2": "Price per sqm"
+  },
+  "contact": {
+    "nom": "Name",
+    "email": "Email",
+    "telephone": "Phone",
+    "message": "Message",
+    "envoyer": "Send",
+    "succes": "Message sent successfully",
+    "erreur": "An error occurred"
+  },
+  "errors": {
+    "404_titre": "Page not found",
+    "404_message": "Oops, this page does not exist anymore.",
+    "500_titre": "Server error",
+    "500_message": "A temporary issue occurred."
+  },
+  "commun": {
+    "voir_plus": "View more",
+    "retour": "Back",
+    "fermer": "Close",
+    "confirmer": "Confirm",
+    "annuler": "Cancel",
+    "supprimer": "Delete",
+    "chargement": "Loading...",
+    "aucun_resultat": "No result"
+  }
+}

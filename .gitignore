@@ -1,4 +1,25 @@
+# Env
 .env
 .env.local
-.next/
+.env.production
+
+# Node
 node_modules/
+.next/
+npm-debug.log*
+
+# Build
+/public/build/
+/public/hot/
+
+# Cache
+.cache/
+*.pack
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/tmp/

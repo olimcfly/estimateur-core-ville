@@ -56,9 +56,8 @@ class Database
                 $cfg['options']
             );
         } catch (PDOException $e) {
-            throw new \RuntimeException(
-                'Connexion base de données échouée : ' . $e->getMessage()
-            );
+            error_log('[Database::connect] ' . $e->getMessage());
+            throw new \RuntimeException('Une erreur interne est survenue.');
         }
     }
 
@@ -69,9 +68,14 @@ class Database
     */
     public function query(string $sql, array $params = []): \PDOStatement
     {
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            error_log('[Database::query] ' . $e->getMessage());
+            throw new \RuntimeException('Une erreur interne est survenue.');
+        }
     }
 
     public function fetch(string $sql, array $params = []): ?array

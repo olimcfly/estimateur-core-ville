@@ -20,7 +20,9 @@ return [
     | Sécurité
     |--------------------------------------------------------------------------
     */
-    'secret_key'  => $_ENV['APP_SECRET']  ?? 'changez-cette-cle-en-production',
+    'secret_key'  => $_ENV['APP_KEY'] ?? throw new \RuntimeException(
+        'La variable d\'environnement APP_KEY est requise.'
+    ),
     'token_ttl'   => 3600, // secondes
 
     /*

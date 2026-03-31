@@ -1,57 +1,48 @@
 import { NextResponse } from 'next/server';
-import Negotiator from 'negotiator';
-import { match } from '@formatjs/intl-localematcher';
-import { COOKIE_KEY, DEFAULT_LOCALE, LOCALES } from './i18n/config';
 
-function getLocaleFromAcceptLanguage(request) {
-  const negotiatorHeaders = Object.fromEntries(request.headers.entries());
-  const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-  return match(languages, LOCALES, DEFAULT_LOCALE);
-}
+const accessLog = [];
+const rateLimitStore = new Map();
+const WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 60;
 
-function getLocaleFromCookie(request) {
-  const locale = request.cookies.get(COOKIE_KEY)?.value;
-  if (locale && LOCALES.includes(locale)) {
-    return locale;
-  }
-
-  return null;
-}
-
-function getLocaleFromPath(pathname) {
-  const maybeLocale = pathname.split('/').filter(Boolean)[0];
-  return LOCALES.includes(maybeLocale) ? maybeLocale : null;
-}
+const getClientIp = (request) =>
+  request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+  request.ip ||
+  'unknown';
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('.')
-  ) {
+  if (!pathname.startsWith('/admin')) {
     return NextResponse.next();
   }
 
-  const localeInPath = getLocaleFromPath(pathname);
-  if (localeInPath) {
-    return NextResponse.next();
+  const ip = getClientIp(request);
+  const now = Date.now();
+  const previousHits = rateLimitStore.get(ip) || [];
+  const recentHits = previousHits.filter((timestamp) => now - timestamp < WINDOW_MS);
+  recentHits.push(now);
+  rateLimitStore.set(ip, recentHits);
+
+  accessLog.push({ ip, pathname, at: new Date(now).toISOString() });
+  if (accessLog.length > 1000) accessLog.shift();
+
+  if (recentHits.length > MAX_REQUESTS_PER_WINDOW) {
+    return NextResponse.json({ message: 'Trop de requêtes. Réessayez plus tard.' }, { status: 429 });
   }
 
-  const locale = getLocaleFromCookie(request) || getLocaleFromAcceptLanguage(request);
-  const redirectUrl = new URL(`/${locale}${pathname}`, request.url);
-  const response = NextResponse.redirect(redirectUrl);
+  const role = request.cookies.get('user_role')?.value || request.headers.get('x-user-role');
 
-  response.cookies.set(COOKIE_KEY, locale, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: 'lax',
-  });
+  if (role !== 'ADMIN') {
+    const redirectUrl = new URL('/?unauthorized=admin', request.url);
+    return NextResponse.redirect(redirectUrl);
+  }
 
+  const response = NextResponse.next();
+  response.headers.set('x-admin-access-log-size', String(accessLog.length));
   return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next|.*\\..*).*)'],
+  matcher: ['/admin/:path*'],
 };

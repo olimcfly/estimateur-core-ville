@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "accueil": "Accueil",
+    "acheter": "Acheter",
+    "louer": "Louer",
+    "vendre": "Vendre",
+    "estimation": "Estimation",
+    "blog": "Blog",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "hero": {
+    "titre": "Trouvez le bien parfait, au bon prix",
+    "soustitre": "Achetez, vendez ou louez partout en France avec des données fiables.",
+    "recherche_placeholder": "Ville, quartier, type de bien..."
+  },
+  "recherche": {
+    "filtres": "Filtres",
+    "trier_par": "Trier par",
+    "resultats": "Résultats",
+    "aucun_resultat": "Aucun résultat trouvé",
+    "chargement": "Chargement des annonces..."
+  },
+  "bien": {
+    "chambres": "Chambres",
+    "pieces": "Pièces",
+    "surface": "Surface",
+    "etage": "Étage",
+    "reference": "Référence",
+    "contacter": "Contacter",
+    "favori": "Favori",
+    "partager": "Partager",
+    "voir_plus": "Voir plus",
+    "prix_m2": "Prix au m²"
+  },
+  "contact": {
+    "nom": "Nom",
+    "email": "Email",
+    "telephone": "Téléphone",
+    "message": "Message",
+    "envoyer": "Envoyer",
+    "succes": "Message envoyé avec succès",
+    "erreur": "Une erreur est survenue"
+  },
+  "errors": {
+    "404_titre": "Page introuvable",
+    "404_message": "Oups, cette page n'existe pas (ou plus).",
+    "500_titre": "Erreur serveur",
+    "500_message": "Un problème temporaire est survenu."
+  },
+  "commun": {
+    "voir_plus": "Voir plus",
+    "retour": "Retour",
+    "fermer": "Fermer",
+    "confirmer": "Confirmer",
+    "annuler": "Annuler",
+    "supprimer": "Supprimer",
+    "chargement": "Chargement...",
+    "aucun_resultat": "Aucun résultat"
+  }
+}

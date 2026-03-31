@@ -1,3 +1,10 @@
+-- ============================================
+-- 003 - BLOG, NEWSLETTER & SEO
+-- ============================================
+
+-- -----------------------------------------------
+-- CATEGORIES BLOG
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS categories_blog (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
@@ -13,6 +20,9 @@ CREATE TABLE IF NOT EXISTS categories_blog (
     UNIQUE KEY uq_categories_blog_slug (slug)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------
+-- TAGS
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS tags (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
@@ -21,6 +31,9 @@ CREATE TABLE IF NOT EXISTS tags (
     UNIQUE KEY uq_tags_slug (slug)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------
+-- ARTICLES
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS articles (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     titre VARCHAR(255) NOT NULL,
@@ -33,17 +46,20 @@ CREATE TABLE IF NOT EXISTS articles (
     statut ENUM('brouillon', 'publie', 'archive') NOT NULL DEFAULT 'brouillon',
     featured TINYINT(1) NOT NULL DEFAULT 0,
     vues INT UNSIGNED NOT NULL DEFAULT 0,
-    temps_lecture SMALLINT UNSIGNED NULL,
+    temps_lecture SMALLINT UNSIGNED NULL,         -- en minutes
     meta_title VARCHAR(255) NULL,
     meta_description VARCHAR(500) NULL,
     og_image_url VARCHAR(2048) NULL,
     published_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     UNIQUE KEY uq_articles_slug (slug),
     KEY idx_articles_statut_published_at (statut, published_at),
     KEY idx_articles_auteur_id_statut (auteur_id, statut),
     KEY idx_articles_categorie_id_statut (categorie_id, statut),
+    KEY idx_articles_featured (featured),         -- ✅ ajouté
+
     CONSTRAINT fk_articles_auteur_id_users
         FOREIGN KEY (auteur_id) REFERENCES users (id)
         ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -52,10 +68,14 @@ CREATE TABLE IF NOT EXISTS articles (
         ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------
+-- ARTICLES <-> TAGS (pivot)
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS articles_tags (
     article_id BIGINT UNSIGNED NOT NULL,
     tag_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (article_id, tag_id),
+
     CONSTRAINT fk_articles_tags_article_id_articles
         FOREIGN KEY (article_id) REFERENCES articles (id)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -64,18 +84,25 @@ CREATE TABLE IF NOT EXISTS articles_tags (
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------
+-- COMMENTAIRES
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS commentaires (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     article_id BIGINT UNSIGNED NOT NULL,
     parent_id BIGINT UNSIGNED NULL,
     user_id BIGINT UNSIGNED NULL,
-    nom VARCHAR(255) NULL,
-    email VARCHAR(255) NULL,
+    nom VARCHAR(255) NULL,                        -- si non connecté
+    email VARCHAR(255) NULL,                      -- si non connecté
     contenu TEXT NOT NULL,
     statut ENUM('en_attente', 'approuve', 'spam') NOT NULL DEFAULT 'en_attente',
     ip_address VARCHAR(45) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
     KEY idx_commentaires_article_id_statut (article_id, statut),
+    KEY idx_commentaires_parent_id (parent_id),
+    KEY idx_commentaires_user_id (user_id),       -- ✅ ajouté
+
     CONSTRAINT fk_commentaires_article_id_articles
         FOREIGN KEY (article_id) REFERENCES articles (id)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -87,6 +114,9 @@ CREATE TABLE IF NOT EXISTS commentaires (
         ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------
+-- NEWSLETTER
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS newsletter (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
@@ -95,20 +125,40 @@ CREATE TABLE IF NOT EXISTS newsletter (
     actif TINYINT(1) NOT NULL DEFAULT 1,
     token_desabo VARCHAR(255) NOT NULL,
     preferences JSON NULL,
+    -- Structure attendue :
+    -- {
+    --   "categories_blog": [1, 3],
+    --   "alertes_biens": true,
+    --   "actualites_marche": true,
+    --   "frequency": "weekly"
+    -- }
     confirmed TINYINT(1) NOT NULL DEFAULT 0,
     confirmed_at TIMESTAMP NULL,
-    source VARCHAR(255) NULL,
+    source VARCHAR(255) NULL,                     -- ex: 'blog', 'estimation', 'footer'
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     UNIQUE KEY uq_newsletter_email (email),
     UNIQUE KEY uq_newsletter_token_desabo (token_desabo),
     KEY idx_newsletter_actif_confirmed (actif, confirmed)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------
+-- PAGES SEO
+-- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS pages_seo (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    page_type ENUM('accueil', 'ville', 'type_bien', 'blog') NOT NULL,
-    identifiant VARCHAR(255) NOT NULL,
+    page_type ENUM(
+        'accueil',
+        'ville',
+        'type_bien',
+        'blog',
+        'estimation',   -- ✅ ajouté
+        'contact',      -- ✅ ajouté
+        'agent',        -- ✅ ajouté
+        'agence'        -- ✅ ajouté
+    ) NOT NULL,
+    identifiant VARCHAR(255) NOT NULL,            -- ex: slug ville, slug type_bien, 'accueil'
     meta_title VARCHAR(255) NULL,
     meta_description VARCHAR(500) NULL,
     og_title VARCHAR(255) NULL,
@@ -117,8 +167,9 @@ CREATE TABLE IF NOT EXISTS pages_seo (
     h1_override VARCHAR(255) NULL,
     contenu_intro TEXT NULL,
     contenu_bas_page TEXT NULL,
-    schema_json JSON NULL,
+    schema_json JSON NULL,                        -- Schema.org structured data
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
     UNIQUE KEY uq_pages_seo_page_type_identifiant (page_type, identifiant)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

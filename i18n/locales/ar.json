@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "accueil": "الرئيسية",
+    "acheter": "شراء",
+    "louer": "إيجار",
+    "vendre": "بيع",
+    "estimation": "تقييم",
+    "blog": "المدونة",
+    "contact": "اتصل بنا",
+    "admin": "الإدارة"
+  },
+  "hero": {
+    "titre": "اعثر على العقار المناسب بالسعر المناسب",
+    "soustitre": "اشترِ أو بِع أو استأجر في فرنسا مع بيانات عقارية موثوقة.",
+    "recherche_placeholder": "مدينة، حي، نوع العقار..."
+  },
+  "recherche": {
+    "filtres": "الفلاتر",
+    "trier_par": "ترتيب حسب",
+    "resultats": "النتائج",
+    "aucun_resultat": "لا توجد نتائج",
+    "chargement": "جارٍ تحميل الإعلانات..."
+  },
+  "bien": {
+    "chambres": "غرف النوم",
+    "pieces": "الغرف",
+    "surface": "المساحة",
+    "etage": "الطابق",
+    "reference": "المرجع",
+    "contacter": "تواصل",
+    "favori": "مفضل",
+    "partager": "مشاركة",
+    "voir_plus": "عرض المزيد",
+    "prix_m2": "السعر لكل متر مربع"
+  },
+  "contact": {
+    "nom": "الاسم",
+    "email": "البريد الإلكتروني",
+    "telephone": "الهاتف",
+    "message": "الرسالة",
+    "envoyer": "إرسال",
+    "succes": "تم إرسال الرسالة بنجاح",
+    "erreur": "حدث خطأ"
+  },
+  "errors": {
+    "404_titre": "الصفحة غير موجودة",
+    "404_message": "عذرًا، هذه الصفحة غير متوفرة.",
+    "500_titre": "خطأ في الخادم",
+    "500_message": "حدثت مشكلة مؤقتة."
+  },
+  "commun": {
+    "voir_plus": "عرض المزيد",
+    "retour": "رجوع",
+    "fermer": "إغلاق",
+    "confirmer": "تأكيد",
+    "annuler": "إلغاء",
+    "supprimer": "حذف",
+    "chargement": "جارٍ التحميل...",
+    "aucun_resultat": "لا توجد نتائج"
+  }
+}

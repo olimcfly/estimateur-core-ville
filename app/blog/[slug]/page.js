@@ -12,8 +12,8 @@ import {
   truncateDescription,
 } from '../../../lib/seo';
 
-const TableOfContents = dynamic(() => import('../../../components/blog/TableOfContents'), { ssr: false });
-const CommentSection = dynamic(() => import('../../../components/blog/CommentSection'), { ssr: false });
+const TableOfContents = dynamic(() => import('../../../components/blog/TableOfContents'), { });
+const CommentSection = dynamic(() => import('../../../components/blog/CommentSection'), { });
 
 export const revalidate = 86400;
 

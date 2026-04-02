@@ -1,7 +1,0 @@
-# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
-PassengerAppRoot "/home/sc1tasq5564/test-estimateur"
-PassengerBaseURI "/"
-PassengerNodejs "/home/sc1tasq5564/nodevenv/test-estimateur/20/bin/node"
-PassengerAppType node
-PassengerStartupFile server.js
-# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END

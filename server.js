@@ -10,8 +10,8 @@ app.prepare().then(() => {
   createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
-  }).listen(3000, (err) => {
+  }).listen(process.env.PORT || 3000, (err) => {
     if (err) throw err;
-    console.log('Next.js server ready on http://localhost:3000');
+    console.log('> Ready on port', process.env.PORT || 3000);
   });
 });

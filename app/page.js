@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import BoutonFavori from '../components/BoutonFavori';
 
+export const metadata = {
+  title: 'Estimation Immobilière Gratuite Bordeaux',
+  description: 'Estimez votre bien immobilier à Bordeaux en quelques minutes. Gratuit, rapide et fiable.',
+};
+
 const exempleBien = {
   id: 'demo-lyon-69001',
   titre: 'Appartement T3 - Lyon 1er',

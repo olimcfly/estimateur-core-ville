@@ -2,8 +2,36 @@ import './globals.css';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Estimation Immobilier',
-  description: 'Plateforme d\'estimation immobilière par ville',
+  title: 'Estimation Immobilière Bordeaux | Gratuit & Rapide',
+  description: 'Estimez la valeur de votre bien immobilier à Bordeaux gratuitement. Outil d\'estimation rapide et fiable pour vendre ou acheter.',
+  keywords: 'estimation immobilière, Bordeaux, prix immobilier, évaluation bien, estimation gratuite',
+  authors: [{ name: 'Estimation Immobilier Bordeaux' }],
+  openGraph: {
+    title: 'Estimation Immobilière Bordeaux | Gratuit & Rapide',
+    description: 'Estimez la valeur de votre bien immobilier à Bordeaux gratuitement. Outil d\'estimation rapide et fiable.',
+    type: 'website',
+    url: 'https://estimation-immobilier-bordeaux.fr',
+    siteName: 'Estimation Immobilier Bordeaux',
+    images: [
+      {
+        url: 'https://estimation-immobilier-bordeaux.fr/og-default.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Estimation Immobilière Bordeaux',
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
